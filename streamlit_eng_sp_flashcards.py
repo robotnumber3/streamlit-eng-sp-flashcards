@@ -23,6 +23,7 @@ csv_files = [
     f for f in os.listdir(CSV_FOLDER)
     if f.endswith(".csv")
 ]
+csv_files.sort(key=str.lower)
 
 # --- SESSION STATE INITIALIZATION ---
 if "selected_csv" not in st.session_state:
