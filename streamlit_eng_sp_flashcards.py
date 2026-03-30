@@ -1,4 +1,4 @@
-# REV 9
+# REV 10
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -201,17 +201,22 @@ html, body, p, div, span, label, [class*="st-"] {{
 div[data-testid="stVerticalBlock"] {{
     gap: 0.3rem !important;
 }}
-/* Force button columns horizontal on mobile */
-[data-testid="stHorizontalBlock"] {{
+/* Button columns — scoped to btn_row_wrap so header cols are unaffected */
+.st-key-btn_row_wrap [data-testid="stHorizontalBlock"] {{
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    gap: 0.4rem !important;
+    gap: 0.5rem !important;
     align-items: stretch !important;
+    width: 100% !important;
 }}
-[data-testid="stColumn"] {{
+.st-key-btn_row_wrap [data-testid="stColumn"] {{
     flex: 1 1 0 !important;
-    width: auto !important;
+    min-width: 0 !important;
+}}
+.st-key-btn_row_wrap div[data-testid="stButton"] > button {{
+    width: 100% !important;
+    min-height: 3.0rem !important;
 }}
 
 /* Selectbox */
@@ -882,24 +887,25 @@ if st.session_state.quit_requested:
     </div>
     """, unsafe_allow_html=True)
 
-    c1, c2 = st.columns(2)
-    with c1:
-        with st.container(key="quitnow_wrap"):
-            if st.button("Quit", key="quitnow_btn"):
-                st.session_state.final_exit = True
-                st.rerun()
-    with c2:
-        with st.container(key="newsession_wrap"):
-            if st.button("New Session", key="newsession_btn"):
-                for k in ("selected_csv", "loaded_csv"):
-                    st.session_state[k] = None
-                for k in ("cards", "order"):
-                    st.session_state[k] = []
-                st.session_state.index          = 0
-                st.session_state.show_answer    = False
-                st.session_state.quit_requested = False
-                st.session_state.final_exit     = False
-                st.rerun()
+    with st.container(key="btn_row_wrap"):
+        c1, c2 = st.columns(2)
+        with c1:
+            with st.container(key="quitnow_wrap"):
+                if st.button("Quit", key="quitnow_btn"):
+                    st.session_state.final_exit = True
+                    st.rerun()
+        with c2:
+            with st.container(key="newsession_wrap"):
+                if st.button("New Session", key="newsession_btn"):
+                    for k in ("selected_csv", "loaded_csv"):
+                        st.session_state[k] = None
+                    for k in ("cards", "order"):
+                        st.session_state[k] = []
+                    st.session_state.index          = 0
+                    st.session_state.show_answer    = False
+                    st.session_state.quit_requested = False
+                    st.session_state.final_exit     = False
+                    st.rerun()
     st.stop()
 
 # ========================================================================
@@ -939,23 +945,24 @@ st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_gestures(st.session_state.show_answer)
 
-# Buttons in flex wrapper to force side-by-side on mobile
-st.markdown('<div class="btn-flex-row">', unsafe_allow_html=True)
+# Buttons in keyed container so CSS can target them specifically
 if not st.session_state.show_answer:
-    col1, col2 = st.columns(2)
-    with col1:
-        with st.container(key="showanswer_wrap"):
-            st.button("→", key="showanswer_btn", on_click=reveal_answer)
-    with col2:
-        with st.container(key="quitbefore_wrap"):
-            if st.button("🛑", key="quitbefore_btn"):
-                st.session_state.quit_requested = True
-                st.rerun()
+    with st.container(key="btn_row_wrap"):
+        col1, col2 = st.columns(2)
+        with col1:
+            with st.container(key="showanswer_wrap"):
+                st.button("→", key="showanswer_btn", on_click=reveal_answer)
+        with col2:
+            with st.container(key="quitbefore_wrap"):
+                if st.button("🛑", key="quitbefore_btn"):
+                    st.session_state.quit_requested = True
+                    st.rerun()
 else:
-    col1, col2 = st.columns(2)
-    with col1:
-        with st.container(key="correct_wrap"):
-            st.button("✓", key="correct_btn", on_click=mark_correct)
-    with col2:
-        with st.container(key="repeat_wrap"):
-            st.button("?", key="repeat_btn", on_click=mark_repeat)
+    with st.container(key="btn_row_wrap"):
+        col1, col2 = st.columns(2)
+        with col1:
+            with st.container(key="correct_wrap"):
+                st.button("✓", key="correct_btn", on_click=mark_correct)
+        with col2:
+            with st.container(key="repeat_wrap"):
+                st.button("?", key="repeat_btn", on_click=mark_repeat)
