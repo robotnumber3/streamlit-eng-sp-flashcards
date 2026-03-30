@@ -431,14 +431,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .title-main {{
     font-family: 'Fraunces', serif;
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 2.0 rem;
+    font-weight: 800;
     color: {t['fg']};
     line-height: 1;
     white-space: nowrap;
 }}
 .title-sub {{
-    font-size: 0.72rem;
+    font-size: 1.5rem;
     font-weight: 400;
     color: {t['muted']};
     white-space: nowrap;
