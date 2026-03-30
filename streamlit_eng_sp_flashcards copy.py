@@ -240,6 +240,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-hamburger_wrap {{
     min-width: 2.5rem !important;
 }}
+.st-key-hamburger_wrap div[data-testid="stButton"] {{
+    display: flex !important;
+    justify-content: flex-end !important;
+}}
 .st-key-hamburger_wrap div[data-testid="stButton"] > button {{
     background: transparent !important;
     border: none !important;
@@ -304,14 +308,24 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    gap: 0.5rem !important;
+    gap: 0.45rem !important;
     justify-content: center !important;
+    width: 100% !important;
 }}
 .st-key-btn_row_wrap [data-testid="stColumn"] {{
-    flex: 0 0 44% !important;
-    width: 44% !important;
+    flex: 1 1 0 !important;
+    width: calc(50% - 0.225rem) !important;
     min-width: 0 !important;
-    max-width: 44% !important;
+    max-width: none !important;
+}}
+.st-key-btn_row_wrap [data-testid="stColumn"] > div {{
+    width: 100% !important;
+}}
+.st-key-btn_row_wrap div[data-testid="stButton"] {{
+    width: 100% !important;
+}}
+.st-key-btn_row_wrap div[data-testid="stButton"] > div {{
+    width: 100% !important;
 }}
 .st-key-btn_row_wrap div[data-testid="stButton"] > button {{
     width: 100% !important;
@@ -319,28 +333,115 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 1.3rem !important;
 }}
 
+/* ---- Small centered icon button row ---- */
+.st-key-icon_btn_row_wrap [data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    gap: 0.8rem !important;
+    width: fit-content !important;
+    margin: 0 auto !important;
+}}
+.st-key-icon_btn_row_wrap [data-testid="stColumn"] {{
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+}}
+.st-key-icon_btn_row_wrap [data-testid="stColumn"] > div,
+.st-key-icon_btn_row_wrap div[data-testid="stButton"],
+.st-key-icon_btn_row_wrap div[data-testid="stButton"] > div {{
+    width: auto !important;
+}}
+.st-key-icon_btn_row_wrap div[data-testid="stButton"] > button {{
+    width: 5.4rem !important;
+    min-height: 3.2rem !important;
+    font-size: 1.3rem !important;
+}}
+
+/* ---- Centered summary button row ---- */
+.st-key-summary_btn_row_wrap [data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    gap: 0.8rem !important;
+    width: fit-content !important;
+    margin: 0 auto !important;
+}}
+.st-key-summary_btn_row_wrap [data-testid="stColumn"] {{
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+}}
+.st-key-summary_btn_row_wrap [data-testid="stColumn"] > div,
+.st-key-summary_btn_row_wrap div[data-testid="stButton"],
+.st-key-summary_btn_row_wrap div[data-testid="stButton"] > div {{
+    width: auto !important;
+}}
+.st-key-summary_btn_row_wrap div[data-testid="stButton"] > button {{
+    min-width: 0 !important;
+    min-height: 3.2rem !important;
+    padding-left: 1.1rem !important;
+    padding-right: 1.1rem !important;
+}}
+.st-key-quitnow_wrap div[data-testid="stButton"] > button {{
+    width: 5.8rem !important;
+}}
+.st-key-newsession_wrap div[data-testid="stButton"] > button {{
+    width: 10.6rem !important;
+}}
+
+/* ---- Header row ---- */
+.st-key-header_row_wrap [data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+}}
+.st-key-header_row_wrap [data-testid="stColumn"] {{
+    min-width: 0 !important;
+}}
+.st-key-header_row_wrap [data-testid="stColumn"]:first-child {{
+    flex: 1 1 auto !important;
+    width: auto !important;
+}}
+.st-key-header_row_wrap [data-testid="stColumn"]:last-child {{
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+}}
+
 /* ---- Title row ---- */
 .title-row {{
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: nowrap;
     padding: 0.5rem 0 0.3rem 0;
     width: 100%;
+    min-width: 0;
 }}
 .title-row-spacer {{
     flex: 1;
 }}
 .title-main {{
     font-family: 'Fraunces', serif;
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 600;
     color: {t['fg']};
     line-height: 1;
+    white-space: nowrap;
 }}
 .title-sub {{
-    font-size: 0.72rem;
+    font-size: 1.0rem;
     font-weight: 400;
     color: {t['muted']};
+    white-space: nowrap;
 }}
 
 /* ---- Menu dropdown ---- */
@@ -646,21 +747,21 @@ def stats_card_html(shown, total, correct, repeat):
 
 def render_header():
     menu_icon = "✕" if st.session_state.menu_open else "☰"
-    # Use columns to guarantee same line on all screen sizes
-    title_col, ham_col = st.columns([6, 1])
-    with title_col:
-        st.markdown(
-            "<div class='title-row'>"
-            "<span class='title-main'>Spanish Flashcards</span>"
-            "<span class='title-sub'>(Collett)</span>"
-            "</div>",
-            unsafe_allow_html=True,
-        )
-    with ham_col:
-        with st.container(key="hamburger_wrap"):
-            if st.button(menu_icon, key="hamburger_btn"):
-                st.session_state.menu_open = not st.session_state.menu_open
-                st.rerun()
+    with st.container(key="header_row_wrap"):
+        title_col, ham_col = st.columns([1, 0.14], gap="small")
+        with title_col:
+            st.markdown(
+                "<div class='title-row'>"
+                "<span class='title-main'>Spanish Flashcards</span>"
+                "<span class='title-sub'>(Collett)</span>"
+                "</div>",
+                unsafe_allow_html=True,
+            )
+        with ham_col:
+            with st.container(key="hamburger_wrap"):
+                if st.button(menu_icon, key="hamburger_btn"):
+                    st.session_state.menu_open = not st.session_state.menu_open
+                    st.rerun()
     st.markdown(
         f"<hr style='border:none;border-top:1px solid {t['border']};margin:0 0 0.7rem 0;'>",
         unsafe_allow_html=True,
@@ -723,7 +824,7 @@ def render_deck_strip():
 
 
 def render_buttons(show_answer):
-    with st.container(key="btn_row_wrap"):
+    with st.container(key="icon_btn_row_wrap"):
         if not show_answer:
             col1, col2 = st.columns(2)
             with col1:
@@ -834,7 +935,7 @@ if st.session_state.quit_requested:
     </div>
     """, unsafe_allow_html=True)
 
-    with st.container(key="btn_row_wrap"):
+    with st.container(key="summary_btn_row_wrap"):
         c1, c2 = st.columns(2)
         with c1:
             with st.container(key="quitnow_wrap"):

@@ -56,6 +56,8 @@ THEMES = {
         "card_fg":       "#f0ece4",
         "accent":        "#2e8b57",
         "accent_light":  "#c8f0d8",
+        "info":          "#2f6fdf",
+        "info_light":    "#d7e5ff",
         "warn":          "#b8860b",
         "warn_light":    "#fdf0c0",
         "danger":        "#a01818",
@@ -79,6 +81,8 @@ THEMES = {
         "card_fg":       "#e8e4dc",
         "accent":        "#3dba70",
         "accent_light":  "#1a3d2a",
+        "info":          "#63a4ff",
+        "info_light":    "#11294d",
         "warn":          "#f0b429",
         "warn_light":    "#3d2e00",
         "danger":        "#e05252",
@@ -102,6 +106,8 @@ THEMES = {
         "card_fg":       "#d4f0ee",
         "accent":        "#1a9e92",
         "accent_light":  "#0d2e2e",
+        "info":          "#4ea3ff",
+        "info_light":    "#0d2742",
         "warn":          "#c48a0a",
         "warn_light":    "#2a1e00",
         "danger":        "#c04040",
@@ -293,6 +299,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-color: {t['accent']} !important;
     color: {t['accent']} !important;
 }}
+/* ---- Mistakes Only ---- */
+.st-key-mistakesonly_wrap div[data-testid="stButton"] > button {{
+    background-color: {t['info_light']} !important;
+    border-color: {t['info']} !important;
+    color: {t['info']} !important;
+}}
+.st-key-mistakesonly_wrap div[data-testid="stButton"] > button:disabled {{
+    background-color: rgba(128, 128, 128, 0.14) !important;
+    border-color: rgba(128, 128, 128, 0.32) !important;
+    color: rgba(180, 180, 180, 0.55) !important;
+    opacity: 1 !important;
+    cursor: default !important;
+}}
 /* ---- Change Deck ---- */
 .st-key-changedeck_wrap div[data-testid="stButton"] > button {{
     background-color: {t['bg']} !important;
@@ -392,6 +411,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-newsession_wrap div[data-testid="stButton"] > button {{
     width: 10.6rem !important;
+}}
+.st-key-mistakesonly_wrap div[data-testid="stButton"] > button {{
+    width: 9.8rem !important;
 }}
 
 /* ---- Header row ---- */
@@ -500,18 +522,18 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background: {t['accent']}; transition: width 0.4s ease;
 }}
 .stats-card .prog-label {{
-    font-size: 0.65rem; opacity: 0.55;
+    font-size: 0.78rem; opacity: 0.62;
     margin-bottom: 0.4rem; color: {t['card_fg']};
 }}
 .stats-card .stat-row {{ display: flex; gap: 1.1rem; flex-wrap: wrap; }}
 .stats-card .stat-item {{ display: flex; flex-direction: column; }}
 .stats-card .stat-label {{
-    font-size: 0.60rem; font-weight: 500;
+    font-size: 0.70rem; font-weight: 500;
     text-transform: uppercase; letter-spacing: 0.07em;
     opacity: 0.55; color: {t['card_fg']};
 }}
 .stats-card .stat-value {{
-    font-size: 0.95rem; font-weight: 600; color: {t['card_fg']};
+    font-size: 1.10rem; font-weight: 600; color: {t['card_fg']};
 }}
 
 /* ---- Flashcard boxes ---- */
@@ -844,6 +866,31 @@ def render_buttons(show_answer):
                 with st.container(key="repeat_wrap"):
                     st.button("?", key="repeat_btn", on_click=mark_repeat)
 
+
+def restart_mistakes_only():
+    mistake_cards = [
+        {
+            "word": card["word"],
+            "answer": card["answer"],
+            "shown": False,
+            "repeat_score": 1,
+            "error_flag": 0,
+        }
+        for card in st.session_state.cards
+        if card["error_flag"] == 1
+    ]
+    if not mistake_cards:
+        return
+    st.session_state.cards = mistake_cards
+    st.session_state.order = list(range(len(mistake_cards)))
+    random.shuffle(st.session_state.order)
+    st.session_state.index = 0
+    st.session_state.show_answer = False
+    st.session_state.quit_requested = False
+    st.session_state.final_exit = False
+    st.session_state.menu_open = False
+    st.rerun()
+
 # ========================================================================
 # FINAL EXIT
 # ========================================================================
@@ -935,13 +982,18 @@ if st.session_state.quit_requested:
     </div>
     """, unsafe_allow_html=True)
 
+    mistakes_only_disabled = repeat_count == 0
+
     with st.container(key="summary_btn_row_wrap"):
-        c1, c2 = st.columns(2)
+        c1, c2, c3 = st.columns(3)
         with c1:
-            with st.container(key="quitnow_wrap"):
-                if st.button("Quit", key="quitnow_btn"):
-                    st.session_state.final_exit = True
-                    st.rerun()
+            with st.container(key="mistakesonly_wrap"):
+                st.button(
+                    "Mistakes Only",
+                    key="mistakesonly_btn",
+                    on_click=restart_mistakes_only,
+                    disabled=mistakes_only_disabled,
+                )
         with c2:
             with st.container(key="newsession_wrap"):
                 if st.button("New Session", key="newsession_btn"):
@@ -953,6 +1005,11 @@ if st.session_state.quit_requested:
                     st.session_state.show_answer    = False
                     st.session_state.quit_requested = False
                     st.session_state.final_exit     = False
+                    st.rerun()
+        with c3:
+            with st.container(key="quitnow_wrap"):
+                if st.button("Quit", key="quitnow_btn"):
+                    st.session_state.final_exit = True
                     st.rerun()
     st.stop()
 
