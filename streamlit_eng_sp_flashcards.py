@@ -318,6 +318,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-width: 0 !important;
     max-width: none !important;
 }}
+.st-key-btn_row_wrap [data-testid="stColumn"] > div {{
+    width: 100% !important;
+}}
+.st-key-btn_row_wrap div[data-testid="stButton"] {{
+    width: 100% !important;
+}}
+.st-key-btn_row_wrap div[data-testid="stButton"] > div {{
+    width: 100% !important;
+}}
 .st-key-btn_row_wrap div[data-testid="stButton"] > button {{
     width: 100% !important;
     min-height: 3.2rem !important;
