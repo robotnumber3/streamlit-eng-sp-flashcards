@@ -385,7 +385,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     justify-content: center !important;
-    gap: 0.8rem !important;
+    gap: 0.45rem !important;
     width: fit-content !important;
     margin: 0 auto !important;
 }}
@@ -403,17 +403,18 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-summary_btn_row_wrap div[data-testid="stButton"] > button {{
     min-width: 0 !important;
     min-height: 3.2rem !important;
-    padding-left: 1.1rem !important;
-    padding-right: 1.1rem !important;
+    font-size: 1.05rem !important;
+    padding-left: 0.8rem !important;
+    padding-right: 0.8rem !important;
 }}
 .st-key-quitnow_wrap div[data-testid="stButton"] > button {{
-    width: 5.8rem !important;
+    width: 4.9rem !important;
 }}
 .st-key-newsession_wrap div[data-testid="stButton"] > button {{
-    width: 10.6rem !important;
+    width: 8.4rem !important;
 }}
 .st-key-mistakesonly_wrap div[data-testid="stButton"] > button {{
-    width: 9.8rem !important;
+    width: 8.0rem !important;
 }}
 
 /* ---- Header row ---- */
