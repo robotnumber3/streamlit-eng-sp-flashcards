@@ -1,4 +1,4 @@
-# REV 2
+# REV 3
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -191,6 +191,7 @@ html, body, p, div, span, label, [class*="st-"] {{
     padding: 0 1rem 1rem 1rem !important;
     max-width: 600px !important;
     margin: 0 auto !important;
+    position: relative !important;
 }}
 
 /* Selectbox */
@@ -294,9 +295,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-color: transparent !important;
     color: {t['fg']} !important;
     font-size: 1.3rem !important;
-    min-height: 2.0rem !important;
+    min-height: 1.8rem !important;
     width: auto !important;
-    padding: 0 0.3rem !important;
+    padding: 0 0.2rem !important;
     font-weight: 400 !important;
     border-width: 0px !important;
 }}
@@ -304,11 +305,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 /* ---- Top header bar ---- */
 .top-header {{
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.7rem 0 0.5rem 0;
-    border-bottom: 1px solid {t['border']};
-    margin-bottom: 1rem;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.5rem 0 0.3rem 0;
 }}
 .title-bar-main {{
     font-family: 'Fraunces', serif;
@@ -318,12 +317,16 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     line-height: 1;
 }}
 .title-bar-sub {{
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     font-weight: 400;
     color: {t['muted']};
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-left: 0.5rem;
+}}
+/* Absolutely position hamburger to top-right */
+.st-key-hamburger_wrap {{
+    position: absolute;
+    top: 0.4rem;
+    right: 0.5rem;
+    z-index: 999;
 }}
 
 /* ---- Menu dropdown ---- */
@@ -368,9 +371,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 /* ---- Stats card ---- */
 .stats-card {{
     background-color: {t['card_bg']};
-    border-radius: 0.9rem;
-    padding: 0.7rem 1.0rem;
-    margin-bottom: 0.9rem;
+    border-radius: 0.8rem;
+    padding: 0.45rem 0.75rem;
+    margin-bottom: 0.5rem;
 }}
 .stats-card .prog-wrap {{
     background: rgba(128,128,128,0.2);
@@ -400,8 +403,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .fc-block {{
     border: 1px solid {t['border']};
     border-radius: 1rem;
-    padding: 0.9rem 1.1rem;
-    margin-bottom: 0.8rem;
+    padding: 0.55rem 0.85rem;
+    margin-bottom: 0.45rem;
     background: {t['bg']};
     cursor: pointer;
     user-select: none;
@@ -417,17 +420,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .fc-word {{
     font-family: 'Fraunces', serif;
-    font-size: 1.55rem; font-weight: 700;
+    font-size: 1.2rem; font-weight: 700;
     line-height: 1.15; color: {t['fg']};
 }}
 .fc-answer {{
     font-family: 'Fraunces', serif;
-    font-size: 1.4rem; font-weight: 400; font-style: italic;
+    font-size: 1.1rem; font-weight: 400; font-style: italic;
     line-height: 1.2; color: {t['fg']};
 }}
 .fc-word-placeholder {{
     font-family: 'Fraunces', serif;
-    font-size: 1.4rem; line-height: 1.2; min-height: 1.8rem;
+    font-size: 1.1rem; line-height: 1.2; min-height: 1.4rem;
 }}
 .fc-note, .fc-answer-note {{
     font-family: 'DM Sans', sans-serif;
@@ -451,6 +454,30 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .summary-grid .sg-label {{ font-weight: 400; opacity: 0.65; color: {t['card_fg']}; }}
 .summary-grid .sg-value {{ font-weight: 600; text-align: right; color: {t['card_fg']}; }}
+
+/* ---- Button row ---- */
+.btn-row {{
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+}}
+.btn-row button {{
+    flex: 1;
+    min-height: 2.8rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    border-width: 2px;
+    border-style: solid;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: opacity 0.15s;
+}}
+.btn-row button:active {{ opacity: 0.7; }}
+.btn-show    {{ background: {t['btn_show_bg']}; border-color: {t['btn_show_bd']}; color: {t['btn_show_fg']}; }}
+.btn-quit    {{ background: {t['danger_light']}; border-color: {t['danger']}; color: {t['danger']}; }}
+.btn-correct {{ background: {t['accent_light']}; border-color: {t['accent']}; color: {t['accent']}; }}
+.btn-repeat  {{ background: {t['warn_light']}; border-color: {t['warn']}; color: {t['warn']}; }}
 
 /* ---- Big title (deck picker / exit) ---- */
 .title-block {{ padding: 1.5rem 0 1rem 0; }}
@@ -599,44 +626,45 @@ def inject_gestures(show_answer):
             var cards = doc.querySelectorAll('.fc-block');
             if (!cards.length) return false;
 
-            cards.forEach(function(card) {
-                var fresh = card.cloneNode(true);
-                card.parentNode.replaceChild(fresh, card);
+            // Expose clickBtn globally for HTML buttons
+            window.parent.fcClickBtn = clickBtn;
 
-                // Tap = reveal answer (both boxes, only before answer shown)
-                fresh.addEventListener('click', function(e) {
-                    if (!showAnswer) {
-                        clickBtn('\u2192');
-                    }
-                });
+            // Delegate from body — avoids cloneNode breaking Streamlit
+            var body = doc.body;
+            if (body._fcAttached) return true;
+            body._fcAttached = true;
 
-                fresh.addEventListener('touchstart', function(e) {
-                    startX = e.touches[0].clientX;
-                    startY = e.touches[0].clientY;
-                    startT = Date.now();
-                    moved  = false;
-                }, {passive: true});
-
-                fresh.addEventListener('touchmove', function(e) {
-                    moved = true;
-                }, {passive: true});
-
-                fresh.addEventListener('touchend', function(e) {
-                    if (!showAnswer) return;
-                    var dx = e.changedTouches[0].clientX - startX;
-                    var dy = e.changedTouches[0].clientY - startY;
-                    var dt = Date.now() - startT;
-                    if (dt > SWIPE_MAX_DT) return;
-                    if (Math.abs(dx) < SWIPE_MIN) return;
-                    if (Math.abs(dy) > Math.abs(dx) * 0.8) return;
-                    e.preventDefault();
-                    if (dx > 0) {
-                        clickBtn('\u2713');
-                    } else {
-                        clickBtn('?');
-                    }
-                }, {passive: false});
+            body.addEventListener('click', function(e) {
+                if (!e.target.closest('.fc-block')) return;
+                if (!showAnswer) clickBtn('\u2192');
             });
+
+            body.addEventListener('touchstart', function(e) {
+                if (!e.target.closest('.fc-block')) return;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                startT = Date.now();
+                moved  = false;
+            }, {passive: true});
+
+            body.addEventListener('touchmove', function(e) {
+                moved = true;
+            }, {passive: true});
+
+            body.addEventListener('touchend', function(e) {
+                if (!e.target.closest('.fc-block')) return;
+                if (!showAnswer) return;
+                var dx = e.changedTouches[0].clientX - startX;
+                var dy = e.changedTouches[0].clientY - startY;
+                var dt = Date.now() - startT;
+                if (dt > SWIPE_MAX_DT) return;
+                if (Math.abs(dx) < SWIPE_MIN) return;
+                if (Math.abs(dy) > Math.abs(dx) * 0.8) return;
+                e.preventDefault();
+                if (dx > 0) { clickBtn('\u2713'); }
+                else        { clickBtn('?'); }
+            }, {passive: false});
+
             return true;
         }
 
@@ -672,22 +700,19 @@ def stats_card_html(shown, total, correct, repeat):
 
 
 def render_header():
-    """Title on left, hamburger on right — always at top, full width."""
-    title_col, ham_col = st.columns([6, 1])
-    with title_col:
-        st.markdown("""
-        <div class="top-header" style="border-bottom:none;margin-bottom:0;padding-bottom:0;">
-          <span class="title-bar-main">Spanish Flashcards</span>
-          <span class="title-bar-sub">Collett</span>
-        </div>
-        """, unsafe_allow_html=True)
-    with ham_col:
-        menu_icon = "✕" if st.session_state.menu_open else "☰"
-        with st.container(key="hamburger_wrap"):
-            if st.button(menu_icon, key="hamburger_btn"):
-                st.session_state.menu_open = not st.session_state.menu_open
-                st.rerun()
-    st.markdown(f"<hr style='border:none;border-top:1px solid {t['border']};margin:0.3rem 0 0.9rem 0;'>",
+    """Title and hamburger on one line via absolute positioning."""
+    menu_icon = "✕" if st.session_state.menu_open else "☰"
+    st.markdown("""
+    <div class="top-header">
+      <span class="title-bar-main">Spanish Flashcards</span>
+      <span class="title-bar-sub">(Collett)</span>
+    </div>
+    """, unsafe_allow_html=True)
+    with st.container(key="hamburger_wrap"):
+        if st.button(menu_icon, key="hamburger_btn"):
+            st.session_state.menu_open = not st.session_state.menu_open
+            st.rerun()
+    st.markdown(f"<hr style='border:none;border-top:1px solid {t['border']};margin:0.2rem 0 0.6rem 0;'>",
                 unsafe_allow_html=True)
 
 
@@ -895,22 +920,32 @@ stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_gestures(st.session_state.show_answer)
 
-# Buttons: always side by side in two equal columns
+# Invisible Streamlit buttons — JS clicks these
+st.markdown('<div style="display:none !important;visibility:hidden;height:0;overflow:hidden;">', unsafe_allow_html=True)
 if not st.session_state.show_answer:
-    colA, colB = st.columns(2)
-    with colA:
-        with st.container(key="showanswer_wrap"):
-            st.button("→", key="showanswer_btn", on_click=reveal_answer)
-    with colB:
-        with st.container(key="quitbefore_wrap"):
-            if st.button("🛑", key="quitbefore_btn"):
-                st.session_state.quit_requested = True
-                st.rerun()
+    with st.container(key="showanswer_wrap"):
+        st.button("→", key="showanswer_btn", on_click=reveal_answer)
+    with st.container(key="quitbefore_wrap"):
+        if st.button("🛑", key="quitbefore_btn"):
+            st.session_state.quit_requested = True
+            st.rerun()
 else:
-    col1, col2 = st.columns(2)
-    with col1:
-        with st.container(key="correct_wrap"):
-            st.button("✓", key="correct_btn", on_click=mark_correct)
-    with col2:
-        with st.container(key="repeat_wrap"):
-            st.button("?", key="repeat_btn", on_click=mark_repeat)
+    with st.container(key="correct_wrap"):
+        st.button("✓", key="correct_btn", on_click=mark_correct)
+    with st.container(key="repeat_wrap"):
+        st.button("?", key="repeat_btn", on_click=mark_repeat)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Visible HTML button row — guaranteed side by side on any screen
+if not st.session_state.show_answer:
+    st.markdown("""
+    <div class="btn-row">
+      <button class="btn-show"  onclick="window.parent.fcClickBtn('→')">→</button>
+      <button class="btn-quit"  onclick="window.parent.fcClickBtn('🛑')">🛑</button>
+    </div>""", unsafe_allow_html=True)
+else:
+    st.markdown("""
+    <div class="btn-row">
+      <button class="btn-correct" onclick="window.parent.fcClickBtn('✓')">✓</button>
+      <button class="btn-repeat"  onclick="window.parent.fcClickBtn('?')">?</button>
+    </div>""", unsafe_allow_html=True)
