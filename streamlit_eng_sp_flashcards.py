@@ -1,4 +1,4 @@
-# REV 7
+# REV 8
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -200,6 +200,19 @@ html, body, p, div, span, label, [class*="st-"] {{
 }}
 div[data-testid="stVerticalBlock"] {{
     gap: 0.3rem !important;
+}}
+/* Force button columns horizontal on mobile */
+[data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 0.4rem !important;
+    align-items: stretch !important;
+}}
+[data-testid="stColumn"] {{
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    width: auto !important;
 }}
 
 /* Selectbox */
@@ -653,16 +666,16 @@ def inject_gestures(show_answer):
         function attach() {
             var doc  = window.parent.document;
             var body = doc.body;
-            if (body._fcAttached) return true;
             var cards = doc.querySelectorAll('.fc-block');
             if (!cards.length) return false;
-            body._fcAttached = true;
-
-            // Tap either card box to reveal answer
-            body.addEventListener('click', function(e) {
+            if (doc._fcHandler) {
+                doc.body.removeEventListener('click', doc._fcHandler);
+            }
+            doc._fcHandler = function(e) {
                 if (!e.target.closest('.fc-block')) return;
                 if (!showAnswer) clickBtn('\u2192');
-            });
+            };
+            doc.body.addEventListener('click', doc._fcHandler);
             return true;
         }
 
@@ -700,7 +713,7 @@ def stats_card_html(shown, total, correct, repeat):
 def render_header():
     """Title+subtitle left, hamburger right."""
     menu_icon = "✕" if st.session_state.menu_open else "☰"
-    title_col, ham_col = st.columns([10, 1])
+    title_col, ham_col = st.columns([5, 1])
     with title_col:
         st.markdown(
             "<div style='display:flex;align-items:baseline;gap:0.4rem;padding:0.4rem 0 0.2rem 0;'>"
@@ -930,7 +943,7 @@ inject_gestures(st.session_state.show_answer)
 # Buttons in flex wrapper to force side-by-side on mobile
 st.markdown('<div class="btn-flex-row">', unsafe_allow_html=True)
 if not st.session_state.show_answer:
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns(2)
     with col1:
         with st.container(key="showanswer_wrap"):
             st.button("→", key="showanswer_btn", on_click=reveal_answer)
@@ -940,11 +953,10 @@ if not st.session_state.show_answer:
                 st.session_state.quit_requested = True
                 st.rerun()
 else:
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns(2)
     with col1:
         with st.container(key="correct_wrap"):
             st.button("✓", key="correct_btn", on_click=mark_correct)
     with col2:
         with st.container(key="repeat_wrap"):
             st.button("?", key="repeat_btn", on_click=mark_repeat)
-st.markdown('</div>', unsafe_allow_html=True)
