@@ -480,7 +480,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     white-space: nowrap;
 }}
 .title-sub {{
-    font-size: 1.0rem;
+    font-size: 0.9rem;
     font-weight: 400;
     color: {t['muted']};
     white-space: nowrap;
@@ -795,7 +795,7 @@ def render_header():
             st.markdown(
                 "<div class='title-row'>"
                 "<span class='title-main'>Spanish Flashcards</span>"
-                "<span class='title-sub'>(Collett)</span>"
+                "<span class='title-sub'>(David & Miguel)</span>"
                 "</div>",
                 unsafe_allow_html=True,
             )
