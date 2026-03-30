@@ -1,0 +1,126 @@
+word,answer
+"I [sing, subj]",yo
+"you [informal, sing, subj]",tú
+"you [formal, sing, subj]",usted
+"he [M, sing, subj]",él
+"she [F, sing, subj]",ella
+"we [pl, subj, M/mixed]",nosotros
+"we [F, pl, subj]",nosotras
+"you all [pl, subj]",ustedes
+"they [pl, subj, M/mixed]",ellos
+"they [F, pl, subj]",ellas
+"him [M, sing, D.O.]",lo
+"it [M, sing, D.O.]",lo
+"her [F, sing, D.O.]",la
+"it [F, sing, D.O.]",la
+"them [pl, D.O.]",los
+"you all [pl, D.O.]",los
+"them [F, pl, D.O.]",las
+"to/for him [formal, M, sing, I.O.]",le
+"to/for her [formal, F, sing, I.O.]",le
+"to/for you [formal, sing, I.O.]",le
+"to/for them [pl, I.O.]",les
+"to/for you all [pl, I.O.]",les
+myself [reflexive],me [reflexive]
+"yourself [informal, reflexive]",te [reflexive]
+ourselves [reflexive],nos [reflexive]
+"themselves [pl, reflexive]",se [reflexive]
+"yourselves [pl, reflexive]",se [reflexive]
+my,mi / mis
+your [informal],tu / tus
+"our [M, sing]",nuestro
+"our [F, sing]",nuestra
+"our [M, pl]",nuestros
+"our [F, pl]",nuestras
+what,qué
+which [choice],cuál
+what [choice],cuál
+which [pl],cuáles
+who [sing],quién
+who [pl],quiénes
+"how much [M, sing]",cuánto
+"how much [F, sing]",cuánta
+"how many [M, pl]",cuántos
+"how many [F, pl]",cuántas
+where,dónde
+how,cómo
+when,cuándo
+why,por qué
+"this [M, sing]",este
+"this [F, sing]",esta
+"these [M, pl]",estos
+"these [F, pl]",estas
+"that [M, sing]",ese
+"that [F, sing]",esa
+"those [M, pl]",esos
+"those [F, pl]",esas
+"that over there [M, sing]",aquel
+"that over there [F, sing]",aquella
+"those over there [M, pl]",aquellos
+"those over there [F, pl]",aquellas
+this [neuter],esto
+that [neuter],eso
+that over there [neuter],aquello
+"for me [sing, prep]",mí
+"for you [informal, sing, prep]",ti
+"for him [M, sing, prep]",él
+"for her [F, sing, prep]",ella
+"for yourself [sing, prep, reflexive]",sí [reflexive]
+"for us [pl, prep]",nosotros
+"for them [pl, prep]",ellos
+"to/for me – it [M, sing, clitic]",me lo
+"to/for me – it [F, sing, clitic]",me la
+"to/for us – it [M, sing, clitic]",nos lo
+"to/for us – it [F, sing, clitic]",nos la
+"to/for me – them [M, pl, clitic]",me los
+"to/for me – them [F, pl, clitic]",me las
+"mine [M, sing]",mío
+"mine [F, sing]",mía
+"mine [M, pl]",míos
+"mine [F, pl]",mías
+"yours [informal, M, sing]",tuyo
+"yours [informal, F, sing]",tuya
+"yours [informal, M, pl]",tuyos
+"yours [informal, F, pl]",tuyas
+"ours [M, sing]",nuestro
+"ours [F, sing]",nuestra
+"ours [M, pl]",nuestros
+"ours [F, pl]",nuestras
+"me [sing, obj]",me [obj]
+"you [informal, sing, obj]",te [obj]
+"us [pl, obj]",nos [obj]
+someone,alguien
+no one,nadie
+something,algo
+nothing,nada
+"someone [M, sing]",alguno
+"someone [F, sing]",alguna
+"some [M, pl]",algunos
+"some [F, pl]",algunas
+"none [M, sing]",ninguno
+"none [F, sing]",ninguna
+that,que
+which,que
+who,que
+who [sing],quien
+who [pl],quienes
+"which [M, sing]",cual
+which [pl],cuales
+"whose [M, sing]",cuyo
+"whose [F, sing]",cuya
+where,donde
+"each other [M, sing]",el uno al otro
+"each other [F, sing]",la una a la otra
+"each other [M, pl]",los unos a los otros
+"each other [F, pl]",las unas a las otras
+each other [neutral common],mutuamente
+himself/herself/yourself/themselves/yourselves [reflexive],se [reflexive]
+"to/for him/her/you/them – it [formal, M, sing, clitic]",se lo
+"to/for him/her/you/them – it [formal, F, sing, clitic]",se la
+"to/for him/her/you/them – them [formal, M, pl, clitic]",se los
+"to/for him/her/you/them – them [formal, F, pl, clitic]",se las
+his/her/its/your/their [formal],su / sus
+"his/hers/yours/theirs [formal, M, sing]",suyo
+"his/hers/yours/theirs [formal, F, sing]",suya
+"his/hers/yours/theirs [formal, M, pl]",suyos
+"his/hers/yours/theirs [formal, F, pl]",suyas

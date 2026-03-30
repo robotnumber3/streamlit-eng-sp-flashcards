@@ -1,0 +1,16 @@
+word,answer
+I walk [caminar],camino
+"You walk [caminar, sing, inf]",caminas
+"He, she, you walk [caminar, sing; you=formal 'usted']",camina
+We walk [caminar],caminamos
+They walk [caminar],caminan
+I play [tocar],toco
+"You play [tocar, sing, inf]",tocas
+"He, she, you play [tocar, sing; you=formal 'usted']",toca
+We play [tocar],tocamos
+They play [tocar],tocan
+I help [ayudar],ayudo
+"You help [ayudar, sing, inf]",ayudas
+"He, she, you help [ayudar, sing; you=formal 'usted']",ayuda
+We help [ayudar],ayudamos
+They help [ayudar],ayudan

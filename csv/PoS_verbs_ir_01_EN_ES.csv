@@ -1,0 +1,36 @@
+word,answer
+I open [abrir],abro
+"You open [abrir, sing, inf]",abres
+"He, she, you open [abrir, sing; you=formal 'usted']",abre
+We open [abrir],abrimos
+They open [abrir],abren
+I share [compartir],comparto
+"You share [compartir, sing, inf]",compartes
+"He, she, you share [compartir, sing; you=formal 'usted']",comparte
+We share [compartir],compartimos
+They share [compartir],comparten
+I decide [decidir],decido
+"You decide [decidir, sing, inf]",decides
+"He, she, you decide [decidir, sing; you=formal 'usted']",decide
+We decide [decidir],decidimos
+They decide [decidir],deciden
+I discuss [discutir],discuto
+"You discuss [discutir, sing, inf]",discutes
+"He, she, you discuss [discutir, sing; you=formal 'usted']",discute
+We discuss [discutir],discutimos
+They discuss [discutir],discuten
+I write [escribir],escribo
+"You write [escribir, sing, inf]",escribes
+"He, she, you write [escribir, sing; you=formal 'usted']",escribe
+We write [escribir],escribimos
+They write [escribir],escriben
+I receive [recibir],recibo
+"You receive [recibir, sing, inf]",recibes
+"He, she, you receive [recibir, sing; you=formal 'usted']",recibe
+We receive [recibir],recibimos
+They receive [recibir],reciben
+I go up [subir],subo
+"You go up [subir, sing, inf]",subes
+"He, she, you go up [subir, sing; you=formal 'usted']",sube
+We go up [subir],subimos
+They go up [subir],suben

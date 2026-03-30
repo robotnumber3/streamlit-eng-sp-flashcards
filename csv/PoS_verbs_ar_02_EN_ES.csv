@@ -1,0 +1,16 @@
+word,answer
+I buy [comprar],compro
+"You buy [comprar, sing, inf]",compras
+"He, she, you buy [comprar, sing; you=formal 'usted']",compra
+We buy [comprar],compramos
+They buy [comprar],compran
+I take [llevar],llevo
+"You take [llevar, sing, inf]",llevas
+"He, she, you take [llevar, sing; you=formal 'usted']",lleva
+We take [llevar],llevamos
+They take [llevar],llevan
+I work [trabajar],trabajo
+"You work [trabajar, sing, inf]",trabajas
+"He, she, you work [trabajar, sing; you=formal 'usted']",trabaja
+We work [trabajar],trabajamos
+They work [trabajar],trabajan
