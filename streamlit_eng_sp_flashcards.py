@@ -1,3 +1,4 @@
+# REV 2
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -225,8 +226,8 @@ html, body, p, div, span, label, [class*="st-"] {{
 div[data-testid="stButton"] > button {{
     font-family: 'DM Sans', sans-serif !important;
     width: 100% !important;
-    min-height: 3.0rem !important;
-    font-size: 1.4rem !important;
+    min-height: 2.6rem !important;
+    font-size: 1.2rem !important;
     font-weight: 600 !important;
     border-radius: 0.75rem !important;
     border-width: 2px !important;
@@ -243,7 +244,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {t['btn_show_bg']} !important;
     border-color: {t['btn_show_bd']} !important;
     color: {t['btn_show_fg']} !important;
-    font-size: 1.8rem !important;
+    font-size: 1.5rem !important;
 }}
 /* Correct ✓ */
 .st-key-correct_wrap div[data-testid="stButton"] > button {{
@@ -311,7 +312,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .title-bar-main {{
     font-family: 'Fraunces', serif;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: {t['fg']};
     line-height: 1;
@@ -392,7 +393,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     opacity: 0.55; color: {t['card_fg']};
 }}
 .stats-card .stat-value {{
-    font-size: 1.0rem; font-weight: 600; color: {t['card_fg']};
+    font-size: 0.9rem; font-weight: 600; color: {t['card_fg']};
 }}
 
 /* ---- Flashcard boxes ---- */
@@ -416,22 +417,22 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .fc-word {{
     font-family: 'Fraunces', serif;
-    font-size: 2.0rem; font-weight: 700;
+    font-size: 1.55rem; font-weight: 700;
     line-height: 1.15; color: {t['fg']};
 }}
 .fc-answer {{
     font-family: 'Fraunces', serif;
-    font-size: 1.8rem; font-weight: 400; font-style: italic;
+    font-size: 1.4rem; font-weight: 400; font-style: italic;
     line-height: 1.2; color: {t['fg']};
 }}
 .fc-word-placeholder {{
     font-family: 'Fraunces', serif;
-    font-size: 1.8rem; line-height: 1.2; min-height: 2.2rem;
+    font-size: 1.4rem; line-height: 1.2; min-height: 1.8rem;
 }}
 .fc-note, .fc-answer-note {{
     font-family: 'DM Sans', sans-serif;
-    font-size: 1.0rem; font-weight: 400;
-    color: {t['muted']}; margin-top: 0.25rem; line-height: 1.3;
+    font-size: 0.85rem; font-weight: 400;
+    color: {t['muted']}; margin-top: 0.2rem; line-height: 1.3;
 }}
 
 /* ---- Summary ---- */
