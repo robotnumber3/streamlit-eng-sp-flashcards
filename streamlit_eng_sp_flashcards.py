@@ -1,4 +1,4 @@
-# REV 8
+# REV 9
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -211,7 +211,6 @@ div[data-testid="stVerticalBlock"] {{
 }}
 [data-testid="stColumn"] {{
     flex: 1 1 0 !important;
-    min-width: 0 !important;
     width: auto !important;
 }}
 
@@ -248,7 +247,7 @@ div[data-testid="stVerticalBlock"] {{
 div[data-testid="stButton"] > button {{
     font-family: 'DM Sans', sans-serif !important;
     width: 100% !important;
-    min-height: 2.6rem !important;
+    min-height: 3.0rem !important;
     font-size: 1.2rem !important;
     font-weight: 600 !important;
     border-radius: 0.75rem !important;
@@ -336,7 +335,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .title-bar-main {{
     font-family: 'Fraunces', serif;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: {t['fg']};
     line-height: 1;
@@ -401,7 +400,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {t['card_bg']};
     border-radius: 0.8rem;
     padding: 0.45rem 0.75rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.0rem;
 }}
 .stats-card .prog-wrap {{
     background: rgba(128,128,128,0.2);
@@ -432,7 +431,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border: 1px solid {t['border']};
     border-radius: 1rem;
     padding: 0.55rem 0.85rem;
-    margin-bottom: 0.45rem;
+    margin-bottom: 0.8rem;
     background: {t['bg']};
     cursor: pointer;
     user-select: none;
@@ -500,7 +499,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .btn-row {{
     display: flex;
     gap: 0.6rem;
-    margin-top: 0.4rem;
+    margin-top: 1.0rem;
 }}
 .btn-row button {{
     flex: 1;
@@ -713,7 +712,7 @@ def stats_card_html(shown, total, correct, repeat):
 def render_header():
     """Title+subtitle left, hamburger right."""
     menu_icon = "✕" if st.session_state.menu_open else "☰"
-    title_col, ham_col = st.columns([5, 1])
+    title_col, ham_col = st.columns([8, 1])
     with title_col:
         st.markdown(
             "<div style='display:flex;align-items:baseline;gap:0.4rem;padding:0.4rem 0 0.2rem 0;'>"
@@ -728,7 +727,7 @@ def render_header():
                 st.session_state.menu_open = not st.session_state.menu_open
                 st.rerun()
     st.markdown(
-        f"<hr style='border:none;border-top:1px solid {t['border']};margin:0 0 0 0;'>",
+        f"<hr style='border:none;border-top:1px solid {t['border']};margin:0 0 0.8rem 0;'>",
         unsafe_allow_html=True,
     )
 
