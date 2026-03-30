@@ -159,7 +159,7 @@ st.markdown("""
 [data-testid="collapsedControl"] { display: none !important; }
 
 /* ---- Mobile layout (phones) ---- */
-@media (max-width: 768px) {{
+@media (max-width: 820px) {{
     .block-container {{
         padding: 0 0.6rem 1rem 0.6rem !important;
     }}
@@ -580,15 +580,49 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 # VIEWPORT META  (must be injected via JS — Streamlit doesn't set it)
 # ------------------------------------------------------------------------
 
+# Viewport meta via JS (belt-and-suspenders: also injected inside inject_gestures)
 st.components.v1.html("""
 <script>
 (function() {
-    var head = window.parent.document.head;
-    if (!head.querySelector('meta[name="viewport"]')) {
-        var meta = window.parent.document.createElement('meta');
+    var doc = window.parent.document;
+    var head = doc.head;
+    // Set viewport
+    var existing = head.querySelector('meta[name="viewport"]');
+    if (existing) {
+        existing.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+    } else {
+        var meta = doc.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
         head.appendChild(meta);
+    }
+    // Force reflow of media queries by toggling a class
+    doc.documentElement.classList.add('mobile-viewport-set');
+
+    // Also inject mobile CSS directly into parent document
+    // in case @media queries don't fire correctly on Streamlit Cloud
+    if (window.parent.innerWidth <= 820) {
+        var style = doc.createElement('style');
+        style.id = 'mobile-override';
+        style.textContent = [
+            '.fc-word { font-size: 1.75rem !important; }',
+            '.fc-answer { font-size: 1.55rem !important; }',
+            '.fc-word-placeholder { font-size: 1.55rem !important; min-height: 2.0rem !important; }',
+            '.fc-note, .fc-answer-note { font-size: 0.78rem !important; }',
+            '.fc-section-label, .fc-answer-label { font-size: 0.58rem !important; }',
+            '.fc-block { padding: 0.75rem 0.9rem !important; margin-bottom: 0.7rem !important; }',
+            '.stats-card { padding: 0.55rem 0.8rem !important; margin-bottom: 0.7rem !important; }',
+            '.stats-card .stat-value { font-size: 0.88rem !important; }',
+            '.stats-card .stat-label { font-size: 0.58rem !important; }',
+            '.stats-card .stat-row { gap: 0.9rem !important; }',
+            '.title-bar-main { font-size: 1.1rem !important; }',
+            '.title-bar-sub { font-size: 0.65rem !important; }',
+            '.title-bar { padding: 0.6rem 0 0.5rem 0 !important; margin-bottom: 0.7rem !important; }',
+            'div[data-testid="stButton"] > button { min-height: 2.4rem !important; font-size: 1.1rem !important; border-radius: 0.6rem !important; }',
+        ].join(' ');
+        if (!doc.getElementById('mobile-override')) {
+            doc.head.appendChild(style);
+        }
     }
 })();
 </script>
@@ -712,66 +746,93 @@ def title_bar():
 
 
 def inject_gestures(show_answer):
-    """Inject touch/click gesture handlers for flashcard interaction."""
-    # Button label text we search for in the DOM to trigger clicks
-    reveal_label  = "\u2192"   # →
-    correct_label = "\u2713"   # ✓
-    repeat_label  = "?"
-
-    js = f"""
+    """Robust touch/tap/swipe handler for iOS Safari on Streamlit Cloud."""
+    show_str = "true" if show_answer else "false"
+    js = """
     <script>
-    (function() {{
-        var SWIPE_MIN = 50;   // px to count as a swipe
-        var startX, startY, startT;
-        var showAnswer = {"true" if show_answer else "false"};
+    (function() {
+        var SWIPE_MIN  = 40;
+        var SWIPE_MAX_DT = 800;
+        var showAnswer = """ + show_str + """;
+        var startX, startY, startT, moved;
 
-        function findBtn(label) {{
-            var btns = window.parent.document.querySelectorAll('button');
-            for (var i = 0; i < btns.length; i++) {{
-                if (btns[i].innerText.trim() === label) return btns[i];
-            }}
-            return null;
-        }}
+        // ---- Find and click a Streamlit button by its label ----
+        function clickBtn(label) {
+            var doc = window.parent.document;
+            var btns = doc.querySelectorAll('button');
+            for (var i = 0; i < btns.length; i++) {
+                if (btns[i].innerText.trim() === label) {
+                    btns[i].dispatchEvent(new MouseEvent('click', {bubbles: true}));
+                    return true;
+                }
+            }
+            return false;
+        }
 
-        function clickBtn(label) {{
-            var btn = findBtn(label);
-            if (btn) btn.click();
-        }}
+        // ---- Attach listeners to ALL fc-block elements ----
+        function attach() {
+            var doc = window.parent.document;
+            var cards = doc.querySelectorAll('.fc-block');
+            if (!cards.length) return false;
 
-        var card = window.parent.document.querySelector('.fc-block');
-        if (!card) return;
+            cards.forEach(function(card) {
+                // Remove old listeners by cloning
+                var fresh = card.cloneNode(true);
+                card.parentNode.replaceChild(fresh, card);
 
-        // Tap = reveal answer (only when answer not yet shown)
-        card.addEventListener('click', function(e) {{
-            if (!showAnswer) {{
-                clickBtn("{reveal_label}");
-            }}
-        }});
+                // Tap = reveal (works on both boxes, only before answer shown)
+                fresh.addEventListener('click', function(e) {
+                    if (!showAnswer) {
+                        clickBtn('\u2192');
+                    }
+                });
 
-        // Touch swipe = correct / repeat (only when answer is shown)
-        card.addEventListener('touchstart', function(e) {{
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            startT = Date.now();
-        }}, {{passive: true}});
+                // Touch start
+                fresh.addEventListener('touchstart', function(e) {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    startT = Date.now();
+                    moved  = false;
+                }, {passive: true});
 
-        card.addEventListener('touchend', function(e) {{
-            if (!showAnswer) return;
-            var dx = e.changedTouches[0].clientX - startX;
-            var dy = e.changedTouches[0].clientY - startY;
-            var dt = Date.now() - startT;
-            if (Math.abs(dx) < SWIPE_MIN || Math.abs(dy) > Math.abs(dx)) return;
-            if (dt > 600) return;  // too slow
-            if (dx > 0) {{
-                clickBtn("{correct_label}");
-            }} else {{
-                clickBtn("{repeat_label}");
-            }}
-        }}, {{passive: true}});
-    }})();
+                // Track movement to distinguish tap from swipe
+                fresh.addEventListener('touchmove', function(e) {
+                    moved = true;
+                }, {passive: true});
+
+                // Touch end = swipe decision
+                fresh.addEventListener('touchend', function(e) {
+                    if (!showAnswer) return;
+                    var dx = e.changedTouches[0].clientX - startX;
+                    var dy = e.changedTouches[0].clientY - startY;
+                    var dt = Date.now() - startT;
+                    // Must be fast enough, horizontal enough, and long enough
+                    if (dt > SWIPE_MAX_DT) return;
+                    if (Math.abs(dx) < SWIPE_MIN) return;
+                    if (Math.abs(dy) > Math.abs(dx) * 0.8) return;
+                    e.preventDefault();
+                    if (dx > 0) {
+                        clickBtn('\u2713');  // right = correct
+                    } else {
+                        clickBtn('?');       // left  = repeat
+                    }
+                }, {passive: false});
+            });
+            return true;
+        }
+
+        // ---- Retry until cards exist in DOM (Streamlit renders async) ----
+        var attempts = 0;
+        function tryAttach() {
+            if (attach()) return;
+            if (++attempts < 20) setTimeout(tryAttach, 150);
+        }
+        tryAttach();
+    })();
     </script>
     """
     components.html(js, height=0)
+
 
 def right_panel():
     """Right column: hamburger menu (theme) at top, deck info always visible at bottom."""
