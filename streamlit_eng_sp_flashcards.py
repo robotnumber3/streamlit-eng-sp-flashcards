@@ -473,7 +473,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .title-main {{
     font-family: 'Fraunces', serif;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: 600;
     color: {t['fg']};
     line-height: 1;
