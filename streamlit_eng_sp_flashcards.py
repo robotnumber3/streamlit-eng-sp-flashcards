@@ -157,6 +157,84 @@ st.markdown("""
 <style>
 [data-testid="stSidebar"]        { display: none !important; }
 [data-testid="collapsedControl"] { display: none !important; }
+
+/* ---- Mobile layout (phones) ---- */
+@media (max-width: 768px) {{
+    .block-container {{
+        padding: 0 0.6rem 1rem 0.6rem !important;
+    }}
+    .title-bar {{
+        padding: 0.6rem 0 0.5rem 0;
+        margin-bottom: 0.7rem;
+    }}
+    .title-bar-main {{
+        font-size: 1.1rem;
+    }}
+    .title-bar-sub {{
+        font-size: 0.65rem;
+    }}
+    .stats-card {{
+        padding: 0.55rem 0.8rem;
+        margin-bottom: 0.7rem;
+        border-radius: 0.7rem;
+    }}
+    .stats-card .prog-label {{
+        font-size: 0.62rem;
+        margin-bottom: 0.3rem;
+    }}
+    .stats-card .stat-label {{
+        font-size: 0.58rem;
+    }}
+    .stats-card .stat-value {{
+        font-size: 0.88rem;
+    }}
+    .stats-card .stat-row {{
+        gap: 0.9rem;
+    }}
+    .fc-block {{
+        padding: 0.75rem 0.9rem 0.9rem 0.9rem;
+        margin-bottom: 0.7rem;
+        border-radius: 0.8rem;
+    }}
+    .fc-section-label, .fc-answer-label {{
+        font-size: 0.58rem;
+        margin-bottom: 0.15rem;
+    }}
+    .fc-word {{
+        font-size: 1.75rem;
+    }}
+    .fc-answer {{
+        font-size: 1.55rem;
+    }}
+    .fc-note, .fc-answer-note {{
+        font-size: 0.78rem;
+        margin-top: 0.2rem;
+    }}
+    .fc-word-placeholder {{
+        font-size: 1.55rem;
+        min-height: 2.0rem;
+    }}
+    /* Buttons */
+    div[data-testid="stButton"] > button {{
+        min-height: 2.4rem !important;
+        font-size: 1.1rem !important;
+        border-radius: 0.6rem !important;
+    }}
+    .st-key-showanswer_wrap div[data-testid="stButton"] > button {{
+        font-size: 1.4rem !important;
+    }}
+    .st-key-quitnow_wrap div[data-testid="stButton"] > button,
+    .st-key-newsession_wrap div[data-testid="stButton"] > button {{
+        font-size: 1.0rem !important;
+    }}
+    .right-panel-inner {{
+        padding-left: 0.7rem;
+        padding-top: 0.5rem;
+    }}
+    .hamburger-btn {{
+        font-size: 1.1rem !important;
+    }}
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -497,6 +575,24 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .summary-grid .sg-value {{ font-weight: 600; text-align: right; color: {t['card_fg']}; }}
 </style>
 """, unsafe_allow_html=True)
+
+# ------------------------------------------------------------------------
+# VIEWPORT META  (must be injected via JS — Streamlit doesn't set it)
+# ------------------------------------------------------------------------
+
+st.components.v1.html("""
+<script>
+(function() {
+    var head = window.parent.document.head;
+    if (!head.querySelector('meta[name="viewport"]')) {
+        var meta = window.parent.document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+        head.appendChild(meta);
+    }
+})();
+</script>
+""", height=0)
 
 # ------------------------------------------------------------------------
 # CARD LOGIC HELPERS
