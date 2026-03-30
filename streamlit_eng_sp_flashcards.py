@@ -26,6 +26,25 @@ PREFS_FILE = os.path.expanduser("~/.flashcards_prefs.json")
 csv_files = [f for f in os.listdir(CSV_FOLDER) if f.endswith(".csv")]
 csv_files.sort(key=str.lower)
 
+
+def csv_data_row_count(filename):
+    file_path = os.path.join(CSV_FOLDER, filename)
+    try:
+        with open(file_path, encoding="utf-8", errors="ignore") as handle:
+            return max(sum(1 for _ in handle) - 1, 0)
+    except Exception:
+        return 0
+
+
+csv_row_counts = {filename: csv_data_row_count(filename) for filename in csv_files}
+
+
+def display_deck_name(filename):
+    base_name, extension = os.path.splitext(filename)
+    if extension.lower() == ".csv":
+        return f"{base_name} [{csv_row_counts.get(filename, 0)}]"
+    return base_name
+
 # ------------------------------------------------------------------------
 # PREFS
 # ------------------------------------------------------------------------
@@ -823,7 +842,7 @@ def render_menu():
 def render_deck_strip():
     if not st.session_state.selected_csv:
         return
-    deck_name = st.session_state.selected_csv.replace("_", " ").replace(".csv", "")
+    deck_name = display_deck_name(st.session_state.selected_csv)
     d_col, b_col = st.columns([3, 1])
     with d_col:
         st.markdown(
@@ -917,7 +936,12 @@ if st.session_state.selected_csv is None:
     render_menu()
     st.markdown("<hr class='soft-divider'>", unsafe_allow_html=True)
     deck_options = ["-- Choose a deck --", *csv_files]
-    selected = st.selectbox("Available decks:", deck_options, index=0)
+    selected = st.selectbox(
+        "Available decks:",
+        deck_options,
+        index=0,
+        format_func=lambda value: value if value == "-- Choose a deck --" else display_deck_name(value),
+    )
     if selected != deck_options[0]:
         st.session_state.selected_csv   = selected
         st.session_state.cards          = []
