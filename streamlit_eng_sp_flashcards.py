@@ -333,52 +333,30 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 1.3rem !important;
 }}
 
-/* ---- HTML button rows ---- */
-.html-btn-row {{
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-items: stretch;
-    gap: 0.55rem;
-    width: 100%;
-    margin-top: 1rem;
+/* ---- Small centered icon button row ---- */
+.st-key-icon_btn_row_wrap [data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+    width: 100% !important;
 }}
-.html-btn-row button {{
-    flex: 1 1 0;
-    width: calc(50% - 0.275rem);
-    min-height: 3.2rem;
-    border-radius: 0.75rem;
-    border-width: 2px;
-    border-style: solid;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1.3rem;
-    font-weight: 600;
-    cursor: pointer;
+.st-key-icon_btn_row_wrap [data-testid="stColumn"] {{
+    flex: 0 0 5.8rem !important;
+    width: 5.8rem !important;
+    min-width: 5.8rem !important;
+    max-width: 5.8rem !important;
 }}
-.html-btn-show {{
-    background: {t['btn_show_bg']};
-    border-color: {t['btn_show_bd']};
-    color: {t['btn_show_fg']};
+.st-key-icon_btn_row_wrap [data-testid="stColumn"] > div,
+.st-key-icon_btn_row_wrap div[data-testid="stButton"],
+.st-key-icon_btn_row_wrap div[data-testid="stButton"] > div {{
+    width: 100% !important;
 }}
-.html-btn-quit {{
-    background: {t['danger_light']};
-    border-color: {t['danger']};
-    color: {t['danger']};
-}}
-.html-btn-correct {{
-    background: {t['accent_light']};
-    border-color: {t['accent']};
-    color: {t['accent']};
-}}
-.html-btn-repeat {{
-    background: {t['warn_light']};
-    border-color: {t['warn']};
-    color: {t['warn']};
-}}
-.html-btn-hidden {{
-    display: none;
-    height: 0;
-    overflow: hidden;
+.st-key-icon_btn_row_wrap div[data-testid="stButton"] > button {{
+    width: 100% !important;
+    min-height: 3.2rem !important;
+    font-size: 1.3rem !important;
 }}
 
 /* ---- Header row ---- */
@@ -690,8 +668,6 @@ def inject_tap_reveal(show_answer):
                 }
             }
         }
-        window.parent.fcClickBtn = clickBtn;
-        try { window.parent.parent.fcClickBtn = clickBtn; } catch (e) {}
         function attach() {
             var doc = window.parent.document;
             var cards = doc.querySelectorAll('.fc-block');
@@ -813,61 +789,25 @@ def render_deck_strip():
 
 
 def render_buttons(show_answer):
-    st.markdown('<div class="html-btn-hidden">', unsafe_allow_html=True)
-    if not show_answer:
-        with st.container(key="showanswer_wrap"):
-            st.button("→", key="showanswer_btn", on_click=reveal_answer)
-        with st.container(key="quitbefore_wrap"):
-            if st.button("🛑", key="quitbefore_btn"):
-                st.session_state.quit_requested = True
-                st.rerun()
-        st.markdown(
-            "<div class='html-btn-row'>"
-            "<button class='html-btn-show' onclick='window.parent.fcClickBtn(\"→\")'>→</button>"
-            "<button class='html-btn-quit' onclick='window.parent.fcClickBtn(\"🛑\")'>🛑</button>"
-            "</div>",
-            unsafe_allow_html=True,
-        )
-    else:
-        with st.container(key="correct_wrap"):
-            st.button("✓", key="correct_btn", on_click=mark_correct)
-        with st.container(key="repeat_wrap"):
-            st.button("?", key="repeat_btn", on_click=mark_repeat)
-        st.markdown(
-            "<div class='html-btn-row'>"
-            "<button class='html-btn-correct' onclick='window.parent.fcClickBtn(\"✓\")'>✓</button>"
-            "<button class='html-btn-repeat' onclick='window.parent.fcClickBtn(\"?\")'>?</button>"
-            "</div>",
-            unsafe_allow_html=True,
-        )
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-def render_summary_buttons():
-    st.markdown('<div class="html-btn-hidden">', unsafe_allow_html=True)
-    with st.container(key="quitnow_wrap"):
-        if st.button("Quit", key="quitnow_btn"):
-            st.session_state.final_exit = True
-            st.rerun()
-    with st.container(key="newsession_wrap"):
-        if st.button("New Session", key="newsession_btn"):
-            for k in ("selected_csv", "loaded_csv"):
-                st.session_state[k] = None
-            for k in ("cards", "order"):
-                st.session_state[k] = []
-            st.session_state.index          = 0
-            st.session_state.show_answer    = False
-            st.session_state.quit_requested = False
-            st.session_state.final_exit     = False
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown(
-        "<div class='html-btn-row'>"
-        "<button class='html-btn-quit' onclick='window.parent.fcClickBtn(\"Quit\")'>Quit</button>"
-        "<button class='html-btn-correct' onclick='window.parent.fcClickBtn(\"New Session\")'>New Session</button>"
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    with st.container(key="icon_btn_row_wrap"):
+        if not show_answer:
+            col1, col2 = st.columns(2)
+            with col1:
+                with st.container(key="showanswer_wrap"):
+                    st.button("→", key="showanswer_btn", on_click=reveal_answer)
+            with col2:
+                with st.container(key="quitbefore_wrap"):
+                    if st.button("🛑", key="quitbefore_btn"):
+                        st.session_state.quit_requested = True
+                        st.rerun()
+        else:
+            col1, col2 = st.columns(2)
+            with col1:
+                with st.container(key="correct_wrap"):
+                    st.button("✓", key="correct_btn", on_click=mark_correct)
+            with col2:
+                with st.container(key="repeat_wrap"):
+                    st.button("?", key="repeat_btn", on_click=mark_repeat)
 
 # ========================================================================
 # FINAL EXIT
@@ -960,7 +900,25 @@ if st.session_state.quit_requested:
     </div>
     """, unsafe_allow_html=True)
 
-    render_summary_buttons()
+    with st.container(key="btn_row_wrap"):
+        c1, c2 = st.columns(2)
+        with c1:
+            with st.container(key="quitnow_wrap"):
+                if st.button("Quit", key="quitnow_btn"):
+                    st.session_state.final_exit = True
+                    st.rerun()
+        with c2:
+            with st.container(key="newsession_wrap"):
+                if st.button("New Session", key="newsession_btn"):
+                    for k in ("selected_csv", "loaded_csv"):
+                        st.session_state[k] = None
+                    for k in ("cards", "order"):
+                        st.session_state[k] = []
+                    st.session_state.index          = 0
+                    st.session_state.show_answer    = False
+                    st.session_state.quit_requested = False
+                    st.session_state.final_exit     = False
+                    st.rerun()
     st.stop()
 
 # ========================================================================
