@@ -1,4 +1,4 @@
-# REV 5
+# REV 6
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -193,6 +193,14 @@ html, body, p, div, span, label, [class*="st-"] {{
     margin: 0 auto !important;
     position: relative !important;
 }}
+/* Reduce Streamlit's default element vertical gaps */
+[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stVerticalBlock"] > div {{
+    gap: 0 !important;
+}}
+div[data-testid="stVerticalBlock"] {{
+    gap: 0.3rem !important;
+}}
 
 /* Selectbox */
 [data-testid="stSelectbox"] > div > div {{
@@ -289,15 +297,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-height: 2.2rem !important;
     font-weight: 500 !important;
 }}
-/* Hide all hidden-callback Streamlit buttons via their container keys */
-.st-key-hamburger_wrap,
-.st-key-showanswer_wrap,
-.st-key-quitbefore_wrap,
-.st-key-correct_wrap,
-.st-key-repeat_wrap {{
-    display: none !important;
-    height: 0 !important;
-    overflow: hidden !important;
+/* Hamburger button styling */
+.st-key-hamburger_wrap div[data-testid="stButton"] > button {{
+    background: transparent !important;
+    border: none !important;
+    color: {t['fg']} !important;
+    font-size: 1.3rem !important;
+    min-height: 1.8rem !important;
+    padding: 0 !important;
+    font-weight: 400 !important;
 }}
 
 /* ---- Top header bar ---- */
@@ -677,51 +685,26 @@ def stats_card_html(shown, total, correct, repeat):
 
 
 def render_header():
-    """Title left, hamburger right — pure HTML row + hidden Streamlit button."""
+    """Title left, hamburger right — st.columns guarantees same line."""
     menu_icon = "✕" if st.session_state.menu_open else "☰"
-    # Pure HTML flex row: title left, hamburger right
+    left, right = st.columns([6, 1])
+    with left:
+        st.markdown(
+            "<div class=\"top-header\">"
+            "<span class=\"title-bar-main\">Spanish Flashcards</span>"
+            "<span class=\"title-bar-sub\">(Collett)</span>"
+            "</div>",
+            unsafe_allow_html=True,
+        )
+    with right:
+        with st.container(key="hamburger_wrap"):
+            if st.button(menu_icon, key="hamburger_btn"):
+                st.session_state.menu_open = not st.session_state.menu_open
+                st.rerun()
     st.markdown(
-        "<div class=\"top-header\">"
-        "<div class=\"title-left\">"
-        "<span class=\"title-bar-main\">Spanish Flashcards</span>"
-        "<span class=\"title-bar-sub\">(Collett)</span>"
-        "</div>"
-        "<button class=\"ham-btn\" onclick=\"window.parent.document.getElementById('ham-hidden-btn').click();\">"
-        + menu_icon +
-        "</button>"
-        "</div>",
+        f"<hr style='border:none;border-top:1px solid {t['border']};margin:0 0 0.4rem 0;'>",
         unsafe_allow_html=True,
     )
-    st.markdown(f"<hr style='border:none;border-top:1px solid {t['border']};margin:0.2rem 0 0.6rem 0;'>",
-                unsafe_allow_html=True)
-    # Hidden Streamlit button — provides the Python callback
-    st.markdown('<div style="display:none;height:0;overflow:hidden;">', unsafe_allow_html=True)
-    with st.container(key="hamburger_wrap"):
-        if st.button(menu_icon, key="hamburger_btn"):
-            st.session_state.menu_open = not st.session_state.menu_open
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    # Inject JS to wire up the HTML button id
-    components.html("""
-    <script>
-    (function() {
-        function wire() {
-            var doc = window.parent.document;
-            var btns = doc.querySelectorAll('button');
-            for (var i = 0; i < btns.length; i++) {
-                if (btns[i].innerText.trim() === '☰' || btns[i].innerText.trim() === '✕') {
-                    btns[i].id = 'ham-hidden-btn';
-                    return true;
-                }
-            }
-            return false;
-        }
-        var n = 0;
-        function t() { if (!wire() && ++n < 20) setTimeout(t, 150); }
-        t();
-    })();
-    </script>
-    """, height=0)
 
 
 def render_menu():
@@ -767,7 +750,7 @@ def render_deck_strip():
     d_col, b_col = st.columns([3, 1])
     with d_col:
         st.markdown(
-            '<div class="deck-strip">'
+            '<div class="deck-strip" style="margin-top:0;padding-top:0;">'
             '<span class="deck-strip-label">Deck</span>'
             '<span class="deck-strip-name">' + deck_name + '</span>'
             '</div>', unsafe_allow_html=True)
@@ -928,28 +911,22 @@ stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_gestures(st.session_state.show_answer)
 
-# Hidden Streamlit callback buttons (hidden via CSS key selectors)
+# Real Streamlit buttons — styled via CSS, guaranteed to work
 if not st.session_state.show_answer:
-    with st.container(key="showanswer_wrap"):
-        st.button("→", key="showanswer_btn", on_click=reveal_answer)
-    with st.container(key="quitbefore_wrap"):
-        if st.button("🛑", key="quitbefore_btn"):
-            st.session_state.quit_requested = True
-            st.rerun()
-    # Visible HTML buttons — side by side via flex
-    st.markdown("""
-    <div class="btn-row">
-      <button class="btn-show" onclick="window.parent.fcClickBtn('→')">→</button>
-      <button class="btn-quit" onclick="window.parent.fcClickBtn('🛑')">🛑</button>
-    </div>""", unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        with st.container(key="showanswer_wrap"):
+            st.button("→", key="showanswer_btn", on_click=reveal_answer)
+    with col2:
+        with st.container(key="quitbefore_wrap"):
+            if st.button("🛑", key="quitbefore_btn"):
+                st.session_state.quit_requested = True
+                st.rerun()
 else:
-    with st.container(key="correct_wrap"):
-        st.button("✓", key="correct_btn", on_click=mark_correct)
-    with st.container(key="repeat_wrap"):
-        st.button("?", key="repeat_btn", on_click=mark_repeat)
-    # Visible HTML buttons — side by side via flex
-    st.markdown("""
-    <div class="btn-row">
-      <button class="btn-correct" onclick="window.parent.fcClickBtn('✓')">✓</button>
-      <button class="btn-repeat"  onclick="window.parent.fcClickBtn('?')">?</button>
-    </div>""", unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        with st.container(key="correct_wrap"):
+            st.button("✓", key="correct_btn", on_click=mark_correct)
+    with col2:
+        with st.container(key="repeat_wrap"):
+            st.button("?", key="repeat_btn", on_click=mark_repeat)
