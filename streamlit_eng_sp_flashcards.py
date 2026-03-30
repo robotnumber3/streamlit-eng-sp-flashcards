@@ -339,7 +339,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     justify-content: center !important;
-    gap: 0.4rem !important;
+    gap: 0.8rem !important;
     width: fit-content !important;
     margin: 0 auto !important;
 }}
@@ -366,7 +366,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     justify-content: center !important;
-    gap: 0.4rem !important;
+    gap: 0.8rem !important;
     width: fit-content !important;
     margin: 0 auto !important;
 }}
