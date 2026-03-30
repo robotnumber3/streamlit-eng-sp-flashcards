@@ -1,4 +1,4 @@
-# REV 4
+# REV 5
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -289,17 +289,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-height: 2.2rem !important;
     font-weight: 500 !important;
 }}
-/* Hamburger */
-.st-key-hamburger_wrap div[data-testid="stButton"] > button {{
-    background-color: transparent !important;
-    border-color: transparent !important;
-    color: {t['fg']} !important;
-    font-size: 1.3rem !important;
-    min-height: 1.8rem !important;
-    width: auto !important;
-    padding: 0 0.2rem !important;
-    font-weight: 400 !important;
-    border-width: 0px !important;
+/* Hide all hidden-callback Streamlit buttons via their container keys */
+.st-key-hamburger_wrap,
+.st-key-showanswer_wrap,
+.st-key-quitbefore_wrap,
+.st-key-correct_wrap,
+.st-key-repeat_wrap {{
+    display: none !important;
+    height: 0 !important;
+    overflow: hidden !important;
 }}
 
 /* ---- Top header bar ---- */
@@ -327,12 +325,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-weight: 400;
     color: {t['muted']};
 }}
-/* Hamburger floated right inside header row */
-.st-key-hamburger_wrap {{
-    position: absolute;
-    top: 0.3rem;
-    right: 1rem;
-    z-index: 999;
+/* Hamburger — pure HTML button inside the flex row */
+.ham-btn {{
+    background: transparent;
+    border: none;
+    color: {t['fg']};
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0 0.2rem;
+    line-height: 1;
 }}
 
 /* ---- Menu dropdown ---- */
@@ -676,24 +677,51 @@ def stats_card_html(shown, total, correct, repeat):
 
 
 def render_header():
-    """Title left, hamburger right, same line."""
+    """Title left, hamburger right — pure HTML row + hidden Streamlit button."""
     menu_icon = "✕" if st.session_state.menu_open else "☰"
-    # Title in HTML flex row
-    st.markdown("""
-    <div class="top-header">
-      <div class="title-left">
-        <span class="title-bar-main">Spanish Flashcards</span>
-        <span class="title-bar-sub">(Collett)</span>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-    # Hamburger — CSS positions it absolute top-right
+    # Pure HTML flex row: title left, hamburger right
+    st.markdown(
+        "<div class=\"top-header\">"
+        "<div class=\"title-left\">"
+        "<span class=\"title-bar-main\">Spanish Flashcards</span>"
+        "<span class=\"title-bar-sub\">(Collett)</span>"
+        "</div>"
+        "<button class=\"ham-btn\" onclick=\"window.parent.document.getElementById('ham-hidden-btn').click();\">"
+        + menu_icon +
+        "</button>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(f"<hr style='border:none;border-top:1px solid {t['border']};margin:0.2rem 0 0.6rem 0;'>",
+                unsafe_allow_html=True)
+    # Hidden Streamlit button — provides the Python callback
+    st.markdown('<div style="display:none;height:0;overflow:hidden;">', unsafe_allow_html=True)
     with st.container(key="hamburger_wrap"):
         if st.button(menu_icon, key="hamburger_btn"):
             st.session_state.menu_open = not st.session_state.menu_open
             st.rerun()
-    st.markdown(f"<hr style='border:none;border-top:1px solid {t['border']};margin:0.2rem 0 0.6rem 0;'>",
-                unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    # Inject JS to wire up the HTML button id
+    components.html("""
+    <script>
+    (function() {
+        function wire() {
+            var doc = window.parent.document;
+            var btns = doc.querySelectorAll('button');
+            for (var i = 0; i < btns.length; i++) {
+                if (btns[i].innerText.trim() === '☰' || btns[i].innerText.trim() === '✕') {
+                    btns[i].id = 'ham-hidden-btn';
+                    return true;
+                }
+            }
+            return false;
+        }
+        var n = 0;
+        function t() { if (!wire() && ++n < 20) setTimeout(t, 150); }
+        t();
+    })();
+    </script>
+    """, height=0)
 
 
 def render_menu():
@@ -900,32 +928,26 @@ stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_gestures(st.session_state.show_answer)
 
-# HTML buttons — guaranteed side by side, trigger hidden Streamlit buttons via JS
+# Hidden Streamlit callback buttons (hidden via CSS key selectors)
 if not st.session_state.show_answer:
-    # Hidden Streamlit callbacks
-    st.markdown('<div style="display:none;height:0;overflow:hidden;">', unsafe_allow_html=True)
     with st.container(key="showanswer_wrap"):
         st.button("→", key="showanswer_btn", on_click=reveal_answer)
     with st.container(key="quitbefore_wrap"):
         if st.button("🛑", key="quitbefore_btn"):
             st.session_state.quit_requested = True
             st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    # Visible HTML buttons
+    # Visible HTML buttons — side by side via flex
     st.markdown("""
     <div class="btn-row">
       <button class="btn-show" onclick="window.parent.fcClickBtn('→')">→</button>
       <button class="btn-quit" onclick="window.parent.fcClickBtn('🛑')">🛑</button>
     </div>""", unsafe_allow_html=True)
 else:
-    # Hidden Streamlit callbacks
-    st.markdown('<div style="display:none;height:0;overflow:hidden;">', unsafe_allow_html=True)
     with st.container(key="correct_wrap"):
         st.button("✓", key="correct_btn", on_click=mark_correct)
     with st.container(key="repeat_wrap"):
         st.button("?", key="repeat_btn", on_click=mark_repeat)
-    st.markdown('</div>', unsafe_allow_html=True)
-    # Visible HTML buttons
+    # Visible HTML buttons — side by side via flex
     st.markdown("""
     <div class="btn-row">
       <button class="btn-correct" onclick="window.parent.fcClickBtn('✓')">✓</button>
