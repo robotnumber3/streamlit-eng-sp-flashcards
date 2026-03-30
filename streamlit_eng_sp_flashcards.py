@@ -1,4 +1,4 @@
-# REV 10
+# REV 11
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -636,6 +636,7 @@ def render_flashcard(prompt, solution, show_answer):
     q_inner = format_word(prompt, 'fc-word', 'fc-note')
     q_html  = '<div class="fc-block"><div class="fc-section-label">Translate</div>' + q_inner + '</div>'
     st.markdown(q_html, unsafe_allow_html=True)
+    st.markdown('<div style="height:0.6rem"></div>', unsafe_allow_html=True)
     if show_answer:
         a_inner = format_word(solution, 'fc-answer', 'fc-answer-note')
         a_html  = '<div class="fc-block"><div class="fc-section-label">Answer</div>' + a_inner + '</div>'
@@ -664,8 +665,24 @@ def inject_gestures(show_answer):
             return false;
         }
 
-        // Expose for HTML buttons
+        // Expose for HTML buttons on both window levels
         window.parent.fcClickBtn = clickBtn;
+        try { window.parent.parent.fcClickBtn = clickBtn; } catch(e) {}
+
+        // Wire hamburger HTML button to hidden Streamlit callback
+        (function wireHam() {
+            var doc  = window.parent.document;
+            var btns = doc.querySelectorAll('button');
+            for (var i = 0; i < btns.length; i++) {
+                var t = btns[i].innerText.trim();
+                if ((t === '☰' || t === '✕') && btns[i].style.display === 'none'
+                    || btns[i].closest('[style*="display:none"]')) {
+                    btns[i].id = 'ham-cb';
+                    return;
+                }
+            }
+            setTimeout(wireHam, 150);
+        })();
 
         function attach() {
             var doc  = window.parent.document;
@@ -715,26 +732,35 @@ def stats_card_html(shown, total, correct, repeat):
 
 
 def render_header():
-    """Title+subtitle left, hamburger right."""
+    """Title left, hamburger right — pure HTML, no st.columns."""
     menu_icon = "✕" if st.session_state.menu_open else "☰"
-    title_col, ham_col = st.columns([8, 1])
-    with title_col:
-        st.markdown(
-            "<div style='display:flex;align-items:baseline;gap:0.4rem;padding:0.4rem 0 0.2rem 0;'>"
-            "<span class=\"title-bar-main\">Spanish Flashcards</span>"
-            "<span class=\"title-bar-sub\">(Collett)</span>"
-            "</div>",
-            unsafe_allow_html=True,
-        )
-    with ham_col:
-        with st.container(key="hamburger_wrap"):
-            if st.button(menu_icon, key="hamburger_btn"):
-                st.session_state.menu_open = not st.session_state.menu_open
-                st.rerun()
+    # Pure HTML flex row — guaranteed same line on any screen
+    st.markdown(
+        "<div style='display:flex;align-items:center;justify-content:space-between;"
+        "padding:0.5rem 0 0.3rem 0;'>"
+        "<div style='display:flex;align-items:baseline;gap:0.4rem;'>"
+        "<span class=\"title-bar-main\">Spanish Flashcards</span>"
+        "<span class=\"title-bar-sub\">(Collett)</span>"
+        "</div>"
+        "<button style='background:transparent;border:none;color:inherit;"
+        "font-size:1.3rem;cursor:pointer;padding:0 0.2rem;line-height:1;'"
+        " onclick=\"document.getElementById(\'ham-cb\').click();\">"
+        + menu_icon +
+        "</button>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
     st.markdown(
         f"<hr style='border:none;border-top:1px solid {t['border']};margin:0 0 0.8rem 0;'>",
         unsafe_allow_html=True,
     )
+    # Hidden Streamlit button provides the Python callback
+    st.markdown('<div style="display:none;height:0;overflow:hidden;">', unsafe_allow_html=True)
+    with st.container(key="hamburger_wrap"):
+        if st.button(menu_icon, key="hamburger_btn"):
+            st.session_state.menu_open = not st.session_state.menu_open
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_menu():
@@ -945,24 +971,36 @@ st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_gestures(st.session_state.show_answer)
 
-# Buttons in keyed container so CSS can target them specifically
+# Hidden Streamlit callbacks (CSS hides these)
+st.markdown('<div style="display:none;height:0;overflow:hidden;">', unsafe_allow_html=True)
 if not st.session_state.show_answer:
-    with st.container(key="btn_row_wrap"):
-        col1, col2 = st.columns(2)
-        with col1:
-            with st.container(key="showanswer_wrap"):
-                st.button("→", key="showanswer_btn", on_click=reveal_answer)
-        with col2:
-            with st.container(key="quitbefore_wrap"):
-                if st.button("🛑", key="quitbefore_btn"):
-                    st.session_state.quit_requested = True
-                    st.rerun()
+    with st.container(key="showanswer_wrap"):
+        st.button("→", key="showanswer_btn", on_click=reveal_answer)
+    with st.container(key="quitbefore_wrap"):
+        if st.button("🛑", key="quitbefore_btn"):
+            st.session_state.quit_requested = True
+            st.rerun()
 else:
-    with st.container(key="btn_row_wrap"):
-        col1, col2 = st.columns(2)
-        with col1:
-            with st.container(key="correct_wrap"):
-                st.button("✓", key="correct_btn", on_click=mark_correct)
-        with col2:
-            with st.container(key="repeat_wrap"):
-                st.button("?", key="repeat_btn", on_click=mark_repeat)
+    with st.container(key="correct_wrap"):
+        st.button("✓", key="correct_btn", on_click=mark_correct)
+    with st.container(key="repeat_wrap"):
+        st.button("?", key="repeat_btn", on_click=mark_repeat)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Visible HTML buttons — pure flexbox, guaranteed 50/50 width
+if not st.session_state.show_answer:
+    st.markdown(
+        "<div class='btn-row'>"
+        "<button class='btn-show' onclick='window.parent.fcClickBtn(\"\u2192\")'>→</button>"
+        "<button class='btn-quit' onclick='window.parent.fcClickBtn(\"\U0001f6d1\")'>🛑</button>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+else:
+    st.markdown(
+        "<div class='btn-row'>"
+        "<button class='btn-correct' onclick='window.parent.fcClickBtn(\"\u2713\")'>✓</button>"
+        "<button class='btn-repeat'  onclick='window.parent.fcClickBtn(\"?\")'>?</button>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
