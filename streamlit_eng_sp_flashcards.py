@@ -1,4 +1,4 @@
-# REV 13
+# REV 14
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -233,13 +233,6 @@ div[data-testid="stButton"] > button {{
 div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 
 /* ---- Hamburger ---- */
-.st-key-hamburger_wrap {{
-    position: absolute !important;
-    top: 0.3rem !important;
-    right: 0 !important;
-    z-index: 200 !important;
-    width: auto !important;
-}}
 .st-key-hamburger_wrap div[data-testid="stButton"] > button {{
     background: transparent !important;
     border: none !important;
@@ -300,29 +293,47 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 
 /* ---- Force button-pair columns side by side ---- */
+.st-key-btn_row_wrap {{
+    width: 100% !important;
+}}
+.st-key-btn_row_wrap > div,
+.st-key-btn_row_wrap [data-testid="stVerticalBlock"],
+.st-key-btn_row_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
+    width: 100% !important;
+}}
 .st-key-btn_row_wrap [data-testid="stHorizontalBlock"] {{
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     gap: 0.5rem !important;
     width: 100% !important;
+    box-sizing: border-box !important;
 }}
 .st-key-btn_row_wrap [data-testid="stColumn"] {{
-    flex: 1 1 0 !important;
+    flex: 1 1 45% !important;
     min-width: 0 !important;
+    max-width: 50% !important;
+    width: 50% !important;
 }}
+.st-key-btn_row_wrap div[data-testid="stButton"],
 .st-key-btn_row_wrap div[data-testid="stButton"] > button {{
     width: 100% !important;
     min-height: 3.2rem !important;
     font-size: 1.3rem !important;
+    display: block !important;
+    box-sizing: border-box !important;
 }}
 
 /* ---- Title row ---- */
 .title-row {{
     display: flex;
-    align-items: baseline;
-    gap: 0.4rem;
-    padding: 0.6rem 2.5rem 0.3rem 0;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0 0.3rem 0;
+    width: 100%;
+}}
+.title-row-spacer {{
+    flex: 1;
 }}
 .title-main {{
     font-family: 'Fraunces', serif;
@@ -573,7 +584,7 @@ def render_flashcard(prompt, solution, show_answer):
     q_inner = format_word(prompt, 'fc-word', 'fc-note')
     q_html  = '<div class="fc-block"><div class="fc-section-label">Translate</div>' + q_inner + '</div>'
     st.markdown(q_html, unsafe_allow_html=True)
-    st.markdown('<div style="height:0.5rem"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="height:0.3rem"></div>', unsafe_allow_html=True)
     if show_answer:
         a_inner = format_word(solution, 'fc-answer', 'fc-answer-note')
         a_html  = '<div class="fc-block"><div class="fc-section-label">Answer</div>' + a_inner + '</div>'
@@ -641,18 +652,21 @@ def stats_card_html(shown, total, correct, repeat):
 
 def render_header():
     menu_icon = "✕" if st.session_state.menu_open else "☰"
-    st.markdown(
-        "<div class='title-row'>"
-        "<span class='title-main'>Spanish Flashcards</span>"
-        "<span class='title-sub'>(Collett)</span>"
-        "</div>",
-        unsafe_allow_html=True,
-    )
-    # Hamburger button — absolutely positioned top-right via CSS
-    with st.container(key="hamburger_wrap"):
-        if st.button(menu_icon, key="hamburger_btn"):
-            st.session_state.menu_open = not st.session_state.menu_open
-            st.rerun()
+    # Use columns to guarantee same line on all screen sizes
+    title_col, ham_col = st.columns([7, 1])
+    with title_col:
+        st.markdown(
+            "<div class='title-row'>"
+            "<span class='title-main'>Spanish Flashcards</span>"
+            "<span class='title-sub'>(Collett)</span>"
+            "</div>",
+            unsafe_allow_html=True,
+        )
+    with ham_col:
+        with st.container(key="hamburger_wrap"):
+            if st.button(menu_icon, key="hamburger_btn"):
+                st.session_state.menu_open = not st.session_state.menu_open
+                st.rerun()
     st.markdown(
         f"<hr style='border:none;border-top:1px solid {t['border']};margin:0 0 0.7rem 0;'>",
         unsafe_allow_html=True,
@@ -715,7 +729,7 @@ def render_deck_strip():
 
 
 def render_buttons(show_answer):
-    st.markdown('<div style="height:0.5rem"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="height:0.3rem"></div>', unsafe_allow_html=True)
     with st.container(key="btn_row_wrap"):
         if not show_answer:
             col1, col2 = st.columns(2)
