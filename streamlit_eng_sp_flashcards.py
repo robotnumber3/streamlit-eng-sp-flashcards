@@ -1,4 +1,4 @@
-# REV 6
+# REV 7
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -470,6 +470,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .summary-grid .sg-label {{ font-weight: 400; opacity: 0.65; color: {t['card_fg']}; }}
 .summary-grid .sg-value {{ font-weight: 600; text-align: right; color: {t['card_fg']}; }}
 
+/* ---- Force button columns side-by-side on mobile ---- */
+.btn-flex-row > div[data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 0.5rem !important;
+}}
+.btn-flex-row > div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {{
+    flex: 1 1 0% !important;
+    width: auto !important;
+    min-width: 0 !important;
+}}
+
 /* ---- Button row ---- */
 .btn-row {{
     display: flex;
@@ -685,24 +698,24 @@ def stats_card_html(shown, total, correct, repeat):
 
 
 def render_header():
-    """Title left, hamburger right — st.columns guarantees same line."""
+    """Title+subtitle left, hamburger right."""
     menu_icon = "✕" if st.session_state.menu_open else "☰"
-    left, right = st.columns([6, 1])
-    with left:
+    title_col, ham_col = st.columns([10, 1])
+    with title_col:
         st.markdown(
-            "<div class=\"top-header\">"
+            "<div style='display:flex;align-items:baseline;gap:0.4rem;padding:0.4rem 0 0.2rem 0;'>"
             "<span class=\"title-bar-main\">Spanish Flashcards</span>"
             "<span class=\"title-bar-sub\">(Collett)</span>"
             "</div>",
             unsafe_allow_html=True,
         )
-    with right:
+    with ham_col:
         with st.container(key="hamburger_wrap"):
             if st.button(menu_icon, key="hamburger_btn"):
                 st.session_state.menu_open = not st.session_state.menu_open
                 st.rerun()
     st.markdown(
-        f"<hr style='border:none;border-top:1px solid {t['border']};margin:0 0 0.4rem 0;'>",
+        f"<hr style='border:none;border-top:1px solid {t['border']};margin:0 0 0 0;'>",
         unsafe_allow_html=True,
     )
 
@@ -906,14 +919,18 @@ else:
 
 render_header()
 render_menu()
+st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 render_deck_strip()
+st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
+st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_gestures(st.session_state.show_answer)
 
-# Real Streamlit buttons — styled via CSS, guaranteed to work
+# Buttons in flex wrapper to force side-by-side on mobile
+st.markdown('<div class="btn-flex-row">', unsafe_allow_html=True)
 if not st.session_state.show_answer:
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 1])
     with col1:
         with st.container(key="showanswer_wrap"):
             st.button("→", key="showanswer_btn", on_click=reveal_answer)
@@ -923,10 +940,11 @@ if not st.session_state.show_answer:
                 st.session_state.quit_requested = True
                 st.rerun()
 else:
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 1])
     with col1:
         with st.container(key="correct_wrap"):
             st.button("✓", key="correct_btn", on_click=mark_correct)
     with col2:
         with st.container(key="repeat_wrap"):
             st.button("?", key="repeat_btn", on_click=mark_repeat)
+st.markdown('</div>', unsafe_allow_html=True)
