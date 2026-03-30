@@ -1,3 +1,4 @@
+# REV 11
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -190,6 +191,32 @@ html, body, p, div, span, label, [class*="st-"] {{
     padding: 0 1rem 1rem 1rem !important;
     max-width: 600px !important;
     margin: 0 auto !important;
+    position: relative !important;
+}}
+/* Reduce Streamlit's default element vertical gaps */
+[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stVerticalBlock"] > div {{
+    gap: 0 !important;
+}}
+div[data-testid="stVerticalBlock"] {{
+    gap: 0.3rem !important;
+}}
+/* Button columns — scoped to btn_row_wrap so header cols are unaffected */
+.st-key-btn_row_wrap [data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 0.5rem !important;
+    align-items: stretch !important;
+    width: 100% !important;
+}}
+.st-key-btn_row_wrap [data-testid="stColumn"] {{
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+}}
+.st-key-btn_row_wrap div[data-testid="stButton"] > button {{
+    width: 100% !important;
+    min-height: 3.0rem !important;
 }}
 
 /* Selectbox */
@@ -226,7 +253,7 @@ div[data-testid="stButton"] > button {{
     font-family: 'DM Sans', sans-serif !important;
     width: 100% !important;
     min-height: 3.0rem !important;
-    font-size: 1.4rem !important;
+    font-size: 1.2rem !important;
     font-weight: 600 !important;
     border-radius: 0.75rem !important;
     border-width: 2px !important;
@@ -243,7 +270,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {t['btn_show_bg']} !important;
     border-color: {t['btn_show_bd']} !important;
     color: {t['btn_show_fg']} !important;
-    font-size: 1.8rem !important;
+    font-size: 1.5rem !important;
 }}
 /* Correct ✓ */
 .st-key-correct_wrap div[data-testid="stButton"] > button {{
@@ -287,17 +314,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-height: 2.2rem !important;
     font-weight: 500 !important;
 }}
-/* Hamburger */
+/* Hamburger button styling */
 .st-key-hamburger_wrap div[data-testid="stButton"] > button {{
-    background-color: transparent !important;
-    border-color: transparent !important;
+    background: transparent !important;
+    border: none !important;
     color: {t['fg']} !important;
     font-size: 1.3rem !important;
-    min-height: 2.0rem !important;
-    width: auto !important;
-    padding: 0 0.3rem !important;
+    min-height: 1.8rem !important;
+    padding: 0 !important;
     font-weight: 400 !important;
-    border-width: 0px !important;
 }}
 
 /* ---- Top header bar ---- */
@@ -305,24 +330,35 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.7rem 0 0.5rem 0;
-    border-bottom: 1px solid {t['border']};
-    margin-bottom: 1rem;
+    padding: 0.5rem 0 0.3rem 0;
+    width: 100%;
+}}
+.title-left {{
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
 }}
 .title-bar-main {{
     font-family: 'Fraunces', serif;
-    font-size: 1.3rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: {t['fg']};
     line-height: 1;
 }}
 .title-bar-sub {{
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     font-weight: 400;
     color: {t['muted']};
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-left: 0.5rem;
+}}
+/* Hamburger — pure HTML button inside the flex row */
+.ham-btn {{
+    background: transparent;
+    border: none;
+    color: {t['fg']};
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0 0.2rem;
+    line-height: 1;
 }}
 
 /* ---- Menu dropdown ---- */
@@ -367,9 +403,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 /* ---- Stats card ---- */
 .stats-card {{
     background-color: {t['card_bg']};
-    border-radius: 0.9rem;
-    padding: 0.7rem 1.0rem;
-    margin-bottom: 0.9rem;
+    border-radius: 0.8rem;
+    padding: 0.45rem 0.75rem;
+    margin-bottom: 1.0rem;
 }}
 .stats-card .prog-wrap {{
     background: rgba(128,128,128,0.2);
@@ -392,14 +428,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     opacity: 0.55; color: {t['card_fg']};
 }}
 .stats-card .stat-value {{
-    font-size: 1.0rem; font-weight: 600; color: {t['card_fg']};
+    font-size: 0.9rem; font-weight: 600; color: {t['card_fg']};
 }}
 
 /* ---- Flashcard boxes ---- */
 .fc-block {{
     border: 1px solid {t['border']};
     border-radius: 1rem;
-    padding: 0.9rem 1.1rem;
+    padding: 0.55rem 0.85rem;
     margin-bottom: 0.8rem;
     background: {t['bg']};
     cursor: pointer;
@@ -416,22 +452,22 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .fc-word {{
     font-family: 'Fraunces', serif;
-    font-size: 2.0rem; font-weight: 700;
+    font-size: 1.2rem; font-weight: 700;
     line-height: 1.15; color: {t['fg']};
 }}
 .fc-answer {{
     font-family: 'Fraunces', serif;
-    font-size: 1.8rem; font-weight: 400; font-style: italic;
+    font-size: 1.1rem; font-weight: 400; font-style: italic;
     line-height: 1.2; color: {t['fg']};
 }}
 .fc-word-placeholder {{
     font-family: 'Fraunces', serif;
-    font-size: 1.8rem; line-height: 1.2; min-height: 2.2rem;
+    font-size: 1.1rem; line-height: 1.2; min-height: 1.4rem;
 }}
 .fc-note, .fc-answer-note {{
     font-family: 'DM Sans', sans-serif;
-    font-size: 1.0rem; font-weight: 400;
-    color: {t['muted']}; margin-top: 0.25rem; line-height: 1.3;
+    font-size: 0.85rem; font-weight: 400;
+    color: {t['muted']}; margin-top: 0.2rem; line-height: 1.3;
 }}
 
 /* ---- Summary ---- */
@@ -450,6 +486,43 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .summary-grid .sg-label {{ font-weight: 400; opacity: 0.65; color: {t['card_fg']}; }}
 .summary-grid .sg-value {{ font-weight: 600; text-align: right; color: {t['card_fg']}; }}
+
+/* ---- Force button columns side-by-side on mobile ---- */
+.btn-flex-row > div[data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 0.5rem !important;
+}}
+.btn-flex-row > div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {{
+    flex: 1 1 0% !important;
+    width: auto !important;
+    min-width: 0 !important;
+}}
+
+/* ---- Button row ---- */
+.btn-row {{
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1.0rem;
+}}
+.btn-row button {{
+    flex: 1;
+    min-height: 2.8rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    border-width: 2px;
+    border-style: solid;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: opacity 0.15s;
+}}
+.btn-row button:active {{ opacity: 0.7; }}
+.btn-show    {{ background: {t['btn_show_bg']}; border-color: {t['btn_show_bd']}; color: {t['btn_show_fg']}; }}
+.btn-quit    {{ background: {t['danger_light']}; border-color: {t['danger']}; color: {t['danger']}; }}
+.btn-correct {{ background: {t['accent_light']}; border-color: {t['accent']}; color: {t['accent']}; }}
+.btn-repeat  {{ background: {t['warn_light']}; border-color: {t['warn']}; color: {t['warn']}; }}
 
 /* ---- Big title (deck picker / exit) ---- */
 .title-block {{ padding: 1.5rem 0 1rem 0; }}
@@ -563,6 +636,7 @@ def render_flashcard(prompt, solution, show_answer):
     q_inner = format_word(prompt, 'fc-word', 'fc-note')
     q_html  = '<div class="fc-block"><div class="fc-section-label">Translate</div>' + q_inner + '</div>'
     st.markdown(q_html, unsafe_allow_html=True)
+    st.markdown('<div style="height:0.6rem"></div>', unsafe_allow_html=True)
     if show_answer:
         a_inner = format_word(solution, 'fc-answer', 'fc-answer-note')
         a_html  = '<div class="fc-block"><div class="fc-section-label">Answer</div>' + a_inner + '</div>'
@@ -572,14 +646,12 @@ def render_flashcard(prompt, solution, show_answer):
 
 
 def inject_gestures(show_answer):
+    """Tap to reveal only — no swipe."""
     show_str = "true" if show_answer else "false"
     js = """
     <script>
     (function() {
-        var SWIPE_MIN    = 40;
-        var SWIPE_MAX_DT = 800;
-        var showAnswer   = """ + show_str + """;
-        var startX, startY, startT, moved;
+        var showAnswer = """ + show_str + """;
 
         function clickBtn(label) {
             var doc  = window.parent.document;
@@ -593,49 +665,38 @@ def inject_gestures(show_answer):
             return false;
         }
 
+        // Expose for HTML buttons on both window levels
+        window.parent.fcClickBtn = clickBtn;
+        try { window.parent.parent.fcClickBtn = clickBtn; } catch(e) {}
+
+        // Wire hamburger HTML button to hidden Streamlit callback
+        (function wireHam() {
+            var doc  = window.parent.document;
+            var btns = doc.querySelectorAll('button');
+            for (var i = 0; i < btns.length; i++) {
+                var t = btns[i].innerText.trim();
+                if ((t === '☰' || t === '✕') && btns[i].style.display === 'none'
+                    || btns[i].closest('[style*="display:none"]')) {
+                    btns[i].id = 'ham-cb';
+                    return;
+                }
+            }
+            setTimeout(wireHam, 150);
+        })();
+
         function attach() {
-            var doc   = window.parent.document;
+            var doc  = window.parent.document;
+            var body = doc.body;
             var cards = doc.querySelectorAll('.fc-block');
             if (!cards.length) return false;
-
-            cards.forEach(function(card) {
-                var fresh = card.cloneNode(true);
-                card.parentNode.replaceChild(fresh, card);
-
-                // Tap = reveal answer (both boxes, only before answer shown)
-                fresh.addEventListener('click', function(e) {
-                    if (!showAnswer) {
-                        clickBtn('\u2192');
-                    }
-                });
-
-                fresh.addEventListener('touchstart', function(e) {
-                    startX = e.touches[0].clientX;
-                    startY = e.touches[0].clientY;
-                    startT = Date.now();
-                    moved  = false;
-                }, {passive: true});
-
-                fresh.addEventListener('touchmove', function(e) {
-                    moved = true;
-                }, {passive: true});
-
-                fresh.addEventListener('touchend', function(e) {
-                    if (!showAnswer) return;
-                    var dx = e.changedTouches[0].clientX - startX;
-                    var dy = e.changedTouches[0].clientY - startY;
-                    var dt = Date.now() - startT;
-                    if (dt > SWIPE_MAX_DT) return;
-                    if (Math.abs(dx) < SWIPE_MIN) return;
-                    if (Math.abs(dy) > Math.abs(dx) * 0.8) return;
-                    e.preventDefault();
-                    if (dx > 0) {
-                        clickBtn('\u2713');
-                    } else {
-                        clickBtn('?');
-                    }
-                }, {passive: false});
-            });
+            if (doc._fcHandler) {
+                doc.body.removeEventListener('click', doc._fcHandler);
+            }
+            doc._fcHandler = function(e) {
+                if (!e.target.closest('.fc-block')) return;
+                if (!showAnswer) clickBtn('\u2192');
+            };
+            doc.body.addEventListener('click', doc._fcHandler);
             return true;
         }
 
@@ -671,23 +732,35 @@ def stats_card_html(shown, total, correct, repeat):
 
 
 def render_header():
-    """Title on left, hamburger on right — always at top, full width."""
-    title_col, ham_col = st.columns([6, 1])
-    with title_col:
-        st.markdown("""
-        <div class="top-header" style="border-bottom:none;margin-bottom:0;padding-bottom:0;">
-          <span class="title-bar-main">Spanish Flashcards</span>
-          <span class="title-bar-sub">Collett</span>
-        </div>
-        """, unsafe_allow_html=True)
-    with ham_col:
-        menu_icon = "✕" if st.session_state.menu_open else "☰"
-        with st.container(key="hamburger_wrap"):
-            if st.button(menu_icon, key="hamburger_btn"):
-                st.session_state.menu_open = not st.session_state.menu_open
-                st.rerun()
-    st.markdown(f"<hr style='border:none;border-top:1px solid {t['border']};margin:0.3rem 0 0.9rem 0;'>",
-                unsafe_allow_html=True)
+    """Title left, hamburger right — pure HTML, no st.columns."""
+    menu_icon = "✕" if st.session_state.menu_open else "☰"
+    # Pure HTML flex row — guaranteed same line on any screen
+    st.markdown(
+        "<div style='display:flex;align-items:center;justify-content:space-between;"
+        "padding:0.5rem 0 0.3rem 0;'>"
+        "<div style='display:flex;align-items:baseline;gap:0.4rem;'>"
+        "<span class=\"title-bar-main\">Spanish Flashcards</span>"
+        "<span class=\"title-bar-sub\">(Collett)</span>"
+        "</div>"
+        "<button style='background:transparent;border:none;color:inherit;"
+        "font-size:1.3rem;cursor:pointer;padding:0 0.2rem;line-height:1;'"
+        " onclick=\"document.getElementById(\'ham-cb\').click();\">"
+        + menu_icon +
+        "</button>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        f"<hr style='border:none;border-top:1px solid {t['border']};margin:0 0 0.8rem 0;'>",
+        unsafe_allow_html=True,
+    )
+    # Hidden Streamlit button provides the Python callback
+    st.markdown('<div style="display:none;height:0;overflow:hidden;">', unsafe_allow_html=True)
+    with st.container(key="hamburger_wrap"):
+        if st.button(menu_icon, key="hamburger_btn"):
+            st.session_state.menu_open = not st.session_state.menu_open
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_menu():
@@ -733,7 +806,7 @@ def render_deck_strip():
     d_col, b_col = st.columns([3, 1])
     with d_col:
         st.markdown(
-            '<div class="deck-strip">'
+            '<div class="deck-strip" style="margin-top:0;padding-top:0;">'
             '<span class="deck-strip-label">Deck</span>'
             '<span class="deck-strip-name">' + deck_name + '</span>'
             '</div>', unsafe_allow_html=True)
@@ -840,24 +913,25 @@ if st.session_state.quit_requested:
     </div>
     """, unsafe_allow_html=True)
 
-    c1, c2 = st.columns(2)
-    with c1:
-        with st.container(key="quitnow_wrap"):
-            if st.button("Quit", key="quitnow_btn"):
-                st.session_state.final_exit = True
-                st.rerun()
-    with c2:
-        with st.container(key="newsession_wrap"):
-            if st.button("New Session", key="newsession_btn"):
-                for k in ("selected_csv", "loaded_csv"):
-                    st.session_state[k] = None
-                for k in ("cards", "order"):
-                    st.session_state[k] = []
-                st.session_state.index          = 0
-                st.session_state.show_answer    = False
-                st.session_state.quit_requested = False
-                st.session_state.final_exit     = False
-                st.rerun()
+    with st.container(key="btn_row_wrap"):
+        c1, c2 = st.columns(2)
+        with c1:
+            with st.container(key="quitnow_wrap"):
+                if st.button("Quit", key="quitnow_btn"):
+                    st.session_state.final_exit = True
+                    st.rerun()
+        with c2:
+            with st.container(key="newsession_wrap"):
+                if st.button("New Session", key="newsession_btn"):
+                    for k in ("selected_csv", "loaded_csv"):
+                        st.session_state[k] = None
+                    for k in ("cards", "order"):
+                        st.session_state[k] = []
+                    st.session_state.index          = 0
+                    st.session_state.show_answer    = False
+                    st.session_state.quit_requested = False
+                    st.session_state.final_exit     = False
+                    st.rerun()
     st.stop()
 
 # ========================================================================
@@ -889,27 +963,44 @@ else:
 
 render_header()
 render_menu()
+st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 render_deck_strip()
+st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
+st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_gestures(st.session_state.show_answer)
 
-# Buttons: always side by side in two equal columns
+# Hidden Streamlit callbacks (CSS hides these)
+st.markdown('<div style="display:none;height:0;overflow:hidden;">', unsafe_allow_html=True)
 if not st.session_state.show_answer:
-    colA, colB = st.columns(2)
-    with colA:
-        with st.container(key="showanswer_wrap"):
-            st.button("→", key="showanswer_btn", on_click=reveal_answer)
-    with colB:
-        with st.container(key="quitbefore_wrap"):
-            if st.button("🛑", key="quitbefore_btn"):
-                st.session_state.quit_requested = True
-                st.rerun()
+    with st.container(key="showanswer_wrap"):
+        st.button("→", key="showanswer_btn", on_click=reveal_answer)
+    with st.container(key="quitbefore_wrap"):
+        if st.button("🛑", key="quitbefore_btn"):
+            st.session_state.quit_requested = True
+            st.rerun()
 else:
-    col1, col2 = st.columns(2)
-    with col1:
-        with st.container(key="correct_wrap"):
-            st.button("✓", key="correct_btn", on_click=mark_correct)
-    with col2:
-        with st.container(key="repeat_wrap"):
-            st.button("?", key="repeat_btn", on_click=mark_repeat)
+    with st.container(key="correct_wrap"):
+        st.button("✓", key="correct_btn", on_click=mark_correct)
+    with st.container(key="repeat_wrap"):
+        st.button("?", key="repeat_btn", on_click=mark_repeat)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Visible HTML buttons — pure flexbox, guaranteed 50/50 width
+if not st.session_state.show_answer:
+    st.markdown(
+        "<div class='btn-row'>"
+        "<button class='btn-show' onclick='window.parent.fcClickBtn(\"\u2192\")'>→</button>"
+        "<button class='btn-quit' onclick='window.parent.fcClickBtn(\"\U0001f6d1\")'>🛑</button>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+else:
+    st.markdown(
+        "<div class='btn-row'>"
+        "<button class='btn-correct' onclick='window.parent.fcClickBtn(\"\u2713\")'>✓</button>"
+        "<button class='btn-repeat'  onclick='window.parent.fcClickBtn(\"?\")'>?</button>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
