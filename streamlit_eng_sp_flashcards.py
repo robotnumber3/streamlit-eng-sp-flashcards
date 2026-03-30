@@ -3,7 +3,14 @@
 import streamlit as st
 import random
 import os
+import sys
 import pandas as pd
+from streamlit.runtime.scriptrunner import get_script_run_ctx
+
+
+if get_script_run_ctx() is None:
+    print("Run this app with: streamlit run streamlit_eng_sp_flashcards.py")
+    sys.exit(1)
 
 
 # ------------------------------------------------------------------------
@@ -311,6 +318,8 @@ if st.session_state.quit_requested:
             st.session_state.final_exit = False
 
             st.rerun()
+
+    st.stop()
 
 
 
