@@ -1,4 +1,4 @@
-# REV 3
+# REV 4
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -305,9 +305,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 /* ---- Top header bar ---- */
 .top-header {{
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0 0.3rem 0;
+    width: 100%;
+}}
+.title-left {{
+    display: flex;
     align-items: baseline;
     gap: 0.4rem;
-    padding: 0.5rem 0 0.3rem 0;
 }}
 .title-bar-main {{
     font-family: 'Fraunces', serif;
@@ -321,11 +327,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-weight: 400;
     color: {t['muted']};
 }}
-/* Absolutely position hamburger to top-right */
+/* Hamburger floated right inside header row */
 .st-key-hamburger_wrap {{
     position: absolute;
-    top: 0.4rem;
-    right: 0.5rem;
+    top: 0.3rem;
+    right: 1rem;
     z-index: 999;
 }}
 
@@ -600,14 +606,12 @@ def render_flashcard(prompt, solution, show_answer):
 
 
 def inject_gestures(show_answer):
+    """Tap to reveal only — no swipe."""
     show_str = "true" if show_answer else "false"
     js = """
     <script>
     (function() {
-        var SWIPE_MIN    = 40;
-        var SWIPE_MAX_DT = 800;
-        var showAnswer   = """ + show_str + """;
-        var startX, startY, startT, moved;
+        var showAnswer = """ + show_str + """;
 
         function clickBtn(label) {
             var doc  = window.parent.document;
@@ -621,50 +625,22 @@ def inject_gestures(show_answer):
             return false;
         }
 
+        // Expose for HTML buttons
+        window.parent.fcClickBtn = clickBtn;
+
         function attach() {
-            var doc   = window.parent.document;
-            var cards = doc.querySelectorAll('.fc-block');
-            if (!cards.length) return false;
-
-            // Expose clickBtn globally for HTML buttons
-            window.parent.fcClickBtn = clickBtn;
-
-            // Delegate from body — avoids cloneNode breaking Streamlit
+            var doc  = window.parent.document;
             var body = doc.body;
             if (body._fcAttached) return true;
+            var cards = doc.querySelectorAll('.fc-block');
+            if (!cards.length) return false;
             body._fcAttached = true;
 
+            // Tap either card box to reveal answer
             body.addEventListener('click', function(e) {
                 if (!e.target.closest('.fc-block')) return;
                 if (!showAnswer) clickBtn('\u2192');
             });
-
-            body.addEventListener('touchstart', function(e) {
-                if (!e.target.closest('.fc-block')) return;
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-                startT = Date.now();
-                moved  = false;
-            }, {passive: true});
-
-            body.addEventListener('touchmove', function(e) {
-                moved = true;
-            }, {passive: true});
-
-            body.addEventListener('touchend', function(e) {
-                if (!e.target.closest('.fc-block')) return;
-                if (!showAnswer) return;
-                var dx = e.changedTouches[0].clientX - startX;
-                var dy = e.changedTouches[0].clientY - startY;
-                var dt = Date.now() - startT;
-                if (dt > SWIPE_MAX_DT) return;
-                if (Math.abs(dx) < SWIPE_MIN) return;
-                if (Math.abs(dy) > Math.abs(dx) * 0.8) return;
-                e.preventDefault();
-                if (dx > 0) { clickBtn('\u2713'); }
-                else        { clickBtn('?'); }
-            }, {passive: false});
-
             return true;
         }
 
@@ -700,14 +676,18 @@ def stats_card_html(shown, total, correct, repeat):
 
 
 def render_header():
-    """Title and hamburger on one line via absolute positioning."""
+    """Title left, hamburger right, same line."""
     menu_icon = "✕" if st.session_state.menu_open else "☰"
+    # Title in HTML flex row
     st.markdown("""
     <div class="top-header">
-      <span class="title-bar-main">Spanish Flashcards</span>
-      <span class="title-bar-sub">(Collett)</span>
+      <div class="title-left">
+        <span class="title-bar-main">Spanish Flashcards</span>
+        <span class="title-bar-sub">(Collett)</span>
+      </div>
     </div>
     """, unsafe_allow_html=True)
+    # Hamburger — CSS positions it absolute top-right
     with st.container(key="hamburger_wrap"):
         if st.button(menu_icon, key="hamburger_btn"):
             st.session_state.menu_open = not st.session_state.menu_open
@@ -920,30 +900,32 @@ stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_gestures(st.session_state.show_answer)
 
-# Invisible Streamlit buttons — JS clicks these
-st.markdown('<div style="display:none !important;visibility:hidden;height:0;overflow:hidden;">', unsafe_allow_html=True)
+# HTML buttons — guaranteed side by side, trigger hidden Streamlit buttons via JS
 if not st.session_state.show_answer:
+    # Hidden Streamlit callbacks
+    st.markdown('<div style="display:none;height:0;overflow:hidden;">', unsafe_allow_html=True)
     with st.container(key="showanswer_wrap"):
         st.button("→", key="showanswer_btn", on_click=reveal_answer)
     with st.container(key="quitbefore_wrap"):
         if st.button("🛑", key="quitbefore_btn"):
             st.session_state.quit_requested = True
             st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    # Visible HTML buttons
+    st.markdown("""
+    <div class="btn-row">
+      <button class="btn-show" onclick="window.parent.fcClickBtn('→')">→</button>
+      <button class="btn-quit" onclick="window.parent.fcClickBtn('🛑')">🛑</button>
+    </div>""", unsafe_allow_html=True)
 else:
+    # Hidden Streamlit callbacks
+    st.markdown('<div style="display:none;height:0;overflow:hidden;">', unsafe_allow_html=True)
     with st.container(key="correct_wrap"):
         st.button("✓", key="correct_btn", on_click=mark_correct)
     with st.container(key="repeat_wrap"):
         st.button("?", key="repeat_btn", on_click=mark_repeat)
-st.markdown('</div>', unsafe_allow_html=True)
-
-# Visible HTML button row — guaranteed side by side on any screen
-if not st.session_state.show_answer:
-    st.markdown("""
-    <div class="btn-row">
-      <button class="btn-show"  onclick="window.parent.fcClickBtn('→')">→</button>
-      <button class="btn-quit"  onclick="window.parent.fcClickBtn('🛑')">🛑</button>
-    </div>""", unsafe_allow_html=True)
-else:
+    st.markdown('</div>', unsafe_allow_html=True)
+    # Visible HTML buttons
     st.markdown("""
     <div class="btn-row">
       <button class="btn-correct" onclick="window.parent.fcClickBtn('✓')">✓</button>
