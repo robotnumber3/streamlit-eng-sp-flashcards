@@ -132,16 +132,18 @@ prefs = load_prefs()
 defaults = {
     "theme":          prefs.get("theme", "dark"),
     "menu_open":      False,
+    "direction_mode": prefs.get("direction_mode", "random"),
     "selected_csv":   None,
     "cards":          [],
     "order":          [],
     "index":          0,
     "show_answer":    False,
-    "direction":      ("EN_TO_ES" if prefs.get("direction_mode","random") == "en_to_es" else ("ES_TO_EN" if prefs.get("direction_mode","random") == "es_to_en" else random.choice(["EN_TO_ES", "ES_TO_EN"]))),
+    "direction":      ("EN_TO_ES" if prefs.get("direction_mode","random") == "en_to_es"
+                       else ("ES_TO_EN" if prefs.get("direction_mode","random") == "es_to_en"
+                       else random.choice(["EN_TO_ES", "ES_TO_EN"]))),
     "quit_requested": False,
     "final_exit":     False,
     "loaded_csv":     None,
-    "direction_mode": prefs.get("direction_mode", "random"),
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -185,53 +187,46 @@ html, body, p, div, span, label, [class*="st-"] {{
     color: {t['fg']};
 }}
 .block-container {{
-    padding: 0 1.5rem 2rem 1.5rem !important;
-    max-width: 100% !important;
+    padding: 0 1rem 1rem 1rem !important;
+    max-width: 600px !important;
+    margin: 0 auto !important;
 }}
 
-/* ---- Selectbox ---- */
+/* Selectbox */
 [data-testid="stSelectbox"] > div > div {{
     background-color: {t['bg']} !important;
     border-color: {t['border']} !important;
     color: {t['fg']} !important;
 }}
-/* Dropdown list portal — force theme colors */
-[data-baseweb="popover"] ul,
-[data-baseweb="menu"] ul,
-[data-baseweb="select"] ul {{
+[data-baseweb="popover"] ul, [data-baseweb="menu"] ul {{
     background-color: {t['dropdown_bg']} !important;
 }}
-[data-baseweb="popover"] li,
-[data-baseweb="menu"] li,
-[data-baseweb="select"] li {{
+[data-baseweb="popover"] li, [data-baseweb="menu"] li {{
     background-color: {t['dropdown_bg']} !important;
     color: {t['dropdown_fg']} !important;
 }}
-[data-baseweb="popover"] li:hover,
-[data-baseweb="menu"] li:hover {{
-    background-color: {t['dropdown_hover']} !important;
-}}
+[data-baseweb="popover"] li:hover {{ background-color: {t['dropdown_hover']} !important; }}
 
-/* ---- Radio ---- */
+/* Radio */
 [data-testid="stRadio"] label {{
     color: {t['fg']} !important;
-    font-size: 0.88rem !important;
+    font-size: 0.9rem !important;
 }}
 [data-testid="stRadio"] {{ margin-bottom: 0 !important; }}
 
-/* ---- Markdown ---- */
+/* Markdown */
 [data-testid="stMarkdownContainer"] p,
 [data-testid="stMarkdownContainer"] li {{
     color: {t['fg']} !important;
     font-family: 'DM Sans', sans-serif !important;
 }}
 
-/* ---- All buttons base ---- */
+/* All buttons base */
 div[data-testid="stButton"] > button {{
     font-family: 'DM Sans', sans-serif !important;
     width: 100% !important;
-    min-height: 3.4rem !important;
-    font-size: 1.5rem !important;
+    min-height: 3.0rem !important;
+    font-size: 1.4rem !important;
     font-weight: 600 !important;
     border-radius: 0.75rem !important;
     border-width: 2px !important;
@@ -243,28 +238,12 @@ div[data-testid="stButton"] > button {{
 }}
 div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 
-/* Hamburger ☰ */
-.st-key-hamburger_wrap div[data-testid="stButton"] > button {{
-    background-color: transparent !important;
-    border-color: transparent !important;
-    color: {t['muted']} !important;
-    font-size: 1.4rem !important;
-    min-height: 2.2rem !important;
-    width: auto !important;
-    padding: 0 0.4rem !important;
-    font-weight: 400 !important;
-}}
-.st-key-hamburger_wrap div[data-testid="stButton"] > button:hover {{
-    color: {t['fg']} !important;
-    opacity: 1 !important;
-}}
-
 /* Show answer → */
 .st-key-showanswer_wrap div[data-testid="stButton"] > button {{
     background-color: {t['btn_show_bg']} !important;
     border-color: {t['btn_show_bd']} !important;
     color: {t['btn_show_fg']} !important;
-    font-size: 2.0rem !important;
+    font-size: 1.8rem !important;
 }}
 /* Correct ✓ */
 .st-key-correct_wrap div[data-testid="stButton"] > button {{
@@ -283,20 +262,21 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {t['danger_light']} !important;
     border-color: {t['danger']} !important;
     color: {t['danger']} !important;
+    font-size: 1.4rem !important;
 }}
 /* Quit */
 .st-key-quitnow_wrap div[data-testid="stButton"] > button {{
     background-color: {t['danger_light']} !important;
     border-color: {t['danger']} !important;
     color: {t['danger']} !important;
-    font-size: 1.4rem !important;
+    font-size: 1.2rem !important;
 }}
 /* New Session */
 .st-key-newsession_wrap div[data-testid="stButton"] > button {{
     background-color: {t['accent_light']} !important;
     border-color: {t['accent']} !important;
     color: {t['accent']} !important;
-    font-size: 1.4rem !important;
+    font-size: 1.2rem !important;
 }}
 /* Change Deck */
 .st-key-changedeck_wrap div[data-testid="stButton"] > button {{
@@ -307,199 +287,212 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-height: 2.2rem !important;
     font-weight: 500 !important;
 }}
+/* Hamburger */
+.st-key-hamburger_wrap div[data-testid="stButton"] > button {{
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: {t['fg']} !important;
+    font-size: 1.3rem !important;
+    min-height: 2.0rem !important;
+    width: auto !important;
+    padding: 0 0.3rem !important;
+    font-weight: 400 !important;
+    border-width: 0px !important;
+}}
+
+/* ---- Top header bar ---- */
+.top-header {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0 0.5rem 0;
+    border-bottom: 1px solid {t['border']};
+    margin-bottom: 1rem;
+}}
+.title-bar-main {{
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: {t['fg']};
+    line-height: 1;
+}}
+.title-bar-sub {{
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: {t['muted']};
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-left: 0.5rem;
+}}
+
+/* ---- Menu dropdown ---- */
+.menu-dropdown {{
+    background-color: {t['menu_bg']};
+    border: 1px solid {t['border']};
+    border-radius: 0.75rem;
+    padding: 0.9rem 1.1rem 0.7rem 1.1rem;
+    margin-bottom: 0.9rem;
+}}
+.menu-section-label {{
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: {t['panel_label']};
+    margin-bottom: 0.4rem;
+}}
+
+/* ---- Deck info strip ---- */
+.deck-strip {{
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    flex-wrap: wrap;
+}}
+.deck-strip-label {{
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: {t['muted']};
+}}
+.deck-strip-name {{
+    font-family: 'Fraunces', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: {t['fg']};
+}}
 
 /* ---- Stats card ---- */
 .stats-card {{
     background-color: {t['card_bg']};
-    border-radius: 1rem;
-    padding: 0.85rem 1.2rem;
-    margin-bottom: 1.4rem;
+    border-radius: 0.9rem;
+    padding: 0.7rem 1.0rem;
+    margin-bottom: 0.9rem;
 }}
 .stats-card .prog-wrap {{
     background: rgba(128,128,128,0.2);
-    border-radius: 99px; height: 5px;
-    margin-bottom: 0.4rem; overflow: hidden;
+    border-radius: 99px; height: 4px;
+    margin-bottom: 0.35rem; overflow: hidden;
 }}
 .stats-card .prog-fill {{
-    height: 5px; border-radius: 99px;
+    height: 4px; border-radius: 99px;
     background: {t['accent']}; transition: width 0.4s ease;
 }}
 .stats-card .prog-label {{
-    font-size: 0.70rem; opacity: 0.55;
-    margin-bottom: 0.5rem; color: {t['card_fg']};
+    font-size: 0.65rem; opacity: 0.55;
+    margin-bottom: 0.4rem; color: {t['card_fg']};
 }}
-.stats-card .stat-row {{ display: flex; gap: 1.4rem; flex-wrap: wrap; }}
+.stats-card .stat-row {{ display: flex; gap: 1.2rem; flex-wrap: wrap; }}
 .stats-card .stat-item {{ display: flex; flex-direction: column; }}
 .stats-card .stat-label {{
-    font-size: 0.68rem; font-weight: 500;
-    text-transform: uppercase; letter-spacing: 0.08em;
+    font-size: 0.60rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.07em;
     opacity: 0.55; color: {t['card_fg']};
 }}
 .stats-card .stat-value {{
-    font-size: 1.15rem; font-weight: 600; color: {t['card_fg']};
+    font-size: 1.0rem; font-weight: 600; color: {t['card_fg']};
 }}
 
-/* ---- Flashcard display ---- */
+/* ---- Flashcard boxes ---- */
 .fc-block {{
     border: 1px solid {t['border']};
-    border-radius: 1.2rem;
-    padding: 1.4rem 1.6rem 1.6rem 1.6rem;
-    margin-bottom: 1.4rem;
+    border-radius: 1rem;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 0.8rem;
     background: {t['bg']};
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
     transition: border-color 0.15s ease;
 }}
-.fc-block:active {{
-    border-color: {t['accent']};
-}}
+.fc-block:active {{ border-color: {t['accent']}; }}
+.fc-block-empty {{ opacity: 0.35; }}
 .fc-section-label {{
-    font-size: 0.72rem; font-weight: 500;
+    font-size: 0.60rem; font-weight: 500;
     text-transform: uppercase; letter-spacing: 0.08em;
-    color: {t['muted']};
-    margin-bottom: 0.3rem;
+    color: {t['muted']}; margin-bottom: 0.2rem;
 }}
 .fc-word {{
     font-family: 'Fraunces', serif;
-    font-size: 2.8rem; font-weight: 700;
+    font-size: 2.0rem; font-weight: 700;
     line-height: 1.15; color: {t['fg']};
-    margin-bottom: 0;
-}}
-.fc-divider {{
-    border: none;
-    border-top: 1px solid {t['border']};
-    margin: 1.1rem 0;
-}}
-.fc-answer-label {{
-    font-size: 0.72rem; font-weight: 500;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    color: {t['muted']};
-    margin-bottom: 0.3rem;
 }}
 .fc-answer {{
     font-family: 'Fraunces', serif;
-    font-size: 2.4rem; font-weight: 400; font-style: italic;
+    font-size: 1.8rem; font-weight: 400; font-style: italic;
     line-height: 1.2; color: {t['fg']};
-}}
-.fc-block-empty {{
-    opacity: 0.35;
 }}
 .fc-word-placeholder {{
     font-family: 'Fraunces', serif;
-    font-size: 2.4rem;
-    line-height: 1.2;
-    min-height: 2.9rem;
+    font-size: 1.8rem; line-height: 1.2; min-height: 2.2rem;
 }}
-.fc-note {{
+.fc-note, .fc-answer-note {{
     font-family: 'DM Sans', sans-serif;
-    font-size: 1.0rem;
-    font-weight: 400;
-    color: {t['muted']};
-    margin-top: 0.3rem;
-    line-height: 1.3;
-}}
-.fc-answer-note {{
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1.0rem;
-    font-weight: 400;
-    color: {t['muted']};
-    margin-top: 0.3rem;
-    line-height: 1.3;
-}}
-
-/* ---- Hamburger menu dropdown ---- */
-.menu-dropdown {{
-    background-color: {t['menu_bg']};
-    border: 1px solid {t['border']};
-    border-radius: 0.75rem;
-    padding: 1rem 1.2rem 0.8rem 1.2rem;
-    margin-bottom: 0.8rem;
-}}
-.menu-dropdown .menu-section-label {{
-    font-size: 0.68rem; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.1em;
-    color: {t['panel_label']};
-    margin-bottom: 0.5rem;
-}}
-
-/* ---- Right panel ---- */
-.right-panel {{
-    padding-left: 0;
-    padding-top: 0;
-}}
-.panel-section-label {{
-    font-size: 0.68rem; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.1em;
-    color: {t['panel_label']};
-    margin-bottom: 0.4rem;
-}}
-.deck-name {{
-    font-family: 'Fraunces', serif;
-    font-size: 1.0rem; font-weight: 600;
-    color: {t['fg']};
-    margin-bottom: 0.7rem;
-    line-height: 1.3; word-break: break-word;
-}}
-
-/* ---- Top title bar ---- */
-.title-bar {{
-    display: flex;
-    align-items: baseline;
-    gap: 0.7rem;
-    padding: 1.2rem 0 0.8rem 0;
-    border-bottom: 1px solid {t['border']};
-    margin-bottom: 1.4rem;
-}}
-.title-bar-main {{
-    font-family: 'Fraunces', serif;
-    font-size: 1.6rem; font-weight: 700;
-    color: {t['fg']}; line-height: 1;
-}}
-.title-bar-sub {{
-    font-size: 0.78rem; font-weight: 400;
-    color: {t['muted']};
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-}}
-
-/* ---- Big title (deck picker) ---- */
-.title-block {{ padding: 1.8rem 0 1.2rem 0; }}
-.title-main {{
-    font-family: 'Fraunces', serif;
-    font-size: 3.0rem; font-weight: 700;
-    color: {t['fg']}; line-height: 1.1;
-}}
-.title-sub {{
-    font-size: 1.0rem; font-weight: 300;
-    color: {t['muted']}; margin-top: 0.4rem;
-    letter-spacing: 0.06em; text-transform: uppercase;
-}}
-.soft-divider {{
-    border: none; border-top: 1px solid {t['border']}; margin: 1rem 0;
+    font-size: 1.0rem; font-weight: 400;
+    color: {t['muted']}; margin-top: 0.25rem; line-height: 1.3;
 }}
 
 /* ---- Summary ---- */
 .summary-title {{
     font-family: 'Fraunces', serif;
-    font-size: 1.8rem; font-weight: 700;
-    color: {t['fg']}; margin-bottom: 1rem;
+    font-size: 1.6rem; font-weight: 700;
+    color: {t['fg']}; margin-bottom: 0.9rem;
 }}
 .summary-grid {{
     display: grid; grid-template-columns: 1fr 1fr;
-    gap: 0.55rem 1.2rem;
+    gap: 0.5rem 1rem;
     background: {t['card_bg']};
-    border-radius: 1rem;
-    padding: 1rem 1.2rem; margin-bottom: 1.2rem;
-    font-size: 0.92rem;
+    border-radius: 0.9rem;
+    padding: 0.9rem 1.1rem; margin-bottom: 1rem;
+    font-size: 0.9rem;
 }}
 .summary-grid .sg-label {{ font-weight: 400; opacity: 0.65; color: {t['card_fg']}; }}
 .summary-grid .sg-value {{ font-weight: 600; text-align: right; color: {t['card_fg']}; }}
+
+/* ---- Big title (deck picker / exit) ---- */
+.title-block {{ padding: 1.5rem 0 1rem 0; }}
+.title-main {{
+    font-family: 'Fraunces', serif;
+    font-size: 2.4rem; font-weight: 700;
+    color: {t['fg']}; line-height: 1.1;
+}}
+.title-sub {{
+    font-size: 0.9rem; font-weight: 300;
+    color: {t['muted']}; margin-top: 0.3rem;
+    letter-spacing: 0.06em; text-transform: uppercase;
+}}
+.soft-divider {{
+    border: none; border-top: 1px solid {t['border']}; margin: 0.8rem 0;
+}}
 </style>
 """, unsafe_allow_html=True)
 
 # ------------------------------------------------------------------------
-# CARD LOGIC HELPERS
+# VIEWPORT + MOBILE CSS  (injected into parent document)
+# ------------------------------------------------------------------------
+
+components.html("""
+<script>
+(function() {
+    var doc = window.parent.document;
+    var head = doc.head;
+    var existing = head.querySelector('meta[name="viewport"]');
+    if (existing) {
+        existing.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+    } else {
+        var meta = doc.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+        head.appendChild(meta);
+    }
+})();
+</script>
+""", height=0)
+
+# ------------------------------------------------------------------------
+# CARD LOGIC
 # ------------------------------------------------------------------------
 
 def current_card_index():
@@ -541,7 +534,7 @@ def advance_card():
     card["shown"] = True
     if card["repeat_score"] > 0:
         schedule_repeat(idx, card["repeat_score"])
-    st.session_state.index     += 1
+    st.session_state.index      += 1
     st.session_state.show_answer = False
     mode = st.session_state.direction_mode
     if mode == "en_to_es":
@@ -552,8 +545,111 @@ def advance_card():
         st.session_state.direction = random.choice(["EN_TO_ES", "ES_TO_EN"])
 
 # ------------------------------------------------------------------------
-# UI COMPONENTS
+# UI HELPERS
 # ------------------------------------------------------------------------
+
+def format_word(text, word_class, note_class):
+    import re
+    m = re.search(r'(\[.*?\])', text)
+    if m:
+        main = text[:m.start()].strip()
+        note = m.group(1)
+        return ('<div class="' + word_class + '">' + main + '</div>'
+                '<div class="' + note_class + '">' + note + '</div>')
+    return '<div class="' + word_class + '">' + text + '</div>'
+
+
+def render_flashcard(prompt, solution, show_answer):
+    q_inner = format_word(prompt, 'fc-word', 'fc-note')
+    q_html  = '<div class="fc-block"><div class="fc-section-label">Translate</div>' + q_inner + '</div>'
+    st.markdown(q_html, unsafe_allow_html=True)
+    if show_answer:
+        a_inner = format_word(solution, 'fc-answer', 'fc-answer-note')
+        a_html  = '<div class="fc-block"><div class="fc-section-label">Answer</div>' + a_inner + '</div>'
+    else:
+        a_html  = '<div class="fc-block fc-block-empty"><div class="fc-section-label">Answer</div><div class="fc-word-placeholder">&nbsp;</div></div>'
+    st.markdown(a_html, unsafe_allow_html=True)
+
+
+def inject_gestures(show_answer):
+    show_str = "true" if show_answer else "false"
+    js = """
+    <script>
+    (function() {
+        var SWIPE_MIN    = 40;
+        var SWIPE_MAX_DT = 800;
+        var showAnswer   = """ + show_str + """;
+        var startX, startY, startT, moved;
+
+        function clickBtn(label) {
+            var doc  = window.parent.document;
+            var btns = doc.querySelectorAll('button');
+            for (var i = 0; i < btns.length; i++) {
+                if (btns[i].innerText.trim() === label) {
+                    btns[i].dispatchEvent(new MouseEvent('click', {bubbles: true}));
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function attach() {
+            var doc   = window.parent.document;
+            var cards = doc.querySelectorAll('.fc-block');
+            if (!cards.length) return false;
+
+            cards.forEach(function(card) {
+                var fresh = card.cloneNode(true);
+                card.parentNode.replaceChild(fresh, card);
+
+                // Tap = reveal answer (both boxes, only before answer shown)
+                fresh.addEventListener('click', function(e) {
+                    if (!showAnswer) {
+                        clickBtn('\u2192');
+                    }
+                });
+
+                fresh.addEventListener('touchstart', function(e) {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    startT = Date.now();
+                    moved  = false;
+                }, {passive: true});
+
+                fresh.addEventListener('touchmove', function(e) {
+                    moved = true;
+                }, {passive: true});
+
+                fresh.addEventListener('touchend', function(e) {
+                    if (!showAnswer) return;
+                    var dx = e.changedTouches[0].clientX - startX;
+                    var dy = e.changedTouches[0].clientY - startY;
+                    var dt = Date.now() - startT;
+                    if (dt > SWIPE_MAX_DT) return;
+                    if (Math.abs(dx) < SWIPE_MIN) return;
+                    if (Math.abs(dy) > Math.abs(dx) * 0.8) return;
+                    e.preventDefault();
+                    if (dx > 0) {
+                        clickBtn('\u2713');
+                    } else {
+                        clickBtn('?');
+                    }
+                }, {passive: false});
+            });
+            return true;
+        }
+
+        var attempts = 0;
+        function tryAttach() {
+            if (attach()) return;
+            if (++attempts < 20) setTimeout(tryAttach, 150);
+        }
+        tryAttach();
+    })();
+    </script>
+    """
+    components.html(js, height=0)
+
 
 def stats_card_html(shown, total, correct, repeat):
     pct        = int(shown / total * 100) if total > 0 else 0
@@ -565,175 +661,85 @@ def stats_card_html(shown, total, correct, repeat):
       <div class="prog-wrap"><div class="prog-fill" style="width:{pct}%"></div></div>
       <div class="prog-label">{pct}% complete &nbsp;·&nbsp; {remaining} remaining</div>
       <div class="stat-row">
-        <div class="stat-item">
-          <div class="stat-label">Correct</div><div class="stat-value">{correct}</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Repeat</div><div class="stat-value">{repeat}</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Accuracy</div><div class="stat-value">{accuracy}%</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Missed</div><div class="stat-value">{missed_pct}%</div>
-        </div>
+        <div class="stat-item"><div class="stat-label">Correct</div><div class="stat-value">{correct}</div></div>
+        <div class="stat-item"><div class="stat-label">Repeat</div><div class="stat-value">{repeat}</div></div>
+        <div class="stat-item"><div class="stat-label">Accuracy</div><div class="stat-value">{accuracy}%</div></div>
+        <div class="stat-item"><div class="stat-label">Missed</div><div class="stat-value">{missed_pct}%</div></div>
       </div>
     </div>
     """, unsafe_allow_html=True)
 
 
-def format_word(text, word_class, note_class):
-    """Split bracketed notes onto a second smaller line."""
-    import re
-    m = re.search(r'(\[.*?\])', text)
-    if m:
-        main = text[:m.start()].strip()
-        note = m.group(1)
-        return ('<div class="' + word_class + '">' + main + '</div>'
-                '<div class="' + note_class + '">' + note + '</div>')
-    return '<div class="' + word_class + '">' + text + '</div>'
-
-def render_flashcard(prompt, solution, show_answer):
-    """Always render both boxes; answer box empty until revealed."""
-    q_inner = format_word(prompt, 'fc-word', 'fc-note')
-    q_html  = '<div class="fc-block"><div class="fc-section-label">Translate</div>' + q_inner + '</div>'
-    st.markdown(q_html, unsafe_allow_html=True)
-    if show_answer:
-        a_inner = format_word(solution, 'fc-answer', 'fc-answer-note')
-        a_html  = '<div class="fc-block"><div class="fc-section-label">Answer</div>' + a_inner + '</div>'
-    else:
-        a_html  = '<div class="fc-block fc-block-empty"><div class="fc-section-label">Answer</div><div class="fc-word-placeholder">&nbsp;</div></div>'
-    st.markdown(a_html, unsafe_allow_html=True)
-
-def title_bar():
-    """Thin persistent title across the top of the main column."""
-    st.markdown("""
-    <div class="title-bar">
-      <span class="title-bar-main">Spanish Flashcards</span>
-      <span class="title-bar-sub">Collett</span>
-    </div>
-    """, unsafe_allow_html=True)
+def render_header():
+    """Title on left, hamburger on right — always at top, full width."""
+    title_col, ham_col = st.columns([6, 1])
+    with title_col:
+        st.markdown("""
+        <div class="top-header" style="border-bottom:none;margin-bottom:0;padding-bottom:0;">
+          <span class="title-bar-main">Spanish Flashcards</span>
+          <span class="title-bar-sub">Collett</span>
+        </div>
+        """, unsafe_allow_html=True)
+    with ham_col:
+        menu_icon = "✕" if st.session_state.menu_open else "☰"
+        with st.container(key="hamburger_wrap"):
+            if st.button(menu_icon, key="hamburger_btn"):
+                st.session_state.menu_open = not st.session_state.menu_open
+                st.rerun()
+    st.markdown(f"<hr style='border:none;border-top:1px solid {t['border']};margin:0.3rem 0 0.9rem 0;'>",
+                unsafe_allow_html=True)
 
 
-def inject_gestures(show_answer):
-    """Inject touch/click gesture handlers for flashcard interaction."""
-    # Button label text we search for in the DOM to trigger clicks
-    reveal_label  = "\u2192"   # →
-    correct_label = "\u2713"   # ✓
-    repeat_label  = "?"
+def render_menu():
+    """Dropdown menu below header when open."""
+    if not st.session_state.menu_open:
+        return
+    st.markdown('<div class="menu-dropdown">', unsafe_allow_html=True)
 
-    js = f"""
-    <script>
-    (function() {{
-        var SWIPE_MIN = 50;   // px to count as a swipe
-        var startX, startY, startT;
-        var showAnswer = {"true" if show_answer else "false"};
+    # Theme
+    st.markdown('<div class="menu-section-label">Theme</div>', unsafe_allow_html=True)
+    new_theme = st.radio("Theme", options=["light", "dark", "aqua"],
+                         index=["light","dark","aqua"].index(st.session_state.theme),
+                         label_visibility="collapsed", key="theme_radio")
+    if new_theme != st.session_state.theme:
+        st.session_state.theme     = new_theme
+        st.session_state.menu_open = False
+        save_prefs({"theme": new_theme, "direction_mode": st.session_state.direction_mode})
+        st.rerun()
 
-        function findBtn(label) {{
-            var btns = window.parent.document.querySelectorAll('button');
-            for (var i = 0; i < btns.length; i++) {{
-                if (btns[i].innerText.trim() === label) return btns[i];
-            }}
-            return null;
-        }}
+    # Direction
+    st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Direction</div>',
+                unsafe_allow_html=True)
+    dir_options = ["Random 50/50", "EN → ES only", "ES → EN only"]
+    dir_keys    = ["random", "en_to_es", "es_to_en"]
+    cur_idx     = dir_keys.index(st.session_state.direction_mode)
+    new_dir     = st.radio("Direction", options=dir_options, index=cur_idx,
+                           label_visibility="collapsed", key="dir_radio")
+    if dir_options.index(new_dir) != cur_idx:
+        st.session_state.direction_mode = dir_keys[dir_options.index(new_dir)]
+        st.session_state.menu_open      = False
+        save_prefs({"theme": st.session_state.theme,
+                    "direction_mode": st.session_state.direction_mode})
+        st.rerun()
 
-        function clickBtn(label) {{
-            var btn = findBtn(label);
-            if (btn) btn.click();
-        }}
+    st.markdown('</div>', unsafe_allow_html=True)
 
-        var card = window.parent.document.querySelector('.fc-block');
-        if (!card) return;
 
-        // Tap = reveal answer (only when answer not yet shown)
-        card.addEventListener('click', function(e) {{
-            if (!showAnswer) {{
-                clickBtn("{reveal_label}");
-            }}
-        }});
-
-        // Touch swipe = correct / repeat (only when answer is shown)
-        card.addEventListener('touchstart', function(e) {{
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            startT = Date.now();
-        }}, {{passive: true}});
-
-        card.addEventListener('touchend', function(e) {{
-            if (!showAnswer) return;
-            var dx = e.changedTouches[0].clientX - startX;
-            var dy = e.changedTouches[0].clientY - startY;
-            var dt = Date.now() - startT;
-            if (Math.abs(dx) < SWIPE_MIN || Math.abs(dy) > Math.abs(dx)) return;
-            if (dt > 600) return;  // too slow
-            if (dx > 0) {{
-                clickBtn("{correct_label}");
-            }} else {{
-                clickBtn("{repeat_label}");
-            }}
-        }}, {{passive: true}});
-    }})();
-    </script>
-    """
-    components.html(js, height=0)
-
-def right_panel():
-    """Right column: hamburger menu (theme) at top, deck info always visible at bottom."""
-    st.markdown('<div class="right-panel"><div class="right-panel-inner">', unsafe_allow_html=True)
-
-    # --- Hamburger toggle ---
-    menu_icon = "✕" if st.session_state.menu_open else "☰"
-    with st.container(key="hamburger_wrap"):
-        if st.button(menu_icon, key="hamburger_btn"):
-            st.session_state.menu_open = not st.session_state.menu_open
-            st.rerun()
-
-    # --- Menu dropdown ---
-    if st.session_state.menu_open:
-        st.markdown('<div class="menu-dropdown">', unsafe_allow_html=True)
-        st.markdown('<div class="menu-section-label">Theme</div>', unsafe_allow_html=True)
-        new_theme = st.radio(
-            "Theme",
-            options=["light", "dark", "aqua"],
-            index=["light", "dark", "aqua"].index(st.session_state.theme),
-            label_visibility="collapsed",
-            key="theme_radio",
-        )
-        if new_theme != st.session_state.theme:
-            st.session_state.theme     = new_theme
-            st.session_state.menu_open = False
-            save_prefs({"theme": new_theme})
-            st.rerun()
-
-        st.markdown('<div class="menu-section-label" style="margin-top:1rem;">Direction</div>', unsafe_allow_html=True)
-        dir_options = ["Random 50/50", "EN → ES only", "ES → EN only"]
-        dir_keys    = ["random", "en_to_es", "es_to_en"]
-        cur_idx     = dir_keys.index(st.session_state.direction_mode)
-        new_dir     = st.radio(
-            "Direction",
-            options=dir_options,
-            index=cur_idx,
-            label_visibility="collapsed",
-            key="dir_radio",
-        )
-        if dir_options.index(new_dir) != cur_idx:
-            st.session_state.direction_mode = dir_keys[dir_options.index(new_dir)]
-            st.session_state.menu_open      = False
-            save_prefs({"theme": st.session_state.theme, "direction_mode": st.session_state.direction_mode})
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # --- Always-visible deck info ---
-    if st.session_state.selected_csv:
+def render_deck_strip():
+    """Small always-visible deck name + change button below menu."""
+    if not st.session_state.selected_csv:
+        return
+    deck_name = st.session_state.selected_csv.replace("_", " ").replace(".csv", "")
+    d_col, b_col = st.columns([3, 1])
+    with d_col:
         st.markdown(
-            f"<hr style='border:none;border-top:1px solid {t['divider']};margin:0.9rem 0;'>",
-            unsafe_allow_html=True,
-        )
-        st.markdown('<div class="panel-section-label">Deck</div>', unsafe_allow_html=True)
-        deck_name = st.session_state.selected_csv.replace("_", " ").replace(".csv", "")
-        st.markdown(f'<div class="deck-name">{deck_name}</div>', unsafe_allow_html=True)
+            '<div class="deck-strip">'
+            '<span class="deck-strip-label">Deck</span>'
+            '<span class="deck-strip-name">' + deck_name + '</span>'
+            '</div>', unsafe_allow_html=True)
+    with b_col:
         with st.container(key="changedeck_wrap"):
-            if st.button("← Change Deck", key="changedeck_btn"):
+            if st.button("← Deck", key="changedeck_btn"):
                 for k in ("selected_csv", "loaded_csv"):
                     st.session_state[k] = None
                 for k in ("cards", "order"):
@@ -745,23 +751,18 @@ def right_panel():
                 st.session_state.menu_open      = False
                 st.rerun()
 
-    st.markdown('</div></div>', unsafe_allow_html=True)
-
 # ========================================================================
 # FINAL EXIT
 # ========================================================================
 
 if st.session_state.final_exit:
-    main_col, panel_col = st.columns([3, 1])
-    with main_col:
-        title_bar()
-        st.markdown("""
-        <div class="title-block">
-          <div class="title-main">¡Buen trabajo!</div>
-          <div class="title-sub">Keep practicing every day</div>
-        </div>""", unsafe_allow_html=True)
-    with panel_col:
-        right_panel()
+    render_header()
+    render_menu()
+    st.markdown("""
+    <div class="title-block">
+      <div class="title-main">¡Buen trabajo!</div>
+      <div class="title-sub">Keep practicing every day</div>
+    </div>""", unsafe_allow_html=True)
     st.stop()
 
 # ========================================================================
@@ -769,24 +770,21 @@ if st.session_state.final_exit:
 # ========================================================================
 
 if st.session_state.selected_csv is None:
-    main_col, panel_col = st.columns([3, 1])
-    with main_col:
-        title_bar()
-        st.markdown("<hr class='soft-divider'>", unsafe_allow_html=True)
-        deck_options = ["-- Choose a deck --", *csv_files]
-        selected = st.selectbox("Available decks:", deck_options, index=0)
-        if selected != deck_options[0]:
-            st.session_state.selected_csv   = selected
-            st.session_state.cards          = []
-            st.session_state.order          = []
-            st.session_state.index          = 0
-            st.session_state.show_answer    = False
-            st.session_state.quit_requested = False
-            st.session_state.final_exit     = False
-            st.session_state.loaded_csv     = None
-            st.rerun()
-    with panel_col:
-        right_panel()
+    render_header()
+    render_menu()
+    st.markdown("<hr class='soft-divider'>", unsafe_allow_html=True)
+    deck_options = ["-- Choose a deck --", *csv_files]
+    selected = st.selectbox("Available decks:", deck_options, index=0)
+    if selected != deck_options[0]:
+        st.session_state.selected_csv   = selected
+        st.session_state.cards          = []
+        st.session_state.order          = []
+        st.session_state.index          = 0
+        st.session_state.show_answer    = False
+        st.session_state.quit_requested = False
+        st.session_state.final_exit     = False
+        st.session_state.loaded_csv     = None
+        st.rerun()
     st.stop()
 
 # ========================================================================
@@ -819,54 +817,47 @@ repeat_count  = sum(1 for c in st.session_state.cards if c["error_flag"] == 1)
 # ========================================================================
 
 if st.session_state.quit_requested:
-    main_col, panel_col = st.columns([3, 1])
-    with main_col:
-        title_bar()
-        st.markdown("<div class='summary-title'>Session Summary</div>", unsafe_allow_html=True)
+    render_header()
+    render_menu()
+    st.markdown("<div class='summary-title'>Session Summary</div>", unsafe_allow_html=True)
 
-        perfect_first_try = sum(
-            1 for c in st.session_state.cards
-            if c["shown"] and c["repeat_score"] == 0 and c["error_flag"] == 0
-        )
-        avg_rs = (
-            sum(c["repeat_score"] for c in st.session_state.cards if c["shown"]) / shown_cards
-        ) if shown_cards > 0 else 0
-        accuracy   = int(correct_count / shown_cards * 100) if shown_cards > 0 else 0
-        missed_pct = int(repeat_count  / shown_cards * 100) if shown_cards > 0 else 0
+    perfect_first_try = sum(1 for c in st.session_state.cards
+                            if c["shown"] and c["repeat_score"] == 0 and c["error_flag"] == 0)
+    avg_rs = (sum(c["repeat_score"] for c in st.session_state.cards if c["shown"]) / shown_cards
+              ) if shown_cards > 0 else 0
+    accuracy   = int(correct_count / shown_cards * 100) if shown_cards > 0 else 0
+    missed_pct = int(repeat_count  / shown_cards * 100) if shown_cards > 0 else 0
 
-        st.markdown(f"""
-        <div class="summary-grid">
-          <div class="sg-label">Cards Shown</div>      <div class="sg-value">{shown_cards}</div>
-          <div class="sg-label">Correct</div>           <div class="sg-value">{correct_count}</div>
-          <div class="sg-label">Repeat Needed</div>     <div class="sg-value">{repeat_count}</div>
-          <div class="sg-label">Perfect First Try</div> <div class="sg-value">{perfect_first_try}</div>
-          <div class="sg-label">Avg Repeat Score</div>  <div class="sg-value">{avg_rs:.2f}</div>
-          <div class="sg-label">Accuracy</div>          <div class="sg-value">{accuracy}%</div>
-          <div class="sg-label">Missed</div>            <div class="sg-value">{missed_pct}%</div>
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="summary-grid">
+      <div class="sg-label">Cards Shown</div>      <div class="sg-value">{shown_cards}</div>
+      <div class="sg-label">Correct</div>           <div class="sg-value">{correct_count}</div>
+      <div class="sg-label">Repeat Needed</div>     <div class="sg-value">{repeat_count}</div>
+      <div class="sg-label">Perfect First Try</div> <div class="sg-value">{perfect_first_try}</div>
+      <div class="sg-label">Avg Repeat Score</div>  <div class="sg-value">{avg_rs:.2f}</div>
+      <div class="sg-label">Accuracy</div>          <div class="sg-value">{accuracy}%</div>
+      <div class="sg-label">Missed</div>            <div class="sg-value">{missed_pct}%</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-        c1, c2 = st.columns(2)
-        with c1:
-            with st.container(key="quitnow_wrap"):
-                if st.button("Quit", key="quitnow_btn"):
-                    st.session_state.final_exit = True
-                    st.rerun()
-        with c2:
-            with st.container(key="newsession_wrap"):
-                if st.button("New Session", key="newsession_btn"):
-                    for k in ("selected_csv", "loaded_csv"):
-                        st.session_state[k] = None
-                    for k in ("cards", "order"):
-                        st.session_state[k] = []
-                    st.session_state.index          = 0
-                    st.session_state.show_answer    = False
-                    st.session_state.quit_requested = False
-                    st.session_state.final_exit     = False
-                    st.rerun()
-
-    with panel_col:
-        right_panel()
+    c1, c2 = st.columns(2)
+    with c1:
+        with st.container(key="quitnow_wrap"):
+            if st.button("Quit", key="quitnow_btn"):
+                st.session_state.final_exit = True
+                st.rerun()
+    with c2:
+        with st.container(key="newsession_wrap"):
+            if st.button("New Session", key="newsession_btn"):
+                for k in ("selected_csv", "loaded_csv"):
+                    st.session_state[k] = None
+                for k in ("cards", "order"):
+                    st.session_state[k] = []
+                st.session_state.index          = 0
+                st.session_state.show_answer    = False
+                st.session_state.quit_requested = False
+                st.session_state.final_exit     = False
+                st.rerun()
     st.stop()
 
 # ========================================================================
@@ -893,35 +884,32 @@ else:
     prompt, solution = card["answer"], card["word"]
 
 # ========================================================================
-# MAIN LAYOUT
+# MAIN FLASHCARD LAYOUT  (full width, no side column)
 # ========================================================================
 
-main_col, panel_col = st.columns([3, 1])
+render_header()
+render_menu()
+render_deck_strip()
+stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
+render_flashcard(prompt, solution, st.session_state.show_answer)
+inject_gestures(st.session_state.show_answer)
 
-with main_col:
-    title_bar()
-    stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
-    render_flashcard(prompt, solution, st.session_state.show_answer)
-    inject_gestures(st.session_state.show_answer)
-
-    if not st.session_state.show_answer:
-        colA, colB, _ = st.columns([0.14, 0.14, 0.72])
-        with colA:
-            with st.container(key="showanswer_wrap"):
-                st.button("→", key="showanswer_btn", on_click=reveal_answer)
-        with colB:
-            with st.container(key="quitbefore_wrap"):
-                if st.button("🛑", key="quitbefore_btn"):
-                    st.session_state.quit_requested = True
-                    st.rerun()
-    else:
-        col1, col2, _ = st.columns([0.14, 0.14, 0.72])
-        with col1:
-            with st.container(key="correct_wrap"):
-                st.button("✓", key="correct_btn", on_click=mark_correct)
-        with col2:
-            with st.container(key="repeat_wrap"):
-                st.button("?", key="repeat_btn", on_click=mark_repeat)
-
-with panel_col:
-    right_panel()
+# Buttons: always side by side in two equal columns
+if not st.session_state.show_answer:
+    colA, colB = st.columns(2)
+    with colA:
+        with st.container(key="showanswer_wrap"):
+            st.button("→", key="showanswer_btn", on_click=reveal_answer)
+    with colB:
+        with st.container(key="quitbefore_wrap"):
+            if st.button("🛑", key="quitbefore_btn"):
+                st.session_state.quit_requested = True
+                st.rerun()
+else:
+    col1, col2 = st.columns(2)
+    with col1:
+        with st.container(key="correct_wrap"):
+            st.button("✓", key="correct_btn", on_click=mark_correct)
+    with col2:
+        with st.container(key="repeat_wrap"):
+            st.button("?", key="repeat_btn", on_click=mark_repeat)
