@@ -339,7 +339,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     justify-content: center !important;
-    gap: 1rem !important;
+    gap: 0.6rem !important;
     width: 100% !important;
 }}
 .st-key-icon_btn_row_wrap [data-testid="stColumn"] {{
@@ -357,6 +357,31 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: 100% !important;
     min-height: 3.2rem !important;
     font-size: 1.3rem !important;
+}}
+
+/* ---- Centered summary button row ---- */
+.st-key-summary_btn_row_wrap [data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    gap: 0.6rem !important;
+    width: 100% !important;
+}}
+.st-key-summary_btn_row_wrap [data-testid="stColumn"] {{
+    flex: 0 1 10rem !important;
+    width: 10rem !important;
+    min-width: 0 !important;
+    max-width: 10rem !important;
+}}
+.st-key-summary_btn_row_wrap [data-testid="stColumn"] > div,
+.st-key-summary_btn_row_wrap div[data-testid="stButton"],
+.st-key-summary_btn_row_wrap div[data-testid="stButton"] > div {{
+    width: 100% !important;
+}}
+.st-key-summary_btn_row_wrap div[data-testid="stButton"] > button {{
+    width: 100% !important;
+    min-height: 3.2rem !important;
 }}
 
 /* ---- Header row ---- */
@@ -900,7 +925,7 @@ if st.session_state.quit_requested:
     </div>
     """, unsafe_allow_html=True)
 
-    with st.container(key="btn_row_wrap"):
+    with st.container(key="summary_btn_row_wrap"):
         c1, c2 = st.columns(2)
         with c1:
             with st.container(key="quitnow_wrap"):
