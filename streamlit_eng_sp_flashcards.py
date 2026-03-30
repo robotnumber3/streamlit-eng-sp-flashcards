@@ -339,22 +339,23 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     justify-content: center !important;
-    gap: 0.6rem !important;
-    width: 100% !important;
+    gap: 0.4rem !important;
+    width: fit-content !important;
+    margin: 0 auto !important;
 }}
 .st-key-icon_btn_row_wrap [data-testid="stColumn"] {{
-    flex: 0 0 5.8rem !important;
-    width: 5.8rem !important;
-    min-width: 5.8rem !important;
-    max-width: 5.8rem !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
 }}
 .st-key-icon_btn_row_wrap [data-testid="stColumn"] > div,
 .st-key-icon_btn_row_wrap div[data-testid="stButton"],
 .st-key-icon_btn_row_wrap div[data-testid="stButton"] > div {{
-    width: 100% !important;
+    width: auto !important;
 }}
 .st-key-icon_btn_row_wrap div[data-testid="stButton"] > button {{
-    width: 100% !important;
+    width: 5.4rem !important;
     min-height: 3.2rem !important;
     font-size: 1.3rem !important;
 }}
@@ -365,23 +366,32 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     justify-content: center !important;
-    gap: 0.6rem !important;
-    width: 100% !important;
+    gap: 0.4rem !important;
+    width: fit-content !important;
+    margin: 0 auto !important;
 }}
 .st-key-summary_btn_row_wrap [data-testid="stColumn"] {{
-    flex: 0 1 10rem !important;
-    width: 10rem !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
     min-width: 0 !important;
-    max-width: 10rem !important;
+    max-width: none !important;
 }}
 .st-key-summary_btn_row_wrap [data-testid="stColumn"] > div,
 .st-key-summary_btn_row_wrap div[data-testid="stButton"],
 .st-key-summary_btn_row_wrap div[data-testid="stButton"] > div {{
-    width: 100% !important;
+    width: auto !important;
 }}
 .st-key-summary_btn_row_wrap div[data-testid="stButton"] > button {{
-    width: 100% !important;
+    min-width: 0 !important;
     min-height: 3.2rem !important;
+    padding-left: 1.1rem !important;
+    padding-right: 1.1rem !important;
+}}
+.st-key-quitnow_wrap div[data-testid="stButton"] > button {{
+    width: 5.8rem !important;
+}}
+.st-key-newsession_wrap div[data-testid="stButton"] > button {{
+    width: 10.6rem !important;
 }}
 
 /* ---- Header row ---- */
