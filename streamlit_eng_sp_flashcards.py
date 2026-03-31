@@ -625,6 +625,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .soft-divider {{
     border: none; border-top: 1px solid {t['border']}; margin: 0.6rem 0;
 }}
+
+/* ---- Responsive deck picker ---- */
+.st-key-mobile_deck_picker_wrap {{
+    display: none;
+}}
+@media (max-width: 767px) {{
+    .st-key-desktop_deck_picker_wrap {{
+        display: none !important;
+    }}
+    .st-key-mobile_deck_picker_wrap {{
+        display: block !important;
+    }}
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -920,23 +933,8 @@ if st.session_state.selected_csv is None:
     render_header()
     render_menu()
     st.markdown("<hr class='soft-divider'>", unsafe_allow_html=True)
-    
-    # Detect if mobile via CSS media query
-    is_mobile = components.html("""
-    <script>
-    const isMobile = window.innerWidth < 768;
-    window.parent.postMessage({streamlit: {custom: {isMobile: isMobile}}}, "*");
-    </script>
-    """, height=0)
-    
-    # Use session state to track mobile detection (defaults to False on first load)
-    if "is_mobile_device" not in st.session_state:
-        st.session_state.is_mobile_device = False
-    
     deck_options = ["-- Choose a deck --", *csv_files]
-    
-    if st.session_state.is_mobile_device:
-        # Mobile: scrollable list of tight buttons
+    with st.container(key="mobile_deck_picker_wrap"):
         st.markdown("<div style='font-size: 0.95rem; color: " + t['fg'] + ";'>Available decks:</div>", unsafe_allow_html=True)
         deck_container = st.container(height=250)
         with deck_container:
@@ -952,8 +950,8 @@ if st.session_state.selected_csv is None:
                     st.session_state.final_exit     = False
                     st.session_state.loaded_csv     = None
                     st.rerun()
-    else:
-        # Desktop: standard selectbox
+
+    with st.container(key="desktop_deck_picker_wrap"):
         selected = st.selectbox(
             "Available decks:",
             deck_options,
