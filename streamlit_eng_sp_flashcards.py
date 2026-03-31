@@ -1,4 +1,4 @@
-# REV 22
+# REV 23
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -175,8 +175,6 @@ defaults = {
     "quit_requested": False,
     "final_exit":     False,
     "loaded_csv":     None,
-    "speak_text":     "",
-    "speak_request_id": 0,
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -339,6 +337,18 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {t['info_light']} !important;
     border-color: {t['info']} !important;
     color: {t['info']} !important;
+}}
+.speaker-html-btn {{
+    width: 5.4rem;
+    min-height: 3.2rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    border: 2px solid {t['info']};
+    background-color: {t['info_light']};
+    color: {t['info']};
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
 }}
 .st-key-mistakesonly_wrap div[data-testid="stButton"] > button:disabled {{
     background-color: rgba(128, 128, 128, 0.14) !important;
@@ -813,14 +823,6 @@ def strip_spoken_text(text):
     return spoken_text.strip()
 
 
-def queue_spanish_audio(text_to_speak):
-    clean_text = strip_spoken_text(text_to_speak)
-    if not clean_text:
-        return
-    st.session_state["speak_text"] = clean_text
-    st.session_state["speak_request_id"] += 1
-
-
 def render_flashcard(prompt, solution, show_answer):
     q_inner = format_word(prompt, 'fc-word', 'fc-note')
     q_html  = '<div class="fc-block"><div class="fc-section-label">Translate</div>' + q_inner + '</div>'
@@ -871,7 +873,7 @@ def inject_tap_reveal(show_answer):
     """, height=0)
 
 
-def inject_speech(text, request_id):
+def inject_speech_support(text):
     speech_rate_map = {
         1: 0.35,
         2: 0.55,
@@ -880,19 +882,17 @@ def inject_speech(text, request_id):
         5: 1.00,
     }
     speech_rate = speech_rate_map.get(st.session_state.speech_speed, 1.00)
+    speech_text = strip_spoken_text(text)
     components.html(
         f"""
         <script>
         (function() {{
-            var speechText = {json.dumps(text)};
-            var requestId = {request_id};
+            var speechText = {json.dumps(speech_text)};
             var speechRate = {speech_rate};
             var speechWindow = window.parent;
             var synth = speechWindow.speechSynthesis;
 
-            if (!synth || !speechText || requestId <= 0) return;
-            if (speechWindow._fcLastSpeechRequestId === requestId) return;
-            speechWindow._fcLastSpeechRequestId = requestId;
+            if (!synth || !speechText) return;
 
             function pickVoice(voices) {{
                 return voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
@@ -914,11 +914,27 @@ def inject_speech(text, request_id):
                 synth.speak(utterance);
             }}
 
-            if (synth.getVoices && synth.getVoices().length) {{
-                speakNow();
-            }} else {{
-                setTimeout(speakNow, 150);
-            }}
+            speechWindow.fcSpeakSpanish = function() {{
+                if (synth.getVoices && synth.getVoices().length) {{
+                    speakNow();
+                    return;
+                }}
+
+                var handled = false;
+                function handleVoicesChanged() {{
+                    if (handled) return;
+                    handled = true;
+                    speakNow();
+                }}
+
+                if (typeof synth.addEventListener === 'function') {{
+                    synth.addEventListener('voiceschanged', handleVoicesChanged, {{ once: true }});
+                }} else {{
+                    synth.onvoiceschanged = handleVoicesChanged;
+                }}
+
+                setTimeout(handleVoicesChanged, 250);
+            }};
         }})();
         </script>
         """,
@@ -1031,7 +1047,7 @@ def render_deck_strip():
         '</div>', unsafe_allow_html=True)
 
 
-def render_buttons(show_answer, spanish_audio_text):
+def render_buttons(show_answer):
     if not show_answer:
         with st.container(key="icon_btn_row_wrap"):
             col1, col2 = st.columns(2)
@@ -1055,7 +1071,10 @@ def render_buttons(show_answer, spanish_audio_text):
                 st.button("?", key="repeat_btn", on_click=mark_repeat)
         with col3:
             with st.container(key="speaker_wrap"):
-                st.button("🔊", key="speaker_btn", on_click=queue_spanish_audio, args=(spanish_audio_text,))
+                st.markdown(
+                    "<button class='speaker-html-btn' onclick='window.fcSpeakSpanish && window.fcSpeakSpanish()'>🔊</button>",
+                    unsafe_allow_html=True,
+                )
 
 
 def restart_mistakes_only():
@@ -1268,5 +1287,5 @@ render_deck_strip()
 stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_tap_reveal(st.session_state.show_answer)
-inject_speech(st.session_state["speak_text"], st.session_state["speak_request_id"])
-render_buttons(st.session_state.show_answer, spanish_text)
+inject_speech_support(spanish_text)
+render_buttons(st.session_state.show_answer)
