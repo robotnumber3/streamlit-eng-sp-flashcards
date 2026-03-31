@@ -646,6 +646,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         font-size: 0.82rem !important;
         font-weight: 500 !important;
         line-height: 1.0 !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
         border-radius: 0 !important;
         border: none !important;
         box-shadow: none !important;
