@@ -1,4 +1,4 @@
-# REV 28
+# REV 29
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -424,15 +424,25 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin: 0 auto !important;
 }}
 .st-key-answer_action_row_wrap [data-testid="stColumn"] {{
-    flex: 0 0 auto !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
+    display: contents !important;
 }}
 .st-key-answer_action_row_wrap [data-testid="stColumn"] > div,
 .st-key-answer_action_row_wrap div[data-testid="stButton"],
 .st-key-answer_action_row_wrap div[data-testid="stButton"] > div {{
     width: auto !important;
+}}
+.st-key-answer_action_row_wrap .st-key-speaker_wrap,
+.st-key-answer_action_row_wrap .st-key-speaker_wrap > div,
+.st-key-answer_action_row_wrap .st-key-speaker_wrap [data-testid="stElementContainer"] {{
+    width: auto !important;
+    min-width: 0 !important;
+}}
+.st-key-answer_action_row_wrap .st-key-speaker_wrap iframe {{
+    width: 4.3rem !important;
+    min-width: 4.3rem !important;
+    max-width: 4.3rem !important;
+    display: block !important;
+    margin: 0 !important;
 }}
 .st-key-answer_action_row_wrap div[data-testid="stButton"] > button {{
     width: 4.3rem !important;
@@ -1077,9 +1087,7 @@ def render_buttons(show_answer, spanish_audio_text):
         return
 
     with st.container(key="answer_action_row_wrap"):
-        left_spacer, col1, col2, col3, right_spacer = st.columns([1.4, 1, 1, 1, 1.4], gap="small")
-        with left_spacer:
-            st.empty()
+        col1, col2, col3 = st.columns(3, gap="small")
         with col1:
             with st.container(key="correct_wrap"):
                 st.button("✓", key="correct_btn", on_click=mark_correct)
@@ -1089,8 +1097,6 @@ def render_buttons(show_answer, spanish_audio_text):
         with col3:
             with st.container(key="speaker_wrap"):
                 render_speaker_button(spanish_audio_text)
-        with right_spacer:
-            st.empty()
 
 
 def restart_mistakes_only():
