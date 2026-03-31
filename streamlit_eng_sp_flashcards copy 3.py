@@ -1,4 +1,4 @@
-# REV 17
+# REV 16
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -843,11 +843,26 @@ def render_deck_strip():
     if not st.session_state.selected_csv:
         return
     deck_name = display_deck_name(st.session_state.selected_csv)
-    st.markdown(
-        '<div class="deck-strip">'
-        '<span class="deck-strip-label">Deck</span>'
-        '<span class="deck-strip-name">' + deck_name + '</span>'
-        '</div>', unsafe_allow_html=True)
+    d_col, b_col = st.columns([3, 1])
+    with d_col:
+        st.markdown(
+            '<div class="deck-strip">'
+            '<span class="deck-strip-label">Deck</span>'
+            '<span class="deck-strip-name">' + deck_name + '</span>'
+            '</div>', unsafe_allow_html=True)
+    with b_col:
+        with st.container(key="changedeck_wrap"):
+            if st.button("← Deck", key="changedeck_btn"):
+                for k in ("selected_csv", "loaded_csv"):
+                    st.session_state[k] = None
+                for k in ("cards", "order"):
+                    st.session_state[k] = []
+                st.session_state.index          = 0
+                st.session_state.show_answer    = False
+                st.session_state.quit_requested = False
+                st.session_state.final_exit     = False
+                st.session_state.menu_open      = False
+                st.rerun()
 
 
 def render_buttons(show_answer):
@@ -1006,7 +1021,7 @@ if st.session_state.quit_requested:
         with c1:
             with st.container(key="mistakesonly_wrap"):
                 st.button(
-                    "Mistakes",
+                    "Mistakes Only",
                     key="mistakesonly_btn",
                     on_click=restart_mistakes_only,
                     disabled=mistakes_only_disabled,
