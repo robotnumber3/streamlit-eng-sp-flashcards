@@ -1,4 +1,4 @@
-# REV 16
+# REV 15
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -959,14 +959,7 @@ if st.session_state.selected_csv is None:
 # ========================================================================
 
 if st.session_state.loaded_csv != st.session_state.selected_csv or not st.session_state.cards:
-    # Auto-detect delimiter (some files use ; others use ,)
-    csv_path = os.path.join(CSV_FOLDER, st.session_state.selected_csv)
-    with open(csv_path, 'r', encoding='utf-8') as _f:
-        _first = _f.readline()
-    _sep = ';' if ';' in _first else ','
-    df = pd.read_csv(csv_path, sep=_sep)
-    # Normalize column names (strip whitespace)
-    df.columns = [c.strip() for c in df.columns]
+    df = pd.read_csv(os.path.join(CSV_FOLDER, st.session_state.selected_csv))
     st.session_state.cards = [
         {"word": row["word"], "answer": row["answer"],
          "shown": False, "repeat_score": 1, "error_flag": 0}
