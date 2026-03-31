@@ -926,9 +926,7 @@ if st.session_state.selected_csv is None:
         deck_options,
         index=0,
         format_func=lambda value: value if value == "-- Choose a deck --" else display_deck_name(value),
-        disabled=True
     )
-    
     if selected != deck_options[0]:
         st.session_state.selected_csv   = selected
         st.session_state.cards          = []
