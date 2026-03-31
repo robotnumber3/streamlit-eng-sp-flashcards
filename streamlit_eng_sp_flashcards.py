@@ -1,4 +1,4 @@
-# REV 29
+# REV 30
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -419,7 +419,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-wrap: nowrap !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 0.2rem !important;
+    gap: 0.35rem !important;
     width: fit-content !important;
     margin: 0 auto !important;
 }}
@@ -442,7 +442,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-width: 4.3rem !important;
     max-width: 4.3rem !important;
     display: block !important;
-    margin: 0 !important;
+    margin: 0.12rem 0 0 0 !important;
 }}
 .st-key-answer_action_row_wrap div[data-testid="stButton"] > button {{
     width: 4.3rem !important;
@@ -904,6 +904,7 @@ def render_speaker_button(text):
             color: {t['info']};
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
+            margin-top: 0.12rem;
         }}
         </style>
         <button id="speak-btn" type="button">🔊</button>
