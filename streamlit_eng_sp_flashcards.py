@@ -1,4 +1,4 @@
-# REV 23
+# REV 24
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -337,18 +337,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {t['info_light']} !important;
     border-color: {t['info']} !important;
     color: {t['info']} !important;
-}}
-.speaker-html-btn {{
-    width: 5.4rem;
-    min-height: 3.2rem;
-    font-size: 1.3rem;
-    font-weight: 600;
-    border-radius: 0.75rem;
-    border: 2px solid {t['info']};
-    background-color: {t['info_light']};
-    color: {t['info']};
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
 }}
 .st-key-mistakesonly_wrap div[data-testid="stButton"] > button:disabled {{
     background-color: rgba(128, 128, 128, 0.14) !important;
@@ -873,7 +861,7 @@ def inject_tap_reveal(show_answer):
     """, height=0)
 
 
-def inject_speech_support(text):
+def speech_rate_value():
     speech_rate_map = {
         1: 0.35,
         2: 0.55,
@@ -881,18 +869,45 @@ def inject_speech_support(text):
         4: 0.90,
         5: 1.00,
     }
-    speech_rate = speech_rate_map.get(st.session_state.speech_speed, 1.00)
+    return speech_rate_map.get(st.session_state.speech_speed, 1.00)
+
+
+def render_speaker_button(text):
     speech_text = strip_spoken_text(text)
+    speech_rate = speech_rate_value()
     components.html(
         f"""
+        <style>
+        body {{
+            margin: 0;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 3.2rem;
+        }}
+        #speak-btn {{
+            width: 5.4rem;
+            min-height: 3.2rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-radius: 0.75rem;
+            border: 2px solid {t['info']};
+            background-color: {t['info_light']};
+            color: {t['info']};
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }}
+        </style>
+        <button id="speak-btn" type="button">🔊</button>
         <script>
         (function() {{
             var speechText = {json.dumps(speech_text)};
             var speechRate = {speech_rate};
-            var speechWindow = window.parent;
-            var synth = speechWindow.speechSynthesis;
+            var synth = window.speechSynthesis;
+            var button = document.getElementById('speak-btn');
 
-            if (!synth || !speechText) return;
+            if (!button || !synth || !speechText) return;
 
             function pickVoice(voices) {{
                 return voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
@@ -914,7 +929,8 @@ def inject_speech_support(text):
                 synth.speak(utterance);
             }}
 
-            speechWindow.fcSpeakSpanish = function() {{
+            function speakFromTap(event) {{
+                if (event) event.preventDefault();
                 if (synth.getVoices && synth.getVoices().length) {{
                     speakNow();
                     return;
@@ -934,11 +950,14 @@ def inject_speech_support(text):
                 }}
 
                 setTimeout(handleVoicesChanged, 250);
-            }};
+            }}
+
+            button.addEventListener('click', speakFromTap);
+            button.addEventListener('touchend', speakFromTap);
         }})();
         </script>
         """,
-        height=0,
+        height=60,
     )
 
 
@@ -1047,7 +1066,7 @@ def render_deck_strip():
         '</div>', unsafe_allow_html=True)
 
 
-def render_buttons(show_answer):
+def render_buttons(show_answer, spanish_audio_text):
     if not show_answer:
         with st.container(key="icon_btn_row_wrap"):
             col1, col2 = st.columns(2)
@@ -1071,10 +1090,7 @@ def render_buttons(show_answer):
                 st.button("?", key="repeat_btn", on_click=mark_repeat)
         with col3:
             with st.container(key="speaker_wrap"):
-                st.markdown(
-                    "<button class='speaker-html-btn' onclick='window.fcSpeakSpanish && window.fcSpeakSpanish()'>🔊</button>",
-                    unsafe_allow_html=True,
-                )
+                render_speaker_button(spanish_audio_text)
 
 
 def restart_mistakes_only():
@@ -1287,5 +1303,4 @@ render_deck_strip()
 stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_tap_reveal(st.session_state.show_answer)
-inject_speech_support(spanish_text)
-render_buttons(st.session_state.show_answer)
+render_buttons(st.session_state.show_answer, spanish_text)
