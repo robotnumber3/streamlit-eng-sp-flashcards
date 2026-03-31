@@ -1,4 +1,4 @@
-# REV 26
+# REV 28
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -419,7 +419,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-wrap: nowrap !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 0.35rem !important;
+    gap: 0.2rem !important;
     width: fit-content !important;
     margin: 0 auto !important;
 }}
@@ -435,7 +435,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: auto !important;
 }}
 .st-key-answer_action_row_wrap div[data-testid="stButton"] > button {{
-    width: 4.6rem !important;
+    width: 4.3rem !important;
     min-height: 3.2rem !important;
     font-size: 1.3rem !important;
 }}
@@ -884,7 +884,7 @@ def render_speaker_button(text):
             min-height: 3.2rem;
         }}
         #speak-btn {{
-            width: 4.6rem;
+            width: 4.3rem;
             min-height: 3.2rem;
             font-size: 1.3rem;
             font-weight: 600;
@@ -1077,7 +1077,9 @@ def render_buttons(show_answer, spanish_audio_text):
         return
 
     with st.container(key="answer_action_row_wrap"):
-        col1, col2, col3 = st.columns(3)
+        left_spacer, col1, col2, col3, right_spacer = st.columns([1.4, 1, 1, 1, 1.4], gap="small")
+        with left_spacer:
+            st.empty()
         with col1:
             with st.container(key="correct_wrap"):
                 st.button("✓", key="correct_btn", on_click=mark_correct)
@@ -1087,6 +1089,8 @@ def render_buttons(show_answer, spanish_audio_text):
         with col3:
             with st.container(key="speaker_wrap"):
                 render_speaker_button(spanish_audio_text)
+        with right_spacer:
+            st.empty()
 
 
 def restart_mistakes_only():
@@ -1248,7 +1252,7 @@ if st.session_state.quit_requested:
                 )
         with c2:
             with st.container(key="newsession_wrap"):
-                if st.button("New Session", key="newsession_btn"):
+                if st.button("New", key="newsession_btn"):
                     for k in ("selected_csv", "loaded_csv"):
                         st.session_state[k] = None
                     for k in ("cards", "order"):
