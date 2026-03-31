@@ -641,6 +641,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         margin-bottom: 0.05rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [data-testid="stButton"] > button {{
+        display: flex !important;
+        align-items: center !important;
         min-height: 1.75rem !important;
         padding: 0.05rem 0.45rem !important;
         font-size: 0.82rem !important;
@@ -651,6 +653,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         border-radius: 0 !important;
         border: none !important;
         box-shadow: none !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [data-testid="stButton"] > button > div,
+    .st-key-mobile_deck_picker_wrap [data-testid="stButton"] > button p {{
+        width: 100% !important;
+        margin: 0 !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
     }}
     .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] > * {{
         margin-bottom: 0 !important;
