@@ -1,4 +1,4 @@
-# REV 17
+# REV 19
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -920,25 +920,56 @@ if st.session_state.selected_csv is None:
     render_header()
     render_menu()
     st.markdown("<hr class='soft-divider'>", unsafe_allow_html=True)
-    deck_options = ["-- Choose a deck --", *csv_files]
-    selected = st.selectbox(
-        "Available decks:",
-        deck_options,
-        index=0,
-        format_func=lambda value: value if value == "-- Choose a deck --" else display_deck_name(value),
-        disabled=True
-    )
     
-    if selected != deck_options[0]:
-        st.session_state.selected_csv   = selected
-        st.session_state.cards          = []
-        st.session_state.order          = []
-        st.session_state.index          = 0
-        st.session_state.show_answer    = False
-        st.session_state.quit_requested = False
-        st.session_state.final_exit     = False
-        st.session_state.loaded_csv     = None
-        st.rerun()
+    # Detect if mobile via CSS media query
+    is_mobile = components.html("""
+    <script>
+    const isMobile = window.innerWidth < 768;
+    window.parent.postMessage({streamlit: {custom: {isMobile: isMobile}}}, "*");
+    </script>
+    """, height=0)
+    
+    # Use session state to track mobile detection (defaults to False on first load)
+    if "is_mobile_device" not in st.session_state:
+        st.session_state.is_mobile_device = False
+    
+    deck_options = ["-- Choose a deck --", *csv_files]
+    
+    if st.session_state.is_mobile_device:
+        # Mobile: scrollable list of tight buttons
+        st.markdown("<div style='font-size: 0.95rem; color: " + t['fg'] + ";'>Available decks:</div>", unsafe_allow_html=True)
+        deck_container = st.container(height=250)
+        with deck_container:
+            for csv_file in csv_files:
+                deck_display = display_deck_name(csv_file)
+                if st.button(deck_display, key=f"deck_btn_{csv_file}", use_container_width=True):
+                    st.session_state.selected_csv   = csv_file
+                    st.session_state.cards          = []
+                    st.session_state.order          = []
+                    st.session_state.index          = 0
+                    st.session_state.show_answer    = False
+                    st.session_state.quit_requested = False
+                    st.session_state.final_exit     = False
+                    st.session_state.loaded_csv     = None
+                    st.rerun()
+    else:
+        # Desktop: standard selectbox
+        selected = st.selectbox(
+            "Available decks:",
+            deck_options,
+            index=0,
+            format_func=lambda value: value if value == "-- Choose a deck --" else display_deck_name(value),
+        )
+        if selected != deck_options[0]:
+            st.session_state.selected_csv   = selected
+            st.session_state.cards          = []
+            st.session_state.order          = []
+            st.session_state.index          = 0
+            st.session_state.show_answer    = False
+            st.session_state.quit_requested = False
+            st.session_state.final_exit     = False
+            st.session_state.loaded_csv     = None
+            st.rerun()
     st.stop()
 
 # ========================================================================
