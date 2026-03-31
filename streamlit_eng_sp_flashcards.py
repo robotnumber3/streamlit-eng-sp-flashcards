@@ -1,4 +1,4 @@
-# REV 24
+# REV 26
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -419,7 +419,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-wrap: nowrap !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 0.8rem !important;
+    gap: 0.35rem !important;
     width: fit-content !important;
     margin: 0 auto !important;
 }}
@@ -434,11 +434,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-answer_action_row_wrap div[data-testid="stButton"] > div {{
     width: auto !important;
 }}
-.st-key-answer_action_row_wrap [data-testid="stColumn"]:nth-child(3) {{
-    margin-left: 3.6rem !important;
-}}
 .st-key-answer_action_row_wrap div[data-testid="stButton"] > button {{
-    width: 5.4rem !important;
+    width: 4.6rem !important;
     min-height: 3.2rem !important;
     font-size: 1.3rem !important;
 }}
@@ -449,7 +446,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     justify-content: center !important;
-    gap: 0.45rem !important;
+    gap: 0.25rem !important;
     width: fit-content !important;
     margin: 0 auto !important;
 }}
@@ -466,19 +463,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-summary_btn_row_wrap div[data-testid="stButton"] > button {{
     min-width: 0 !important;
-    min-height: 3.2rem !important;
-    font-size: 1.05rem !important;
-    padding-left: 0.8rem !important;
-    padding-right: 0.8rem !important;
+    min-height: 2.8rem !important;
+    font-size: 0.92rem !important;
+    padding-left: 0.55rem !important;
+    padding-right: 0.55rem !important;
 }}
 .st-key-quitnow_wrap div[data-testid="stButton"] > button {{
-    width: 4.9rem !important;
+    width: 4.0rem !important;
 }}
 .st-key-newsession_wrap div[data-testid="stButton"] > button {{
-    width: 8.4rem !important;
+    width: 6.8rem !important;
 }}
 .st-key-mistakesonly_wrap div[data-testid="stButton"] > button {{
-    width: 8.0rem !important;
+    width: 5.8rem !important;
 }}
 
 /* ---- Header row ---- */
@@ -863,10 +860,10 @@ def inject_tap_reveal(show_answer):
 
 def speech_rate_value():
     speech_rate_map = {
-        1: 0.35,
-        2: 0.55,
-        3: 0.75,
-        4: 0.90,
+        1: 0.20,
+        2: 0.40,
+        3: 0.60,
+        4: 0.80,
         5: 1.00,
     }
     return speech_rate_map.get(st.session_state.speech_speed, 1.00)
@@ -887,7 +884,7 @@ def render_speaker_button(text):
             min-height: 3.2rem;
         }}
         #speak-btn {{
-            width: 5.4rem;
+            width: 4.6rem;
             min-height: 3.2rem;
             font-size: 1.3rem;
             font-weight: 600;
@@ -988,7 +985,6 @@ def render_header():
             st.markdown(
                 "<div class='title-row'>"
                 "<span class='title-main'>Spanish Flashcards</span>"
-                "<span class='title-sub'>(David & Miguel)</span>"
                 "</div>",
                 unsafe_allow_html=True,
             )
@@ -1035,8 +1031,8 @@ def render_menu():
         1: "Very Slow",
         2: "Slow",
         3: "Medium",
-        4: "Medium Fast",
-        5: "Default",
+        4: "Fast",
+        5: "Very Fast",
     }
     new_speed = st.radio(
         "Speech Speed",
