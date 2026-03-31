@@ -637,6 +637,22 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-mobile_deck_picker_wrap {{
         display: block !important;
     }}
+    .st-key-mobile_deck_picker_wrap [data-testid="stButton"] {{
+        margin-bottom: 0.2rem !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [data-testid="stButton"] > button {{
+        min-height: 2.15rem !important;
+        padding: 0.2rem 0.6rem !important;
+        font-size: 0.9rem !important;
+        font-weight: 500 !important;
+        line-height: 1.1 !important;
+        border-radius: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] > * {{
+        margin-bottom: 0 !important;
+    }}
 }}
 </style>
 """, unsafe_allow_html=True)
