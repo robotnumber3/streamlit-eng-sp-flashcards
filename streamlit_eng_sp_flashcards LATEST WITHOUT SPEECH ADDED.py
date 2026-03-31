@@ -1,4 +1,4 @@
-# REV 22
+# REV 19
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -62,14 +62,6 @@ def save_prefs(prefs):
             json.dump(prefs, f)
     except Exception:
         pass
-
-
-def current_prefs():
-    return {
-        "theme": st.session_state.theme,
-        "direction_mode": st.session_state.direction_mode,
-        "speech_speed": st.session_state.speech_speed,
-    }
 
 # ------------------------------------------------------------------------
 # THEMES
@@ -163,7 +155,6 @@ defaults = {
     "theme":          prefs.get("theme", "dark"),
     "menu_open":      False,
     "direction_mode": prefs.get("direction_mode", "random"),
-    "speech_speed":   prefs.get("speech_speed", 5),
     "selected_csv":   None,
     "cards":          [],
     "order":          [],
@@ -175,8 +166,6 @@ defaults = {
     "quit_requested": False,
     "final_exit":     False,
     "loaded_csv":     None,
-    "speak_text":     "",
-    "speak_request_id": 0,
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -335,11 +324,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-color: {t['info']} !important;
     color: {t['info']} !important;
 }}
-.st-key-speaker_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['info_light']} !important;
-    border-color: {t['info']} !important;
-    color: {t['info']} !important;
-}}
 .st-key-mistakesonly_wrap div[data-testid="stButton"] > button:disabled {{
     background-color: rgba(128, 128, 128, 0.14) !important;
     border-color: rgba(128, 128, 128, 0.32) !important;
@@ -409,37 +393,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: auto !important;
 }}
 .st-key-icon_btn_row_wrap div[data-testid="stButton"] > button {{
-    width: 5.4rem !important;
-    min-height: 3.2rem !important;
-    font-size: 1.3rem !important;
-}}
-
-/* ---- Revealed answer action row ---- */
-.st-key-answer_action_row_wrap [data-testid="stHorizontalBlock"] {{
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 0.8rem !important;
-    width: fit-content !important;
-    margin: 0 auto !important;
-}}
-.st-key-answer_action_row_wrap [data-testid="stColumn"] {{
-    flex: 0 0 auto !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-}}
-.st-key-answer_action_row_wrap [data-testid="stColumn"] > div,
-.st-key-answer_action_row_wrap div[data-testid="stButton"],
-.st-key-answer_action_row_wrap div[data-testid="stButton"] > div {{
-    width: auto !important;
-}}
-.st-key-answer_action_row_wrap [data-testid="stColumn"]:nth-child(3) {{
-    margin-left: 3.6rem !important;
-}}
-.st-key-answer_action_row_wrap div[data-testid="stButton"] > button {{
     width: 5.4rem !important;
     min-height: 3.2rem !important;
     font-size: 1.3rem !important;
@@ -805,22 +758,6 @@ def format_word(text, word_class, note_class):
     return '<div class="' + word_class + '">' + text + '</div>'
 
 
-def strip_spoken_text(text):
-    import re
-
-    spoken_text = re.sub(r'\[.*?\]|\(.*?\)', '', text)
-    spoken_text = re.sub(r'\s+', ' ', spoken_text)
-    return spoken_text.strip()
-
-
-def queue_spanish_audio(text_to_speak):
-    clean_text = strip_spoken_text(text_to_speak)
-    if not clean_text:
-        return
-    st.session_state["speak_text"] = clean_text
-    st.session_state["speak_request_id"] += 1
-
-
 def render_flashcard(prompt, solution, show_answer):
     q_inner = format_word(prompt, 'fc-word', 'fc-note')
     q_html  = '<div class="fc-block"><div class="fc-section-label">Translate</div>' + q_inner + '</div>'
@@ -869,61 +806,6 @@ def inject_tap_reveal(show_answer):
     })();
     </script>
     """, height=0)
-
-
-def inject_speech(text, request_id):
-    speech_rate_map = {
-        1: 0.35,
-        2: 0.55,
-        3: 0.75,
-        4: 0.90,
-        5: 1.00,
-    }
-    speech_rate = speech_rate_map.get(st.session_state.speech_speed, 1.00)
-    components.html(
-        f"""
-        <script>
-        (function() {{
-            var speechText = {json.dumps(text)};
-            var requestId = {request_id};
-            var speechRate = {speech_rate};
-            var speechWindow = window.parent;
-            var synth = speechWindow.speechSynthesis;
-
-            if (!synth || !speechText || requestId <= 0) return;
-            if (speechWindow._fcLastSpeechRequestId === requestId) return;
-            speechWindow._fcLastSpeechRequestId = requestId;
-
-            function pickVoice(voices) {{
-                return voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
-                    || voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
-                    || voices.find(function(voice) {{ return voice.lang && voice.lang.toLowerCase().startsWith('es'); }})
-                    || null;
-            }}
-
-            function speakNow() {{
-                var utterance = new SpeechSynthesisUtterance(speechText);
-                var voices = synth.getVoices ? synth.getVoices() : [];
-                var voice = pickVoice(voices);
-
-                utterance.lang = voice ? voice.lang : 'es-ES';
-                utterance.rate = speechRate;
-                if (voice) utterance.voice = voice;
-
-                synth.cancel();
-                synth.speak(utterance);
-            }}
-
-            if (synth.getVoices && synth.getVoices().length) {{
-                speakNow();
-            }} else {{
-                setTimeout(speakNow, 150);
-            }}
-        }})();
-        </script>
-        """,
-        height=0,
-    )
 
 
 def stats_card_html(shown, total, correct, repeat):
@@ -979,7 +861,7 @@ def render_menu():
     if new_theme != st.session_state.theme:
         st.session_state.theme     = new_theme
         st.session_state.menu_open = False
-        save_prefs(current_prefs())
+        save_prefs({"theme": new_theme, "direction_mode": st.session_state.direction_mode})
         st.rerun()
     st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Direction</div>',
                 unsafe_allow_html=True)
@@ -991,31 +873,8 @@ def render_menu():
     if dir_options.index(new_dir) != cur_idx:
         st.session_state.direction_mode = dir_keys[dir_options.index(new_dir)]
         st.session_state.menu_open      = False
-        save_prefs(current_prefs())
-        st.rerun()
-    st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Speech Speed</div>',
-                unsafe_allow_html=True)
-    speed_options = [1, 2, 3, 4, 5]
-    speed_labels = {
-        1: "Very Slow",
-        2: "Slow",
-        3: "Medium",
-        4: "Medium Fast",
-        5: "Default",
-    }
-    new_speed = st.radio(
-        "Speech Speed",
-        options=speed_options,
-        index=speed_options.index(st.session_state.speech_speed),
-        format_func=lambda value: speed_labels[value],
-        horizontal=True,
-        label_visibility="collapsed",
-        key="speech_speed_radio",
-    )
-    if new_speed != st.session_state.speech_speed:
-        st.session_state.speech_speed = new_speed
-        st.session_state.menu_open = False
-        save_prefs(current_prefs())
+        save_prefs({"theme": st.session_state.theme,
+                    "direction_mode": st.session_state.direction_mode})
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1031,9 +890,9 @@ def render_deck_strip():
         '</div>', unsafe_allow_html=True)
 
 
-def render_buttons(show_answer, spanish_audio_text):
-    if not show_answer:
-        with st.container(key="icon_btn_row_wrap"):
+def render_buttons(show_answer):
+    with st.container(key="icon_btn_row_wrap"):
+        if not show_answer:
             col1, col2 = st.columns(2)
             with col1:
                 with st.container(key="showanswer_wrap"):
@@ -1043,19 +902,14 @@ def render_buttons(show_answer, spanish_audio_text):
                     if st.button("🛑", key="quitbefore_btn"):
                         st.session_state.quit_requested = True
                         st.rerun()
-        return
-
-    with st.container(key="answer_action_row_wrap"):
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            with st.container(key="correct_wrap"):
-                st.button("✓", key="correct_btn", on_click=mark_correct)
-        with col2:
-            with st.container(key="repeat_wrap"):
-                st.button("?", key="repeat_btn", on_click=mark_repeat)
-        with col3:
-            with st.container(key="speaker_wrap"):
-                st.button("🔊", key="speaker_btn", on_click=queue_spanish_audio, args=(spanish_audio_text,))
+        else:
+            col1, col2 = st.columns(2)
+            with col1:
+                with st.container(key="correct_wrap"):
+                    st.button("✓", key="correct_btn", on_click=mark_correct)
+            with col2:
+                with st.container(key="repeat_wrap"):
+                    st.button("?", key="repeat_btn", on_click=mark_repeat)
 
 
 def restart_mistakes_only():
@@ -1256,8 +1110,6 @@ if st.session_state.direction == "EN_TO_ES":
 else:
     prompt, solution = card["answer"], card["word"]
 
-spanish_text = solution if st.session_state.direction == "EN_TO_ES" else prompt
-
 # ========================================================================
 # MAIN LAYOUT
 # ========================================================================
@@ -1268,5 +1120,4 @@ render_deck_strip()
 stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_tap_reveal(st.session_state.show_answer)
-inject_speech(st.session_state["speak_text"], st.session_state["speak_request_id"])
-render_buttons(st.session_state.show_answer, spanish_text)
+render_buttons(st.session_state.show_answer)
