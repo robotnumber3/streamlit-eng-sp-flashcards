@@ -1,4 +1,4 @@
-# REV 53
+# REV 54
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -540,15 +540,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {BUTTON_COLORS['green']['bg']} !important;
     border-color: {BUTTON_COLORS['green']['border']} !important;
     color: {BUTTON_COLORS['green']['fg']} !important;
-    font-size: 1.5rem !important;
-    font-weight: 700 !important;
+    font-size: 1.35rem !important;
+    font-weight: 600 !important;
 }}
 .st-key-showanswer_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
 .st-key-showanswer_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
 .st-key-showanswer_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
 .st-key-showanswer_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
-    font-size: 1.55rem !important;
-    font-weight: 700 !important;
+    font-size: 1.38rem !important;
+    font-weight: 600 !important;
     line-height: 1 !important;
 }}
 /* ---- Correct ✓ ---- */
@@ -1576,7 +1576,7 @@ def render_buttons(show_answer, spanish_audio_text):
             col1, col2 = st.columns(2)
             with col1:
                 with st.container(key="showanswer_wrap"):
-                    st.button("➜", key="showanswer_btn", on_click=reveal_answer)
+                    st.button("→", key="showanswer_btn", on_click=reveal_answer)
             with col2:
                 with st.container(key="quitbefore_wrap"):
                     if st.button("🛑", key="quitbefore_btn"):
@@ -1751,6 +1751,8 @@ if st.session_state.quit_requested:
               ) if shown_cards > 0 else 0
     accuracy   = int(correct_count / shown_cards * 100) if shown_cards > 0 else 0
     missed_pct = int(repeat_count  / shown_cards * 100) if shown_cards > 0 else 0
+        current_user_label = PERSON_LABELS[st.session_state.active_person]
+        current_review_cards = review_count_for(st.session_state.active_person)
 
     st.markdown(f"""
     <div class="summary-grid">
@@ -1761,16 +1763,9 @@ if st.session_state.quit_requested:
       <div class="sg-label">Avg Repeat Score</div>  <div class="sg-value">{avg_rs:.2f}</div>
       <div class="sg-label">Accuracy</div>          <div class="sg-value">{accuracy}%</div>
       <div class="sg-label">Missed</div>            <div class="sg-value">{missed_pct}%</div>
+      <div class="sg-label">REVIEW deck ({current_user_label} cards)</div> <div class="sg-value">{current_review_cards}</div>
     </div>
     """, unsafe_allow_html=True)
-    st.markdown(
-        f"<div class='summary-review-line'>{review_deck_label('miguel')}: {review_count_for('miguel')} cards</div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        f"<div class='summary-review-line'>{review_deck_label('david')}: {review_count_for('david')} cards</div>",
-        unsafe_allow_html=True,
-    )
 
     mistakes_only_disabled = repeat_count == 0
 
