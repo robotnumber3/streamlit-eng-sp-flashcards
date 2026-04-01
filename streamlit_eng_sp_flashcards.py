@@ -1,4 +1,4 @@
-# REV 44
+# REV 45
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -235,6 +235,33 @@ THEMES = {
         "dropdown_bg":   "#0d2a2a",
         "dropdown_fg":   "#d4f0ee",
         "dropdown_hover":"#143535",
+    },
+    "amber": {
+        "bg":            "#120d08",
+        "fg":            "#ffd78a",
+        "card_bg":       "#24180f",
+        "card_fg":       "#ffe7b8",
+        "accent":        "#ffb347",
+        "accent_light":  "#3a2411",
+        "info":          "#ffc94d",
+        "info_light":    "#3a2b0e",
+        "warn":          "#ffd966",
+        "warn_light":    "#42320d",
+        "danger":        "#ff7a45",
+        "danger_light":  "#3d1710",
+        "border":        "#4a3420",
+        "divider":       "#4a3420",
+        "muted":         "#c89d58",
+        "btn_show_bg":   "#3a2411",
+        "btn_show_fg":   "#ffcf70",
+        "btn_show_bd":   "#ffb347",
+        "panel_label":   "#b78643",
+        "review":        "#ffb85c",
+        "review_light":  "#38200d",
+        "menu_bg":       "#1d140d",
+        "dropdown_bg":   "#1d140d",
+        "dropdown_fg":   "#ffe7b8",
+        "dropdown_hover":"#2c1d11",
     },
 }
 
@@ -1409,8 +1436,8 @@ def render_menu():
     active_person_label = PERSON_LABELS[st.session_state.active_person]
     st.markdown('<div class="menu-dropdown">', unsafe_allow_html=True)
     st.markdown('<div class="menu-section-label">Theme</div>', unsafe_allow_html=True)
-    new_theme = st.radio("Theme", options=["light", "dark", "aqua"],
-                         index=["light","dark","aqua"].index(st.session_state.theme),
+    new_theme = st.radio("Theme", options=["light", "dark", "aqua", "amber"],
+                         index=["light","dark","aqua", "amber"].index(st.session_state.theme),
                          label_visibility="collapsed", key="theme_radio")
     if new_theme != st.session_state.theme:
         st.session_state.theme     = new_theme
