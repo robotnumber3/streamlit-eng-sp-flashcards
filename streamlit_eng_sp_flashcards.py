@@ -1,4 +1,4 @@
-# REV 46
+# REV 47
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -35,10 +35,10 @@ REVIEW_DECK_VALUES = {
 REVIEW_DECK_ORDER = [REVIEW_DECK_VALUES["miguel"], REVIEW_DECK_VALUES["david"]]
 
 BUTTON_COLORS = {
-    "green": {"bg": "#c8f0d8", "border": "#2e8b57", "fg": "#1a6b38"},
-    "yellow": {"bg": "#fdf0c0", "border": "#b8860b", "fg": "#8a6400"},
-    "blue": {"bg": "#d7e5ff", "border": "#2f6fdf", "fg": "#1f57b6"},
-    "red": {"bg": "#f8d8d8", "border": "#c23b22", "fg": "#a01818"},
+    "green": {"bg": "#c8f0d8", "border": "#2e8b57", "fg": "#0f4f29"},
+    "yellow": {"bg": "#fdf0c0", "border": "#b8860b", "fg": "#6a4b00"},
+    "blue": {"bg": "#d7e5ff", "border": "#2f6fdf", "fg": "#17479a"},
+    "red": {"bg": "#f8d8d8", "border": "#c23b22", "fg": "#7f1717"},
 }
 
 csv_files = [f for f in os.listdir(CSV_FOLDER) if f.endswith(".csv")]
@@ -499,6 +499,11 @@ div[data-testid="stButton"] > button {{
     background-color: {t['bg']} !important;
     color: {t['fg']} !important;
     border-color: {t['border']} !important;
+}}
+div[data-testid="stButton"] > button > div,
+div[data-testid="stButton"] > button p,
+div[data-testid="stButton"] > button span {{
+    color: inherit !important;
 }}
 div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 
