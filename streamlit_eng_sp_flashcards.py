@@ -1,4 +1,4 @@
-# REV 43
+# REV 44
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -796,16 +796,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-erase_review_confirm_wrap {{
     margin-top: 0.95rem !important;
 }}
+.st-key-clear_erase_review_confirm_wrap {{
+    display: none !important;
+}}
 .st-key-erase_review_wrap div[data-testid="stButton"] > button,
 .st-key-erase_review_confirm_wrap div[data-testid="stButton"] > button {{
     min-height: 2.65rem !important;
     font-size: 0.95rem !important;
     font-weight: 700 !important;
-}}
-.st-key-erase_review_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['danger_light']} !important;
-    border-color: {t['danger']} !important;
-    color: {t['danger']} !important;
 }}
 .st-key-erase_review_confirm_wrap div[data-testid="stButton"] > button {{
     background-color: {t['danger']} !important;
@@ -1077,6 +1075,42 @@ def render_delete_confirm_timeout():
             function clickClearButton() {
                 var doc = window.parent.document;
                 var button = doc.querySelector('.st-key-clear_delete_confirm_wrap button');
+                if (!button) {
+                    return false;
+                }
+                button.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+                return true;
+            }
+
+            setTimeout(function() {
+                if (clickClearButton()) return;
+                var attempts = 0;
+                var timer = setInterval(function() {
+                    attempts += 1;
+                    if (clickClearButton() || attempts >= 10) {
+                        clearInterval(timer);
+                    }
+                }, 150);
+            }, 2000);
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def clear_erase_review_confirm():
+    st.session_state.erase_review_confirm = False
+
+
+def render_erase_review_confirm_timeout():
+    components.html(
+        """
+        <script>
+        (function() {
+            function clickClearButton() {
+                var doc = window.parent.document;
+                var button = doc.querySelector('.st-key-clear_erase_review_confirm_wrap button');
                 if (!button) {
                     return false;
                 }
@@ -1424,11 +1458,10 @@ def render_menu():
         st.rerun()
     if active_review_count > 0:
         erase_label = f"Erase Review Deck ({active_person_label})"
-        confirm_label = f"Confirm Erase Review Deck ({active_person_label})"
         erase_wrap_key = "erase_review_confirm_wrap" if st.session_state.erase_review_confirm else "erase_review_wrap"
         with st.container(key=erase_wrap_key):
             if st.button(
-                confirm_label if st.session_state.erase_review_confirm else erase_label,
+                erase_label,
                 key="erase_review_btn",
             ):
                 if st.session_state.erase_review_confirm:
@@ -1436,6 +1469,10 @@ def render_menu():
                 else:
                     st.session_state.erase_review_confirm = True
                 st.rerun()
+        if st.session_state.erase_review_confirm:
+            with st.container(key="clear_erase_review_confirm_wrap"):
+                st.button("__clear_erase_review_confirm__", key="clear_erase_review_confirm_btn", on_click=clear_erase_review_confirm)
+            render_erase_review_confirm_timeout()
     st.markdown('</div>', unsafe_allow_html=True)
 
 
