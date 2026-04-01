@@ -388,7 +388,6 @@ def sync_menu_widget_state():
     st.session_state.theme_radio = st.session_state.theme
     st.session_state.dir_radio = direction_labels[st.session_state.direction_mode]
     st.session_state.speech_speed_radio = st.session_state.speech_speed
-    st.session_state.person_radio = st.session_state.active_person
 
 
 def store_active_person_prefs():
