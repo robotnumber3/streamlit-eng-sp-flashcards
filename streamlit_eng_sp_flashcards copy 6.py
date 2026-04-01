@@ -1,4 +1,4 @@
-# REV 51
+# REV 50
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -541,15 +541,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-color: {BUTTON_COLORS['green']['border']} !important;
     color: {BUTTON_COLORS['green']['fg']} !important;
     font-size: 1.5rem !important;
-    font-weight: 800 !important;
-}}
-.st-key-showanswer_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
-.st-key-showanswer_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
-.st-key-showanswer_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
-.st-key-showanswer_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
-    font-size: 1.7rem !important;
-    font-weight: 800 !important;
-    line-height: 1 !important;
 }}
 /* ---- Correct ✓ ---- */
 .st-key-correct_wrap div[data-testid="stButton"] > button {{
