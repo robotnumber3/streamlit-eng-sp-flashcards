@@ -1,4 +1,4 @@
-# REV 45
+# REV 46
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -33,6 +33,13 @@ REVIEW_DECK_VALUES = {
     for person in PERSON_LABELS
 }
 REVIEW_DECK_ORDER = [REVIEW_DECK_VALUES["miguel"], REVIEW_DECK_VALUES["david"]]
+
+BUTTON_COLORS = {
+    "green": {"bg": "#c8f0d8", "border": "#2e8b57", "fg": "#1a6b38"},
+    "yellow": {"bg": "#fdf0c0", "border": "#b8860b", "fg": "#8a6400"},
+    "blue": {"bg": "#d7e5ff", "border": "#2f6fdf", "fg": "#1f57b6"},
+    "red": {"bg": "#f8d8d8", "border": "#c23b22", "fg": "#a01818"},
+}
 
 csv_files = [f for f in os.listdir(CSV_FOLDER) if f.endswith(".csv")]
 csv_files.sort(key=str.lower)
@@ -517,51 +524,51 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 
 /* ---- Show answer → ---- */
 .st-key-showanswer_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['btn_show_bg']} !important;
-    border-color: {t['btn_show_bd']} !important;
-    color: {t['btn_show_fg']} !important;
+    background-color: {BUTTON_COLORS['green']['bg']} !important;
+    border-color: {BUTTON_COLORS['green']['border']} !important;
+    color: {BUTTON_COLORS['green']['fg']} !important;
     font-size: 1.5rem !important;
 }}
 /* ---- Correct ✓ ---- */
 .st-key-correct_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['accent_light']} !important;
-    border-color: {t['accent']} !important;
-    color: {t['accent']} !important;
+    background-color: {BUTTON_COLORS['green']['bg']} !important;
+    border-color: {BUTTON_COLORS['green']['border']} !important;
+    color: {BUTTON_COLORS['green']['fg']} !important;
 }}
 /* ---- Repeat ? ---- */
 .st-key-repeat_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['warn_light']} !important;
-    border-color: {t['warn']} !important;
-    color: {t['warn']} !important;
+    background-color: {BUTTON_COLORS['yellow']['bg']} !important;
+    border-color: {BUTTON_COLORS['yellow']['border']} !important;
+    color: {BUTTON_COLORS['yellow']['fg']} !important;
 }}
 /* ---- Quit before 🛑 ---- */
 .st-key-quitbefore_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['danger_light']} !important;
-    border-color: {t['danger']} !important;
-    color: {t['danger']} !important;
+    background-color: {BUTTON_COLORS['red']['bg']} !important;
+    border-color: {BUTTON_COLORS['red']['border']} !important;
+    color: {BUTTON_COLORS['red']['fg']} !important;
 }}
 /* ---- Quit ---- */
 .st-key-quitnow_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['danger_light']} !important;
-    border-color: {t['danger']} !important;
-    color: {t['danger']} !important;
+    background-color: {BUTTON_COLORS['red']['bg']} !important;
+    border-color: {BUTTON_COLORS['red']['border']} !important;
+    color: {BUTTON_COLORS['red']['fg']} !important;
 }}
 /* ---- New Session ---- */
 .st-key-newsession_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['accent_light']} !important;
-    border-color: {t['accent']} !important;
-    color: {t['accent']} !important;
+    background-color: {BUTTON_COLORS['green']['bg']} !important;
+    border-color: {BUTTON_COLORS['green']['border']} !important;
+    color: {BUTTON_COLORS['green']['fg']} !important;
 }}
 /* ---- Mistakes Only ---- */
 .st-key-mistakesonly_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['info_light']} !important;
-    border-color: {t['info']} !important;
-    color: {t['info']} !important;
+    background-color: {BUTTON_COLORS['blue']['bg']} !important;
+    border-color: {BUTTON_COLORS['blue']['border']} !important;
+    color: {BUTTON_COLORS['blue']['fg']} !important;
 }}
 .st-key-speaker_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['info_light']} !important;
-    border-color: {t['info']} !important;
-    color: {t['info']} !important;
+    background-color: {BUTTON_COLORS['blue']['bg']} !important;
+    border-color: {BUTTON_COLORS['blue']['border']} !important;
+    color: {BUTTON_COLORS['blue']['fg']} !important;
 }}
 .st-key-del_active_wrap div[data-testid="stButton"] > button {{
     background-color: {t['review_light']} !important;
