@@ -1,4 +1,4 @@
-# REV 47
+# REV 48
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -504,6 +504,14 @@ div[data-testid="stButton"] > button > div,
 div[data-testid="stButton"] > button p,
 div[data-testid="stButton"] > button span {{
     color: inherit !important;
+}}
+div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
+div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
+div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+    opacity: 1 !important;
 }}
 div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 
