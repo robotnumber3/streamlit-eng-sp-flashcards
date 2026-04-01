@@ -398,6 +398,13 @@ def store_active_person_prefs():
     }
 
 
+def close_menu_and_save():
+    store_active_person_prefs()
+    save_prefs(current_prefs())
+    st.session_state.menu_open = False
+    st.session_state.erase_review_confirm = False
+
+
 def apply_person_prefs(person):
     person_prefs = sanitize_person_prefs(
         st.session_state.person_settings.get(person, {}),
@@ -1570,9 +1577,10 @@ def render_header():
         with ham_col:
             with st.container(key="hamburger_wrap"):
                 if st.button(menu_icon, key="hamburger_btn"):
-                    st.session_state.menu_open = not st.session_state.menu_open
-                    if not st.session_state.menu_open:
-                        st.session_state.erase_review_confirm = False
+                    if st.session_state.menu_open:
+                        close_menu_and_save()
+                    else:
+                        st.session_state.menu_open = True
                     st.rerun()
     with st.container(key="person_radio_wrap"):
         selected_person = st.radio(
@@ -1613,9 +1621,7 @@ def render_menu():
     if new_theme != st.session_state.theme:
         st.session_state.theme     = new_theme
         store_active_person_prefs()
-        st.session_state.menu_open = False
         st.session_state.erase_review_confirm = False
-        save_prefs(current_prefs())
         st.rerun()
     st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Direction</div>',
                 unsafe_allow_html=True)
@@ -1628,9 +1634,7 @@ def render_menu():
         st.session_state.direction_mode = dir_keys[dir_options.index(new_dir)]
         st.session_state.direction = direction_for_mode(st.session_state.direction_mode)
         store_active_person_prefs()
-        st.session_state.menu_open      = False
         st.session_state.erase_review_confirm = False
-        save_prefs(current_prefs())
         st.rerun()
     st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Speech Speed</div>',
                 unsafe_allow_html=True)
@@ -1654,9 +1658,7 @@ def render_menu():
     if new_speed != st.session_state.speech_speed:
         st.session_state.speech_speed = new_speed
         store_active_person_prefs()
-        st.session_state.menu_open = False
         st.session_state.erase_review_confirm = False
-        save_prefs(current_prefs())
         st.rerun()
     if active_review_count > 0:
         erase_label = f"Erase Review Deck ({active_person_label})"
