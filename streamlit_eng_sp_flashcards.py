@@ -1,4 +1,4 @@
-# REV 54
+# REV 55
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -1751,8 +1751,8 @@ if st.session_state.quit_requested:
               ) if shown_cards > 0 else 0
     accuracy   = int(correct_count / shown_cards * 100) if shown_cards > 0 else 0
     missed_pct = int(repeat_count  / shown_cards * 100) if shown_cards > 0 else 0
-        current_user_label = PERSON_LABELS[st.session_state.active_person]
-        current_review_cards = review_count_for(st.session_state.active_person)
+    current_user_label = PERSON_LABELS[st.session_state.active_person]
+    current_review_cards = review_count_for(st.session_state.active_person)
 
     st.markdown(f"""
     <div class="summary-grid">
