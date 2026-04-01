@@ -1291,24 +1291,14 @@ def inject_tap_reveal(show_answer):
     <script>
     (function() {
         var showAnswer = """ + show_str + """;
-        function clickShowAnswerButton() {
-            var doc = window.parent.document;
-            var showBtn = doc.querySelector('.st-key-showanswer_wrap button');
-            if (showBtn) {
-                showBtn.dispatchEvent(new MouseEvent('click', {bubbles:true}));
-                return true;
-            }
-
-            var btns = doc.querySelectorAll('button');
-            var labels = ['\u279c', '\u2192'];
+        function clickBtn(label) {
+            var btns = window.parent.document.querySelectorAll('button');
             for (var i = 0; i < btns.length; i++) {
-                if (labels.indexOf(btns[i].innerText.trim()) !== -1) {
+                if (btns[i].innerText.trim() === label) {
                     btns[i].dispatchEvent(new MouseEvent('click', {bubbles:true}));
-                    return true;
+                    return;
                 }
             }
-
-            return false;
         }
         function attach() {
             var doc = window.parent.document;
@@ -1317,7 +1307,7 @@ def inject_tap_reveal(show_answer):
             if (doc._fcHandler) doc.body.removeEventListener('click', doc._fcHandler);
             doc._fcHandler = function(e) {
                 if (!e.target.closest('.fc-block')) return;
-                if (!showAnswer) clickShowAnswerButton();
+                if (!showAnswer) clickBtn('\u2192');
             };
             doc.body.addEventListener('click', doc._fcHandler);
             return true;
