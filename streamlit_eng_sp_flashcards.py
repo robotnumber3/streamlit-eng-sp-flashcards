@@ -1,4 +1,4 @@
-# REV 51
+# REV 52
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -1576,7 +1576,7 @@ def render_buttons(show_answer, spanish_audio_text):
             col1, col2 = st.columns(2)
             with col1:
                 with st.container(key="showanswer_wrap"):
-                    st.button("→", key="showanswer_btn", on_click=reveal_answer)
+                    st.button("➜", key="showanswer_btn", on_click=reveal_answer)
             with col2:
                 with st.container(key="quitbefore_wrap"):
                     if st.button("🛑", key="quitbefore_btn"):
