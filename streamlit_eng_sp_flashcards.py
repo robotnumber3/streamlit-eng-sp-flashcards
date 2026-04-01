@@ -1,4 +1,4 @@
-# REV 48
+# REV 49
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -691,7 +691,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-icon_btn_row_wrap div[data-testid="stButton"] > button {{
     width: 100% !important;
     min-height: 3.2rem !important;
-    font-size: 1.3rem !important;
+    font-size: 1.55rem !important;
+    font-weight: 700 !important;
 }}
 
 /* ---- Revealed answer action row ---- */
@@ -732,7 +733,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-answer_action_row_wrap div[data-testid="stButton"] > button {{
     width: 3.6rem !important;
     min-height: 3.2rem !important;
-    font-size: 1.15rem !important;
+    font-size: 1.55rem !important;
+    font-weight: 700 !important;
 }}
 
 /* ---- Centered summary button row ---- */
@@ -760,6 +762,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-width: 0 !important;
     min-height: 2.8rem !important;
     font-size: 0.92rem !important;
+    font-weight: 700 !important;
     padding-left: 0.55rem !important;
     padding-right: 0.55rem !important;
 }}
