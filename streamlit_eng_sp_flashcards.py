@@ -1,4 +1,4 @@
-# REV 49
+# REV 50
 # streamlit_eng_sp_flashcards.py
 
 import streamlit as st
@@ -694,6 +694,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 1.55rem !important;
     font-weight: 700 !important;
 }}
+.st-key-icon_btn_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-icon_btn_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
+.st-key-icon_btn_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
+.st-key-icon_btn_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
+    font-size: 1.55rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+}}
 
 /* ---- Revealed answer action row ---- */
 .st-key-answer_action_row_wrap [data-testid="stHorizontalBlock"] {{
@@ -736,6 +744,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 1.55rem !important;
     font-weight: 700 !important;
 }}
+.st-key-answer_action_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-answer_action_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
+.st-key-answer_action_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
+.st-key-answer_action_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
+    font-size: 1.55rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+}}
 
 /* ---- Centered summary button row ---- */
 .st-key-summary_btn_row_wrap [data-testid="stHorizontalBlock"] {{
@@ -765,6 +781,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-weight: 700 !important;
     padding-left: 0.55rem !important;
     padding-right: 0.55rem !important;
+}}
+.st-key-summary_btn_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-summary_btn_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
+.st-key-summary_btn_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
+.st-key-summary_btn_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    line-height: 1.05 !important;
 }}
 .st-key-quitnow_wrap div[data-testid="stButton"] > button {{
     width: 4.0rem !important;
