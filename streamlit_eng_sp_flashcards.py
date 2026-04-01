@@ -88,18 +88,80 @@ def display_deck_name(filename):
 # PREFS
 # ------------------------------------------------------------------------
 
+DEFAULT_THEME = "dark"
+DEFAULT_DIRECTION_MODE = "random"
+DEFAULT_SPEECH_SPEED = 5
+
+
+def default_person_prefs():
+    return {
+        "theme": DEFAULT_THEME,
+        "direction_mode": DEFAULT_DIRECTION_MODE,
+        "speech_speed": DEFAULT_SPEECH_SPEED,
+    }
+
+
+def sanitize_person_prefs(pref_data, fallback=None):
+    fallback = fallback or default_person_prefs()
+    theme = pref_data.get("theme", fallback["theme"])
+    if theme not in THEMES:
+        theme = fallback["theme"]
+    direction_mode = pref_data.get("direction_mode", fallback["direction_mode"])
+    if direction_mode not in {"random", "en_to_es", "es_to_en"}:
+        direction_mode = fallback["direction_mode"]
+    speech_speed = pref_data.get("speech_speed", fallback["speech_speed"])
+    if speech_speed not in {1, 2, 3, 4, 5}:
+        speech_speed = fallback["speech_speed"]
+    return {
+        "theme": theme,
+        "direction_mode": direction_mode,
+        "speech_speed": speech_speed,
+    }
+
+
+def normalize_prefs(pref_data):
+    pref_data = pref_data if isinstance(pref_data, dict) else {}
+    shared_defaults = sanitize_person_prefs(pref_data, default_person_prefs())
+    raw_person_settings = pref_data.get("person_settings", {})
+    if not isinstance(raw_person_settings, dict):
+        raw_person_settings = {}
+
+    person_settings = {}
+    for person in PERSON_LABELS:
+        person_settings[person] = sanitize_person_prefs(
+            raw_person_settings.get(person, {}),
+            shared_defaults,
+        )
+
+    active_person = pref_data.get("active_person", "miguel")
+    if active_person not in PERSON_LABELS:
+        active_person = "miguel"
+
+    return {
+        "active_person": active_person,
+        "person_settings": person_settings,
+    }
+
+
+def direction_for_mode(direction_mode):
+    if direction_mode == "en_to_es":
+        return "EN_TO_ES"
+    if direction_mode == "es_to_en":
+        return "ES_TO_EN"
+    return random.choice(["EN_TO_ES", "ES_TO_EN"])
+
 def load_prefs():
     try:
         with open(PREFS_FILE, encoding="utf-8") as f:
-            return json.load(f)
+            return normalize_prefs(json.load(f))
     except Exception:
-        return {}
+        return normalize_prefs({})
 
 
 def save_prefs(pref_data):
     try:
         with open(PREFS_FILE, "w", encoding="utf-8") as f:
-            json.dump(pref_data, f, ensure_ascii=False)
+            json.dump(normalize_prefs(pref_data), f, ensure_ascii=False)
     except Exception:
         pass
 
@@ -150,11 +212,19 @@ def save_review_data(review_data):
 
 
 def current_prefs():
-    return {
+    current_person = st.session_state.active_person
+    person_settings = {
+        person: dict(st.session_state.person_settings.get(person, default_person_prefs()))
+        for person in PERSON_LABELS
+    }
+    person_settings[current_person] = {
         "theme": st.session_state.theme,
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
+    }
+    return {
         "active_person": st.session_state.active_person,
+        "person_settings": person_settings,
     }
 
 # ------------------------------------------------------------------------
@@ -278,23 +348,24 @@ THEMES = {
 
 prefs = load_prefs()
 review_data = load_review_data()
+active_person = prefs["active_person"]
+active_person_prefs = prefs["person_settings"][active_person]
 
 defaults = {
-    "theme":          prefs.get("theme", "dark"),
+    "theme":          active_person_prefs["theme"],
     "menu_open":      False,
-    "direction_mode": prefs.get("direction_mode", "random"),
-    "speech_speed":   prefs.get("speech_speed", 5),
-    "active_person":  prefs.get("active_person", "miguel"),
-    "person_radio":   prefs.get("active_person", "miguel"),
+    "direction_mode": active_person_prefs["direction_mode"],
+    "speech_speed":   active_person_prefs["speech_speed"],
+    "active_person":  active_person,
+    "person_radio":   active_person,
+    "person_settings": prefs["person_settings"],
     "review_data":    review_data,
     "selected_csv":   None,
     "cards":          [],
     "order":          [],
     "index":          0,
     "show_answer":    False,
-    "direction":      ("EN_TO_ES" if prefs.get("direction_mode","random") == "en_to_es"
-                       else ("ES_TO_EN" if prefs.get("direction_mode","random") == "es_to_en"
-                       else random.choice(["EN_TO_ES", "ES_TO_EN"]))),
+    "direction":      direction_for_mode(active_person_prefs["direction_mode"]),
     "quit_requested": False,
     "final_exit":     False,
     "loaded_csv":     None,
@@ -306,6 +377,39 @@ for k, v in defaults.items():
         st.session_state[k] = v
 
 t = THEMES[st.session_state.theme]
+
+
+def sync_menu_widget_state():
+    direction_labels = {
+        "random": "Random 50/50",
+        "en_to_es": "EN → ES only",
+        "es_to_en": "ES → EN only",
+    }
+    st.session_state.theme_radio = st.session_state.theme
+    st.session_state.dir_radio = direction_labels[st.session_state.direction_mode]
+    st.session_state.speech_speed_radio = st.session_state.speech_speed
+    st.session_state.person_radio = st.session_state.active_person
+
+
+def store_active_person_prefs():
+    st.session_state.person_settings[st.session_state.active_person] = {
+        "theme": st.session_state.theme,
+        "direction_mode": st.session_state.direction_mode,
+        "speech_speed": st.session_state.speech_speed,
+    }
+
+
+def apply_person_prefs(person):
+    person_prefs = sanitize_person_prefs(
+        st.session_state.person_settings.get(person, {}),
+        default_person_prefs(),
+    )
+    st.session_state.person_settings[person] = person_prefs
+    st.session_state.theme = person_prefs["theme"]
+    st.session_state.direction_mode = person_prefs["direction_mode"]
+    st.session_state.speech_speed = person_prefs["speech_speed"]
+    st.session_state.direction = direction_for_mode(person_prefs["direction_mode"])
+    sync_menu_widget_state()
 
 
 def review_count_for(person):
@@ -1481,7 +1585,9 @@ def render_header():
             key="person_radio",
         )
         if selected_person != st.session_state.active_person:
+            store_active_person_prefs()
             st.session_state.active_person = selected_person
+            apply_person_prefs(selected_person)
             st.session_state.erase_review_confirm = False
             save_prefs(current_prefs())
             if is_review_deck(st.session_state.selected_csv):
@@ -1507,6 +1613,7 @@ def render_menu():
                          label_visibility="collapsed", key="theme_radio")
     if new_theme != st.session_state.theme:
         st.session_state.theme     = new_theme
+        store_active_person_prefs()
         st.session_state.menu_open = False
         st.session_state.erase_review_confirm = False
         save_prefs(current_prefs())
@@ -1520,6 +1627,8 @@ def render_menu():
                            label_visibility="collapsed", key="dir_radio")
     if dir_options.index(new_dir) != cur_idx:
         st.session_state.direction_mode = dir_keys[dir_options.index(new_dir)]
+        st.session_state.direction = direction_for_mode(st.session_state.direction_mode)
+        store_active_person_prefs()
         st.session_state.menu_open      = False
         st.session_state.erase_review_confirm = False
         save_prefs(current_prefs())
@@ -1545,6 +1654,7 @@ def render_menu():
     )
     if new_speed != st.session_state.speech_speed:
         st.session_state.speech_speed = new_speed
+        store_active_person_prefs()
         st.session_state.menu_open = False
         st.session_state.erase_review_confirm = False
         save_prefs(current_prefs())
