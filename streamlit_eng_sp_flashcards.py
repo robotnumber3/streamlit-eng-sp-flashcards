@@ -1025,17 +1025,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 
 /* ---- Menu dropdown ---- */
-.menu-backdrop {
+.menu-backdrop {{
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.38);
     z-index: 998;
     pointer-events: auto;
-}
-.st-key-menu_modal_wrap {
+}}
+.st-key-menu_modal_wrap {{
     position: relative;
     z-index: 999;
-}
+}}
 .menu-dropdown {{
     background-color: {t['menu_bg']};
     border: 1px solid {t['border']};
