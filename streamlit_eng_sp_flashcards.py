@@ -1672,6 +1672,8 @@ def render_header():
                     else:
                         st.session_state.menu_open = True
                     st.rerun()
+    if st.session_state.menu_open:
+        return
     with st.container(key="person_radio_wrap"):
         selected_person = st.radio(
             "Person",
