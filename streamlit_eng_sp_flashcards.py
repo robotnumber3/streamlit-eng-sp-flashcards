@@ -1058,8 +1058,18 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-clear_erase_review_confirm_wrap {{
     display: none !important;
 }}
-.st-key-close_menu_backdrop_wrap {{
+.st-key-close_menu_backdrop_wrap,
+.st-key-close_menu_backdrop_wrap > div,
+.st-key-close_menu_backdrop_wrap [data-testid="stElementContainer"],
+.st-key-close_menu_backdrop_wrap div[data-testid="stButton"],
+.st-key-close_menu_backdrop_wrap div[data-testid="stButton"] > div,
+.st-key-close_menu_backdrop_wrap div[data-testid="stButton"] > button {{
     display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
 }}
 .st-key-erase_review_wrap div[data-testid="stButton"] > button,
 .st-key-erase_review_confirm_wrap div[data-testid="stButton"] > button {{
