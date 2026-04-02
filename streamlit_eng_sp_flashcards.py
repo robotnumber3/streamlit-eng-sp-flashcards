@@ -97,6 +97,7 @@ def is_forced_en_es_deck(filename):
 DEFAULT_THEME = "dark"
 DEFAULT_DIRECTION_MODE = "random"
 DEFAULT_SPEECH_SPEED = 5
+DEFAULT_SHOW_HINTS = True
 
 
 def default_person_prefs():
@@ -104,6 +105,7 @@ def default_person_prefs():
         "theme": DEFAULT_THEME,
         "direction_mode": DEFAULT_DIRECTION_MODE,
         "speech_speed": DEFAULT_SPEECH_SPEED,
+        "show_hints": DEFAULT_SHOW_HINTS,
     }
 
 
@@ -118,10 +120,14 @@ def sanitize_person_prefs(pref_data, fallback=None):
     speech_speed = pref_data.get("speech_speed", fallback["speech_speed"])
     if speech_speed not in {1, 2, 3, 4, 5}:
         speech_speed = fallback["speech_speed"]
+    show_hints = pref_data.get("show_hints", fallback["show_hints"])
+    if not isinstance(show_hints, bool):
+        show_hints = fallback["show_hints"]
     return {
         "theme": theme,
         "direction_mode": direction_mode,
         "speech_speed": speech_speed,
+        "show_hints": show_hints,
     }
 
 
@@ -234,6 +240,7 @@ def current_prefs():
         "theme": st.session_state.theme,
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
+        "show_hints": st.session_state.show_hints,
     }
     return {
         "active_person": st.session_state.active_person,
@@ -369,6 +376,7 @@ defaults = {
     "menu_open":      False,
     "direction_mode": active_person_prefs["direction_mode"],
     "speech_speed":   active_person_prefs["speech_speed"],
+    "show_hints":     active_person_prefs["show_hints"],
     "active_person":  active_person,
     "person_radio":   active_person,
     "person_settings": prefs["person_settings"],
@@ -401,6 +409,7 @@ def sync_menu_widget_state():
     st.session_state.theme_radio = st.session_state.theme
     st.session_state.dir_radio = direction_labels[st.session_state.direction_mode]
     st.session_state.speech_speed_radio = st.session_state.speech_speed
+    st.session_state.hints_radio = "Hints ON" if st.session_state.show_hints else "Hints OFF"
 
 
 def store_active_person_prefs():
@@ -408,6 +417,7 @@ def store_active_person_prefs():
         "theme": st.session_state.theme,
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
+        "show_hints": st.session_state.show_hints,
     }
 
 
@@ -427,6 +437,7 @@ def apply_person_prefs(person):
     st.session_state.theme = person_prefs["theme"]
     st.session_state.direction_mode = person_prefs["direction_mode"]
     st.session_state.speech_speed = person_prefs["speech_speed"]
+    st.session_state.show_hints = person_prefs["show_hints"]
     st.session_state.direction = direction_for_mode(person_prefs["direction_mode"])
     sync_menu_widget_state()
 
@@ -1106,6 +1117,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {t['muted']};
     white-space: nowrap;
 }}
+.fc-inline-hint {{
+    font-size: 0.72em;
+    font-weight: 400;
+    color: color-mix(in srgb, {t['muted']} 65%, {t['accent']} 35%);
+    white-space: nowrap;
+}}
 .fc-word-placeholder {{
     font-size: 1.1rem; line-height: 1.2; min-height: 1.4rem;
 }}
@@ -1381,15 +1398,19 @@ def advance_card(schedule_current=True):
 def format_word(text, word_class, note_class):
     del note_class
 
+    if not st.session_state.show_hints:
+        text = re.sub(r'\s*\{[^{}]*\}\s*', ' ', text)
+
     parts = []
     last_end = 0
     has_inline_note = False
 
-    for match in re.finditer(r'\[[^\[\]]*\]', text):
+    for match in re.finditer(r'\[[^\[\]]*\]|\{[^{}]*\}', text):
         if match.start() > last_end:
             parts.append(html.escape(text[last_end:match.start()]))
+        note_class_name = "fc-inline-hint" if match.group(0).startswith("{") else "fc-inline-note"
         parts.append(
-            '<span class="fc-inline-note">'
+            '<span class="' + note_class_name + '">'
             + html.escape(match.group(0))
             + '</span>'
         )
@@ -1408,7 +1429,7 @@ def format_word(text, word_class, note_class):
 
 
 def strip_spoken_text(text):
-    spoken_text = re.sub(r'\[.*?\]|\(.*?\)', '', text)
+    spoken_text = re.sub(r'\[.*?\]|\(.*?\)|\{.*?\}', '', text)
     spoken_text = re.sub(r'\s+', ' ', spoken_text)
     return spoken_text.strip()
 
@@ -1644,6 +1665,22 @@ def render_menu():
     active_review_count = review_count_for(st.session_state.active_person)
     active_person_label = PERSON_LABELS[st.session_state.active_person]
     st.markdown('<div class="menu-dropdown">', unsafe_allow_html=True)
+    st.markdown('<div class="menu-section-label">Hints</div>', unsafe_allow_html=True)
+    hint_options = ["Hints ON", "Hints OFF"]
+    new_hints = st.radio(
+        "Hints",
+        options=hint_options,
+        index=0 if st.session_state.show_hints else 1,
+        horizontal=True,
+        label_visibility="collapsed",
+        key="hints_radio",
+    )
+    hints_enabled = new_hints == "Hints ON"
+    if hints_enabled != st.session_state.show_hints:
+        st.session_state.show_hints = hints_enabled
+        store_active_person_prefs()
+        st.session_state.erase_review_confirm = False
+        st.rerun()
     st.markdown('<div class="menu-section-label">Theme</div>', unsafe_allow_html=True)
     new_theme = st.radio("Theme", options=["light", "dark", "aqua", "amber"],
                          index=["light","dark","aqua", "amber"].index(st.session_state.theme),
