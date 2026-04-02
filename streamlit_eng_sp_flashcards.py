@@ -1035,8 +1035,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-menu_modal_wrap {{
     position: relative;
     z-index: 999;
-}}
-.menu-dropdown {{
     background-color: {t['menu_bg']};
     border: 1px solid {t['border']};
     border-radius: 0.75rem;
@@ -1704,7 +1702,6 @@ def render_menu():
     st.markdown('<div class="menu-backdrop"></div>', unsafe_allow_html=True)
     render_menu_backdrop_close_handler()
     with st.container(key="menu_modal_wrap"):
-        st.markdown('<div class="menu-dropdown">', unsafe_allow_html=True)
         st.markdown('<div class="menu-section-label">Hints</div>', unsafe_allow_html=True)
         hint_options = ["Hints ON", "Hints OFF"]
         new_hints = st.radio(
@@ -1784,7 +1781,6 @@ def render_menu():
                 with st.container(key="clear_erase_review_confirm_wrap"):
                     st.button("__clear_erase_review_confirm__", key="clear_erase_review_confirm_btn", on_click=clear_erase_review_confirm)
                 render_erase_review_confirm_timeout()
-        st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_deck_strip():
