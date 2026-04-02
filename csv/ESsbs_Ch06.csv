@@ -1,198 +1,199 @@
-"I close {e > ie}";"cierro"
-"you close [sing, inf] {e > ie}";"cierras"
-"he, she, you close [sing, formal] {e > ie}";"cierra"
-"we close {e > ie}";"cerramos"
-"you close [pl] {e > ie}";"cerráis"
-"they close {e > ie}";"cierran"
-"I begin {e > ie}";"empiezo"
-"you begin [sing, inf] {e > ie}";"empiezas"
-"he, she, you begin [sing, formal] {e > ie}";"empieza"
-"we begin {e > ie}";"empezamos"
-"you begin [pl] {e > ie}";"empezáis"
-"they begin {e > ie}";"empieza"
-"I think {e > ie}";"pienso"
-"you think [sing, inf] {e > ie}";"piensas"
-"he, she, you think [sing, formal] {e > ie}";"piensa"
-"we think {e > ie}";"pensamos"
-"you think [pl] {e > ie}";"pensáis"
-"they think {e > ie}";"piensan"
-"I have/eat lunch {o > ue}";"almuerzo"
-"you have/eat lunch [sing, inf] {o > ue}";"almuerzas"
-"he, she, you have/eat lunch [sing, formal] {o > ue}";"almuerza"
-"we have/eat lunch {o > ue}";"almorzamos"
-"you have/eat lunch [pl] {o > ue}";"almorzáis"
-"they have/eat lunch {o > ue}";"almuerzan"
-"I find {o > ue}";"encuentro"
-"you find [sing, inf] {o > ue}";"encuentras"
-"he, she, you find [sing, formal] {o > ue}";"encuentra"
-"we find {o > ue}";"encontramos"
-"you find [pl] {o > ue}";"encontráis"
-"they find {o > ue}";"encuentran"
-"I remember {o > ue}";"recuerdo"
-"you remember [sing, inf] {o > ue}";"recuerdas"
-"he, she, you remember [sing, formal] {o > ue}";"recuerda"
-"we remember {o > ue}";"recordamos"
-"you remember [pl] {o > ue}";"recordáis"
-"they remember {o > ue}";"recuerdan"
-"I play {u > ue}";"juego"
-"you play [sing, inf] {u > ue}";"juegas"
-"he, she, you play [sing, formal] {u > ue}";"juega"
-"we play {u > ue}";"jugamos"
-"you play [pl] {u > ue}";"jugáis"
-"they play {u > ue}";"juegan"
-"I understand {e > ie}";"entiendo"
-"you understand [sing, inf] {e > ie}";"entiendes"
-"he, she, you understand [sing, formal] {e > ie}";"entiende"
-"we understand {e > ie}";"entendemos"
-"you understand [pl] {e > ie}";"entendéis"
-"they understand {e > ie}";"entienden"
-"I lose {e > ie}";"pierdo"
-"you lose [sing, inf] {e > ie}";"pierdes"
-"he, she, you lose [sing, formal] {e > ie}";"pierde"
-"we lose {e > ie}";"perdemos"
-"you lose [pl] {e > ie}";"perdéis"
-"they lose {e > ie}";"pierden"
-"I want {e > ie}";"quiero"
-"you want [sing, inf] {e > ie}";"quieres"
-"he, she, you want [sing, formal] {e > ie}";"quiere"
-"we want {e > ie}";"queremos"
-"you want [pl] {e > ie}";"queréis"
-"they want {e > ie}";"quieren"
-"I have [tener, irreg yo]";"tengo"
-"you have [sing, inf] {e > ie}";"tienes"
-"he, she, you have [sing, formal] {e > ie}";"tiene"
-"we have {e > ie}";"tenemos"
-"you have [pl] {e > ie}";"tenéis"
-"they have {e > ie}";"tienen"
-"I return/give back {o > ue}";"devuelvo"
-"you return/give back [sing, inf] {o > ue}";"devuelves"
-"he, she, you return/give back [sing, formal] {o > ue}";"devuelve"
-"we return/give back {o > ue}";"devolvemos"
-"you return/give back [pl] {o > ue}";"devolvéis"
-"they return/give back {o > ue}";"devuelven"
-"I am able/can/may {o > ue}";"puedo"
-"you are able/can/may [sing, inf] {o > ue}";"puedes"
-"he, she, you are able/can/may [sing, formal] {o > ue}";"puede"
-"we are able/can/may {o > ue}";"podemos"
-"you are able/can/may [pl] {o > ue}";"podéis"
-"they are able/can/may {o > ue}";"pueden"
-"I return {o > ue}";"vuelvo"
-"you return [sing, inf] {o > ue}";"vuelves"
-"he, she, you return [sing, formal] {o > ue}";"vuelve"
-"we return {o > ue}";"volvemos"
-"you return [pl] {o > ue}";"volvéis"
-"they return {o > ue}";"vuelven"
-"I do/make [irreg yo]";"hago"
-"you do/make [sing, inf]";"haces"
-"he, she, you do/make [sing, formal]";"hace"
-"we do/make";"hacemos"
-"you do/make [pl]";"hacéis"
-"they do/make";"hacen"
-"I put [irreg yo]";"pongo"
-"you put [sing, inf]";"pones"
-"he, she, you put [sing, formal]";"pone"
-"we put";"ponemos"
-"you put [pl]";"ponéis"
-"they put";"ponen"
-"I know/know how [irreg yo]";"sé"
-"you know/know how [sing, inf]";"sabes"
-"he, she, you know/know how [sing, formal]";"sabe"
-"we know/know how";"sabemos"
-"you know/know how [pl]";"sabéis"
-"they know/know how";"saben"
-"I see [irreg yo]";"veo"
-"you see [sing, inf]";"ves"
-"he, she, you see [sing, formal]";"ve"
-"we see";"vemos"
-"you see [pl]";"veis"
-"they see";"ven"
-"I lie {e > ie}";"miento"
-"you lie [sing, inf] {e > ie}";"mientes"
-"he, she, you lie [sing, formal] {e > ie}";"miente"
-"we lie {e > ie}";"mentimos"
-"you lie [pl] {e > ie}";"mentís"
-"they lie {e > ie}";"mienten"
-"I prefer {e > ie}";"prefiero"
-"you prefer [sing, inf] {e > ie}";"prefieres"
-"he, she, you prefer [sing, formal] {e > ie}";"prefiere"
-"we prefer {e > ie}";"preferimos"
-"you prefer [pl] {e > ie}";"preferís"
-"they prefer {e > ie}";"prefieren"
-"I come {e > ie}";"vengo"
-"you come [sing, inf] {e > ie}";"vienes"
-"he, she, you come [sing, formal] {e > ie}";"viene"
-"we come {e > ie}";"venimos"
-"you come [pl] {e > ie}";"venís"
-"they come {e > ie}";"vienen"
-"I ask for/request {e > i}";"pido"
-"you ask for/request [sing, inf] {e > i}";"pides"
-"he, she, you ask for/request [sing, formal] {e > i}";"pide"
-"we ask for/request {e > i}";"pedimos"
-"you ask for/request [pl] {e > i}";"pedís"
-"they ask for/request {e > i}";"piden"
-"I repeat {e > i}";"repito"
-"you repeat [sing, inf] {e > i}";"repites"
-"he, she, you repeat [sing, formal] {e > i}";"repite"
-"we repeat {e > i}";"repetimos"
-"you repeat [pl] {e > i}";"repetís"
-"they repeat {e > i}";"repiten"
-"I follow/continue {e > i}";"sigo"
-"you follow/continue [sing, inf] {e > i}";"sigues"
-"he, she, you follow/continue [sing, formal] {e > i}";"sigue"
-"we follow/continue {e > i}";"seguimos"
-"you follow/continue [pl] {e > i}";"seguís"
-"they follow/continue {e > i}";"siguen"
-"I serve {e > i}";"sirvo"
-"you serve [sing, inf] {e > i}";"sirves"
-"he, she, you serve [sing, formal] {e > i}";"sirve"
-"we serve {e > i}";"servimos"
-"you serve [pl] {e > i}";"servís"
-"they serve {e > i}";"sirven"
-"I smile {e > i}";"sonrío"
-"you smile [sing, inf] {e > i}";"sonríes"
-"he, she, you smile [sing, formal] {e > i}";"sonríe"
-"we smile {e > i}";"sonreímos"
-"you smile [pl] {e > i}";"sonreís"
-"they smile {e > i}";"sonríen"
-"I sleep {o > ue}";"duermo"
-"you sleep [sing, inf] {o > ue}";"duermes"
-"he, she, you sleep [sing, formal] {o > ue}";"duerme"
-"we sleep {o > ue}";"dormimos"
-"you sleep [pl] {o > ue}";"dormís"
-"they sleep {o > ue}";"duermen"
-"I hear [irreg yo]";"oigo"
-"you hear [sing, inf]";"oyes"
-"he, she, you hear [sing, formal]";"oye"
-"we hear";"oímos"
-"you hear [pl]";"oís"
-"they hear";"oyen"
-"I leave/exit/go out [irreg yo]";"salgo"
-"you leave/exit/go out [sing, inf]";"sales"
-"he, she, you leave/exit/go out [sing, formal]";"sale"
-"we leave/exit/go out";"salimos"
-"you leave/exit/go out [pl]";"salís"
-"they leave/exit/go out";"salen"
-"to be sure";"estar seguro"
-"to speak by/on the phone";"hablar por teléfono"
-"to arrive on time";"llegar a tiempo"
-"to think about";"pensar en"
-"to be impossible";"ser imposible"
-"to be safe";"ser seguro"
-"to get on the train";"subir al tren"
-"to take a seat";"tomar asiento"
-"the rush hour";"la hora pico"
-"the crowd";"la muchedumbre"
-"the exit";"la salida"
-"the basement";"el sótano"
-"the theater";"el teatro"
-"near me";"cerca de mí"
-"at my side";"a mi lado"
-"at times";"a veces"
-"fortunately";"afortunadamente"
-"completely";"completamente"
-"again";"de nuevo"
-"after (doing something) + inf";"después de + inf"
-"free (in cost)";"gratis"
-"toward";"hacia"
-"luckily";"menos mal"
-"better";"mejor"
+word,answer
+I close {e > ie},cierro
+"you close [sing, inf] {e > ie}",cierras
+"he, she, you close [sing, formal] {e > ie}",cierra
+we close {e > ie},cerramos
+you close [pl] {e > ie},cerráis
+they close {e > ie},cierran
+I begin {e > ie},empiezo
+"you begin [sing, inf] {e > ie}",empiezas
+"he, she, you begin [sing, formal] {e > ie}",empieza
+we begin {e > ie},empezamos
+you begin [pl] {e > ie},empezáis
+they begin {e > ie},empieza
+I think {e > ie},pienso
+"you think [sing, inf] {e > ie}",piensas
+"he, she, you think [sing, formal] {e > ie}",piensa
+we think {e > ie},pensamos
+you think [pl] {e > ie},pensáis
+they think {e > ie},piensan
+I have/eat lunch {o > ue},almuerzo
+"you have/eat lunch [sing, inf] {o > ue}",almuerzas
+"he, she, you have/eat lunch [sing, formal] {o > ue}",almuerza
+we have/eat lunch {o > ue},almorzamos
+you have/eat lunch [pl] {o > ue},almorzáis
+they have/eat lunch {o > ue},almuerzan
+I find {o > ue},encuentro
+"you find [sing, inf] {o > ue}",encuentras
+"he, she, you find [sing, formal] {o > ue}",encuentra
+we find {o > ue},encontramos
+you find [pl] {o > ue},encontráis
+they find {o > ue},encuentran
+I remember {o > ue},recuerdo
+"you remember [sing, inf] {o > ue}",recuerdas
+"he, she, you remember [sing, formal] {o > ue}",recuerda
+we remember {o > ue},recordamos
+you remember [pl] {o > ue},recordáis
+they remember {o > ue},recuerdan
+I play {u > ue},juego
+"you play [sing, inf] {u > ue}",juegas
+"he, she, you play [sing, formal] {u > ue}",juega
+we play {u > ue},jugamos
+you play [pl] {u > ue},jugáis
+they play {u > ue},juegan
+I understand {e > ie},entiendo
+"you understand [sing, inf] {e > ie}",entiendes
+"he, she, you understand [sing, formal] {e > ie}",entiende
+we understand {e > ie},entendemos
+you understand [pl] {e > ie},entendéis
+they understand {e > ie},entienden
+I lose {e > ie},pierdo
+"you lose [sing, inf] {e > ie}",pierdes
+"he, she, you lose [sing, formal] {e > ie}",pierde
+we lose {e > ie},perdemos
+you lose [pl] {e > ie},perdéis
+they lose {e > ie},pierden
+I want {e > ie},quiero
+"you want [sing, inf] {e > ie}",quieres
+"he, she, you want [sing, formal] {e > ie}",quiere
+we want {e > ie},queremos
+you want [pl] {e > ie},queréis
+they want {e > ie},quieren
+"I have [tener, irreg yo]",tengo
+"you have [sing, inf] {e > ie}",tienes
+"he, she, you have [sing, formal] {e > ie}",tiene
+we have {e > ie},tenemos
+you have [pl] {e > ie},tenéis
+they have {e > ie},tienen
+I return/give back {o > ue},devuelvo
+"you return/give back [sing, inf] {o > ue}",devuelves
+"he, she, you return/give back [sing, formal] {o > ue}",devuelve
+we return/give back {o > ue},devolvemos
+you return/give back [pl] {o > ue},devolvéis
+they return/give back {o > ue},devuelven
+I am able/can/may {o > ue},puedo
+"you are able/can/may [sing, inf] {o > ue}",puedes
+"he, she, you are able/can/may [sing, formal] {o > ue}",puede
+we are able/can/may {o > ue},podemos
+you are able/can/may [pl] {o > ue},podéis
+they are able/can/may {o > ue},pueden
+I return {o > ue},vuelvo
+"you return [sing, inf] {o > ue}",vuelves
+"he, she, you return [sing, formal] {o > ue}",vuelve
+we return {o > ue},volvemos
+you return [pl] {o > ue},volvéis
+they return {o > ue},vuelven
+I do/make [irreg yo],hago
+"you do/make [sing, inf]",haces
+"he, she, you do/make [sing, formal]",hace
+we do/make,hacemos
+you do/make [pl],hacéis
+they do/make,hacen
+I put [irreg yo],pongo
+"you put [sing, inf]",pones
+"he, she, you put [sing, formal]",pone
+we put,ponemos
+you put [pl],ponéis
+they put,ponen
+I know/know how [irreg yo],sé
+"you know/know how [sing, inf]",sabes
+"he, she, you know/know how [sing, formal]",sabe
+we know/know how,sabemos
+you know/know how [pl],sabéis
+they know/know how,saben
+I see [irreg yo],veo
+"you see [sing, inf]",ves
+"he, she, you see [sing, formal]",ve
+we see,vemos
+you see [pl],veis
+they see,ven
+I lie {e > ie},miento
+"you lie [sing, inf] {e > ie}",mientes
+"he, she, you lie [sing, formal] {e > ie}",miente
+we lie {e > ie},mentimos
+you lie [pl] {e > ie},mentís
+they lie {e > ie},mienten
+I prefer {e > ie},prefiero
+"you prefer [sing, inf] {e > ie}",prefieres
+"he, she, you prefer [sing, formal] {e > ie}",prefiere
+we prefer {e > ie},preferimos
+you prefer [pl] {e > ie},preferís
+they prefer {e > ie},prefieren
+I come {e > ie},vengo
+"you come [sing, inf] {e > ie}",vienes
+"he, she, you come [sing, formal] {e > ie}",viene
+we come {e > ie},venimos
+you come [pl] {e > ie},venís
+they come {e > ie},vienen
+I ask for/request {e > i},pido
+"you ask for/request [sing, inf] {e > i}",pides
+"he, she, you ask for/request [sing, formal] {e > i}",pide
+we ask for/request {e > i},pedimos
+you ask for/request [pl] {e > i},pedís
+they ask for/request {e > i},piden
+I repeat {e > i},repito
+"you repeat [sing, inf] {e > i}",repites
+"he, she, you repeat [sing, formal] {e > i}",repite
+we repeat {e > i},repetimos
+you repeat [pl] {e > i},repetís
+they repeat {e > i},repiten
+I follow/continue {e > i},sigo
+"you follow/continue [sing, inf] {e > i}",sigues
+"he, she, you follow/continue [sing, formal] {e > i}",sigue
+we follow/continue {e > i},seguimos
+you follow/continue [pl] {e > i},seguís
+they follow/continue {e > i},siguen
+I serve {e > i},sirvo
+"you serve [sing, inf] {e > i}",sirves
+"he, she, you serve [sing, formal] {e > i}",sirve
+we serve {e > i},servimos
+you serve [pl] {e > i},servís
+they serve {e > i},sirven
+I smile {e > i},sonrío
+"you smile [sing, inf] {e > i}",sonríes
+"he, she, you smile [sing, formal] {e > i}",sonríe
+we smile {e > i},sonreímos
+you smile [pl] {e > i},sonreís
+they smile {e > i},sonríen
+I sleep {o > ue},duermo
+"you sleep [sing, inf] {o > ue}",duermes
+"he, she, you sleep [sing, formal] {o > ue}",duerme
+we sleep {o > ue},dormimos
+you sleep [pl] {o > ue},dormís
+they sleep {o > ue},duermen
+I hear [irreg yo],oigo
+"you hear [sing, inf]",oyes
+"he, she, you hear [sing, formal]",oye
+we hear,oímos
+you hear [pl],oís
+they hear,oyen
+I leave/exit/go out [irreg yo],salgo
+"you leave/exit/go out [sing, inf]",sales
+"he, she, you leave/exit/go out [sing, formal]",sale
+we leave/exit/go out,salimos
+you leave/exit/go out [pl],salís
+they leave/exit/go out,salen
+to be sure,estar seguro
+to speak by/on the phone,hablar por teléfono
+to arrive on time,llegar a tiempo
+to think about,pensar en
+to be impossible,ser imposible
+to be safe,ser seguro
+to get on the train,subir al tren
+to take a seat,tomar asiento
+the rush hour,la hora pico
+the crowd,la muchedumbre
+the exit,la salida
+the basement,el sótano
+the theater,el teatro
+near me,cerca de mí
+at my side,a mi lado
+at times,a veces
+fortunately,afortunadamente
+completely,completamente
+again,de nuevo
+after (doing something) + inf,después de + inf
+free (in cost),gratis
+toward,hacia
+luckily,menos mal
+better,mejor
