@@ -6,6 +6,8 @@ import random
 import os
 import sys
 import json
+import html
+import re
 import pandas as pd
 import streamlit.components.v1 as components
 from streamlit.runtime.scriptrunner import get_script_run_ctx
@@ -84,6 +86,10 @@ def display_deck_name(filename):
         return f"{base_name} [{csv_row_counts.get(filename, 0)}]"
     return base_name
 
+
+def is_forced_en_es_deck(filename):
+    return bool(filename) and not is_review_deck(filename) and "EN_ES" in os.path.basename(filename)
+
 # ------------------------------------------------------------------------
 # PREFS
 # ------------------------------------------------------------------------
@@ -149,6 +155,13 @@ def direction_for_mode(direction_mode):
     if direction_mode == "es_to_en":
         return "ES_TO_EN"
     return random.choice(["EN_TO_ES", "ES_TO_EN"])
+
+
+def effective_direction(deck_value=None):
+    deck_value = st.session_state.selected_csv if deck_value is None else deck_value
+    if is_forced_en_es_deck(deck_value):
+        return "EN_TO_ES"
+    return direction_for_mode(st.session_state.direction_mode)
 
 def load_prefs():
     try:
@@ -452,6 +465,7 @@ def reset_study_state(reset_selected=True):
 def activate_deck(deck_value):
     reset_study_state(reset_selected=False)
     st.session_state.selected_csv = deck_value
+    st.session_state.direction = effective_direction(deck_value)
 
 
 def current_review_person():
@@ -1086,6 +1100,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 1.1rem; font-weight: 400; font-style: italic;
     line-height: 1.2; color: {t['fg']};
 }}
+.fc-inline-note {{
+    font-size: 0.72em;
+    font-weight: 400;
+    color: {t['muted']};
+    white-space: nowrap;
+}}
 .fc-word-placeholder {{
     font-size: 1.1rem; line-height: 1.2; min-height: 1.4rem;
 }}
@@ -1352,32 +1372,42 @@ def advance_card(schedule_current=True):
     st.session_state.index      += 1
     st.session_state.show_answer = False
     st.session_state.delete_review_confirm_key = None
-    mode = st.session_state.direction_mode
-    if mode == "en_to_es":
-        st.session_state.direction = "EN_TO_ES"
-    elif mode == "es_to_en":
-        st.session_state.direction = "ES_TO_EN"
-    else:
-        st.session_state.direction = random.choice(["EN_TO_ES", "ES_TO_EN"])
+    st.session_state.direction = effective_direction()
 
 # ------------------------------------------------------------------------
 # UI HELPERS
 # ------------------------------------------------------------------------
 
 def format_word(text, word_class, note_class):
-    import re
-    m = re.search(r'(\[.*?\])', text)
-    if m:
-        main = text[:m.start()].strip()
-        note = m.group(1)
-        return ('<div class="' + word_class + '">' + main + '</div>'
-                '<div class="' + note_class + '">' + note + '</div>')
-    return '<div class="' + word_class + '">' + text + '</div>'
+    del note_class
+
+    parts = []
+    last_end = 0
+    has_inline_note = False
+
+    for match in re.finditer(r'\[[^\[\]]*\]', text):
+        if match.start() > last_end:
+            parts.append(html.escape(text[last_end:match.start()]))
+        parts.append(
+            '<span class="fc-inline-note">'
+            + html.escape(match.group(0))
+            + '</span>'
+        )
+        last_end = match.end()
+        has_inline_note = True
+
+    if last_end < len(text):
+        parts.append(html.escape(text[last_end:]))
+
+    if has_inline_note:
+        rendered_text = ''.join(parts)
+    else:
+        rendered_text = html.escape(text)
+
+    return '<div class="' + word_class + '">' + rendered_text + '</div>'
 
 
 def strip_spoken_text(text):
-    import re
-
     spoken_text = re.sub(r'\[.*?\]|\(.*?\)', '', text)
     spoken_text = re.sub(r'\s+', ' ', spoken_text)
     return spoken_text.strip()
@@ -1838,15 +1868,25 @@ if st.session_state.loaded_csv != st.session_state.selected_csv or not st.sessio
         _sep = ';' if ';' in _first else ','
         df = pd.read_csv(csv_path, sep=_sep)
         df.columns = [c.strip() for c in df.columns]
-        st.session_state.cards = [
-            {"word": row["word"], "answer": row["answer"],
-             "shown": False, "repeat_score": 1, "error_flag": 0}
-            for _, row in df.iterrows()
-        ]
+        if is_forced_en_es_deck(st.session_state.selected_csv):
+            first_column = df.columns[0]
+            second_column = df.columns[1]
+            st.session_state.cards = [
+                {"word": row[first_column], "answer": row[second_column],
+                 "shown": False, "repeat_score": 1, "error_flag": 0}
+                for _, row in df.iterrows()
+            ]
+        else:
+            st.session_state.cards = [
+                {"word": row["word"], "answer": row["answer"],
+                 "shown": False, "repeat_score": 1, "error_flag": 0}
+                for _, row in df.iterrows()
+            ]
     st.session_state.order = list(range(len(st.session_state.cards)))
     random.shuffle(st.session_state.order)
     st.session_state.index = 0
     st.session_state.loaded_csv = st.session_state.selected_csv
+    st.session_state.direction = effective_direction()
 
 # ========================================================================
 # STATS
@@ -1929,12 +1969,13 @@ if not st.session_state.order:
 # ========================================================================
 
 card = st.session_state.cards[current_card_index()]
-if st.session_state.direction == "EN_TO_ES":
+current_direction = "EN_TO_ES" if is_forced_en_es_deck(st.session_state.selected_csv) else st.session_state.direction
+if current_direction == "EN_TO_ES":
     prompt, solution = card["word"], card["answer"]
 else:
     prompt, solution = card["answer"], card["word"]
 
-spanish_text = solution if st.session_state.direction == "EN_TO_ES" else prompt
+spanish_text = solution if current_direction == "EN_TO_ES" else prompt
 
 # ========================================================================
 # MAIN LAYOUT

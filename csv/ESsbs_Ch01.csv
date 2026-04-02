@@ -1,168 +1,226 @@
 word,answer
-the friend,el amigo
+"agreeable, pleasant",agradable
+"great, terrific",estupendo
+"handsome, beautiful",guapo
+"little, small",pequeño
+"marvelous, wonderful",maravilloso
+"the little boy, the child",el niño
+a (female) friend,una amiga
+a (male) friend,un amigo
+a (male) pianist,un pianista
+a bathroom,un baño
+a bookstore,una librería
+a car,un carro
+a cat,un gato
+a city,una ciudad
+a garden,un jardín
+a lesson,una lección
+a library,una biblioteca
+a mirror,un espejo
+a museum,un museo
+a page,una página
+a pen,una pluma
+a person (male or female),una persona
+a suitcase,una maleta
+a ticket,un tiquete
+a woman,una mujer
+an armchair,un sillón
+an idea,una idea
+beautiful,hermoso
+big,grande
+black,negro
+blue,azul
+brown,"marrón, pardo"
+brown-skinned,moreno
+difficult,difícil
+easy,fácil
+excellent,excelente
+expensive,caro
+fantastic,fantástico
+fat,gordo
+fragile,frágil
+gray,gris
+green,verde
+happy,alegre
+happy,feliz
+horrible,horrible
+inexpensive,barato
+intelligent,inteligente
+interesting,interesante
+nice,simpático
+old,viejo
+orange,anaranjado
+pink,rosado
+poor,pobre
+purple,morado
+red,rojo
+rich,rico
+sad,triste
+sincere,sincero
+slender,delgado
+some (female) artists,unas artistas
+some boats,unos barcos
+some books,unos libros
+some cats,unos gatos
+some conversations,unas conversaciones
+some flowers,unas flores
+some houses,unas casas
+some languages,unos idiomas
+stingy,tacaño
+strong,fuerte
+the (female) artist,la artista
+the (female) cabdriver,la taxista
+the (female) dentist,la dentista
+the (female) manager,la gerente
+the (female) pianist,la pianista
+the (female) president,la presidente
+the (female) singer,la cantante
+the (female) student,la estudiante
+the (male) artist,el artista
+the (male) cabdriver,el taxista
+the (male) dentist,el dentista
+the (male) manager,el gerente
+the (male) pianist,el pianista
+the (male) president,el presidente
+the (male) singer,el cantante
+the (male) student,el estudiante
+the animal,el animal
+the animals,los animales
+the armchair,el sillón
+the attitude,la actitud
+the bag,la bolsa
+the bags,las bolsas
 the bank,el banco
 the bathroom,el baño
-the car,el carro
-the cat,el gato
-the brother,el hermano
+the beautiful woman,la mujer hermosa
+the bed,la cama
+the beer,la cerveza
+the black beer,la cerveza negra
+the black beers,las cervezas negras
+the black cat,el gato negro
+the black jacket,la chaqueta negra
+the blouse,la blusa
+the blue lamp,la lámpara azul
+the blue lamps,las lámparas azules
+the blue windows,las ventanas azules
 the book,el libro
 the boy,el muchacho
-"the little boy, the child",el niño
-the dog,el perro
-the telephone,el teléfono
-the wine,el vino
-the animal,el animal
+the brother,el hermano
+the car,el carro
+the cat,el gato
+the chair,la silla
+the chairs,las sillas
+the church,la iglesia
+the cities,las ciudades
+the city,la ciudad
+the class,la clase
+the classes,las clases
+the climate,el clima
 the coffee,el café
+the conversation,la conversación
+the day,el día
+the dentist,el dentista
 the doctor,el doctor
-the man,el hombre
+the doctors,los doctores
+the dog,el perro
+the dogs,los perros
+the drama,el drama
+the fantastic friend,el amigo fantástico
+the fantastic friends,los amigos fantásticos
+the flower,la flor
+the flowers,las flores
+the friend,el amigo
+the friend,la amiga
+the friends,los amigos
+the friendship,la amistad
+the friendships,las amistades
+the garden,el jardín
+the girl,la muchacha
+the gray dog,el perro gris
+the gray dogs,los perros grises
+the green light,la luz verde
+the green lights,las luces verdes
+the green planets,los planetas verdes
+the hand,la mano
+the handsome man,el hombre hermoso
 the hospital,el hospital
 the hotel,el hotel
-the tomato,el tomate
-the train,el tren
-the climate,el clima
-the day,el día
-the drama,el drama
+the house,la casa
+the illusion,la ilusión
+the illusions,las ilusiones
+the interesting songs,las canciones interesantes
+the invitation,la invitación
+the lamp,la lámpara
+the lamps,las lámparas
 the language,el idioma
+the languages,los idiomas
+the lesson,la lección
+the lessons,las lecciones
+the library,la biblioteca
+the light,la luz
+the lights,las luces
+the little girl,la niña
+the luck,la suerte
+the man,el hombre
+the manager,la gerente
 the map,el mapa
+the marvelous day,el día maravilloso
+the marvelous days,los días maravillosos
+the meal,la comida
+the nice boy,el muchacho simpático
+the nice girl,la muchacha simpática
+the old hotels,los hoteles viejos
+the page,la página
+the person,la persona
+the photograph,la foto
 the planet,el planeta
+the plant,la planta
+the plants,las plantas
 the poem,el poema
 the problem,el problema
 the program,el programa
-the system,el sistema
-the friend,la amiga
-the blouse,la blusa
-the bag,la bolsa
-the bed,la cama
-the house,la casa
-the beer,la cerveza
-the meal,la comida
-the sister,la hermana
-the church,la iglesia
-the lamp,la lámpara
-the table,la mesa
-the girl,la muchacha
-the little girl,la niña
-the person,la persona
-the plant,la planta
-the chair,la silla
-the store,la tienda
-the window,la ventana
-the song,la canción
-the conversation,la conversación
-the invitation,la invitación
-the lesson,la lección
-the illusion,la ilusión
-the television,la televisión
-the city,la ciudad
-the truth,la verdad
-the friendship,la amistad
-the attitude,la actitud
-the photograph,la foto
-the hand,la mano
 the radio,la radio
-the class,la clase
-the flower,la flor
-the light,la luz
-the woman,la mujer
-the skin,la piel
-the luck,la suerte
-the (male) artist,el artista
-the (female) artist,la artista
-the (male) dentist,el dentista
-the (female) dentist,la dentista
-the (male) pianist,el pianista
-the (female) pianist,la pianista
-the (male) cabdriver,el taxista
-the (female) cabdriver,la taxista
-the (male) singer,el cantante
-the (female) singer,la cantante
-the (male) student,el estudiante
-the (female) student,la estudiante
-the (male) manager,el gerente
-the (female) manager,la gerente
-the (male) president,el presidente
-the (female) president,la presidente
-a (male) friend,un amigo
-a bathroom,un baño
-a car,un carro
-a mirror,un espejo
-a cat,un gato
-a garden,un jardín
-a museum,un museo
-a (male) pianist,un pianista
-an armchair,un sillón
-a ticket,un tiquete
-a (female) friend,una amiga
-a library,una biblioteca
-a city,una ciudad
-an idea,una idea
-a bookstore,una librería
-a suitcase,una maleta
-a woman,una mujer
-a page,una página
-a person (male or female),una persona
-a pen,una pluma
-some boats,unos barcos
-some cats,unos gatos
-some languages,unos idiomas
-some books,unos libros
-some (female) artists,unas artistas
-some houses,unas casas
-some conversations,unas conversaciones
-some flowers,unas flores
-the white book,el libro blanco
-the black cat,el gato negro
 the red car,el carro rojo
-the nice boy,el muchacho simpático
-the handsome man,el hombre hermoso
-the white house,la casa blanca
-the black jacket,la chaqueta negra
 the red lamp,la lámpara roja
-the nice girl,la muchacha simpática
-the beautiful woman,la mujer hermosa
-yellow,amarillo
-orange,anaranjado
-blue,azul
-white,blanco
-gray,gris
-brown,"marrón, pardo"
-purple,morado
-brown-skinned,moreno
-black,negro
-red,rojo
-pink,rosado
-green,verde
-"agreeable, pleasant",agradable
-happy,alegre
-inexpensive,barato
-expensive,caro
-weak,débil
-slender,delgado
-difficult,difícil
-"great, terrific",estupendo
-excellent,excelente
-easy,fácil
-fantastic,fantástico
-happy,feliz
-ugly,feo
+the red tomatoes,los tomates rojos
+the rosé wine,el vino rosado
+the rosé wines,los vinos rosados
+the sister,la hermana
+the skin,la piel
+the small cities,las ciudades pequeñas
+the small city,la ciudad pequeña
+the song,la canción
+the store,la tienda
+the strong men,los hombres fuertes
+the strong people,las personas fuertes
+the strong person,la persona fuerte
+the system,el sistema
+the table,la mesa
+the tables,las mesas
+the taxi driver,el taxista
+the taxi drivers,los taxistas
+the telephone,el teléfono
+the telephones,los teléfonos
+the television,la televisión
+the thin women,las mujeres delgadas
+the tomato,el tomate
+the train,el tren
+the trains,los trenes
+the truth,la verdad
+the white book,el libro blanco
+the white house,la casa blanca
+the window,la ventana
+the windows,las ventanas
+the wine,el vino
+the woman,la mujer
+the yellow blouses,las blusas amarillas
+the young boy,el muchacho joven
+the young boys,los muchachos jóvenes
+the young boys,los muchachos jóvenes
 thin,flaco
-fragile,frágil
-strong,fuerte
-fat,gordo
-big,grande
-"handsome, beautiful",guapo
-beautiful,hermoso
-horrible,horrible
-intelligent,inteligente
-interesting,interesante
-young,joven
-"marvelous, wonderful",maravilloso
-"little, small",pequeño
-poor,pobre
-rich,rico
-nice,simpático
-sincere,sincero
-stingy,tacaño
 typical,típico
-sad,triste
-old,viejo
+ugly,feo
+weak,débil
+white,blanco
+yellow,amarillo
+young,joven
