@@ -97,6 +97,7 @@ def is_forced_en_es_deck(filename):
 DEFAULT_THEME = "dark"
 DEFAULT_DIRECTION_MODE = "random"
 DEFAULT_SPEECH_SPEED = 5
+DEFAULT_SHOW_HINTS = True
 
 
 def default_person_prefs():
@@ -104,6 +105,7 @@ def default_person_prefs():
         "theme": DEFAULT_THEME,
         "direction_mode": DEFAULT_DIRECTION_MODE,
         "speech_speed": DEFAULT_SPEECH_SPEED,
+        "show_hints": DEFAULT_SHOW_HINTS,
     }
 
 
@@ -118,10 +120,14 @@ def sanitize_person_prefs(pref_data, fallback=None):
     speech_speed = pref_data.get("speech_speed", fallback["speech_speed"])
     if speech_speed not in {1, 2, 3, 4, 5}:
         speech_speed = fallback["speech_speed"]
+    show_hints = pref_data.get("show_hints", fallback["show_hints"])
+    if not isinstance(show_hints, bool):
+        show_hints = fallback["show_hints"]
     return {
         "theme": theme,
         "direction_mode": direction_mode,
         "speech_speed": speech_speed,
+        "show_hints": show_hints,
     }
 
 
@@ -234,6 +240,7 @@ def current_prefs():
         "theme": st.session_state.theme,
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
+        "show_hints": st.session_state.show_hints,
     }
     return {
         "active_person": st.session_state.active_person,
@@ -369,6 +376,7 @@ defaults = {
     "menu_open":      False,
     "direction_mode": active_person_prefs["direction_mode"],
     "speech_speed":   active_person_prefs["speech_speed"],
+    "show_hints":     active_person_prefs["show_hints"],
     "active_person":  active_person,
     "person_radio":   active_person,
     "person_settings": prefs["person_settings"],
@@ -401,6 +409,7 @@ def sync_menu_widget_state():
     st.session_state.theme_radio = st.session_state.theme
     st.session_state.dir_radio = direction_labels[st.session_state.direction_mode]
     st.session_state.speech_speed_radio = st.session_state.speech_speed
+    st.session_state.hints_radio = "Hints ON" if st.session_state.show_hints else "Hints OFF"
 
 
 def store_active_person_prefs():
@@ -408,6 +417,7 @@ def store_active_person_prefs():
         "theme": st.session_state.theme,
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
+        "show_hints": st.session_state.show_hints,
     }
 
 
@@ -416,6 +426,36 @@ def close_menu_and_save():
     save_prefs(current_prefs())
     st.session_state.menu_open = False
     st.session_state.erase_review_confirm = False
+
+
+def render_menu_backdrop_close_handler():
+    components.html(
+        """
+        <script>
+        (function() {
+            var doc = window.parent.document;
+            var backdrop = doc.querySelector('.menu-backdrop');
+            var closeButton = doc.querySelector('.st-key-hamburger_wrap button');
+
+            if (!backdrop || !closeButton) {
+                return;
+            }
+
+            if (doc._menuBackdropHandler && doc._menuBackdropElement) {
+                doc._menuBackdropElement.removeEventListener('click', doc._menuBackdropHandler);
+            }
+
+            doc._menuBackdropElement = backdrop;
+            doc._menuBackdropHandler = function() {
+                closeButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            };
+
+            backdrop.addEventListener('click', doc._menuBackdropHandler);
+        })();
+        </script>
+        """,
+        height=0,
+    )
 
 
 def apply_person_prefs(person):
@@ -427,6 +467,7 @@ def apply_person_prefs(person):
     st.session_state.theme = person_prefs["theme"]
     st.session_state.direction_mode = person_prefs["direction_mode"]
     st.session_state.speech_speed = person_prefs["speech_speed"]
+    st.session_state.show_hints = person_prefs["show_hints"]
     st.session_state.direction = direction_for_mode(person_prefs["direction_mode"])
     sync_menu_widget_state()
 
@@ -984,7 +1025,16 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 
 /* ---- Menu dropdown ---- */
-.menu-dropdown {{
+.menu-backdrop {{
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.38);
+    z-index: 998;
+    pointer-events: auto;
+}}
+.st-key-menu_modal_wrap {{
+    position: relative;
+    z-index: 999;
     background-color: {t['menu_bg']};
     border: 1px solid {t['border']};
     border-radius: 0.75rem;
@@ -1104,6 +1154,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 0.72em;
     font-weight: 400;
     color: {t['muted']};
+    white-space: nowrap;
+}}
+.fc-inline-hint {{
+    font-size: 0.72em;
+    font-weight: 400;
+    color: color-mix(in srgb, {t['muted']} 65%, {t['accent']} 35%);
     white-space: nowrap;
 }}
 .fc-word-placeholder {{
@@ -1381,15 +1437,19 @@ def advance_card(schedule_current=True):
 def format_word(text, word_class, note_class):
     del note_class
 
+    if not st.session_state.show_hints:
+        text = re.sub(r'\s*\{[^{}]*\}\s*', ' ', text)
+
     parts = []
     last_end = 0
     has_inline_note = False
 
-    for match in re.finditer(r'\[[^\[\]]*\]', text):
+    for match in re.finditer(r'\[[^\[\]]*\]|\{[^{}]*\}', text):
         if match.start() > last_end:
             parts.append(html.escape(text[last_end:match.start()]))
+        note_class_name = "fc-inline-hint" if match.group(0).startswith("{") else "fc-inline-note"
         parts.append(
-            '<span class="fc-inline-note">'
+            '<span class="' + note_class_name + '">'
             + html.escape(match.group(0))
             + '</span>'
         )
@@ -1408,7 +1468,7 @@ def format_word(text, word_class, note_class):
 
 
 def strip_spoken_text(text):
-    spoken_text = re.sub(r'\[.*?\]|\(.*?\)', '', text)
+    spoken_text = re.sub(r'\[.*?\]|\(.*?\)|\{.*?\}', '', text)
     spoken_text = re.sub(r'\s+', ' ', spoken_text)
     return spoken_text.strip()
 
@@ -1612,6 +1672,8 @@ def render_header():
                     else:
                         st.session_state.menu_open = True
                     st.rerun()
+    if st.session_state.menu_open:
+        return
     with st.container(key="person_radio_wrap"):
         selected_person = st.radio(
             "Person",
@@ -1632,10 +1694,6 @@ def render_header():
                 if review_person != selected_person:
                     reset_study_state(reset_selected=True)
             st.rerun()
-    st.markdown(
-        f"<hr style='border:none;border-top:1px solid {t['border']};margin:0 0 0.7rem 0;'>",
-        unsafe_allow_html=True,
-    )
 
 
 def render_menu():
@@ -1643,71 +1701,88 @@ def render_menu():
         return
     active_review_count = review_count_for(st.session_state.active_person)
     active_person_label = PERSON_LABELS[st.session_state.active_person]
-    st.markdown('<div class="menu-dropdown">', unsafe_allow_html=True)
-    st.markdown('<div class="menu-section-label">Theme</div>', unsafe_allow_html=True)
-    new_theme = st.radio("Theme", options=["light", "dark", "aqua", "amber"],
-                         index=["light","dark","aqua", "amber"].index(st.session_state.theme),
-                         label_visibility="collapsed", key="theme_radio")
-    if new_theme != st.session_state.theme:
-        st.session_state.theme     = new_theme
-        store_active_person_prefs()
-        st.session_state.erase_review_confirm = False
-        st.rerun()
-    st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Direction</div>',
-                unsafe_allow_html=True)
-    dir_options = ["Random 50/50", "EN → ES only", "ES → EN only"]
-    dir_keys    = ["random", "en_to_es", "es_to_en"]
-    cur_idx     = dir_keys.index(st.session_state.direction_mode)
-    new_dir     = st.radio("Direction", options=dir_options, index=cur_idx,
-                           label_visibility="collapsed", key="dir_radio")
-    if dir_options.index(new_dir) != cur_idx:
-        st.session_state.direction_mode = dir_keys[dir_options.index(new_dir)]
-        st.session_state.direction = direction_for_mode(st.session_state.direction_mode)
-        store_active_person_prefs()
-        st.session_state.erase_review_confirm = False
-        st.rerun()
-    st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Speech Speed</div>',
-                unsafe_allow_html=True)
-    speed_options = [1, 2, 3, 4, 5]
-    speed_labels = {
-        1: "Very Slow",
-        2: "Slow",
-        3: "Medium",
-        4: "Fast",
-        5: "Very Fast",
-    }
-    new_speed = st.radio(
-        "Speech Speed",
-        options=speed_options,
-        index=speed_options.index(st.session_state.speech_speed),
-        format_func=lambda value: speed_labels[value],
-        horizontal=True,
-        label_visibility="collapsed",
-        key="speech_speed_radio",
-    )
-    if new_speed != st.session_state.speech_speed:
-        st.session_state.speech_speed = new_speed
-        store_active_person_prefs()
-        st.session_state.erase_review_confirm = False
-        st.rerun()
-    if active_review_count > 0:
-        erase_label = f"Erase Review Deck ({active_person_label})"
-        erase_wrap_key = "erase_review_confirm_wrap" if st.session_state.erase_review_confirm else "erase_review_wrap"
-        with st.container(key=erase_wrap_key):
-            if st.button(
-                erase_label,
-                key="erase_review_btn",
-            ):
-                if st.session_state.erase_review_confirm:
-                    erase_review_deck(st.session_state.active_person)
-                else:
-                    st.session_state.erase_review_confirm = True
-                st.rerun()
-        if st.session_state.erase_review_confirm:
-            with st.container(key="clear_erase_review_confirm_wrap"):
-                st.button("__clear_erase_review_confirm__", key="clear_erase_review_confirm_btn", on_click=clear_erase_review_confirm)
-            render_erase_review_confirm_timeout()
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div class="menu-backdrop"></div>', unsafe_allow_html=True)
+    render_menu_backdrop_close_handler()
+    with st.container(key="menu_modal_wrap"):
+        st.markdown('<div class="menu-section-label">Hints</div>', unsafe_allow_html=True)
+        hint_options = ["Hints ON", "Hints OFF"]
+        new_hints = st.radio(
+            "Hints",
+            options=hint_options,
+            index=0 if st.session_state.show_hints else 1,
+            horizontal=True,
+            label_visibility="collapsed",
+            key="hints_radio",
+        )
+        hints_enabled = new_hints == "Hints ON"
+        if hints_enabled != st.session_state.show_hints:
+            st.session_state.show_hints = hints_enabled
+            store_active_person_prefs()
+            st.session_state.erase_review_confirm = False
+            st.rerun()
+        st.markdown('<div class="menu-section-label">Theme</div>', unsafe_allow_html=True)
+        new_theme = st.radio("Theme", options=["light", "dark", "aqua", "amber"],
+                             index=["light","dark","aqua", "amber"].index(st.session_state.theme),
+                             label_visibility="collapsed", key="theme_radio")
+        if new_theme != st.session_state.theme:
+            st.session_state.theme     = new_theme
+            store_active_person_prefs()
+            st.session_state.erase_review_confirm = False
+            st.rerun()
+        st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Direction</div>',
+                    unsafe_allow_html=True)
+        dir_options = ["Random 50/50", "EN → ES only", "ES → EN only"]
+        dir_keys    = ["random", "en_to_es", "es_to_en"]
+        cur_idx     = dir_keys.index(st.session_state.direction_mode)
+        new_dir     = st.radio("Direction", options=dir_options, index=cur_idx,
+                               label_visibility="collapsed", key="dir_radio")
+        if dir_options.index(new_dir) != cur_idx:
+            st.session_state.direction_mode = dir_keys[dir_options.index(new_dir)]
+            st.session_state.direction = direction_for_mode(st.session_state.direction_mode)
+            store_active_person_prefs()
+            st.session_state.erase_review_confirm = False
+            st.rerun()
+        st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Speech Speed</div>',
+                    unsafe_allow_html=True)
+        speed_options = [1, 2, 3, 4, 5]
+        speed_labels = {
+            1: "Very Slow",
+            2: "Slow",
+            3: "Medium",
+            4: "Fast",
+            5: "Very Fast",
+        }
+        new_speed = st.radio(
+            "Speech Speed",
+            options=speed_options,
+            index=speed_options.index(st.session_state.speech_speed),
+            format_func=lambda value: speed_labels[value],
+            horizontal=True,
+            label_visibility="collapsed",
+            key="speech_speed_radio",
+        )
+        if new_speed != st.session_state.speech_speed:
+            st.session_state.speech_speed = new_speed
+            store_active_person_prefs()
+            st.session_state.erase_review_confirm = False
+            st.rerun()
+        if active_review_count > 0:
+            erase_label = f"Erase Review Deck ({active_person_label})"
+            erase_wrap_key = "erase_review_confirm_wrap" if st.session_state.erase_review_confirm else "erase_review_wrap"
+            with st.container(key=erase_wrap_key):
+                if st.button(
+                    erase_label,
+                    key="erase_review_btn",
+                ):
+                    if st.session_state.erase_review_confirm:
+                        erase_review_deck(st.session_state.active_person)
+                    else:
+                        st.session_state.erase_review_confirm = True
+                    st.rerun()
+            if st.session_state.erase_review_confirm:
+                with st.container(key="clear_erase_review_confirm_wrap"):
+                    st.button("__clear_erase_review_confirm__", key="clear_erase_review_confirm_btn", on_click=clear_erase_review_confirm)
+                render_erase_review_confirm_timeout()
 
 
 def render_deck_strip():
@@ -1807,7 +1882,8 @@ if st.session_state.final_exit:
 if st.session_state.selected_csv is None:
     render_header()
     render_menu()
-    st.markdown("<hr class='soft-divider'>", unsafe_allow_html=True)
+    if st.session_state.menu_open:
+        st.stop()
     review_deck_values = visible_review_deck_values()
     deck_options = ["-- Choose a deck --", *review_deck_values, *csv_files]
     with st.container(key="mobile_deck_picker_wrap"):
