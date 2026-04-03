@@ -1,99 +1,99 @@
 word,answer
-“Ella ___ mi amiga. {She is my friend.}”,“Ella es mi amiga. [identity/relationship = ser]”
-“¿Él ___ tu profesor? {Is he your teacher?}”,”¿Él es tu profesor? [identity/classification = ser]”
-“Él ___ doctor. {He is a doctor.}”,“Él es doctor. [profession = ser]”
-“¿Tú ___ ingeniero? {Are you an engineer?}”,”¿Tú eres ingeniero? [profession = ser]”
-“Soy de México. {I am from Mexico.}”,“Soy de México. [origin = ser]”
-“¿Ustedes ___ de España? {Are you all from Spain?}”,”¿Ustedes son de España? [origin = ser]”
-“Él ___ alto. {He is tall.}”,“Él es alto. [inherent characteristic = ser]”
-“¿Ella ___ simpática? {Is she nice?}”,”¿Ella es simpática? [inherent characteristic = ser]”
-“El libro ___ interesante. {The book is interesting.}”,“El libro es interesante. [inherent quality/judgment = ser]”
-“¿La película ___ buena? {Is the movie good?}”,”¿La película es buena? [inherent quality/judgment = ser]”
-“Hoy ___ lunes. {Today is Monday.}”,“Hoy es lunes. [time/date = ser]”
-“¿Qué hora ___? {What time is it?}”,”¿Qué hora es? [time = ser]”
-“El libro ___ de Ana. {The book is Ana’s.}”,“El libro es de Ana. [possession = ser]”
-“¿La casa ___ de ustedes? {Is the house yours?}”,”¿La casa es de ustedes? [possession = ser]”
-“La mesa ___ de madera. {The table is made of wood.}”,“La mesa es de madera. [material = ser]”
-“¿El anillo ___ de oro? {Is the ring made of gold?}”,”¿El anillo es de oro? [material = ser]”
-“La reunión ___ en mi casa. {The meeting is at my house.}”,“La reunión es en mi casa. [event location = ser]”
-“¿La fiesta ___ en el parque? {Is the party in the park?}”,”¿La fiesta es en el parque? [event location = ser]”
-“Estoy en casa. {I am at home.}”,“Estoy en casa. [location = estar]”
-“¿El gato ___ en la mesa? {Is the cat on the table?}”,”¿El gato está en la mesa? [location = estar]”
-“Estoy cansado. {I am tired.}”,“Estoy cansado. [temporary condition/health = estar]”
-“¿Ella ___ enferma? {Is she sick?}”,”¿Ella está enferma? [temporary condition/health = estar]”
-“Estoy feliz. {I am happy.}”,“Estoy feliz. [emotional state = estar]”
-“¿Él ___ enojado? {Is he angry?}”,”¿Él está enojado? [emotional state = estar]”
-“Estamos juntos. {We are together.}”,“Estamos juntos. [state/situation = estar]”
-“¿Ustedes ___ listos? {Are you ready?}”,”¿Ustedes están listos? [state/situation = estar]”
-“Estoy estudiando. {I am studying.}”,“Estoy estudiando. [ongoing action = estar]”
-“¿Ellos ___ trabajando? {Are they working?}”,”¿Ellos están trabajando? [ongoing action = estar]”
-“La puerta ___ cerrada. {The door is closed.}”,“La puerta está cerrada. [result of action = estar]”
-“¿La tienda ___ abierta? {Is the store open?}”,”¿La tienda está abierta? [result of action = estar]”
-“El café ___ frío. {The coffee is cold (right now).}”,“El café está frío. [situational condition/judgment = estar]”
-“¿La sopa ___ caliente? {Is the soup hot?}”,”¿La sopa está caliente? [situational condition/judgment = estar]”
-“how something is right now [estar or ser ?]”,“estar [state/condition]”
-“location [estar or ser ?]”,“estar [location]”
-“temporary condition/reaction (including health) [estar or ser ?]”,“estar [temporary condition/health]”
-“emotional state / changing mood [estar or ser ?]”,“estar [emotional state]”
-“state or situation [estar or ser ?]”,“estar [state/situation]”
-“what something is (identity/essence) [estar or ser ?]”,“ser [identity/essence]”
-“inherent characteristic (description) [estar or ser ?]”,“ser [inherent characteristic]”
-“profession [estar or ser ?]”,“ser [profession]”
-“origin [estar or ser ?]”,“ser [origin]”
-“identity / classification [estar or ser ?]”,“ser [identity/classification]”
-“material [estar or ser ?]”,“ser [material]”
-“possession / ownership [estar or ser ?]”,“ser [possession/ownership]”
-“event location (where an event takes place) [estar or ser ?]”,“ser [event location]”
-“inherent quality/general judgment [estar or ser ?]”,“ser [inherent quality/judgment]”
-“Ella ___ mi mejor amiga de la infancia. {She is my best friend from childhood.}”,“Ella es mi mejor amiga de la infancia. [identity/relationship = ser]”
-“¿Él ___ tu profesor nuevo de matemáticas? {Is he your new math teacher?}”,”¿Él es tu profesor nuevo de matemáticas? [identity/classification = ser]”
-“Él ___ un doctor muy famoso en la ciudad. {He is a very famous doctor in the city.}”,“Él es un doctor muy famoso en la ciudad. [profession = ser]”
-“¿Tú ___ un ingeniero muy talentoso aquí? {Are you a very talented engineer here?}”,”¿Tú eres un ingeniero muy talentoso aquí? [profession = ser]”
-“Nosotros ___ de una pequeña ciudad en México. {We are from a small city in Mexico.}”,“Nosotros somos de una pequeña ciudad en México. [origin = ser]”
-“¿Ellos ___ de un pueblo muy bonito cerca? {Are they from a very nice town nearby?}”,”¿Ellos son de un pueblo muy bonito cerca? [origin = ser]”
-“Él ___ bastante alto y muy fuerte físicamente. {He is quite tall and very physically strong.}”,“Él es bastante alto y muy fuerte físicamente. [inherent characteristic = ser]”
-“¿Ella ___ muy amable con todos los clientes? {Is she very kind to all the customers?}”,”¿Ella es muy amable con todos los clientes? [inherent characteristic = ser]”
-“El libro ___ bastante interesante para jóvenes lectores. {The book is quite interesting for young readers.}”,“El libro es bastante interesante para jóvenes lectores. [inherent quality/judgment = ser]”
-“¿La película ___ realmente buena para toda la familia? {Is the movie really good for the whole family?}”,”¿La película es realmente buena para toda la familia? [inherent quality/judgment = ser]”
-“Hoy ___ un día muy importante para nosotros. {Today is a very important day for us.}”,“Hoy es un día muy importante para nosotros. [time/date = ser]”
-“¿Qué hora ___ exactamente en este momento ahora? {What time is it exactly right now?}”,”¿Qué hora es exactamente en este momento ahora? [time = ser]”
-“El coche ___ de mi hermano mayor en casa. {The car is my older brother’s at home.}”,“El coche es de mi hermano mayor en casa. [possession = ser]”
-“¿La computadora ___ de ustedes en la oficina? {Is the computer yours in the office?}”,”¿La computadora es de ustedes en la oficina? [possession = ser]”
-“La silla ___ de madera muy resistente y antigua. {The chair is made of very strong and old wood.}”,“La silla es de madera muy resistente y antigua. [material = ser]”
-"“¿El reloj ___ de oro puro bastante caro? {Is the watch made of pure gold, quite expensive?}”",”¿El reloj es de oro puro bastante caro? [material = ser]”
-“La conferencia ___ en un edificio moderno del centro. {The conference is in a modern building downtown.}”,“La conferencia es en un edificio moderno del centro. [event location = ser]”
-“¿La boda ___ en un jardín muy bonito hoy? {Is the wedding in a very beautiful garden today?}”,”¿La boda es en un jardín muy bonito hoy? [event location = ser]”
-“Estoy en una casa muy tranquila ahora mismo. {I am in a very quiet house right now.}”,“Estoy en una casa muy tranquila ahora mismo. [location = estar]”
-“¿El perro ___ en el jardín grande afuera? {Is the dog in the big garden outside?}”,”¿El perro está en el jardín grande afuera? [location = estar]”
-“Estoy bastante cansado después de un día largo. {I am quite tired after a long day.}”,“Estoy bastante cansado después de un día largo. [temporary condition/health = estar]”
-“¿Ella ___ un poco enferma desde ayer? {Is she a little sick since yesterday?}”,”¿Ella está un poco enferma desde ayer? [temporary condition/health = estar]”
-“Estoy muy feliz con los resultados finales hoy. {I am very happy with the final results today.}”,“Estoy muy feliz con los resultados finales hoy. [emotional state = estar]”
-“¿Él ___ bastante enojado por la situación actual? {Is he quite angry about the current situation?}”,”¿Él está bastante enojado por la situación actual? [emotional state = estar]”
-“Estamos juntos en este momento tan importante ahora. {We are together in this very important moment now.}”,“Estamos juntos en este momento tan importante ahora. [state/situation = estar]”
-“¿Ustedes ___ listos para la reunión importante hoy? {Are you ready for the important meeting today?}”,”¿Ustedes están listos para la reunión importante hoy? [state/situation = estar]”
-“Estoy estudiando mucho para el examen difícil mañana. {I am studying a lot for the difficult exam tomorrow.}”,“Estoy estudiando mucho para el examen difícil mañana. [ongoing action = estar]”
-“¿Ellos ___ trabajando en un proyecto muy complejo? {Are they working on a very complex project?}”,”¿Ellos están trabajando en un proyecto muy complejo? [ongoing action = estar]”
-“La ventana ___ completamente abierta por el viento fuerte. {The window is completely open because of the strong wind.}”,“La ventana está completamente abierta por el viento fuerte. [result of action = estar]”
-“¿La tienda ___ cerrada por mantenimiento hoy? {Is the store closed for maintenance today?}”,”¿La tienda está cerrada por mantenimiento hoy? [result of action = estar]”
-“El café ___ muy frío después de unos minutos. {The coffee is very cold after a few minutes.}”,“El café está muy frío después de unos minutos. [situational condition/judgment = estar]”
-“¿La sopa ___ suficientemente caliente para comer ahora? {Is the soup hot enough to eat now?}”,”¿La sopa está suficientemente caliente para comer ahora? [situational condition/judgment = estar]”
-“Yo ___ aburrido en clases largas. {I am a boring person in long classes.}”,“Yo soy aburrido en clases largas. [ser = inherent trait → personality]”
-“Yo ___ aburrido en esta clase ahora. {I feel bored in this class right now.}”,“Yo estoy aburrido en esta clase ahora. [estar = current state → feeling]”
-“Ella ___ lista y aprende muy rápido. {She is clever and learns very fast.}”,“Ella es lista y aprende muy rápido. [ser = inherent trait → intelligence]”
-“Ella ___ lista para salir ahora. {She is ready to leave now.}”,“Ella está lista para salir ahora. [estar = state → readiness]”
-“La comida ___ buena en este lugar. {The food is generally good at this place.}”,“La comida es buena en este lugar. [ser = inherent quality → general]”
-“La comida ___ buena hoy en este lugar. {The food tastes good today at this place.}”,“La comida está buena hoy en este lugar. [estar = situational judgment → taste now]”
-“Él ___ seguro y muy confiable siempre. {He is safe and very reliable always.}”,“Él es seguro y muy confiable siempre. [ser = inherent trait → reliability]”
-“Él ___ seguro de su respuesta ahora. {He is sure of his answer right now.}”,“Él está seguro de su respuesta ahora. [estar = mental state → certainty]”
-“El niño ___ malo en la escuela siempre. {The boy is bad at school always.}”,“El niño es malo en la escuela siempre. [ser = inherent trait → personality]”
-“El niño ___ malo con fiebre hoy. {The boy is sick with a fever today.}”,“El niño está malo con fiebre hoy. [estar = condition → illness]”
-“La puerta ___ abierta en ese diseño moderno. {The door is open in that modern design.}”,“La puerta es abierta en ese diseño moderno. [ser = characteristic → general]”
-“La puerta ___ abierta ahora por el viento. {The door is open now because of the wind.}”,“La puerta está abierta ahora por el viento. [estar = result → current state]”
-“El café ___ frío en este tipo especial. {The coffee is cold in this type.}”,“El café es frío en este tipo especial. [ser = inherent type → category]”
-“El café ___ frío después de unos minutos. {The coffee is cold after a few minutes.}”,“El café está frío después de unos minutos. [estar = condition → current state]”
-“La sopa ___ rica en ese restaurante. {The soup is rich in that restaurant.}”,“La sopa es rica en ese restaurante. [ser = inherent quality → general]”
-“La sopa ___ rica ahora con este sabor. {The soup tastes good now with this flavor.}”,“La sopa está rica ahora con este sabor. [estar = situational judgment → taste]”
-“La fruta ___ verde por su color natural. {The fruit is green by its natural color.}”,“La fruta es verde por su color natural. [ser = inherent quality → color]”
-“La fruta ___ verde y necesita más tiempo. {The fruit is unripe and needs more time.}”,“La fruta está verde y necesita más tiempo. [estar = condition → ripeness]”
-“El profesor ___ serio con sus estudiantes siempre. {The teacher is serious with his students always.}”,“El profesor es serio con sus estudiantes siempre. [ser = inherent trait → personality]”
-“El profesor ___ serio hoy por el problema. {The teacher is serious today because of the problem.}”,“El profesor está serio hoy por el problema. [estar = state → temporary mood]”
+Ella ___ mi amiga. {She is my friend.},Ella es mi amiga. [identity/relationship = ser]
+¿Él ___ tu profesor? {Is he your teacher?},¿Él es tu profesor? [identity/classification = ser]
+Él ___ doctor. {He is a doctor.},Él es doctor. [profession = ser]
+¿Tú ___ ingeniero? {Are you an engineer?},¿Tú eres ingeniero? [profession = ser]
+Soy de México. {I am from Mexico.},Soy de México. [origin = ser]
+¿Ustedes ___ de España? {Are you all from Spain?},¿Ustedes son de España? [origin = ser]
+Él ___ alto. {He is tall.},Él es alto. [inherent characteristic = ser]
+¿Ella ___ simpática? {Is she nice?},¿Ella es simpática? [inherent characteristic = ser]
+El libro ___ interesante. {The book is interesting.},El libro es interesante. [inherent quality/judgment = ser]
+¿La película ___ buena? {Is the movie good?},¿La película es buena? [inherent quality/judgment = ser]
+Hoy ___ lunes. {Today is Monday.},Hoy es lunes. [time/date = ser]
+¿Qué hora ___? {What time is it?},¿Qué hora es? [time = ser]
+El libro ___ de Ana. {The book is Ana’s.},El libro es de Ana. [possession = ser]
+¿La casa ___ de ustedes? {Is the house yours?},¿La casa es de ustedes? [possession = ser]
+La mesa ___ de madera. {The table is made of wood.},La mesa es de madera. [material = ser]
+¿El anillo ___ de oro? {Is the ring made of gold?},¿El anillo es de oro? [material = ser]
+La reunión ___ en mi casa. {The meeting is at my house.},La reunión es en mi casa. [event location = ser]
+¿La fiesta ___ en el parque? {Is the party in the park?},¿La fiesta es en el parque? [event location = ser]
+Estoy en casa. {I am at home.},Estoy en casa. [location = estar]
+¿El gato ___ en la mesa? {Is the cat on the table?},¿El gato está en la mesa? [location = estar]
+Estoy cansado. {I am tired.},Estoy cansado. [temporary condition/health = estar]
+¿Ella ___ enferma? {Is she sick?},¿Ella está enferma? [temporary condition/health = estar]
+Estoy feliz. {I am happy.},Estoy feliz. [emotional state = estar]
+¿Él ___ enojado? {Is he angry?},¿Él está enojado? [emotional state = estar]
+Estamos juntos. {We are together.},Estamos juntos. [state/situation = estar]
+¿Ustedes ___ listos? {Are you ready?},¿Ustedes están listos? [state/situation = estar]
+Estoy estudiando. {I am studying.},Estoy estudiando. [ongoing action = estar]
+¿Ellos ___ trabajando? {Are they working?},¿Ellos están trabajando? [ongoing action = estar]
+La puerta ___ cerrada. {The door is closed.},La puerta está cerrada. [result of action = estar]
+¿La tienda ___ abierta? {Is the store open?},¿La tienda está abierta? [result of action = estar]
+El café ___ frío. {The coffee is cold (right now).},El café está frío. [situational condition/judgment = estar]
+¿La sopa ___ caliente? {Is the soup hot?},¿La sopa está caliente? [situational condition/judgment = estar]
+how something is right now [estar or ser ?],estar [state/condition]
+location [estar or ser ?],estar [location]
+temporary condition/reaction (including health) [estar or ser ?],estar [temporary condition/health]
+emotional state / changing mood [estar or ser ?],estar [emotional state]
+state or situation [estar or ser ?],estar [state/situation]
+what something is (identity/essence) [estar or ser ?],ser [identity/essence]
+inherent characteristic (description) [estar or ser ?],ser [inherent characteristic]
+profession [estar or ser ?],ser [profession]
+origin [estar or ser ?],ser [origin]
+identity / classification [estar or ser ?],ser [identity/classification]
+material [estar or ser ?],ser [material]
+possession / ownership [estar or ser ?],ser [possession/ownership]
+event location (where an event takes place) [estar or ser ?],ser [event location]
+inherent quality/general judgment [estar or ser ?],ser [inherent quality/judgment]
+Ella ___ mi mejor amiga de la infancia. {She is my best friend from childhood.},Ella es mi mejor amiga de la infancia. [identity/relationship = ser]
+¿Él ___ tu profesor nuevo de matemáticas? {Is he your new math teacher?},¿Él es tu profesor nuevo de matemáticas? [identity/classification = ser]
+Él ___ un doctor muy famoso en la ciudad. {He is a very famous doctor in the city.},Él es un doctor muy famoso en la ciudad. [profession = ser]
+¿Tú ___ un ingeniero muy talentoso aquí? {Are you a very talented engineer here?},¿Tú eres un ingeniero muy talentoso aquí? [profession = ser]
+Nosotros ___ de una pequeña ciudad en México. {We are from a small city in Mexico.},Nosotros somos de una pequeña ciudad en México. [origin = ser]
+¿Ellos ___ de un pueblo muy bonito cerca? {Are they from a very nice town nearby?},¿Ellos son de un pueblo muy bonito cerca? [origin = ser]
+Él ___ bastante alto y muy fuerte físicamente. {He is quite tall and very physically strong.},Él es bastante alto y muy fuerte físicamente. [inherent characteristic = ser]
+¿Ella ___ muy amable con todos los clientes? {Is she very kind to all the customers?},¿Ella es muy amable con todos los clientes? [inherent characteristic = ser]
+El libro ___ bastante interesante para jóvenes lectores. {The book is quite interesting for young readers.},El libro es bastante interesante para jóvenes lectores. [inherent quality/judgment = ser]
+¿La película ___ realmente buena para toda la familia? {Is the movie really good for the whole family?},¿La película es realmente buena para toda la familia? [inherent quality/judgment = ser]
+Hoy ___ un día muy importante para nosotros. {Today is a very important day for us.},Hoy es un día muy importante para nosotros. [time/date = ser]
+¿Qué hora ___ exactamente en este momento ahora? {What time is it exactly right now?},¿Qué hora es exactamente en este momento ahora? [time = ser]
+El coche ___ de mi hermano mayor en casa. {The car is my older brother’s at home.},El coche es de mi hermano mayor en casa. [possession = ser]
+¿La computadora ___ de ustedes en la oficina? {Is the computer yours in the office?},¿La computadora es de ustedes en la oficina? [possession = ser]
+La silla ___ de madera muy resistente y antigua. {The chair is made of very strong and old wood.},La silla es de madera muy resistente y antigua. [material = ser]
+"¿El reloj ___ de oro puro bastante caro? {Is the watch made of pure gold, quite expensive?}",¿El reloj es de oro puro bastante caro? [material = ser]
+La conferencia ___ en un edificio moderno del centro. {The conference is in a modern building downtown.},La conferencia es en un edificio moderno del centro. [event location = ser]
+¿La boda ___ en un jardín muy bonito hoy? {Is the wedding in a very beautiful garden today?},¿La boda es en un jardín muy bonito hoy? [event location = ser]
+Estoy en una casa muy tranquila ahora mismo. {I am in a very quiet house right now.},Estoy en una casa muy tranquila ahora mismo. [location = estar]
+¿El perro ___ en el jardín grande afuera? {Is the dog in the big garden outside?},¿El perro está en el jardín grande afuera? [location = estar]
+Estoy bastante cansado después de un día largo. {I am quite tired after a long day.},Estoy bastante cansado después de un día largo. [temporary condition/health = estar]
+¿Ella ___ un poco enferma desde ayer? {Is she a little sick since yesterday?},¿Ella está un poco enferma desde ayer? [temporary condition/health = estar]
+Estoy muy feliz con los resultados finales hoy. {I am very happy with the final results today.},Estoy muy feliz con los resultados finales hoy. [emotional state = estar]
+¿Él ___ bastante enojado por la situación actual? {Is he quite angry about the current situation?},¿Él está bastante enojado por la situación actual? [emotional state = estar]
+Estamos juntos en este momento tan importante ahora. {We are together in this very important moment now.},Estamos juntos en este momento tan importante ahora. [state/situation = estar]
+¿Ustedes ___ listos para la reunión importante hoy? {Are you ready for the important meeting today?},¿Ustedes están listos para la reunión importante hoy? [state/situation = estar]
+Estoy estudiando mucho para el examen difícil mañana. {I am studying a lot for the difficult exam tomorrow.},Estoy estudiando mucho para el examen difícil mañana. [ongoing action = estar]
+¿Ellos ___ trabajando en un proyecto muy complejo? {Are they working on a very complex project?},¿Ellos están trabajando en un proyecto muy complejo? [ongoing action = estar]
+La ventana ___ completamente abierta por el viento fuerte. {The window is completely open because of the strong wind.},La ventana está completamente abierta por el viento fuerte. [result of action = estar]
+¿La tienda ___ cerrada por mantenimiento hoy? {Is the store closed for maintenance today?},¿La tienda está cerrada por mantenimiento hoy? [result of action = estar]
+El café ___ muy frío después de unos minutos. {The coffee is very cold after a few minutes.},El café está muy frío después de unos minutos. [situational condition/judgment = estar]
+¿La sopa ___ suficientemente caliente para comer ahora? {Is the soup hot enough to eat now?},¿La sopa está suficientemente caliente para comer ahora? [situational condition/judgment = estar]
+Yo ___ aburrido en clases largas. {I am a boring person in long classes.},Yo soy aburrido en clases largas. [ser = inherent trait → personality]
+Yo ___ aburrido en esta clase ahora. {I feel bored in this class right now.},Yo estoy aburrido en esta clase ahora. [estar = current state → feeling]
+Ella ___ lista y aprende muy rápido. {She is clever and learns very fast.},Ella es lista y aprende muy rápido. [ser = inherent trait → intelligence]
+Ella ___ lista para salir ahora. {She is ready to leave now.},Ella está lista para salir ahora. [estar = state → readiness]
+La comida ___ buena en este lugar. {The food is generally good at this place.},La comida es buena en este lugar. [ser = inherent quality → general]
+La comida ___ buena hoy en este lugar. {The food tastes good today at this place.},La comida está buena hoy en este lugar. [estar = situational judgment → taste now]
+Él ___ seguro y muy confiable siempre. {He is safe and very reliable always.},Él es seguro y muy confiable siempre. [ser = inherent trait → reliability]
+Él ___ seguro de su respuesta ahora. {He is sure of his answer right now.},Él está seguro de su respuesta ahora. [estar = mental state → certainty]
+El niño ___ malo en la escuela siempre. {The boy is bad at school always.},El niño es malo en la escuela siempre. [ser = inherent trait → personality]
+El niño ___ malo con fiebre hoy. {The boy is sick with a fever today.},El niño está malo con fiebre hoy. [estar = condition → illness]
+La puerta ___ abierta en ese diseño moderno. {The door is open in that modern design.},La puerta es abierta en ese diseño moderno. [ser = characteristic → general]
+La puerta ___ abierta ahora por el viento. {The door is open now because of the wind.},La puerta está abierta ahora por el viento. [estar = result → current state]
+El café ___ frío en este tipo especial. {The coffee is cold in this type.},El café es frío en este tipo especial. [ser = inherent type → category]
+El café ___ frío después de unos minutos. {The coffee is cold after a few minutes.},El café está frío después de unos minutos. [estar = condition → current state]
+La sopa ___ rica en ese restaurante. {The soup is rich in that restaurant.},La sopa es rica en ese restaurante. [ser = inherent quality → general]
+La sopa ___ rica ahora con este sabor. {The soup tastes good now with this flavor.},La sopa está rica ahora con este sabor. [estar = situational judgment → taste]
+La fruta ___ verde por su color natural. {The fruit is green by its natural color.},La fruta es verde por su color natural. [ser = inherent quality → color]
+La fruta ___ verde y necesita más tiempo. {The fruit is unripe and needs more time.},La fruta está verde y necesita más tiempo. [estar = condition → ripeness]
+El profesor ___ serio con sus estudiantes siempre. {The teacher is serious with his students always.},El profesor es serio con sus estudiantes siempre. [ser = inherent trait → personality]
+El profesor ___ serio hoy por el problema. {The teacher is serious today because of the problem.},El profesor está serio hoy por el problema. [estar = state → temporary mood]
