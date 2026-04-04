@@ -535,6 +535,7 @@ defaults = {
     "show_hints":     active_person_prefs["show_hints"],
     "active_person":  active_person,
     "person_radio":   active_person,
+    "person_selector_visible": True,
     "person_settings": prefs["person_settings"],
     "review_data":    review_data,
     "progress_data":  progress_data,
@@ -666,6 +667,7 @@ def activate_deck(deck_value):
     reset_study_state(reset_selected=False)
     st.session_state.selected_csv = deck_value
     st.session_state.study_mode = "all" if is_review_deck(deck_value) else None
+    st.session_state.person_selector_visible = False
     st.session_state.direction = effective_direction(deck_value)
 
 
@@ -1183,6 +1185,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {t['fg']};
     line-height: 1;
     white-space: nowrap;
+}}
+.title-sub {{
+    margin-top: 0.18rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: {t['muted']};
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }}
 .title-sub {{
     font-size: 0.8rem;
@@ -1829,7 +1839,10 @@ def render_header():
         with title_col:
             st.markdown(
                 "<div class='title-row'>"
+                "<div>"
                 "<span class='title-main'>Spanish Flashcards</span>"
+                "<div class='title-sub'>" + PERSON_LABELS[st.session_state.active_person] + "</div>"
+                "</div>"
                 "</div>",
                 unsafe_allow_html=True,
             )
@@ -1843,28 +1856,29 @@ def render_header():
                     st.rerun()
     if st.session_state.menu_open:
         return
-    with st.container(key="person_radio_wrap"):
-        selected_person = st.radio(
-            "Person",
-            options=list(PERSON_LABELS.keys()),
-            horizontal=True,
-            format_func=lambda value: PERSON_LABELS[value],
-            label_visibility="collapsed",
-            key="person_radio",
-        )
-        if selected_person != st.session_state.active_person:
-            store_active_person_prefs()
-            st.session_state.active_person = selected_person
-            apply_person_prefs(selected_person)
-            st.session_state.erase_review_confirm = False
-            save_prefs(current_prefs())
-            if is_review_deck(st.session_state.selected_csv):
-                review_person = review_deck_person(st.session_state.selected_csv)
-                if review_person != selected_person:
-                    reset_study_state(reset_selected=True)
-            elif st.session_state.selected_csv:
-                reset_study_state(reset_selected=False)
-            st.rerun()
+    if st.session_state.person_selector_visible:
+        with st.container(key="person_radio_wrap"):
+            selected_person = st.radio(
+                "Person",
+                options=list(PERSON_LABELS.keys()),
+                horizontal=True,
+                format_func=lambda value: PERSON_LABELS[value],
+                label_visibility="collapsed",
+                key="person_radio",
+            )
+            if selected_person != st.session_state.active_person:
+                store_active_person_prefs()
+                st.session_state.active_person = selected_person
+                apply_person_prefs(selected_person)
+                st.session_state.erase_review_confirm = False
+                save_prefs(current_prefs())
+                if is_review_deck(st.session_state.selected_csv):
+                    review_person = review_deck_person(st.session_state.selected_csv)
+                    if review_person != selected_person:
+                        reset_study_state(reset_selected=True)
+                elif st.session_state.selected_csv:
+                    reset_study_state(reset_selected=False)
+                st.rerun()
 
 
 def render_menu():
