@@ -25,6 +25,7 @@ st.set_page_config(page_title="Spanish Flashcards", page_icon="🌿", layout="wi
 CSV_FOLDER = os.path.join(os.path.dirname(__file__), "csv")
 PREFS_FILE = os.path.expanduser("~/.flashcards_prefs.json")
 REVIEWS_FILE = os.path.expanduser("~/.flashcards_reviews.json")
+PROGRESS_FILE = os.path.expanduser("~/.flashcards_progress.json")
 
 PERSON_LABELS = {
     "miguel": "Miguel",
@@ -76,6 +77,67 @@ def csv_data_row_count(filename):
 
 
 csv_row_counts = {filename: csv_data_row_count(filename) for filename in csv_files}
+
+
+def normalize_card_id(raw_value):
+    if pd.isna(raw_value):
+        return None
+    if isinstance(raw_value, bool):
+        return str(raw_value).strip()
+    if isinstance(raw_value, int):
+        return str(raw_value)
+    if isinstance(raw_value, float):
+        if raw_value.is_integer():
+            return str(int(raw_value))
+        return str(raw_value).strip()
+    text = str(raw_value).strip()
+    if not text:
+        return None
+    if re.fullmatch(r"\d+\.0+", text):
+        return text.split(".", 1)[0]
+    return text
+
+
+def completion_sort_key(value):
+    return (0, int(value)) if value.isdigit() else (1, value.lower())
+
+
+def load_regular_deck(filename):
+    csv_path = os.path.join(CSV_FOLDER, filename)
+    with open(csv_path, "r", encoding="utf-8") as handle:
+        first_line = handle.readline()
+    separator = ";" if ";" in first_line else ","
+    df = pd.read_csv(csv_path, sep=separator)
+    df.columns = [column.strip() for column in df.columns]
+
+    lower_columns = {column.lower(): column for column in df.columns}
+    id_column = lower_columns.get("id")
+
+    if is_forced_en_es_deck(filename):
+        content_columns = [column for column in df.columns if column != id_column]
+        word_column = content_columns[0]
+        answer_column = content_columns[1]
+    else:
+        word_column = lower_columns["word"]
+        answer_column = lower_columns["answer"]
+
+    cards = []
+    for _, row in df.iterrows():
+        cards.append(
+            {
+                "id": normalize_card_id(row[id_column]) if id_column else None,
+                "word": row[word_column],
+                "answer": row[answer_column],
+                "shown": False,
+                "repeat_score": 1,
+                "error_flag": 0,
+            }
+        )
+
+    return {
+        "cards": cards,
+        "supports_completion": bool(id_column),
+    }
 
 
 def display_deck_name(filename):
@@ -230,6 +292,99 @@ def save_review_data(review_data):
         pass
 
 
+def load_progress_data():
+    empty = {person: {} for person in PERSON_LABELS}
+    try:
+        with open(PROGRESS_FILE, encoding="utf-8") as f:
+            raw = json.load(f)
+    except Exception:
+        return empty
+
+    progress_data = {person: {} for person in PERSON_LABELS}
+    for person in PERSON_LABELS:
+        person_entries = raw.get(person, {})
+        if not isinstance(person_entries, dict):
+            continue
+        for filename, card_ids in person_entries.items():
+            if isinstance(card_ids, dict):
+                card_ids = card_ids.keys()
+            if not isinstance(card_ids, list) and not hasattr(card_ids, "__iter__"):
+                continue
+            normalized_ids = []
+            seen_ids = set()
+            for card_id in card_ids:
+                normalized_id = normalize_card_id(card_id)
+                if not normalized_id or normalized_id in seen_ids:
+                    continue
+                seen_ids.add(normalized_id)
+                normalized_ids.append(normalized_id)
+            if normalized_ids:
+                progress_data[person][filename] = sorted(normalized_ids, key=completion_sort_key)
+    return progress_data
+
+
+def save_progress_data(progress_data):
+    try:
+        with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
+            serializable = {
+                person: {
+                    filename: sorted(card_ids, key=completion_sort_key)
+                    for filename, card_ids in progress_data.get(person, {}).items()
+                    if card_ids
+                }
+                for person in PERSON_LABELS
+            }
+            json.dump(serializable, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+
+def completed_ids_for(person, filename):
+    return set(st.session_state.progress_data.get(person, {}).get(filename, []))
+
+
+def mark_card_completed(person, filename, card_id):
+    if not card_id:
+        return
+    person_progress = st.session_state.progress_data.setdefault(person, {})
+    deck_progress = set(person_progress.get(filename, []))
+    if card_id in deck_progress:
+        return
+    deck_progress.add(card_id)
+    person_progress[filename] = sorted(deck_progress, key=completion_sort_key)
+    save_progress_data(st.session_state.progress_data)
+
+
+def clear_deck_progress(person, filename):
+    person_progress = st.session_state.progress_data.setdefault(person, {})
+    if filename in person_progress:
+        del person_progress[filename]
+        save_progress_data(st.session_state.progress_data)
+
+
+def deck_progress_stats(filename, person):
+    deck_data = load_regular_deck(filename)
+    cards = deck_data["cards"]
+    total_cards = len(cards)
+
+    if not deck_data["supports_completion"]:
+        return {
+            "supported": False,
+            "total": total_cards,
+            "completed": 0,
+            "remaining": total_cards,
+        }
+
+    valid_ids = {card["id"] for card in cards if card.get("id")}
+    completed = len(completed_ids_for(person, filename) & valid_ids)
+    return {
+        "supported": True,
+        "total": total_cards,
+        "completed": completed,
+        "remaining": max(total_cards - completed, 0),
+    }
+
+
 def current_prefs():
     current_person = st.session_state.active_person
     person_settings = {
@@ -368,6 +523,7 @@ THEMES = {
 
 prefs = load_prefs()
 review_data = load_review_data()
+progress_data = load_progress_data()
 active_person = prefs["active_person"]
 active_person_prefs = prefs["person_settings"][active_person]
 
@@ -381,7 +537,9 @@ defaults = {
     "person_radio":   active_person,
     "person_settings": prefs["person_settings"],
     "review_data":    review_data,
+    "progress_data":  progress_data,
     "selected_csv":   None,
+    "study_mode":     None,
     "cards":          [],
     "order":          [],
     "index":          0,
@@ -493,6 +651,7 @@ def visible_review_deck_values():
 def reset_study_state(reset_selected=True):
     if reset_selected:
         st.session_state.selected_csv = None
+    st.session_state.study_mode = None
     st.session_state.loaded_csv = None
     st.session_state.cards = []
     st.session_state.order = []
@@ -506,6 +665,7 @@ def reset_study_state(reset_selected=True):
 def activate_deck(deck_value):
     reset_study_state(reset_selected=False)
     st.session_state.selected_csv = deck_value
+    st.session_state.study_mode = "all" if is_review_deck(deck_value) else None
     st.session_state.direction = effective_direction(deck_value)
 
 
@@ -795,6 +955,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     opacity: 1 !important;
 }}
 .st-key-mistakesonly_wrap div[data-testid="stButton"] > button:disabled {{
+    background-color: rgba(128, 128, 128, 0.14) !important;
+    border-color: rgba(128, 128, 128, 0.32) !important;
+    color: rgba(180, 180, 180, 0.55) !important;
+    opacity: 1 !important;
+    cursor: default !important;
+}}
+.st-key-study_mode_picker_wrap div[data-testid="stButton"] > button:disabled {{
     background-color: rgba(128, 128, 128, 0.14) !important;
     border-color: rgba(128, 128, 128, 0.32) !important;
     color: rgba(180, 180, 180, 0.55) !important;
@@ -1302,6 +1469,8 @@ def mark_correct():
         card["repeat_score"] = max(card["repeat_score"] - 1, 0)
         advance_card()
     else:
+        if card.get("id"):
+            mark_card_completed(st.session_state.active_person, st.session_state.selected_csv, card["id"])
         card["repeat_score"] = max(card["repeat_score"] - 1, 0)
         advance_card()
 
@@ -1693,6 +1862,8 @@ def render_header():
                 review_person = review_deck_person(st.session_state.selected_csv)
                 if review_person != selected_person:
                     reset_study_state(reset_selected=True)
+            elif st.session_state.selected_csv:
+                reset_study_state(reset_selected=False)
             st.rerun()
 
 
@@ -1796,6 +1967,54 @@ def render_deck_strip():
         '</div>', unsafe_allow_html=True)
 
 
+def render_study_mode_picker():
+    filename = st.session_state.selected_csv
+    person = st.session_state.active_person
+    progress_stats = deck_progress_stats(filename, person)
+    if not progress_stats["supported"]:
+        st.session_state.study_mode = "all"
+        return
+
+    total_cards = progress_stats["total"]
+    completed_cards = progress_stats["completed"]
+    remaining_cards = progress_stats["remaining"]
+    remaining_disabled = completed_cards == 0 or remaining_cards == 0
+    reset_disabled = completed_cards == 0
+
+    st.markdown(
+        "<div class='title-block'>"
+        "<div class='title-big'>Choose Cards</div>"
+        "<div class='title-big-sub'>" + PERSON_LABELS[person] + "</div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+    with st.container(key="study_mode_picker_wrap"):
+        if st.button(f"ALL ({total_cards})", key="study_all_btn", use_container_width=True):
+            st.session_state.study_mode = "all"
+            st.rerun()
+
+        remaining_label = "Remaining" if completed_cards == 0 else f"Remaining ({remaining_cards} of {total_cards})"
+        if st.button(
+            remaining_label,
+            key="study_remaining_btn",
+            use_container_width=True,
+            disabled=remaining_disabled,
+        ):
+            st.session_state.study_mode = "remaining"
+            st.rerun()
+
+        if st.button(
+            "Reset",
+            key="study_reset_btn",
+            use_container_width=True,
+            disabled=reset_disabled,
+        ):
+            clear_deck_progress(person, filename)
+            st.session_state.study_mode = "all"
+            st.rerun()
+
+
 def render_buttons(show_answer, spanish_audio_text):
     if not show_answer:
         with st.container(key="icon_btn_row_wrap"):
@@ -1838,6 +2057,7 @@ def render_buttons(show_answer, spanish_audio_text):
 def restart_mistakes_only():
     mistake_cards = [
         {
+            "id": card.get("id"),
             "word": card["word"],
             "answer": card["answer"],
             "shown": False,
@@ -1924,6 +2144,18 @@ if st.session_state.selected_csv is None:
                 st.rerun()
     st.stop()
 
+if not is_review_deck(st.session_state.selected_csv) and st.session_state.study_mode is None:
+    progress_stats = deck_progress_stats(st.session_state.selected_csv, st.session_state.active_person)
+    if progress_stats["supported"]:
+        render_header()
+        render_menu()
+        if st.session_state.menu_open:
+            st.stop()
+        render_deck_strip()
+        render_study_mode_picker()
+        st.stop()
+    st.session_state.study_mode = "all"
+
 # ========================================================================
 # LOAD CSV
 # ========================================================================
@@ -1933,36 +2165,34 @@ if st.session_state.loaded_csv != st.session_state.selected_csv or not st.sessio
         review_person = review_deck_person(st.session_state.selected_csv)
         review_items = list(st.session_state.review_data.get(review_person, {}).values())
         st.session_state.cards = [
-            {"word": item["word"], "answer": item["answer"],
+            {"id": None, "word": item["word"], "answer": item["answer"],
              "shown": False, "repeat_score": item["count"], "error_flag": 0}
             for item in review_items
         ]
     else:
-        csv_path = os.path.join(CSV_FOLDER, st.session_state.selected_csv)
-        with open(csv_path, 'r', encoding='utf-8') as _f:
-            _first = _f.readline()
-        _sep = ';' if ';' in _first else ','
-        df = pd.read_csv(csv_path, sep=_sep)
-        df.columns = [c.strip() for c in df.columns]
-        if is_forced_en_es_deck(st.session_state.selected_csv):
-            first_column = df.columns[0]
-            second_column = df.columns[1]
+        deck_data = load_regular_deck(st.session_state.selected_csv)
+        st.session_state.cards = deck_data["cards"]
+        if st.session_state.study_mode == "remaining" and deck_data["supports_completion"]:
+            completed_ids = completed_ids_for(st.session_state.active_person, st.session_state.selected_csv)
             st.session_state.cards = [
-                {"word": row[first_column], "answer": row[second_column],
-                 "shown": False, "repeat_score": 1, "error_flag": 0}
-                for _, row in df.iterrows()
-            ]
-        else:
-            st.session_state.cards = [
-                {"word": row["word"], "answer": row["answer"],
-                 "shown": False, "repeat_score": 1, "error_flag": 0}
-                for _, row in df.iterrows()
+                card for card in st.session_state.cards
+                if card.get("id") not in completed_ids
             ]
     st.session_state.order = list(range(len(st.session_state.cards)))
     random.shuffle(st.session_state.order)
     st.session_state.index = 0
     st.session_state.loaded_csv = st.session_state.selected_csv
     st.session_state.direction = effective_direction()
+
+if (
+    not is_review_deck(st.session_state.selected_csv)
+    and st.session_state.study_mode == "remaining"
+    and not st.session_state.cards
+):
+    clear_deck_progress(st.session_state.active_person, st.session_state.selected_csv)
+    st.session_state.study_mode = "all"
+    st.session_state.selected_csv = None
+    st.rerun()
 
 # ========================================================================
 # STATS
@@ -2034,6 +2264,9 @@ if st.session_state.quit_requested:
 
 if st.session_state.cards and st.session_state.order:
     if st.session_state.index >= len(st.session_state.order):
+        if not is_review_deck(st.session_state.selected_csv) and st.session_state.study_mode == "remaining":
+            clear_deck_progress(st.session_state.active_person, st.session_state.selected_csv)
+            st.session_state.study_mode = "all"
         st.session_state.quit_requested = True
         st.rerun()
 
