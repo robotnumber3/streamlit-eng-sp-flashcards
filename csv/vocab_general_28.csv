@@ -1,101 +1,101 @@
-word;answer
-participants;participantes
-he/she/it took out / pulled;sacó
-profession;profesión
-senator;senador
-announcement / call;convocatoria
-long [F, pl];largas
-to affirm;afirmar
-gun / weapon;arma
-American;americano
-provinces;provincias
-as many;cuantos
-proportion / ratio;proporción
-rival;rival
-anguish;angustia
-sparse / scarce [F];escasa
-long [pl];largos
-destruction;destrucción
-European [F, pl];europeas
-we could [cond];podríamos
-celebration;celebración
-suit / I brought;traje
-they seemed;parecían
-legal;jurídico
-roof;techo
-elevated / high;elevado
-financial [F];financiera
-using;utilizando
-to cover;cubrir
-rest / break;descanso
-perception;percepción
-forest;bosque
-continuity;continuidad
-British;británico
-financing;financiación
-well-being;bienestar
-affected [M, pl];afectados
-adviser / counselor;consejero
-he/she/it gives [subj];dé
-I/he/she/it would say;diría
-discovery;descubrimiento
-scandal;escándalo
-stay;estancia
-safe [M, pl];seguros
-arguments;argumentos
-I wait / I hope;espero
-sports;deportes
-he/she/it informs;informa
-prepared / ready [M];preparado
-he/she/it denied;negó
-to add;añadir
-crown;corona
-heads;cabezas
-dead body / corpse;cadáver
-equal / same [pl];iguales
-pending;pendiente
-related;relacionados
-grandfather;abuelo
-to tell him/her;decirle
-normally;normalmente
-offices;oficinas
-revision / review;revisión
-frequent [pl];frecuentes
-institutional;institucional
-he/she/it falls;cae
-previous / prior [F];previa
-rich;ricos
-symbol;símbolo
-he/she/it holds / argues;sostiene
-layer;capa
-temporary;temporal
-vigilance / surveillance;vigilancia
-minimum [F];mínima
-spine;columna vertebral
-you see;ves
-they offer;ofrecen
-I/he/she/it had just…;acababa
-determined / certain [F];determinada
-sauce;salsa
-route / road;ruta
-courses / classes;cursos
-bones;huesos
-permitted / allowed;permitido
-difficult [pl];difíciles
-friend [F];amiga
-observation;observación
-writers [M];escritores
-to assume;asumir
-suffered;sufrido
-seventy;setenta
-they left;dejaron
-guide;guía
-I/he/she/it would do;haría
-nervous [M];nervioso
-alive [pl];vivos
-dimensions;dimensiones
-to attend / to serve / to answer;atender
-contracts / agreements;contratos
-flag;bandera
-to stay;quedarse
-regular / regulate;regular
+"id";"word";"answer"
+"1";"grandfather";"abuelo"
+"2";"I/he/she/it had just…";"acababa"
+"3";"affected [M, pl]";"afectados"
+"4";"to affirm";"afirmar"
+"5";"American";"americano"
+"6";"friend [F]";"amiga"
+"7";"anguish";"angustia"
+"8";"arguments";"argumentos"
+"9";"gun / weapon";"arma"
+"10";"to assume";"asumir"
+"11";"to attend / to serve / to answer";"atender"
+"12";"to add";"añadir"
+"13";"flag";"bandera"
+"14";"well-being";"bienestar"
+"15";"forest";"bosque"
+"16";"British";"británico"
+"17";"heads";"cabezas"
+"18";"dead body / corpse";"cadáver"
+"19";"he/she/it falls";"cae"
+"20";"layer";"capa"
+"21";"celebration";"celebración"
+"22";"spine";"columna vertebral"
+"23";"adviser / counselor";"consejero"
+"24";"continuity";"continuidad"
+"25";"contracts / agreements";"contratos"
+"26";"announcement / call";"convocatoria"
+"27";"crown";"corona"
+"28";"as many";"cuantos"
+"29";"to cover";"cubrir"
+"30";"courses / classes";"cursos"
+"31";"to tell him/her";"decirle"
+"32";"they left";"dejaron"
+"33";"sports";"deportes"
+"34";"rest / break";"descanso"
+"35";"discovery";"descubrimiento"
+"36";"destruction";"destrucción"
+"37";"determined / certain [F]";"determinada"
+"38";"difficult [pl]";"difíciles"
+"39";"dimensions";"dimensiones"
+"40";"I/he/she/it would say";"diría"
+"41";"he/she/it gives [subj]";"dé"
+"42";"elevated / high";"elevado"
+"43";"sparse / scarce [F]";"escasa"
+"44";"writers [M]";"escritores"
+"45";"scandal";"escándalo"
+"46";"I wait / I hope";"espero"
+"47";"stay";"estancia"
+"48";"European [F, pl]";"europeas"
+"49";"financing";"financiación"
+"50";"financial [F]";"financiera"
+"51";"frequent [pl]";"frecuentes"
+"52";"guide";"guía"
+"53";"I/he/she/it would do";"haría"
+"54";"bones";"huesos"
+"55";"equal / same [pl]";"iguales"
+"56";"he/she/it informs";"informa"
+"57";"institutional";"institucional"
+"58";"legal";"jurídico"
+"59";"long [F, pl]";"largas"
+"60";"long [pl]";"largos"
+"61";"minimum [F]";"mínima"
+"62";"he/she/it denied";"negó"
+"63";"nervous [M]";"nervioso"
+"64";"normally";"normalmente"
+"65";"observation";"observación"
+"66";"offices";"oficinas"
+"67";"they offer";"ofrecen"
+"68";"they seemed";"parecían"
+"69";"participants";"participantes"
+"70";"pending";"pendiente"
+"71";"perception";"percepción"
+"72";"permitted / allowed";"permitido"
+"73";"we could [cond]";"podríamos"
+"74";"prepared / ready [M]";"preparado"
+"75";"previous / prior [F]";"previa"
+"76";"profession";"profesión"
+"77";"proportion / ratio";"proporción"
+"78";"provinces";"provincias"
+"79";"to stay";"quedarse"
+"80";"regular / regulate";"regular"
+"81";"related";"relacionados"
+"82";"revision / review";"revisión"
+"83";"rich";"ricos"
+"84";"rival";"rival"
+"85";"route / road";"ruta"
+"86";"he/she/it took out / pulled";"sacó"
+"87";"sauce";"salsa"
+"88";"safe [M, pl]";"seguros"
+"89";"senator";"senador"
+"90";"seventy";"setenta"
+"91";"he/she/it holds / argues";"sostiene"
+"92";"suffered";"sufrido"
+"93";"symbol";"símbolo"
+"94";"roof";"techo"
+"95";"temporary";"temporal"
+"96";"suit / I brought";"traje"
+"97";"using";"utilizando"
+"98";"you see";"ves"
+"99";"vigilance / surveillance";"vigilancia"
+"100";"alive [pl]";"vivos"

@@ -1,169 +1,169 @@
-word,answer
-I walk,yo camino
-you walk,tú caminas
-he walks,él camina
-she walks,ella camina
-we walk,nosotros caminamos
-you walk (plural),ustedes caminan
-they walk,ellos caminan
-I look at,yo miro
-you look at,tú miras
-he looks at,él mira
-she looks at,ella mira
-we look at,nosotros miramos
-you look at (plural),ustedes miran
-they look at,ellos miran
-I play,yo toco
-you play,tú tocas
-he plays,él toca
-she plays,ella toca
-we play,nosotros tocamos
-you play (plural),ustedes tocan
-they play,ellos tocan
-I help,yo ayudo
-you help,tú ayudas
-he helps,él ayuda
-she helps,ella ayuda
-we help,nosotros ayudamos
-you help (plural),ustedes ayudan
-they help,ellos ayudan
-I hope,yo espero
-you hope,tú esperas
-he hopes,él espera
-she hopes,ella espera
-we hope,nosotros esperamos
-you hope (plural),ustedes esperan
-they hope,ellos esperan
-I leave behind,yo dejo
-you leave behind,tú dejas
-he leaves behind,él deja
-she leaves behind,ella deja
-we leave behind,nosotros dejamos
-you leave behind (plural),ustedes dejan
-they leave behind,ellos dejan
-I enter,yo entro
-you enter,tú entras
-he enters,él entra
-she enters,ella entra
-we enter,nosotros entramos
-you enter (plural),ustedes entran
-they enter,ellos entran
-I buy,yo compro
-you buy,tú compras
-he buys,él compra
-she buys,ella compra
-we buy,nosotros compramos
-you buy (plural),ustedes compran
-they buy,ellos compran
-I take,yo llevo
-you take,tú llevas
-he takes,él lleva
-she takes,ella lleva
-we take,nosotros llevamos
-you take (plural),ustedes llevan
-they take,ellos llevan
-I call,yo llamo
-you call,tú llamas
-he calls,él llama
-she calls,ella llama
-we call,nosotros llamamos
-you call (plural),ustedes llaman
-they call,ellos llaman
-I work,yo trabajo
-you work,tú trabajas
-he works,él trabaja
-she works,ella trabaja
-we work,nosotros trabajamos
-you work (plural),ustedes trabajan
-they work,ellos trabajan
-I pay,yo pago
-you pay,tú pagas
-he pays,él paga
-she pays,ella paga
-we pay,nosotros pagamos
-you pay (plural),ustedes pagan
-they pay,ellos pagan
-I need,yo necesito
-you need,tú necesitas
-he needs,él necesita
-she needs,ella necesita
-we need,nosotros necesitamos
-you need (plural),ustedes necesitan
-they need,ellos necesitan
-I cook,yo cocino
-you cook,tú cocinas
-he cooks,él cocina
-she cooks,ella cocina
-we cook,nosotros cocinamos
-you cook (plural),ustedes cocinan
-they cook,ellos cocinan
-I change,yo cambio
-you change,tú cambias
-he changes,él cambia
-she changes,ella cambia
-we change,nosotros cambiamos
-you change (plural),ustedes cambian
-they change,ellos cambian
-I prepare,yo preparo
-you prepare,tú preparas
-he prepares,él prepara
-she prepares,ella prepara
-we prepare,nosotros preparamos
-you prepare (plural),ustedes preparan
-they prepare,ellos preparan
-I look for,yo busco
-you look for,tú buscas
-he looks for,él busca
-she looks for,ella busca
-we look for,nosotros buscamos
-you look for (plural),ustedes buscan
-they look for,ellos buscan
-I drink,yo tomo
-you drink,tú tomas
-he drinks,él toma
-she drinks,ella toma
-we drink,nosotros tomamos
-you drink (plural),ustedes toman
-they drink,ellos toman
-I clean,yo limpio
-you clean,tú limpias
-he cleans,él limpia
-she cleans,ella limpia
-we clean,nosotros limpiamos
-you clean (plural),ustedes limpian
-they clean,ellos limpian
-I return,yo regreso
-you return,tú regresas
-he returns,él regresa
-she returns,ella regresa
-we return,nosotros regresamos
-you return (plural),ustedes regresan
-they return,ellos regresan
-I ask,yo pregunto
-you ask,tú preguntas
-he asks,él pregunta
-she asks,ella pregunta
-we ask,nosotros preguntamos
-you ask (plural),ustedes preguntan
-they ask,ellos preguntan
-I visit,yo visito
-you visit,tú visitas
-he visits,él visita
-she visits,ella visita
-we visit,nosotros visitamos
-you visit (plural),ustedes visitan
-they visit,ellos visitan
-I use,yo uso
-you use,tú usas
-he uses,él usa
-she uses,ella usa
-we use,nosotros usamos
-you use (plural),ustedes usan
-they use,ellos usan
-I speak,yo hablo
-you speak,tú hablas
-he speaks,él habla
-she speaks,ella habla
-we speak,nosotros hablamos
-you speak (plural),ustedes hablan
-they speak,ellos hablan
+"id","word","answer"
+"1","she helps","ella ayuda"
+"2","she looks for","ella busca"
+"3","she changes","ella cambia"
+"4","she walks","ella camina"
+"5","she cooks","ella cocina"
+"6","she buys","ella compra"
+"7","she leaves behind","ella deja"
+"8","she enters","ella entra"
+"9","she hopes","ella espera"
+"10","she speaks","ella habla"
+"11","she cleans","ella limpia"
+"12","she calls","ella llama"
+"13","she takes","ella lleva"
+"14","she looks at","ella mira"
+"15","she needs","ella necesita"
+"16","she pays","ella paga"
+"17","she asks","ella pregunta"
+"18","she prepares","ella prepara"
+"19","she returns","ella regresa"
+"20","she plays","ella toca"
+"21","she drinks","ella toma"
+"22","she works","ella trabaja"
+"23","she uses","ella usa"
+"24","she visits","ella visita"
+"25","they help","ellos ayudan"
+"26","they look for","ellos buscan"
+"27","they change","ellos cambian"
+"28","they walk","ellos caminan"
+"29","they cook","ellos cocinan"
+"30","they buy","ellos compran"
+"31","they leave behind","ellos dejan"
+"32","they enter","ellos entran"
+"33","they hope","ellos esperan"
+"34","they speak","ellos hablan"
+"35","they clean","ellos limpian"
+"36","they call","ellos llaman"
+"37","they take","ellos llevan"
+"38","they look at","ellos miran"
+"39","they need","ellos necesitan"
+"40","they pay","ellos pagan"
+"41","they ask","ellos preguntan"
+"42","they prepare","ellos preparan"
+"43","they return","ellos regresan"
+"44","they play","ellos tocan"
+"45","they drink","ellos toman"
+"46","they work","ellos trabajan"
+"47","they use","ellos usan"
+"48","they visit","ellos visitan"
+"49","we help","nosotros ayudamos"
+"50","we look for","nosotros buscamos"
+"51","we change","nosotros cambiamos"
+"52","we walk","nosotros caminamos"
+"53","we cook","nosotros cocinamos"
+"54","we buy","nosotros compramos"
+"55","we leave behind","nosotros dejamos"
+"56","we enter","nosotros entramos"
+"57","we hope","nosotros esperamos"
+"58","we speak","nosotros hablamos"
+"59","we clean","nosotros limpiamos"
+"60","we call","nosotros llamamos"
+"61","we take","nosotros llevamos"
+"62","we look at","nosotros miramos"
+"63","we need","nosotros necesitamos"
+"64","we pay","nosotros pagamos"
+"65","we ask","nosotros preguntamos"
+"66","we prepare","nosotros preparamos"
+"67","we return","nosotros regresamos"
+"68","we play","nosotros tocamos"
+"69","we drink","nosotros tomamos"
+"70","we work","nosotros trabajamos"
+"71","we use","nosotros usamos"
+"72","we visit","nosotros visitamos"
+"73","you help","tú ayudas"
+"74","you look for","tú buscas"
+"75","you change","tú cambias"
+"76","you walk","tú caminas"
+"77","you cook","tú cocinas"
+"78","you buy","tú compras"
+"79","you leave behind","tú dejas"
+"80","you enter","tú entras"
+"81","you hope","tú esperas"
+"82","you speak","tú hablas"
+"83","you clean","tú limpias"
+"84","you call","tú llamas"
+"85","you take","tú llevas"
+"86","you look at","tú miras"
+"87","you need","tú necesitas"
+"88","you pay","tú pagas"
+"89","you ask","tú preguntas"
+"90","you prepare","tú preparas"
+"91","you return","tú regresas"
+"92","you play","tú tocas"
+"93","you drink","tú tomas"
+"94","you work","tú trabajas"
+"95","you use","tú usas"
+"96","you visit","tú visitas"
+"97","you help (plural)","ustedes ayudan"
+"98","you look for (plural)","ustedes buscan"
+"99","you change (plural)","ustedes cambian"
+"100","you walk (plural)","ustedes caminan"
+"101","you cook (plural)","ustedes cocinan"
+"102","you buy (plural)","ustedes compran"
+"103","you leave behind (plural)","ustedes dejan"
+"104","you enter (plural)","ustedes entran"
+"105","you hope (plural)","ustedes esperan"
+"106","you speak (plural)","ustedes hablan"
+"107","you clean (plural)","ustedes limpian"
+"108","you call (plural)","ustedes llaman"
+"109","you take (plural)","ustedes llevan"
+"110","you look at (plural)","ustedes miran"
+"111","you need (plural)","ustedes necesitan"
+"112","you pay (plural)","ustedes pagan"
+"113","you ask (plural)","ustedes preguntan"
+"114","you prepare (plural)","ustedes preparan"
+"115","you return (plural)","ustedes regresan"
+"116","you play (plural)","ustedes tocan"
+"117","you drink (plural)","ustedes toman"
+"118","you work (plural)","ustedes trabajan"
+"119","you use (plural)","ustedes usan"
+"120","you visit (plural)","ustedes visitan"
+"121","I help","yo ayudo"
+"122","I look for","yo busco"
+"123","I change","yo cambio"
+"124","I walk","yo camino"
+"125","I cook","yo cocino"
+"126","I buy","yo compro"
+"127","I leave behind","yo dejo"
+"128","I enter","yo entro"
+"129","I hope","yo espero"
+"130","I speak","yo hablo"
+"131","I clean","yo limpio"
+"132","I call","yo llamo"
+"133","I take","yo llevo"
+"134","I look at","yo miro"
+"135","I need","yo necesito"
+"136","I pay","yo pago"
+"137","I ask","yo pregunto"
+"138","I prepare","yo preparo"
+"139","I return","yo regreso"
+"140","I play","yo toco"
+"141","I drink","yo tomo"
+"142","I work","yo trabajo"
+"143","I use","yo uso"
+"144","I visit","yo visito"
+"145","he helps","él ayuda"
+"146","he looks for","él busca"
+"147","he changes","él cambia"
+"148","he walks","él camina"
+"149","he cooks","él cocina"
+"150","he buys","él compra"
+"151","he leaves behind","él deja"
+"152","he enters","él entra"
+"153","he hopes","él espera"
+"154","he speaks","él habla"
+"155","he cleans","él limpia"
+"156","he calls","él llama"
+"157","he takes","él lleva"
+"158","he looks at","él mira"
+"159","he needs","él necesita"
+"160","he pays","él paga"
+"161","he asks","él pregunta"
+"162","he prepares","él prepara"
+"163","he returns","él regresa"
+"164","he plays","él toca"
+"165","he drinks","él toma"
+"166","he works","él trabaja"
+"167","he uses","él usa"
+"168","he visits","él visita"

@@ -1,15 +1,15 @@
-word;answer
-and;y
-and;e
-neither...nor;ni...ni
-or;o
-or;u
-either...or;o bien...o bien
-but;pero
-but;mas
-although;aunque
-that is;es decir
-because;porque
-since;pues
-if;si
-as;como
+"id";"word";"answer"
+"1";"although";"aunque"
+"2";"as";"como"
+"3";"and";"e"
+"4";"that is";"es decir"
+"5";"but";"mas"
+"6";"neither...nor";"ni...ni"
+"7";"or";"o"
+"8";"either...or";"o bien...o bien"
+"9";"but";"pero"
+"10";"because";"porque"
+"11";"since";"pues"
+"12";"if";"si"
+"13";"or";"u"
+"14";"and";"y"

@@ -1,94 +1,94 @@
-word,answer
-meters,metros
-march / demonstration,marcha
-regime,régimen
-consequence,consecuencia
-knowledge,conocimiento
-heart,corazón
-campaign,campaña
-structure,estructura
-effects,efectos
-finally,finalmente
-model,modelo
-letter,carta
-construction,construcción
-doctor [M],médico
-fear,miedo
-older / bigger / greatest [pl],mayores
-entry / entrance / starter / ticket,entrada
-humans [pl],humanos
-they are [subj],sean
-attitude,actitud
-you leave [imp] / he leaves / she leaves,deja
-he left / she left / it left [past],dejó
-to take / to carry,llevar
-black [M],negro
-text,texto
-half,mitad
-he was / she was / it was [past],estuvo
-around / about,alrededor
-about,acerca
-weight / peso,peso
-human [M],humano
-little / young [M],pequeño
-date,fecha
-they will be,serán
-doctor,doctor
-ideas,ideas
-wine / he came / she came,vino
-matter / subject,materia
-he arrives / she arrives / it arrives,llega
-career / race,carrera
-a certain [F],cierta
-alone [F],sola
-far,lejos
-judge,juez
-characteristics,características
-risk,riesgo
-easy,fácil
-difference,diferencia
-cultural,cultural
-books,libros
-practice,práctica
-May,mayo
-"our [F, pl]",nuestras
-programs,programas
-memory,memoria
-arrived,llegado
-term / deadline,plazo
-expression,expresión
-December,diciembre
-to maintain / to keep,mantener
-January,enero
-to go back / to return,volver
-painting / picture,cuadro
-product,producto
-he produces / she produces / it produces,produce
-European [F],europea
-conscience,conciencia
-they had / used to have [past],tenían
-behind / back,atrás
-creation,creación
-price,precio
-movie,película
-port,puerto
-fire,fuego
-matter,cuestión
-it happened [past],pasó
-coast / shore,costa
-supposed / assumption,supuesto
-local,local
-he speaks / she speaks / it speaks / you speak [imp],habla
-aspects,aspectos
-room / living room,sala
-camera,cámara
-turn / return,vuelta
-through / way / railroad / train track,vía
-look / eyes,mirada
-best [pl],mejores
-report,informe
-unity / unit,unidad
-different [pl],distintos
-luck,suerte
-such [pl],tales
-he looks / she looks / you look [imp],mira
+"id","word","answer"
+"1","about","acerca"
+"2","attitude","actitud"
+"3","around / about","alrededor"
+"4","aspects","aspectos"
+"5","behind / back","atrás"
+"6","campaign","campaña"
+"7","characteristics","características"
+"8","career / race","carrera"
+"9","letter","carta"
+"10","a certain [F]","cierta"
+"11","conscience","conciencia"
+"12","knowledge","conocimiento"
+"13","consequence","consecuencia"
+"14","construction","construcción"
+"15","heart","corazón"
+"16","coast / shore","costa"
+"17","creation","creación"
+"18","painting / picture","cuadro"
+"19","matter","cuestión"
+"20","cultural","cultural"
+"21","camera","cámara"
+"22","you leave [imp] / he leaves / she leaves","deja"
+"23","he left / she left / it left [past]","dejó"
+"24","December","diciembre"
+"25","difference","diferencia"
+"26","different [pl]","distintos"
+"27","doctor","doctor"
+"28","effects","efectos"
+"29","January","enero"
+"30","entry / entrance / starter / ticket","entrada"
+"31","structure","estructura"
+"32","he was / she was / it was [past]","estuvo"
+"33","European [F]","europea"
+"34","expression","expresión"
+"35","date","fecha"
+"36","finally","finalmente"
+"37","fire","fuego"
+"38","easy","fácil"
+"39","he speaks / she speaks / it speaks / you speak [imp]","habla"
+"40","human [M]","humano"
+"41","humans [pl]","humanos"
+"42","ideas","ideas"
+"43","report","informe"
+"44","judge","juez"
+"45","far","lejos"
+"46","books","libros"
+"47","he arrives / she arrives / it arrives","llega"
+"48","arrived","llegado"
+"49","to take / to carry","llevar"
+"50","local","local"
+"51","to maintain / to keep","mantener"
+"52","march / demonstration","marcha"
+"53","matter / subject","materia"
+"54","May","mayo"
+"55","older / bigger / greatest [pl]","mayores"
+"56","best [pl]","mejores"
+"57","memory","memoria"
+"58","meters","metros"
+"59","fear","miedo"
+"60","he looks / she looks / you look [imp]","mira"
+"61","look / eyes","mirada"
+"62","half","mitad"
+"63","model","modelo"
+"64","doctor [M]","médico"
+"65","black [M]","negro"
+"66","our [F, pl]","nuestras"
+"67","it happened [past]","pasó"
+"68","movie","película"
+"69","little / young [M]","pequeño"
+"70","weight / peso","peso"
+"71","term / deadline","plazo"
+"72","price","precio"
+"73","he produces / she produces / it produces","produce"
+"74","product","producto"
+"75","programs","programas"
+"76","practice","práctica"
+"77","port","puerto"
+"78","risk","riesgo"
+"79","regime","régimen"
+"80","room / living room","sala"
+"81","they are [subj]","sean"
+"82","they will be","serán"
+"83","alone [F]","sola"
+"84","luck","suerte"
+"85","supposed / assumption","supuesto"
+"86","such [pl]","tales"
+"87","they had / used to have [past]","tenían"
+"88","text","texto"
+"89","unity / unit","unidad"
+"90","wine / he came / she came","vino"
+"91","to go back / to return","volver"
+"92","turn / return","vuelta"
+"93","through / way / railroad / train track","vía"

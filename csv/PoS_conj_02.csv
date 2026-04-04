@@ -1,35 +1,35 @@
-word,answer
-besides / in addition to,además
-before [+ noun or infinitive],antes de
-as soon as,apenas
-therefore / so,así que
-although / even though / even if,aunque
-even if [+ subjunctive],aunque
-as [comparative],como
-provided that / as long as,con tal (de) que
-when,cuando
-so that / in such a way that,de forma que
-so that / in such a way that,de manera que
-after / afterwards / later,después
-after  [+ verb],después de que [+ verb]
-as soon as,en cuanto
-so / then / in that case,entonces
-until,hasta que
-then / next / after that,luego
-while / as long as,mientras
-or,o [u before o/ho]
-to / in order to [+ infinitive],para
-so that / in order that [+ subjunctive],para que
-but,pero
-because of,por
-therefore / that’s why / for that reason,por eso
-finally / at last,por fin
-in case / just in case,por si acaso
-because,porque
-[más + adjective +] than [comparative],que
-if,si
-as long as,siempre que
-so [+ adjective +] that,tan…que
-and,y [e before i/hi]
-even though / even if,aun cuando
-because / since  [+ clause],como
+"id","word","answer"
+"1","besides / in addition to","además"
+"2","before [+ noun or infinitive]","antes de"
+"3","as soon as","apenas"
+"4","therefore / so","así que"
+"5","even though / even if","aun cuando"
+"6","although / even though / even if","aunque"
+"7","even if [+ subjunctive]","aunque"
+"8","as [comparative]","como"
+"9","because / since  [+ clause]","como"
+"10","provided that / as long as","con tal (de) que"
+"11","when","cuando"
+"12","so that / in such a way that","de forma que"
+"13","so that / in such a way that","de manera que"
+"14","after / afterwards / later","después"
+"15","after  [+ verb]","después de que [+ verb]"
+"16","as soon as","en cuanto"
+"17","so / then / in that case","entonces"
+"18","until","hasta que"
+"19","then / next / after that","luego"
+"20","while / as long as","mientras"
+"21","or","o [u before o/ho]"
+"22","to / in order to [+ infinitive]","para"
+"23","so that / in order that [+ subjunctive]","para que"
+"24","but","pero"
+"25","because of","por"
+"26","therefore / that’s why / for that reason","por eso"
+"27","finally / at last","por fin"
+"28","in case / just in case","por si acaso"
+"29","because","porque"
+"30","[más + adjective +] than [comparative]","que"
+"31","if","si"
+"32","as long as","siempre que"
+"33","so [+ adjective +] that","tan…que"
+"34","and","y [e before i/hi]"

@@ -1,60 +1,60 @@
-word,answer
-My brother is the director of a company,Mi hermano es director de una empresa
-It can’t be true!,¡No puede ser cierto!
-"In some cases, it is better to be silent","En algunos casos, es mejor estar callado"
-It is a very high level restaurant,Es un restaurante de muy alto nivel
-My family is very large,Mi familia es muy grande
-This book is too long!,¡Este libro es demasiado largo!
-Can you split that biscuit in two?,¿Puedes partir esa galleta en dos?
-How long until the plane takes off?,¿Cuánto falta para que salga el avión?
-I want to get to Ecuador!,¡Quiero llegar a Ecuador!
-What is that thing?,¿Qué es esa cosa?
-The hostel’s security is pretty good,La seguridad del hostel es bastante buena
-I feel bad,Me siento mal
-I have a lot of respect for Matilde,Tengo mucho respeto por Matilde
-Is this real?,¿Esto es real?
-I know what we can cook!,¡Ya sé qué podemos cocinar!
-This singer has a phenomenal voice,Esta cantante tiene una voz fenomenal
-We have to go step by step,Debemos ir paso a paso
-"Sir, what time is it?","Señor, ¿qué hora es?"
-I have about a thousand missed calls,Tengo como mil llamadas perdidas
-Those who want pizza can grab a slice,Quienes quieran pizza pueden tomar una porción
-I’m working on a new project,Estoy trabajando en un nuevo proyecto
-Do you want to go to the market with me?,¿Quieres ir al mercado conmigo?
-The majority of the population is bilingual,La mayoría de la población es bilingüe
-Can you turn on the light?,¿Puedes encender la luz?
-The problem is very clear,El problema es muy claro
-We have to put this house in order,Hay que poner esta casa en orden
-Do you speak Spanish?,¿Hablas español?
-This cake is very good,Esta tarta está muy buena
-Who wants a portion?,¿Quién quiere una porción?
-That store has some delicious ice cream,Aquella tienda tiene unos helados riquísimos
-There are no words to describe what I feel,No hay palabras para describir lo que siento
-Those boots are very dirty,Esas botas están muy sucias
-I work in a big company,Trabajo en una gran empresa
-Are you there?,¿Estás ahí?
-I feel like reading a book,Tengo ganas de leer un libro
-My shirt is the same as yours,Mi camiseta es igual que la tuya
-This is not a political issue,Este no es un asunto político
-You are a very smart person,Eres una persona muy inteligente
-They are my cousins,Ellas son mis primas
-I think we should wait until it stops raining,Creo que deberíamos esperar a que deje de llover
-I have a small problem,Tengo un pequeño problema
-I love Spanish omelette,Amo la tortilla española
-What are the weather conditions?,¿Cómo son las condiciones climáticas?
-I don't have much physical strength,No tengo mucha fuerza física
-Tuesday is my only day off,El martes es mi único día libre
-Are you ready for action?,¿Están listos para la acción?
-Do you think we should call the police?,¿Crees que deberíamos llamar a la policía?
-Is there a supermarket in this area?,¿Hay algún supermercado en esta zona?
-My mother knows everything,Mi madre sabe todo
-There is an ice cream shop on this street,Sobre esta calle hay una heladería
-Inside my backpack there is a bottle of water,En el interior de mi mochila hay una botella de agua
-"I don't have the money, nor the time to go to the movies","No tengo dinero, ni tampoco tiempo para ir al cine"
-Should we go listen to some music?,¿Escuchamos música?
-I have no problem with him,No tengo ningún problema con él
-"From my window, the view is very beautiful","Desde mi ventana, la vista es muy bella"
-Is there a supermarket in this area?,¿Hay algún supermercado en esta zona?
-Can you speak Spanish?,¿Puedes hablar en español?
-Our taxi will arrive in five minutes,Nuestro taxi llegará en cinco minutos
-Carlos works in soy production,Carlos trabaja en la producción de soja
+"id","word","answer"
+"1","I love Spanish omelette","Amo la tortilla española"
+"2","That store has some delicious ice cream","Aquella tienda tiene unos helados riquísimos"
+"3","Carlos works in soy production","Carlos trabaja en la producción de soja"
+"4","I think we should wait until it stops raining","Creo que deberíamos esperar a que deje de llover"
+"5","We have to go step by step","Debemos ir paso a paso"
+"6","From my window, the view is very beautiful","Desde mi ventana, la vista es muy bella"
+"7","Tuesday is my only day off","El martes es mi único día libre"
+"8","The problem is very clear","El problema es muy claro"
+"9","They are my cousins","Ellas son mis primas"
+"10","In some cases, it is better to be silent","En algunos casos, es mejor estar callado"
+"11","Inside my backpack there is a bottle of water","En el interior de mi mochila hay una botella de agua"
+"12","You are a very smart person","Eres una persona muy inteligente"
+"13","It is a very high level restaurant","Es un restaurante de muy alto nivel"
+"14","Those boots are very dirty","Esas botas están muy sucias"
+"15","This singer has a phenomenal voice","Esta cantante tiene una voz fenomenal"
+"16","This cake is very good","Esta tarta está muy buena"
+"17","This is not a political issue","Este no es un asunto político"
+"18","I’m working on a new project","Estoy trabajando en un nuevo proyecto"
+"19","We have to put this house in order","Hay que poner esta casa en orden"
+"20","The majority of the population is bilingual","La mayoría de la población es bilingüe"
+"21","The hostel’s security is pretty good","La seguridad del hostel es bastante buena"
+"22","I feel bad","Me siento mal"
+"23","My shirt is the same as yours","Mi camiseta es igual que la tuya"
+"24","My family is very large","Mi familia es muy grande"
+"25","My brother is the director of a company","Mi hermano es director de una empresa"
+"26","My mother knows everything","Mi madre sabe todo"
+"27","There are no words to describe what I feel","No hay palabras para describir lo que siento"
+"28","I don't have the money, nor the time to go to the movies","No tengo dinero, ni tampoco tiempo para ir al cine"
+"29","I don't have much physical strength","No tengo mucha fuerza física"
+"30","I have no problem with him","No tengo ningún problema con él"
+"31","Our taxi will arrive in five minutes","Nuestro taxi llegará en cinco minutos"
+"32","Those who want pizza can grab a slice","Quienes quieran pizza pueden tomar una porción"
+"33","Sir, what time is it?","Señor, ¿qué hora es?"
+"34","There is an ice cream shop on this street","Sobre esta calle hay una heladería"
+"35","I have about a thousand missed calls","Tengo como mil llamadas perdidas"
+"36","I feel like reading a book","Tengo ganas de leer un libro"
+"37","I have a lot of respect for Matilde","Tengo mucho respeto por Matilde"
+"38","I have a small problem","Tengo un pequeño problema"
+"39","I work in a big company","Trabajo en una gran empresa"
+"40","This book is too long!","¡Este libro es demasiado largo!"
+"41","It can’t be true!","¡No puede ser cierto!"
+"42","I want to get to Ecuador!","¡Quiero llegar a Ecuador!"
+"43","I know what we can cook!","¡Ya sé qué podemos cocinar!"
+"44","Do you think we should call the police?","¿Crees que deberíamos llamar a la policía?"
+"45","How long until the plane takes off?","¿Cuánto falta para que salga el avión?"
+"46","What are the weather conditions?","¿Cómo son las condiciones climáticas?"
+"47","Should we go listen to some music?","¿Escuchamos música?"
+"48","Is this real?","¿Esto es real?"
+"49","Are you ready for action?","¿Están listos para la acción?"
+"50","Are you there?","¿Estás ahí?"
+"51","Do you speak Spanish?","¿Hablas español?"
+"52","Is there a supermarket in this area?","¿Hay algún supermercado en esta zona?"
+"53","Is there a supermarket in this area?","¿Hay algún supermercado en esta zona?"
+"54","Can you turn on the light?","¿Puedes encender la luz?"
+"55","Can you speak Spanish?","¿Puedes hablar en español?"
+"56","Can you split that biscuit in two?","¿Puedes partir esa galleta en dos?"
+"57","Do you want to go to the market with me?","¿Quieres ir al mercado conmigo?"
+"58","Who wants a portion?","¿Quién quiere una porción?"
+"59","What is that thing?","¿Qué es esa cosa?"

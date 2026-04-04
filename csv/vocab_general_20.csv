@@ -1,100 +1,100 @@
-word;answer
-festival;festival
-they arrive;llegan
-mix / he/she/it mixes / you mix [imperative];mezcla
-medicines;medicinas
-household / house;vivienda
-to listen;escuchar
-completely;completamente
-ideal;ideal
-cancer;cáncer
-texts;textos
-hungry;hambriento
-solidarity;solidaridad
-to continue;continuar
-percentage;porcentaje
-arts;artes
-they come;vienen
-they did [imperfect];hacían
-reader;lector
-structures;estructuras
-to come;venir
-castle;castillo
-option / choice;opción
-he/she/it commented;comentó
-he/she/it won;ganó
-threat;amenaza
-representative;representante
-commercial [pl];comerciales
-you can;puedes
-planet;planeta
-he/she/it lost;perdió
-benefit / profit;beneficio
-searching / looking for;buscando
-feelings;sentimientos
-to buy;comprar
-to remain / to stay;quedar
-accident;accidente
-advantage;ventaja
-tax;impuesto
-leaving / quitting;dejando
-different [M];distinto
-aunt;tía
-similar;semejante
-Spanish [F, pl];españolas
-western;occidental
-capable [pl];capaces
-scientist [F];científica
-they have [subjunctive];tengan
-noise;ruido
-individuals;individuos
-victim;víctima
-dress;vestido
-fashion;moda
-titles;títulos
-diagnosis;diagnóstico
-experiences;experiencias
-mirror;espejo
-bridge;puente
-entry / entrance / income;ingreso
-dreams;sueños
-vehicle;vehículo
-he/she/it turns into;convierte
-old [M, pl];viejos
-to begin / to start;empezar
-teachers / professors;profesores
-passion;pasión
-enough / stop;basta
-democratic [M];democrático
-he/she/it felt;sintió
-they said;dijeron
-common [pl];comunes
-feeling;sentimiento
-sentence;sentencia
-state;estatal
-dawn;amanecer
-modern [F];moderna
-impact;impacto
-complex [M];complejo
-complaint;denuncia
-bull;toro
-board;tabla
-crime;delito
-sales;ventas
-domain;dominio
-entities;entidades
-superiors;superiores
-candidates;candidatos
-glory;gloria
-index;índice
-root;raíz
-he/she/it remembered;recordó
-absolute [M];absoluto
-agriculture;agricultura
-composition;composición
-when;cuando
-he/she/it finished;terminó
-they were [subjunctive];fueran
-assistance;asistencia
-explanation;explicación
-towers;torres
+"id";"word";"answer"
+"1";"absolute [M]";"absoluto"
+"2";"accident";"accidente"
+"3";"agriculture";"agricultura"
+"4";"dawn";"amanecer"
+"5";"threat";"amenaza"
+"6";"arts";"artes"
+"7";"assistance";"asistencia"
+"8";"enough / stop";"basta"
+"9";"benefit / profit";"beneficio"
+"10";"searching / looking for";"buscando"
+"11";"candidates";"candidatos"
+"12";"capable [pl]";"capaces"
+"13";"castle";"castillo"
+"14";"scientist [F]";"científica"
+"15";"he/she/it commented";"comentó"
+"16";"commercial [pl]";"comerciales"
+"17";"complex [M]";"complejo"
+"18";"completely";"completamente"
+"19";"composition";"composición"
+"20";"to buy";"comprar"
+"21";"common [pl]";"comunes"
+"22";"to continue";"continuar"
+"23";"he/she/it turns into";"convierte"
+"24";"when";"cuando"
+"25";"cancer";"cáncer"
+"26";"leaving / quitting";"dejando"
+"27";"crime";"delito"
+"28";"democratic [M]";"democrático"
+"29";"complaint";"denuncia"
+"30";"diagnosis";"diagnóstico"
+"31";"they said";"dijeron"
+"32";"different [M]";"distinto"
+"33";"domain";"dominio"
+"34";"to begin / to start";"empezar"
+"35";"entities";"entidades"
+"36";"to listen";"escuchar"
+"37";"Spanish [F, pl]";"españolas"
+"38";"mirror";"espejo"
+"39";"state";"estatal"
+"40";"structures";"estructuras"
+"41";"experiences";"experiencias"
+"42";"explanation";"explicación"
+"43";"festival";"festival"
+"44";"they were [subjunctive]";"fueran"
+"45";"he/she/it won";"ganó"
+"46";"glory";"gloria"
+"47";"they did [imperfect]";"hacían"
+"48";"hungry";"hambriento"
+"49";"ideal";"ideal"
+"50";"impact";"impacto"
+"51";"tax";"impuesto"
+"52";"individuals";"individuos"
+"53";"entry / entrance / income";"ingreso"
+"54";"reader";"lector"
+"55";"they arrive";"llegan"
+"56";"medicines";"medicinas"
+"57";"mix / he/she/it mixes / you mix [imperative]";"mezcla"
+"58";"fashion";"moda"
+"59";"modern [F]";"moderna"
+"60";"western";"occidental"
+"61";"option / choice";"opción"
+"62";"passion";"pasión"
+"63";"he/she/it lost";"perdió"
+"64";"planet";"planeta"
+"65";"percentage";"porcentaje"
+"66";"teachers / professors";"profesores"
+"67";"you can";"puedes"
+"68";"bridge";"puente"
+"69";"to remain / to stay";"quedar"
+"70";"root";"raíz"
+"71";"he/she/it remembered";"recordó"
+"72";"representative";"representante"
+"73";"noise";"ruido"
+"74";"similar";"semejante"
+"75";"sentence";"sentencia"
+"76";"feeling";"sentimiento"
+"77";"feelings";"sentimientos"
+"78";"he/she/it felt";"sintió"
+"79";"solidarity";"solidaridad"
+"80";"dreams";"sueños"
+"81";"superiors";"superiores"
+"82";"board";"tabla"
+"83";"they have [subjunctive]";"tengan"
+"84";"he/she/it finished";"terminó"
+"85";"texts";"textos"
+"86";"bull";"toro"
+"87";"towers";"torres"
+"88";"aunt";"tía"
+"89";"titles";"títulos"
+"90";"vehicle";"vehículo"
+"91";"to come";"venir"
+"92";"advantage";"ventaja"
+"93";"sales";"ventas"
+"94";"dress";"vestido"
+"95";"old [M, pl]";"viejos"
+"96";"they come";"vienen"
+"97";"household / house";"vivienda"
+"98";"victim";"víctima"
+"99";"index";"índice"

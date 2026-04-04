@@ -1,41 +1,41 @@
-word,answer
-I'm hungry,Tengo hambre
-I'm thirsty,Tengo sed
-I'm cold,Tengo frío
-I'm hot,Tengo calor
-I'm afraid,Tengo miedo
-I'm right,Tengo razón
-I'm in a hurry,Tengo prisa
-I'm lucky,Tengo suerte
-I'm sleepy,Tengo sueño
-I'm 74 years old,Tengo setenta y cuatro años.
-I feel like eating,Tengo ganas de comer
-I feel like leaving,Tengo ganas de irme
-I need to go to the bathroom,Tengo que ir al baño
-I have a headache,Tengo dolor de cabeza
-I have a stomachache,Tengo dolor de estómago
-I have a question,Tengo una pregunta
-I have an idea,Tengo una idea
-I have time,Tengo tiempo
-I don't have time,No tengo tiempo
-I have a problem,Tengo un problema
-I'm tired,Estoy cansado
-I'm sick,Estoy enfermo
-I'm ready,Estoy listo
-I'm busy,Estoy ocupado
-I'm happy,Estoy feliz
-I'm sad,Estoy triste
-I'm bored,Estoy aburrido
-I'm nervous,Estoy nervioso
-I'm worried,Estoy preocupado
-I'm relaxed,Estoy relajado
-I'm surprised,Estoy sorprendido
-I'm angry,Estoy enojado
-I'm confused,Estoy confundido
-I'm lost,Estoy perdido
-I'm calm,Estoy tranquilo
-I'm comfortable,Estoy cómodo
-I'm alone,Estoy solo
-I'm safe,Estoy seguro
-I'm full (after eating),Estoy lleno
-I'm serious,Estoy serio
+"id","word","answer"
+"1","I'm bored","Estoy aburrido"
+"2","I'm tired","Estoy cansado"
+"3","I'm confused","Estoy confundido"
+"4","I'm comfortable","Estoy cómodo"
+"5","I'm sick","Estoy enfermo"
+"6","I'm angry","Estoy enojado"
+"7","I'm happy","Estoy feliz"
+"8","I'm ready","Estoy listo"
+"9","I'm full (after eating)","Estoy lleno"
+"10","I'm nervous","Estoy nervioso"
+"11","I'm busy","Estoy ocupado"
+"12","I'm lost","Estoy perdido"
+"13","I'm worried","Estoy preocupado"
+"14","I'm relaxed","Estoy relajado"
+"15","I'm safe","Estoy seguro"
+"16","I'm serious","Estoy serio"
+"17","I'm alone","Estoy solo"
+"18","I'm surprised","Estoy sorprendido"
+"19","I'm calm","Estoy tranquilo"
+"20","I'm sad","Estoy triste"
+"21","I don't have time","No tengo tiempo"
+"22","I'm hot","Tengo calor"
+"23","I have a headache","Tengo dolor de cabeza"
+"24","I have a stomachache","Tengo dolor de estómago"
+"25","I'm cold","Tengo frío"
+"26","I feel like eating","Tengo ganas de comer"
+"27","I feel like leaving","Tengo ganas de irme"
+"28","I'm hungry","Tengo hambre"
+"29","I'm afraid","Tengo miedo"
+"30","I'm in a hurry","Tengo prisa"
+"31","I need to go to the bathroom","Tengo que ir al baño"
+"32","I'm right","Tengo razón"
+"33","I'm thirsty","Tengo sed"
+"34","I'm 74 years old","Tengo setenta y cuatro años."
+"35","I'm lucky","Tengo suerte"
+"36","I'm sleepy","Tengo sueño"
+"37","I have time","Tengo tiempo"
+"38","I have a problem","Tengo un problema"
+"39","I have an idea","Tengo una idea"
+"40","I have a question","Tengo una pregunta"

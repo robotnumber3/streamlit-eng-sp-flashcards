@@ -1,101 +1,101 @@
-word;answer
-directed / addressed [F];dirigida
-axis;eje
-variety;variedad
-easily;fácilmente
-song;canción
-quantities / amounts;cantidades
-orientation / direction;orientación
-photos / pictures;fotos
-to define;definir
-masses / mass;masas
-tobacco;tabaco
-adventure;aventura
-next [F, pl];próximas
-I could [past];pude
-I/he/she/it arrived [impf];llegaba
-acquaintances / known;conocidos
-roots;raíces
-gravity;gravedad
-targets / white [M, pl];blancos
-city hall / municipality;municipio
-rice;arroz
-potential;potencial
-islands;islas
-goals;goles
-opportunities;oportunidades
-they were;estuvieron
-gentleman;caballero
-to place;colocar
-comments;comentarios
-depth;profundidad
-understanding / comprehension;comprensión
-landscape;panorama
-revolutionary;revolucionario
-synthesis;síntesis
-searching / looking for;buscando
-dependence;dependencia
-spring;primavera
-he/she/it increases;aumenta
-he/she/it manifests / expresses;manifiesta
-fruit;fruto
-brilliant;brillante
-dates;fechas
-tower;torre
-darkness / dark;oscuridad
-announcement;anuncio
-intellectuals;intelectuales
-extension / expansion;ampliación
-conservation;conservación
-he/she/it starts / begins;inicia
-he/she/it reached / fulfilled;alcanzó
-he/she/it demonstrates;demuestra
-rooms;salas
-vital;vital
-they could / were able to;pudieron
-races / careers;carreras
-flavour / taste;sabor
-combat;combate
-effectively / sure enough;efectivamente
-tears;lágrimas
-decrease;disminución
-he/she/it poses;plantea
-provincial;provincial
-I/he/she/it looked [impf];miraba
-located [M];situado
-horses;caballos
-proteins;proteínas
-library;biblioteca
-recent [pl];recientes
-outside;afuera
-rates;tasas
-he/she/it rises / gets up;levanta
-fourth [F];cuarta
-mug;taza
-conclusions;conclusiones
-they need;necesitan
-negative [F];negativa
-diet;dieta
-reached / attained;alcanzado
-to go / to walk;andar
-he/she/it highlighted / pointed out;destacó
-pillar;pilar
-flower;flor
-sufficient / enough [pl];suficientes
-existing [pl];existentes
-they use;utilizan
-ceremony;ceremonia
-lawyers;abogados
-they keep / remain;mantienen
-Castilian;castellano
-lived;vivido
-they represent;representan
-cameras;cámaras
-to appear / to show up;aparecer
-gods;dioses
-programming;programación
-doctor / medical [F];médica
-options;opciones
-permission;permiso
-green [pl];verdes
-messages;mensajes
+"id";"word";"answer"
+"1";"lawyers";"abogados"
+"2";"outside";"afuera"
+"3";"reached / attained";"alcanzado"
+"4";"he/she/it reached / fulfilled";"alcanzó"
+"5";"extension / expansion";"ampliación"
+"6";"to go / to walk";"andar"
+"7";"announcement";"anuncio"
+"8";"to appear / to show up";"aparecer"
+"9";"rice";"arroz"
+"10";"he/she/it increases";"aumenta"
+"11";"adventure";"aventura"
+"12";"library";"biblioteca"
+"13";"targets / white [M, pl]";"blancos"
+"14";"brilliant";"brillante"
+"15";"searching / looking for";"buscando"
+"16";"gentleman";"caballero"
+"17";"horses";"caballos"
+"18";"song";"canción"
+"19";"quantities / amounts";"cantidades"
+"20";"races / careers";"carreras"
+"21";"Castilian";"castellano"
+"22";"ceremony";"ceremonia"
+"23";"to place";"colocar"
+"24";"combat";"combate"
+"25";"comments";"comentarios"
+"26";"understanding / comprehension";"comprensión"
+"27";"conclusions";"conclusiones"
+"28";"acquaintances / known";"conocidos"
+"29";"conservation";"conservación"
+"30";"fourth [F]";"cuarta"
+"31";"cameras";"cámaras"
+"32";"to define";"definir"
+"33";"he/she/it demonstrates";"demuestra"
+"34";"dependence";"dependencia"
+"35";"he/she/it highlighted / pointed out";"destacó"
+"36";"diet";"dieta"
+"37";"gods";"dioses"
+"38";"directed / addressed [F]";"dirigida"
+"39";"decrease";"disminución"
+"40";"effectively / sure enough";"efectivamente"
+"41";"axis";"eje"
+"42";"they were";"estuvieron"
+"43";"existing [pl]";"existentes"
+"44";"dates";"fechas"
+"45";"flower";"flor"
+"46";"photos / pictures";"fotos"
+"47";"fruit";"fruto"
+"48";"easily";"fácilmente"
+"49";"goals";"goles"
+"50";"gravity";"gravedad"
+"51";"he/she/it starts / begins";"inicia"
+"52";"intellectuals";"intelectuales"
+"53";"islands";"islas"
+"54";"he/she/it rises / gets up";"levanta"
+"55";"I/he/she/it arrived [impf]";"llegaba"
+"56";"tears";"lágrimas"
+"57";"he/she/it manifests / expresses";"manifiesta"
+"58";"they keep / remain";"mantienen"
+"59";"masses / mass";"masas"
+"60";"messages";"mensajes"
+"61";"I/he/she/it looked [impf]";"miraba"
+"62";"city hall / municipality";"municipio"
+"63";"doctor / medical [F]";"médica"
+"64";"they need";"necesitan"
+"65";"negative [F]";"negativa"
+"66";"options";"opciones"
+"67";"opportunities";"oportunidades"
+"68";"orientation / direction";"orientación"
+"69";"darkness / dark";"oscuridad"
+"70";"landscape";"panorama"
+"71";"permission";"permiso"
+"72";"pillar";"pilar"
+"73";"he/she/it poses";"plantea"
+"74";"potential";"potencial"
+"75";"spring";"primavera"
+"76";"depth";"profundidad"
+"77";"programming";"programación"
+"78";"proteins";"proteínas"
+"79";"provincial";"provincial"
+"80";"next [F, pl]";"próximas"
+"81";"I could [past]";"pude"
+"82";"they could / were able to";"pudieron"
+"83";"roots";"raíces"
+"84";"recent [pl]";"recientes"
+"85";"they represent";"representan"
+"86";"revolutionary";"revolucionario"
+"87";"flavour / taste";"sabor"
+"88";"rooms";"salas"
+"89";"located [M]";"situado"
+"90";"sufficient / enough [pl]";"suficientes"
+"91";"synthesis";"síntesis"
+"92";"tobacco";"tabaco"
+"93";"rates";"tasas"
+"94";"mug";"taza"
+"95";"tower";"torre"
+"96";"they use";"utilizan"
+"97";"variety";"variedad"
+"98";"green [pl]";"verdes"
+"99";"vital";"vital"
+"100";"lived";"vivido"

@@ -1,182 +1,182 @@
-word,answer
-no,no
-"already, still",ya
-"very, really",muy
-yes,sí
-also,también
-when,cuando
-like that,así
-"so, then",entonces
-well,bien
-now,ahora
-where,donde
-"only, just",sólo
-"always, forever",siempre
-well,bueno
-"such, as, too, so",tan
-after,después
-here,aquí
-when?,cuándo
-"later, afterwards",luego
-how?,cómo
-"also, as well, besides",además
-"never, ever",nunca
-where?,dónde
-"almost, nearly",casi
-"today, nowadays",hoy
-there,ahí
-before,antes
-"there, over there",allí
-nevertheless,embargo
-front,frente
-"still, yet",aún
-"still, yet",todavía
-"out, outside, away",fuera
-"there, over there",allá
-"including, even (ADV)",incluso
-"perhaps, maybe",quizás
-"neither, nor, either",tampoco
-"soon, quick",pronto
-"really, actually, in fact",realmente
-badly,mal
-late,tarde
-"hardly, barely",apenas
-too much,demasiado
-only,solamente
-inside,dentro
-"back, behind, ago",atrás
-even (if),siquiera
-yesterday,ayer
-never,jamás
-"up, above",arriba
-"forward, further",adelante
-"simply, just",simplemente
-especially,especialmente
-"down, below, downward",abajo
-precisely,precisamente
-tomorrow,mañana
-"far (away, off)",lejos
-"totally, completely",totalmente
-"finally, at last",finalmente
-often,menudo
-"recently, just",recién
-"here, around here",acá
-"now, at present",actualmente
-"close, near",cerca
-exactly,exactamente
-practically,prácticamente
-"above, on top, in addition",encima
-completely,completamente
-"directly, straight away",directamente
-"surely, securely",seguramente
-"however, nevertheless",obstante
-"apart, aside, separately",aparte
-"by chance, maybe",acaso
-probably,probablemente
-"generally, usually",generalmente
-outside,afuera
-immediately,inmediatamente
-"absolutely, completely",absolutamente
-approximately,aproximadamente
-"rapidly, quickly",rápidamente
-just,justo
-"anew, again",nuevamente
-perfectly,perfectamente
-"even (though), still",aun
-inside,adentro
-"principally, mainly",principalmente
-normally,normalmente
-"(in) front (of), ahead",delante
-afterwards,posteriormente
-"as well, also, moreover",asimismo
-"in fact, actually, indeed",efectivamente
-suddenly,repente
-naturally,naturalmente
-slowly,lentamente
-truly,verdaderamente
-only,únicamente
-"of course, clearly",claro
-"evidently, obviously",evidentemente
-"just, exactly",justamente
-behind,detrás
-clearly,claramente
-"definitely, finally",definitivamente
-recently,recientemente
-possibly,posiblemente
-equally,igualmente
-"fundamentally, basically",fundamentalmente
-"about, around, round",alrededor
-easily,fácilmente
-"including, even",inclusive
-personally,personalmente
-"profoundly, deeply",profundamente
-previously,anteriormente
-exclusively,exclusivamente
-relatively,relativamente
-"right away, at once",seguida
-apparently,aparentemente
-simply,sencillamente
-"extremely, highly",sumamente
-constantly,constantemente
-necessarily,necesariamente
-"particularly, personally",particularmente
-"lately, recently",últimamente
-"immediately, at once",enseguida
-last night,anoche
-obviously,obviamente
-"right now, in a minute",ahorita
-enough,suficientemente
-logically,lógicamente
-basically,básicamente
-respectively,respectivamente
-in front (of),enfrente
-unfortunately,desgraciadamente
-"specifically, exactly",concretamente
-"certainly, indeed",ciertamente
-regrettably,lamentablemente
-softly,suavemente
-fully,plenamente
-"slightly, lightly",ligeramente
-"doubtless, undoubtedly",indudablemente
-"exactly, properly",propiamente
-"supposedly, allegedly",supuestamente
-"luckily, fortunately",afortunadamente
-sincerely,sinceramente
-specifically,específicamente
-continuously,continuamente
-previously,previamente
-automatically,automáticamente
-independently,independientemente
-freely,libremente
-initially,inicialmente
-to where?,adónde
-officially,oficialmente
-"frequently, often",frecuentemente
-daily,diariamente
-correctly,correctamente
-"successively, one by one",sucesivamente
-"frankly, openly",francamente
-strictly,estrictamente
-carefully,cuidadosamente
-economically,económicamente
-habitually,habitualmente
-extremely,extremadamente
-strongly,fuertemente
-"publicly, in public",públicamente
-simultaneously,simultáneamente
-"calmly, peacefully",tranquilamente
-widely,ampliamente
-enormously,enormemente
-"strangely, funnily enough",curiosamente
-literally,literalmente
-"purely, simply",puramente
-essentially,esencialmente
-traditionally,tradicionalmente
-permanently,permanentemente
-politically,políticamente
-physically,físicamente
-"beforehand, in advance",antemano
-seriously,seriamente
-"full, sick of",harto
-legally,legalmente
-with difficulty,difícilmente
+"id","word","answer"
+"1","down, below, downward","abajo"
+"2","absolutely, completely","absolutamente"
+"3","by chance, maybe","acaso"
+"4","now, at present","actualmente"
+"5","here, around here","acá"
+"6","forward, further","adelante"
+"7","also, as well, besides","además"
+"8","inside","adentro"
+"9","to where?","adónde"
+"10","luckily, fortunately","afortunadamente"
+"11","outside","afuera"
+"12","now","ahora"
+"13","right now, in a minute","ahorita"
+"14","there","ahí"
+"15","there, over there","allá"
+"16","there, over there","allí"
+"17","about, around, round","alrededor"
+"18","widely","ampliamente"
+"19","last night","anoche"
+"20","beforehand, in advance","antemano"
+"21","previously","anteriormente"
+"22","before","antes"
+"23","apparently","aparentemente"
+"24","apart, aside, separately","aparte"
+"25","hardly, barely","apenas"
+"26","approximately","aproximadamente"
+"27","here","aquí"
+"28","up, above","arriba"
+"29","as well, also, moreover","asimismo"
+"30","like that","así"
+"31","back, behind, ago","atrás"
+"32","even (though), still","aun"
+"33","automatically","automáticamente"
+"34","yesterday","ayer"
+"35","still, yet","aún"
+"36","well","bien"
+"37","well","bueno"
+"38","basically","básicamente"
+"39","almost, nearly","casi"
+"40","close, near","cerca"
+"41","certainly, indeed","ciertamente"
+"42","clearly","claramente"
+"43","of course, clearly","claro"
+"44","completely","completamente"
+"45","specifically, exactly","concretamente"
+"46","constantly","constantemente"
+"47","continuously","continuamente"
+"48","correctly","correctamente"
+"49","when","cuando"
+"50","carefully","cuidadosamente"
+"51","strangely, funnily enough","curiosamente"
+"52","when?","cuándo"
+"53","how?","cómo"
+"54","definitely, finally","definitivamente"
+"55","(in) front (of), ahead","delante"
+"56","too much","demasiado"
+"57","inside","dentro"
+"58","unfortunately","desgraciadamente"
+"59","after","después"
+"60","behind","detrás"
+"61","daily","diariamente"
+"62","with difficulty","difícilmente"
+"63","directly, straight away","directamente"
+"64","where","donde"
+"65","where?","dónde"
+"66","economically","económicamente"
+"67","in fact, actually, indeed","efectivamente"
+"68","nevertheless","embargo"
+"69","above, on top, in addition","encima"
+"70","in front (of)","enfrente"
+"71","enormously","enormemente"
+"72","immediately, at once","enseguida"
+"73","so, then","entonces"
+"74","essentially","esencialmente"
+"75","especially","especialmente"
+"76","specifically","específicamente"
+"77","strictly","estrictamente"
+"78","evidently, obviously","evidentemente"
+"79","exactly","exactamente"
+"80","exclusively","exclusivamente"
+"81","extremely","extremadamente"
+"82","finally, at last","finalmente"
+"83","frankly, openly","francamente"
+"84","frequently, often","frecuentemente"
+"85","front","frente"
+"86","out, outside, away","fuera"
+"87","strongly","fuertemente"
+"88","fundamentally, basically","fundamentalmente"
+"89","easily","fácilmente"
+"90","physically","físicamente"
+"91","generally, usually","generalmente"
+"92","habitually","habitualmente"
+"93","full, sick of","harto"
+"94","today, nowadays","hoy"
+"95","equally","igualmente"
+"96","including, even","inclusive"
+"97","including, even (ADV)","incluso"
+"98","independently","independientemente"
+"99","doubtless, undoubtedly","indudablemente"
+"100","initially","inicialmente"
+"101","immediately","inmediatamente"
+"102","never","jamás"
+"103","just, exactly","justamente"
+"104","just","justo"
+"105","regrettably","lamentablemente"
+"106","legally","legalmente"
+"107","far (away, off)","lejos"
+"108","slowly","lentamente"
+"109","freely","libremente"
+"110","slightly, lightly","ligeramente"
+"111","literally","literalmente"
+"112","later, afterwards","luego"
+"113","logically","lógicamente"
+"114","badly","mal"
+"115","tomorrow","mañana"
+"116","often","menudo"
+"117","very, really","muy"
+"118","naturally","naturalmente"
+"119","necessarily","necesariamente"
+"120","no","no"
+"121","normally","normalmente"
+"122","anew, again","nuevamente"
+"123","never, ever","nunca"
+"124","however, nevertheless","obstante"
+"125","obviously","obviamente"
+"126","officially","oficialmente"
+"127","particularly, personally","particularmente"
+"128","perfectly","perfectamente"
+"129","permanently","permanentemente"
+"130","personally","personalmente"
+"131","fully","plenamente"
+"132","politically","políticamente"
+"133","possibly","posiblemente"
+"134","afterwards","posteriormente"
+"135","precisely","precisamente"
+"136","previously","previamente"
+"137","principally, mainly","principalmente"
+"138","probably","probablemente"
+"139","profoundly, deeply","profundamente"
+"140","soon, quick","pronto"
+"141","exactly, properly","propiamente"
+"142","practically","prácticamente"
+"143","purely, simply","puramente"
+"144","publicly, in public","públicamente"
+"145","perhaps, maybe","quizás"
+"146","really, actually, in fact","realmente"
+"147","recently","recientemente"
+"148","recently, just","recién"
+"149","relatively","relativamente"
+"150","suddenly","repente"
+"151","respectively","respectivamente"
+"152","rapidly, quickly","rápidamente"
+"153","right away, at once","seguida"
+"154","surely, securely","seguramente"
+"155","simply","sencillamente"
+"156","seriously","seriamente"
+"157","always, forever","siempre"
+"158","simply, just","simplemente"
+"159","simultaneously","simultáneamente"
+"160","sincerely","sinceramente"
+"161","even (if)","siquiera"
+"162","only","solamente"
+"163","softly","suavemente"
+"164","successively, one by one","sucesivamente"
+"165","enough","suficientemente"
+"166","extremely, highly","sumamente"
+"167","supposedly, allegedly","supuestamente"
+"168","yes","sí"
+"169","only, just","sólo"
+"170","also","también"
+"171","neither, nor, either","tampoco"
+"172","such, as, too, so","tan"
+"173","late","tarde"
+"174","still, yet","todavía"
+"175","totally, completely","totalmente"
+"176","traditionally","tradicionalmente"
+"177","calmly, peacefully","tranquilamente"
+"178","truly","verdaderamente"
+"179","already, still","ya"
+"180","lately, recently","últimamente"
+"181","only","únicamente"

@@ -1,16 +1,16 @@
-word,answer
-I owe [deber],debo
-"You owe [deber, sing, inf]",debes
-"He, she, you owe [deber, sing; you=formal 'usted']",debe
-We owe [deber],debemos
-They owe [deber],deben
-I own [poseer],poseo
-"You own [poseer, sing, inf]",posees
-"He, she, you own [poseer, sing; you=formal 'usted']",posee
-We own [poseer],poseemos
-They own [poseer],poseen
-I understand [comprender],comprendo
-"You understand [comprender, sing, inf]",comprendes
-"He, she, you understand [comprender, sing; you=formal 'usted']",comprende
-We understand [comprender],comprendemos
-They understand [comprender],comprenden
+"id","word","answer"
+"1","He, she, you understand [comprender, sing; you=formal 'usted']","comprende"
+"2","We understand [comprender]","comprendemos"
+"3","They understand [comprender]","comprenden"
+"4","You understand [comprender, sing, inf]","comprendes"
+"5","I understand [comprender]","comprendo"
+"6","He, she, you owe [deber, sing; you=formal 'usted']","debe"
+"7","We owe [deber]","debemos"
+"8","They owe [deber]","deben"
+"9","You owe [deber, sing, inf]","debes"
+"10","I owe [deber]","debo"
+"11","He, she, you own [poseer, sing; you=formal 'usted']","posee"
+"12","We own [poseer]","poseemos"
+"13","They own [poseer]","poseen"
+"14","You own [poseer, sing, inf]","posees"
+"15","I own [poseer]","poseo"

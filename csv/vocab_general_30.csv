@@ -1,102 +1,102 @@
-word;answer
-alternatives;alternativas
-noon;mediodía
-external [F];externa
-gallery;galería
-pictures / photographs;fotografías
-they speak;hablan
-legal [pl];legales
-he/she/it develops;desarrolla
-we had;habíamos
-jump;salto
-dogs;perros
-squares;plazas
-responsibilities;responsabilidades
-attacks;ataques
-positive [F];positiva
-relaxed / calm [M];tranquilo
-he/she/it touches;toca
-customs;costumbres
-adults;adultos
-apparently;aparentemente
-accused [M];acusado
-including;incluyendo
-hate;odio
-contacts;contactos
-bomb;bomba
-reactions;reacciones
-to be back;estar de vuelta
-we were;estábamos
-disappearance;desaparición
-corner;rincón
-grey;gris
-we do;hacemos
-exchange;intercambio
-credits;créditos
-characteristic [F];característica
-wounded / injured;heridos
-they should;deberían
-he/she/it directed;dirigió
-to feel;sentirse
-flour;harina
-dynamic [F];dinámica
-to guarantee;garantizar
-card;tarjeta
-consensus;consenso
-financial [M, pl];financieros
-calls;llamados
-therefore;por consiguiente
-secrets;secretos
-they had to;debían
-willing to [M, pl];dispuestos
-thought;pensado
-it arises;surge
-he/she/it existed;existía
-spectator / viewer;espectador
-precise / accurate [F];precisa
-jury;jurado
-agencies;agencias
-convinced;convencido
-ear;oreja
-German [F];alemana
-children / kids [M, pl];chicos
-eighty;ochenta
-bottle;botella
-feminine [F];femenina
-test / exam;examen
-environmental;ambiental
-they happened / spent;pasaron
-I/he/she/it counted / told [impf];contaba
-neighbourhoods;barrios
-they took / brought;llevaron
-guests / invited [M, pl];invitados
-trainer / coach;entrenador
-laugh;risa
-circumstance;circunstancia
-tendencies / trends;tendencias
-stages;etapas
-rock / stone;roca
-comparison;comparación
-he/she/it provokes / causes;provoca
-they saw / watched;vieron
-prevention;prevención
-lady;dama
-liquid / fluid [M];líquido
-they will be;estarán
-to decide;decidir
-calm;calmado
-sufficiently / enough;suficientemente
-comment;comentario
-guarantee;garantía
-main characters / protagonists;protagonistas
-early;temprano
-artistic [F];artística
-workers;obreros
-fifth [M];quinto
-essential;imprescindible
-portrait;retrato
-zero;cero
-disappeared / gone / missing [M];desaparecido
-temperatures;temperaturas
-dance;baile
-curious [M];curioso
+"id";"word";"answer"
+"1";"accused [M]";"acusado"
+"2";"adults";"adultos"
+"3";"agencies";"agencias"
+"4";"German [F]";"alemana"
+"5";"alternatives";"alternativas"
+"6";"environmental";"ambiental"
+"7";"apparently";"aparentemente"
+"8";"artistic [F]";"artística"
+"9";"attacks";"ataques"
+"10";"dance";"baile"
+"11";"neighbourhoods";"barrios"
+"12";"bomb";"bomba"
+"13";"bottle";"botella"
+"14";"calm";"calmado"
+"15";"characteristic [F]";"característica"
+"16";"zero";"cero"
+"17";"children / kids [M, pl]";"chicos"
+"18";"circumstance";"circunstancia"
+"19";"comment";"comentario"
+"20";"comparison";"comparación"
+"21";"consensus";"consenso"
+"22";"I/he/she/it counted / told [impf]";"contaba"
+"23";"contacts";"contactos"
+"24";"convinced";"convencido"
+"25";"customs";"costumbres"
+"26";"credits";"créditos"
+"27";"curious [M]";"curioso"
+"28";"lady";"dama"
+"29";"they should";"deberían"
+"30";"they had to";"debían"
+"31";"to decide";"decidir"
+"32";"disappeared / gone / missing [M]";"desaparecido"
+"33";"disappearance";"desaparición"
+"34";"he/she/it develops";"desarrolla"
+"35";"dynamic [F]";"dinámica"
+"36";"he/she/it directed";"dirigió"
+"37";"willing to [M, pl]";"dispuestos"
+"38";"trainer / coach";"entrenador"
+"39";"spectator / viewer";"espectador"
+"40";"to be back";"estar de vuelta"
+"41";"they will be";"estarán"
+"42";"we were";"estábamos"
+"43";"stages";"etapas"
+"44";"test / exam";"examen"
+"45";"he/she/it existed";"existía"
+"46";"external [F]";"externa"
+"47";"feminine [F]";"femenina"
+"48";"financial [M, pl]";"financieros"
+"49";"pictures / photographs";"fotografías"
+"50";"gallery";"galería"
+"51";"to guarantee";"garantizar"
+"52";"guarantee";"garantía"
+"53";"grey";"gris"
+"54";"they speak";"hablan"
+"55";"we had";"habíamos"
+"56";"we do";"hacemos"
+"57";"flour";"harina"
+"58";"wounded / injured";"heridos"
+"59";"essential";"imprescindible"
+"60";"including";"incluyendo"
+"61";"exchange";"intercambio"
+"62";"guests / invited [M, pl]";"invitados"
+"63";"jury";"jurado"
+"64";"legal [pl]";"legales"
+"65";"calls";"llamados"
+"66";"they took / brought";"llevaron"
+"67";"liquid / fluid [M]";"líquido"
+"68";"noon";"mediodía"
+"69";"workers";"obreros"
+"70";"eighty";"ochenta"
+"71";"hate";"odio"
+"72";"ear";"oreja"
+"73";"they happened / spent";"pasaron"
+"74";"thought";"pensado"
+"75";"dogs";"perros"
+"76";"squares";"plazas"
+"77";"therefore";"por consiguiente"
+"78";"positive [F]";"positiva"
+"79";"precise / accurate [F]";"precisa"
+"80";"prevention";"prevención"
+"81";"main characters / protagonists";"protagonistas"
+"82";"he/she/it provokes / causes";"provoca"
+"83";"fifth [M]";"quinto"
+"84";"reactions";"reacciones"
+"85";"responsibilities";"responsabilidades"
+"86";"portrait";"retrato"
+"87";"corner";"rincón"
+"88";"laugh";"risa"
+"89";"rock / stone";"roca"
+"90";"jump";"salto"
+"91";"secrets";"secretos"
+"92";"to feel";"sentirse"
+"93";"sufficiently / enough";"suficientemente"
+"94";"it arises";"surge"
+"95";"card";"tarjeta"
+"96";"temperatures";"temperaturas"
+"97";"early";"temprano"
+"98";"tendencies / trends";"tendencias"
+"99";"he/she/it touches";"toca"
+"100";"relaxed / calm [M]";"tranquilo"
+"101";"they saw / watched";"vieron"

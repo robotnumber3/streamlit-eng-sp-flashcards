@@ -1,241 +1,241 @@
-word,answer
-an animal, un animal
-a bag, una bolsa
-a bank, un banco
-a bathroom, un baño
-a bed, una cama
-a beer, una cerveza
-a bicycle, una bicicleta
-a blanket, una cobija
-a blouse, una blusa
-a book, un libro
-a bowl,un tazón
-a boy, un muchacho
-a broom, una escoba
-a car, un carro
-a cat,un gato
-a chair, una silla
-a child, un niño
-a church, una iglesia
-a class, una clase
-a coaster,un portavasos
-a coffee, un café
-a conversation, una conversación
-a day, un día
-a department store, una tienda departamental
-a doctor, un doctor
-a dog,un perro
-a door, una puerta
-a drama, un drama
-a flower, una flor
-a fork,un tenedor
-a friend,un amigo
-a friendship, una amistad
-a garden, un jardín
-a girl, una muchacha
-a glass,un vaso
-a guitar, una guitarra
-a hand, una mano
-a hotel, un hotel
-a house, una casa
-a key, una llave
-a kitchen, una cocina
-a knife,un cuchillo
-a lamp, una lámpara
-a lesson, una lección
-a light, una luz
-a lock, una cerradura
-a man, un hombre
-a mirror, un espejo
-a motorcycle, una motocicleta
-a pen, una pluma
-a person, una persona
-a photo, una foto
-a piano,un piano
-a pillow, una almohada
-a plant, una planta
-a plate,un plato
-a plaza/square, una plaza
-a president, un presidente
-a problem, un problema
-a program, un programa
-a rug, una alfombra
-a shower, una regadera
-a singer, un cantante
-a song, una canción
-a spoon, una cuchara
-a store, una tienda
-a stove, una estufa
-a student, un estudiante
-a suitcase, una maleta
-a suitcase, una maleta
-a supermarket,un supermercado
-a system, un sistema
-a table, una mesa
-a tablecloth,un mantel
-a taxi,un taxi
-a taxi driver, un taxista
-a television, una televisión
-a tomato, un tomate
-a train, un tren
-a truth, una verdad
-a wall, una pared
-a window, una ventana
-a wine glass, una copa
-a wine opener,un sacacorchos
-a woman, una mujer
-an attitude, una actitud
-an escalator, una escalera eléctrica
-an illusion, una ilusión
-an invitation, una invitación
-an OXXO,un OXXO
-animals, animales
-art, arte
-attitudes, actitudes
-bags, bolsas
-banks, bancos
-bathrooms, baños
-beds, camas
-beers, cervezas
-bicycles, bicicletas
-blankets, cobijas
-blouses, blusas
-books, libros
-bowls, tazones
-boys,a
-brother,hermano
-brothers,hermanos
-buses, autobuses
-cabinets, gabinetes
-cars, carros
-cats, gatos
-chairs, sillas
-children, niños
-churches, iglesias
-cities, ciudades
-classes, clases
-climates, climas
-closets, clósets
-coasters, portavasos
-coffees, cafés
-conversations, conversaciones
-curtains,cortinas
-days, días
-department stores, tiendas departamentales
-dining room,comedor
-doctors, doctores
-dogs, perros
-doors, puertas
-downstairs,plantas baja
-downstairs areas, plantas bajas
-dramas, dramas
-elevators, elevadores
-floors, pisos
-flowers, flores
-food, la comida
-forks, tenedores
-freezers, congeladores
-fridges, refrigeradores
-friends, amigos
-friendships, amistades
-gardens, jardines
-girls, muchachas
-glasses, vasos
-guitars, guitarras
-hallways, pasillos
-hands, manos
-hospitals, hospitales
-hotels, hoteles
-houses, casas
-ice, hielo
-ice cubes, hielos
-illusions, ilusiones
-invitations, invitaciones
-keys, llaves
-kitchens, cocinas
-knives, cuchillos
-lamps, lámparas
-laptops, laptops
-lessons, lecciones
-lights, luces
-living rooms, salas
-lobbies, lobbies
-locks, cerraduras
-luck, la suerte
-managers, gerentes
-markets, mercados
-men, hombres
-motorcycles, motocicletas
-museums, museos
-notebook,cuaderno
-OXXOs, OXXOs
-paper,papel
-papers, papeles
-parks, parques
-pens, plumas
-people, personas
-photos, fotos
-pianos, pianos
-pictures, cuadros
-pillows, almohadas
-plants, plantas
-plates, platos
-plazas, plazas
-presidents, presidentes
-problems, problemas
-programs, programas
-rugs, alfombras
-shampoo, champú
-sheets, sábanas
-showers, regaderas
-singers, cantantes
-soap, jabón
-sofas, sofás
-songs, canciones
-spoons, cucharas
-steps, escalones
-stores, tiendas
-stoves, estufas
-students, estudiantes
-suitcases, maletas
-supermarkets, supermercados
-systems, sistemas
-tables, mesas
-taxi drivers, taxistas
-taxis, taxis
-televisions, televisiones
-the bus, el autobús
-the bus station,el estación de autobuses
-the cabinet, el gabinete
-the city, la ciudad
-the climate, el clima
-the closet, el clóset
-the desk, el escritorio
-the elevator, el elevador
-the floor, el piso
-the freezer, el congelador
-the hallway, el pasillo
-the hospital, el hospital
-the living room, la sala
-the lobby, el lobby
-the manager, el gerente
-the market, el mercado
-the museum, el museo
-the park, el parque
-the picture (on wall), el cuadro
-the refrigerator, el refrigerador
-the sink, el fregadero
-the sofa, el sofá
-the stairs, las escaleras
-the train station,el estación de tren
-tomatoes, tomates
-trains, trenes
-upstairs,planta alta
-walls, paredes
-water, agua
-windows, ventanas
-wine,vino
-wine glasses, copas
-wine openers, sacacorchos
-wines, vinos
-women, mujeres
+"id","word","answer"
+"1","attitudes"," actitudes"
+"2","water"," agua"
+"3","rugs"," alfombras"
+"4","pillows"," almohadas"
+"5","friends"," amigos"
+"6","friendships"," amistades"
+"7","animals"," animales"
+"8","art"," arte"
+"9","buses"," autobuses"
+"10","banks"," bancos"
+"11","bathrooms"," baños"
+"12","bicycles"," bicicletas"
+"13","blouses"," blusas"
+"14","bags"," bolsas"
+"15","coffees"," cafés"
+"16","beds"," camas"
+"17","songs"," canciones"
+"18","singers"," cantantes"
+"19","cars"," carros"
+"20","houses"," casas"
+"21","locks"," cerraduras"
+"22","beers"," cervezas"
+"23","shampoo"," champú"
+"24","cities"," ciudades"
+"25","classes"," clases"
+"26","climates"," climas"
+"27","closets"," clósets"
+"28","blankets"," cobijas"
+"29","kitchens"," cocinas"
+"30","freezers"," congeladores"
+"31","conversations"," conversaciones"
+"32","wine glasses"," copas"
+"33","pictures"," cuadros"
+"34","spoons"," cucharas"
+"35","knives"," cuchillos"
+"36","doctors"," doctores"
+"37","dramas"," dramas"
+"38","days"," días"
+"39","the bus"," el autobús"
+"40","the climate"," el clima"
+"41","the closet"," el clóset"
+"42","the freezer"," el congelador"
+"43","the picture (on wall)"," el cuadro"
+"44","the elevator"," el elevador"
+"45","the desk"," el escritorio"
+"46","the sink"," el fregadero"
+"47","the cabinet"," el gabinete"
+"48","the manager"," el gerente"
+"49","the hospital"," el hospital"
+"50","the lobby"," el lobby"
+"51","the market"," el mercado"
+"52","the museum"," el museo"
+"53","the park"," el parque"
+"54","the hallway"," el pasillo"
+"55","the floor"," el piso"
+"56","the refrigerator"," el refrigerador"
+"57","the sofa"," el sofá"
+"58","elevators"," elevadores"
+"59","steps"," escalones"
+"60","students"," estudiantes"
+"61","stoves"," estufas"
+"62","flowers"," flores"
+"63","photos"," fotos"
+"64","cabinets"," gabinetes"
+"65","cats"," gatos"
+"66","managers"," gerentes"
+"67","guitars"," guitarras"
+"68","ice"," hielo"
+"69","ice cubes"," hielos"
+"70","men"," hombres"
+"71","hospitals"," hospitales"
+"72","hotels"," hoteles"
+"73","churches"," iglesias"
+"74","illusions"," ilusiones"
+"75","invitations"," invitaciones"
+"76","soap"," jabón"
+"77","gardens"," jardines"
+"78","the city"," la ciudad"
+"79","food"," la comida"
+"80","the living room"," la sala"
+"81","luck"," la suerte"
+"82","laptops"," laptops"
+"83","the stairs"," las escaleras"
+"84","lessons"," lecciones"
+"85","books"," libros"
+"86","keys"," llaves"
+"87","lobbies"," lobbies"
+"88","lights"," luces"
+"89","lamps"," lámparas"
+"90","suitcases"," maletas"
+"91","hands"," manos"
+"92","markets"," mercados"
+"93","tables"," mesas"
+"94","motorcycles"," motocicletas"
+"95","girls"," muchachas"
+"96","women"," mujeres"
+"97","museums"," museos"
+"98","children"," niños"
+"99","OXXOs"," OXXOs"
+"100","papers"," papeles"
+"101","walls"," paredes"
+"102","parks"," parques"
+"103","hallways"," pasillos"
+"104","dogs"," perros"
+"105","people"," personas"
+"106","pianos"," pianos"
+"107","floors"," pisos"
+"108","plants"," plantas"
+"109","downstairs areas"," plantas bajas"
+"110","plates"," platos"
+"111","plazas"," plazas"
+"112","pens"," plumas"
+"113","coasters"," portavasos"
+"114","presidents"," presidentes"
+"115","problems"," problemas"
+"116","programs"," programas"
+"117","doors"," puertas"
+"118","fridges"," refrigeradores"
+"119","showers"," regaderas"
+"120","wine openers"," sacacorchos"
+"121","living rooms"," salas"
+"122","chairs"," sillas"
+"123","systems"," sistemas"
+"124","sofas"," sofás"
+"125","supermarkets"," supermercados"
+"126","sheets"," sábanas"
+"127","taxis"," taxis"
+"128","taxi drivers"," taxistas"
+"129","bowls"," tazones"
+"130","televisions"," televisiones"
+"131","forks"," tenedores"
+"132","stores"," tiendas"
+"133","department stores"," tiendas departamentales"
+"134","tomatoes"," tomates"
+"135","trains"," trenes"
+"136","an animal"," un animal"
+"137","a bank"," un banco"
+"138","a bathroom"," un baño"
+"139","a coffee"," un café"
+"140","a singer"," un cantante"
+"141","a car"," un carro"
+"142","a doctor"," un doctor"
+"143","a drama"," un drama"
+"144","a day"," un día"
+"145","a mirror"," un espejo"
+"146","a student"," un estudiante"
+"147","a man"," un hombre"
+"148","a hotel"," un hotel"
+"149","a garden"," un jardín"
+"150","a book"," un libro"
+"151","a boy"," un muchacho"
+"152","a child"," un niño"
+"153","a president"," un presidente"
+"154","a problem"," un problema"
+"155","a program"," un programa"
+"156","a system"," un sistema"
+"157","a taxi driver"," un taxista"
+"158","a tomato"," un tomate"
+"159","a train"," un tren"
+"160","an attitude"," una actitud"
+"161","a rug"," una alfombra"
+"162","a pillow"," una almohada"
+"163","a friendship"," una amistad"
+"164","a bicycle"," una bicicleta"
+"165","a blouse"," una blusa"
+"166","a bag"," una bolsa"
+"167","a bed"," una cama"
+"168","a song"," una canción"
+"169","a house"," una casa"
+"170","a lock"," una cerradura"
+"171","a beer"," una cerveza"
+"172","a class"," una clase"
+"173","a blanket"," una cobija"
+"174","a kitchen"," una cocina"
+"175","a conversation"," una conversación"
+"176","a wine glass"," una copa"
+"177","a spoon"," una cuchara"
+"178","an escalator"," una escalera eléctrica"
+"179","a broom"," una escoba"
+"180","a stove"," una estufa"
+"181","a flower"," una flor"
+"182","a photo"," una foto"
+"183","a guitar"," una guitarra"
+"184","a church"," una iglesia"
+"185","an illusion"," una ilusión"
+"186","an invitation"," una invitación"
+"187","a lesson"," una lección"
+"188","a key"," una llave"
+"189","a light"," una luz"
+"190","a lamp"," una lámpara"
+"191","a suitcase"," una maleta"
+"192","a suitcase"," una maleta"
+"193","a hand"," una mano"
+"194","a table"," una mesa"
+"195","a motorcycle"," una motocicleta"
+"196","a girl"," una muchacha"
+"197","a woman"," una mujer"
+"198","a wall"," una pared"
+"199","a person"," una persona"
+"200","a plant"," una planta"
+"201","a plaza/square"," una plaza"
+"202","a pen"," una pluma"
+"203","a door"," una puerta"
+"204","a shower"," una regadera"
+"205","a chair"," una silla"
+"206","a television"," una televisión"
+"207","a store"," una tienda"
+"208","a department store"," una tienda departamental"
+"209","a window"," una ventana"
+"210","a truth"," una verdad"
+"211","glasses"," vasos"
+"212","windows"," ventanas"
+"213","wines"," vinos"
+"214","boys","a"
+"215","dining room","comedor"
+"216","curtains","cortinas"
+"217","notebook","cuaderno"
+"218","the bus station","el estación de autobuses"
+"219","the train station","el estación de tren"
+"220","brother","hermano"
+"221","brothers","hermanos"
+"222","paper","papel"
+"223","upstairs","planta alta"
+"224","downstairs","plantas baja"
+"225","a friend","un amigo"
+"226","a knife","un cuchillo"
+"227","a cat","un gato"
+"228","a tablecloth","un mantel"
+"229","an OXXO","un OXXO"
+"230","a dog","un perro"
+"231","a piano","un piano"
+"232","a plate","un plato"
+"233","a coaster","un portavasos"
+"234","a wine opener","un sacacorchos"
+"235","a supermarket","un supermercado"
+"236","a taxi","un taxi"
+"237","a bowl","un tazón"
+"238","a fork","un tenedor"
+"239","a glass","un vaso"
+"240","wine","vino"

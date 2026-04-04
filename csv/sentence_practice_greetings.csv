@@ -1,83 +1,73 @@
-word,answer
-English,Spanish
-Hello,Hola
-Hi,Buenas
-Good morning,Buenos días
-Good afternoon,Buenas tardes
-Good evening / Good night,Buenas noches
-,
-Nice to meet you,Mucho gusto
-My name is David,Me llamo David
-What’s your name?,¿Cómo te llamas?
-"Could you repeat your name, please?","¿Me repites tu nombre, por favor?"
-,
-"How are you? (informal, tú)",¿Cómo estás?
-"How are you? (formal, usted)",¿Cómo está?
-How’s it going?,¿Qué tal?
-How’s everything?,¿Qué tal todo?
-How’s everything going?,¿Cómo va todo?
-Is everything okay here?,¿Todo bien por aquí?
-How have you been?,¿Cómo te ha ido?
-How’s your day?,¿Qué tal tu día?
-How’s your day going?,¿Cómo va tu día?
-How are you (this morning)?,¿Cómo amaneciste?
-Everything ok?,¿Todo bien?
-,
-What’s new?,¿Qué hay de nuevo?
-What’s new with you?,¿Qué me cuentas?
-What’s going on?,¿Qué cuentas?
-What are you up to?,¿Qué haces?
-What’s up?,¿Qué onda?
-,
-"Good, thanks. And you?","Bien, gracias. ¿Y tú?"
-Excellent!,¡Excelente!
-Very good,Muy bien.
-Everything is good.,Todo bien.
-Thanks,Gracias
-Thank you for your help.,Gracias por su ayuda.
-You’re welcome,Con gusto
-"Oh, that’s very kind.","Ah, qué amable."
-That’s really nice of you.,Qué buena onda.
-,
-It’s nice to see you,Un gusto verte
-Great to see you,¡Qué gusto verte!
-It’s good to see you,¡Qué bueno verte!
-Same here,Igualmente
-,
-See you,Nos vemos
-See you later,Hasta luego
-See you later today.,Nos vemos al rato.
-See you tomorrow,Hasta mañana
-See you soon,Nos vemos pronto
-"Take care (informal, tú form)",Cuídate
-"Take care (formal, usted form)",Cuídese
-Have a good day,Que tengas buen día
-Have a good rest,Que descanses
-Hope everything goes well,Que te vaya bien
-Have a good night.,Que tengas buena noche.
-Hope you have a good night.,Que pases buena noche.
-,
-Do you need anything?,¿Necesitas algo?
-Can I help you?,¿Te puedo ayudar?
-Can you help me a little?,¿Me ayuda un poquito?
-Can you help me a tiny bit?,¿Me ayuda tantito?
-Is this okay?,¿Está bien así?
-Of course,Sí claro.
-Of course.,"Sí, cómo no."
-Of course!,¡Claro que sí!
-No problem.,No hay problema.
-Don’t worry.,No se preocupe.
-,
-Excuse me (passing),Con permiso
-Sorry,Perdón
-"Excuse me (informal, tú)",Disculpa
-"Excuse me? (formal, usted)",¿Disculpe?
-,
-What?,¿Cómo?
-What did you say?,¿Cómo dijo?
-What? (polite),¿Mande?
-"Could you repeat it, please?","¿Me lo repite, por favor?"
-Could you say it more slowly?,¿Me lo puede decir más despacio?
-"More slowly, please.","Más despacio, por favor."
-,
-Soon (flexible),Ahorita.
+"id","word","answer"
+"1","Oh, that’s very kind.","Ah, qué amable."
+"2","Soon (flexible)","Ahorita."
+"3","Good, thanks. And you?","Bien, gracias. ¿Y tú?"
+"4","Hi","Buenas"
+"5","Good evening / Good night","Buenas noches"
+"6","Good afternoon","Buenas tardes"
+"7","Good morning","Buenos días"
+"8","You’re welcome","Con gusto"
+"9","Excuse me (passing)","Con permiso"
+"10","Take care (informal, tú form)","Cuídate"
+"11","Take care (formal, usted form)","Cuídese"
+"12","Excuse me (informal, tú)","Disculpa"
+"13","Thanks","Gracias"
+"14","Thank you for your help.","Gracias por su ayuda."
+"15","See you later","Hasta luego"
+"16","See you tomorrow","Hasta mañana"
+"17","Hello","Hola"
+"18","Same here","Igualmente"
+"19","My name is David","Me llamo David"
+"20","Nice to meet you","Mucho gusto"
+"21","Very good","Muy bien."
+"22","More slowly, please.","Más despacio, por favor."
+"23","No problem.","No hay problema."
+"24","Don’t worry.","No se preocupe."
+"25","See you","Nos vemos"
+"26","See you later today.","Nos vemos al rato."
+"27","See you soon","Nos vemos pronto"
+"28","Sorry","Perdón"
+"29","Have a good rest","Que descanses"
+"30","Hope you have a good night.","Que pases buena noche."
+"31","Hope everything goes well","Que te vaya bien"
+"32","Have a good day","Que tengas buen día"
+"33","Have a good night.","Que tengas buena noche."
+"34","That’s really nice of you.","Qué buena onda."
+"35","English","Spanish"
+"36","Of course","Sí claro."
+"37","Of course.","Sí, cómo no."
+"38","Everything is good.","Todo bien."
+"39","It’s nice to see you","Un gusto verte"
+"40","Of course!","¡Claro que sí!"
+"41","Excellent!","¡Excelente!"
+"42","It’s good to see you","¡Qué bueno verte!"
+"43","Great to see you","¡Qué gusto verte!"
+"44","How are you (this morning)?","¿Cómo amaneciste?"
+"45","What did you say?","¿Cómo dijo?"
+"46","How are you? (formal, usted)","¿Cómo está?"
+"47","How are you? (informal, tú)","¿Cómo estás?"
+"48","How have you been?","¿Cómo te ha ido?"
+"49","What’s your name?","¿Cómo te llamas?"
+"50","How’s everything going?","¿Cómo va todo?"
+"51","How’s your day going?","¿Cómo va tu día?"
+"52","What?","¿Cómo?"
+"53","Excuse me? (formal, usted)","¿Disculpe?"
+"54","Is this okay?","¿Está bien así?"
+"55","What? (polite)","¿Mande?"
+"56","Can you help me a tiny bit?","¿Me ayuda tantito?"
+"57","Can you help me a little?","¿Me ayuda un poquito?"
+"58","Could you say it more slowly?","¿Me lo puede decir más despacio?"
+"59","Could you repeat it, please?","¿Me lo repite, por favor?"
+"60","Could you repeat your name, please?","¿Me repites tu nombre, por favor?"
+"61","Do you need anything?","¿Necesitas algo?"
+"62","What’s going on?","¿Qué cuentas?"
+"63","What are you up to?","¿Qué haces?"
+"64","What’s new?","¿Qué hay de nuevo?"
+"65","What’s new with you?","¿Qué me cuentas?"
+"66","What’s up?","¿Qué onda?"
+"67","How’s everything?","¿Qué tal todo?"
+"68","How’s your day?","¿Qué tal tu día?"
+"69","How’s it going?","¿Qué tal?"
+"70","Can I help you?","¿Te puedo ayudar?"
+"71","Is everything okay here?","¿Todo bien por aquí?"
+"72","Everything ok?","¿Todo bien?"

@@ -1,16 +1,16 @@
-word,answer
-I walk [caminar],camino
-"You walk [caminar, sing, inf]",caminas
-"He, she, you walk [caminar, sing; you=formal 'usted']",camina
-We walk [caminar],caminamos
-They walk [caminar],caminan
-I play [tocar],toco
-"You play [tocar, sing, inf]",tocas
-"He, she, you play [tocar, sing; you=formal 'usted']",toca
-We play [tocar],tocamos
-They play [tocar],tocan
-I help [ayudar],ayudo
-"You help [ayudar, sing, inf]",ayudas
-"He, she, you help [ayudar, sing; you=formal 'usted']",ayuda
-We help [ayudar],ayudamos
-They help [ayudar],ayudan
+"id","word","answer"
+"1","He, she, you help [ayudar, sing; you=formal 'usted']","ayuda"
+"2","We help [ayudar]","ayudamos"
+"3","They help [ayudar]","ayudan"
+"4","You help [ayudar, sing, inf]","ayudas"
+"5","I help [ayudar]","ayudo"
+"6","He, she, you walk [caminar, sing; you=formal 'usted']","camina"
+"7","We walk [caminar]","caminamos"
+"8","They walk [caminar]","caminan"
+"9","You walk [caminar, sing, inf]","caminas"
+"10","I walk [caminar]","camino"
+"11","He, she, you play [tocar, sing; you=formal 'usted']","toca"
+"12","We play [tocar]","tocamos"
+"13","They play [tocar]","tocan"
+"14","You play [tocar, sing, inf]","tocas"
+"15","I play [tocar]","toco"

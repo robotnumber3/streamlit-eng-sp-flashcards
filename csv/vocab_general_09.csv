@@ -1,102 +1,102 @@
-word,answer
-to find,encontrar
-democracy,democracia
-raise / increase,aumento
-football / soccer,fútbol
-test / he tries / she tries / you try [imp],prueba
-consumption,consumo
-although / despite,pese a
-occasions,ocasiones
-exterior / abroad,exterior
-solution,solución
-or (before o),u
-daughter,hija
-dream / sleepy,sueño
-capable,capaz
-occasion,ocasión
-industry,industria
-front / in front of / ahead / forward,adelante
-exit,salida
-science,ciencia
-matter / issue,asunto
-association,asociación
-he put / she put / it put [past],puso
-interests,intereses
-gold,oro
-he will be able to,podrá
-question,pregunta
-opposition,oposición
-to enter / to go in,entrar
-madam / Mrs. / Ms.,señora
-he pointed / she pointed [past],señaló
-pain / ache,dolor
-zones / areas,zonas
-commerce / trade / store,comercio
-operation / surgery,operación
-tribunal / court,tribunal
-institutions,instituciones
-subjects / themes / issues,temas
-June,junio
-frame,marco
-sectors,sectores
-to do it,hacerlo
-aspect / look,aspecto
-reasons,razones
-content,contenido
-judgment / trial / lawsuit,juicio
-electoral,electoral
-he considers / she considers / you consider [imp],considera
-he will have,tendrá
-a lot of [F],mucha
-will / willpower,voluntad
-they say,dicen
-memory / I remember,recuerdo
-area / region,área
-he appears / she appears / it appears,aparece
-he saw / she saw [past],vio
-bed,cama
-even,aun
-he presents / she presents,presenta
-revolution,revolución
-he searches / she searches / it searches,busca
-April,abril
-violence,violencia
-"first [F, pl]",primeras
-little [F],pequeña
-guns / arms / weapons,armas
-I/he/she/it owed / had to [past],debía
-effort,esfuerzo
-human [F],humana
-possibilities,posibilidades
-centers,centros
-professional,profesional
-likewise / also,asimismo
-degree / grade,grado
-you have [aux],has
-take / he takes / she takes / you take [imp],toma
-"different [F, pl]",distintas
-material,material
-meat / flesh,carne
-he calls / she calls,llama
-particular,particular
-to work,trabajar
-proposition / proposal,propuesta
-dead [M],muerto
-prices,precios
-reform / renovation,reforma
-brother,hermano
-cut / court,corte
-he began / she began [past],comenzó
-phase / stage,etapa
-however,no obstante
-he puts / she puts / it puts,pone
-"diverse [M, pl]",diversos
-visit / he visits / she visits,visita
-concept,concepto
-patients,pacientes
-weeks,semanas
-types / kinds,tipos
-only / just,solamente
-desire / wish / I wish / I want,deseo
-systems,sistemas
-they find,encuentran
+"id","word","answer"
+"1","April","abril"
+"2","front / in front of / ahead / forward","adelante"
+"3","he appears / she appears / it appears","aparece"
+"4","guns / arms / weapons","armas"
+"5","likewise / also","asimismo"
+"6","association","asociación"
+"7","aspect / look","aspecto"
+"8","matter / issue","asunto"
+"9","raise / increase","aumento"
+"10","even","aun"
+"11","he searches / she searches / it searches","busca"
+"12","bed","cama"
+"13","capable","capaz"
+"14","meat / flesh","carne"
+"15","centers","centros"
+"16","science","ciencia"
+"17","he began / she began [past]","comenzó"
+"18","commerce / trade / store","comercio"
+"19","concept","concepto"
+"20","he considers / she considers / you consider [imp]","considera"
+"21","consumption","consumo"
+"22","content","contenido"
+"23","cut / court","corte"
+"24","I/he/she/it owed / had to [past]","debía"
+"25","democracy","democracia"
+"26","desire / wish / I wish / I want","deseo"
+"27","they say","dicen"
+"28","different [F, pl]","distintas"
+"29","diverse [M, pl]","diversos"
+"30","pain / ache","dolor"
+"31","electoral","electoral"
+"32","to find","encontrar"
+"33","they find","encuentran"
+"34","to enter / to go in","entrar"
+"35","effort","esfuerzo"
+"36","phase / stage","etapa"
+"37","exterior / abroad","exterior"
+"38","football / soccer","fútbol"
+"39","degree / grade","grado"
+"40","to do it","hacerlo"
+"41","you have [aux]","has"
+"42","brother","hermano"
+"43","daughter","hija"
+"44","human [F]","humana"
+"45","industry","industria"
+"46","institutions","instituciones"
+"47","interests","intereses"
+"48","judgment / trial / lawsuit","juicio"
+"49","June","junio"
+"50","he calls / she calls","llama"
+"51","frame","marco"
+"52","material","material"
+"53","a lot of [F]","mucha"
+"54","dead [M]","muerto"
+"55","however","no obstante"
+"56","occasions","ocasiones"
+"57","occasion","ocasión"
+"58","operation / surgery","operación"
+"59","opposition","oposición"
+"60","gold","oro"
+"61","patients","pacientes"
+"62","particular","particular"
+"63","little [F]","pequeña"
+"64","although / despite","pese a"
+"65","he will be able to","podrá"
+"66","he puts / she puts / it puts","pone"
+"67","possibilities","posibilidades"
+"68","prices","precios"
+"69","question","pregunta"
+"70","he presents / she presents","presenta"
+"71","first [F, pl]","primeras"
+"72","professional","profesional"
+"73","proposition / proposal","propuesta"
+"74","test / he tries / she tries / you try [imp]","prueba"
+"75","he put / she put / it put [past]","puso"
+"76","reasons","razones"
+"77","memory / I remember","recuerdo"
+"78","reform / renovation","reforma"
+"79","revolution","revolución"
+"80","exit","salida"
+"81","sectors","sectores"
+"82","weeks","semanas"
+"83","he pointed / she pointed [past]","señaló"
+"84","madam / Mrs. / Ms.","señora"
+"85","systems","sistemas"
+"86","only / just","solamente"
+"87","solution","solución"
+"88","dream / sleepy","sueño"
+"89","subjects / themes / issues","temas"
+"90","he will have","tendrá"
+"91","types / kinds","tipos"
+"92","take / he takes / she takes / you take [imp]","toma"
+"93","to work","trabajar"
+"94","tribunal / court","tribunal"
+"95","or (before o)","u"
+"96","he saw / she saw [past]","vio"
+"97","violence","violencia"
+"98","visit / he visits / she visits","visita"
+"99","will / willpower","voluntad"
+"100","zones / areas","zonas"
+"101","area / region","área"

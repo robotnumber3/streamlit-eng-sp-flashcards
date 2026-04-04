@@ -1,101 +1,101 @@
-word;answer
-independent / freelance;independiente
-positions;posiciones
-societies;sociedades
-exteriors / foreign;exteriores
-date / appointment;cita
-period;período
-propositions / offers / proposals;propuestas
-employees;empleados
-having / owning;teniendo
-agency;agencia
-paintings / pictures;cuadros
-departure;partida
-tension;tensión
-to look / to watch;mirar
-rich / tasty [F];rica
-Mexican;mexicano
-models;modelos
-comeback;regreso
-Governments;gobiernos
-they constitute / they are;constituyen
-absolute [F];absoluta
-weather;clima
-criterion / criteria;criterio
-Latina;latina
-he/she/it continues;continúa
-point / tip;punta
-wide / spacious [F];amplia
-registry / I record;registro
-session;sesión
-homeland;patria
-he/she/it has;posee
-he/she/it entered;entró
-to serve;servir
-rain;lluvia
-won [participle];ganado
-passing through / showing;pasando
-to build;construir
-complete / full [F];completa
-personal [pl];personales
-to reduce;reducir
-to develop;desarrollar
-reach / scope;alcance
-sport;deporte
-pact;pacto
-elaboration;elaboración
-it remained / was left [imperfect];quedaba
-vice president;vicepresidente
-alcohol;alcohol
-formula;fórmula
-inferior / bottom;inferior
-rate;tasa
-experts;expertos
-foreigner;extranjero
-saying;diciendo
-to forget;olvidar
-present [pl];presentes
-thinking;pensando
-he/she/it waited [imperfect];esperaba
-code;código
-cooperation;cooperación
-photography / picture;fotografía
-battle;batalla
-alternative;alternativa
-born [M];nacido
-trees;árboles
-penal / criminal;penal
-full [F];llena
-he/she/it continued / followed;siguió
-spoke / was talking [imperfect];hablaba
-tourism;turismo
-papers;papeles
-often;a menudo
-potato;papa
-popular [pl];populares
-station;estación
-quickly;rápidamente
-section;sección
-determined [M];determinado
-to become / to turn into;convertirse
-global;global
-negotiation;negociación
-instrument;instrumento
-it lasts;dura
-meaning;significado
-intensity;intensidad
-posterior / subsequent;posterior
-multiple [pl];múltiples
-gas;gas
-again;nuevamente
-iron;hierro
-followed [M];seguido
-eleven;once
-achieved / obtained [M];conseguido
-you say [imperative];di
-loneliness / solitude;soledad
-looking / watching;mirando
-introduced / presented [participle];presentado
-instruments;instrumentos
-he/she/it knew;supo
-record / disc / album;disco
+"id";"word";"answer"
+"1";"often";"a menudo"
+"2";"absolute [F]";"absoluta"
+"3";"agency";"agencia"
+"4";"reach / scope";"alcance"
+"5";"alcohol";"alcohol"
+"6";"alternative";"alternativa"
+"7";"wide / spacious [F]";"amplia"
+"8";"battle";"batalla"
+"9";"date / appointment";"cita"
+"10";"weather";"clima"
+"11";"complete / full [F]";"completa"
+"12";"achieved / obtained [M]";"conseguido"
+"13";"they constitute / they are";"constituyen"
+"14";"to build";"construir"
+"15";"he/she/it continues";"continúa"
+"16";"to become / to turn into";"convertirse"
+"17";"cooperation";"cooperación"
+"18";"criterion / criteria";"criterio"
+"19";"paintings / pictures";"cuadros"
+"20";"code";"código"
+"21";"sport";"deporte"
+"22";"to develop";"desarrollar"
+"23";"determined [M]";"determinado"
+"24";"you say [imperative]";"di"
+"25";"saying";"diciendo"
+"26";"record / disc / album";"disco"
+"27";"it lasts";"dura"
+"28";"elaboration";"elaboración"
+"29";"employees";"empleados"
+"30";"he/she/it entered";"entró"
+"31";"he/she/it waited [imperfect]";"esperaba"
+"32";"station";"estación"
+"33";"experts";"expertos"
+"34";"exteriors / foreign";"exteriores"
+"35";"foreigner";"extranjero"
+"36";"photography / picture";"fotografía"
+"37";"formula";"fórmula"
+"38";"won [participle]";"ganado"
+"39";"gas";"gas"
+"40";"global";"global"
+"41";"Governments";"gobiernos"
+"42";"spoke / was talking [imperfect]";"hablaba"
+"43";"iron";"hierro"
+"44";"independent / freelance";"independiente"
+"45";"inferior / bottom";"inferior"
+"46";"instrument";"instrumento"
+"47";"instruments";"instrumentos"
+"48";"intensity";"intensidad"
+"49";"Latina";"latina"
+"50";"full [F]";"llena"
+"51";"rain";"lluvia"
+"52";"Mexican";"mexicano"
+"53";"looking / watching";"mirando"
+"54";"to look / to watch";"mirar"
+"55";"models";"modelos"
+"56";"multiple [pl]";"múltiples"
+"57";"born [M]";"nacido"
+"58";"negotiation";"negociación"
+"59";"again";"nuevamente"
+"60";"to forget";"olvidar"
+"61";"eleven";"once"
+"62";"pact";"pacto"
+"63";"potato";"papa"
+"64";"papers";"papeles"
+"65";"departure";"partida"
+"66";"passing through / showing";"pasando"
+"67";"homeland";"patria"
+"68";"penal / criminal";"penal"
+"69";"thinking";"pensando"
+"70";"personal [pl]";"personales"
+"71";"period";"período"
+"72";"popular [pl]";"populares"
+"73";"he/she/it has";"posee"
+"74";"positions";"posiciones"
+"75";"posterior / subsequent";"posterior"
+"76";"introduced / presented [participle]";"presentado"
+"77";"present [pl]";"presentes"
+"78";"propositions / offers / proposals";"propuestas"
+"79";"point / tip";"punta"
+"80";"it remained / was left [imperfect]";"quedaba"
+"81";"to reduce";"reducir"
+"82";"registry / I record";"registro"
+"83";"comeback";"regreso"
+"84";"rich / tasty [F]";"rica"
+"85";"quickly";"rápidamente"
+"86";"section";"sección"
+"87";"followed [M]";"seguido"
+"88";"to serve";"servir"
+"89";"session";"sesión"
+"90";"meaning";"significado"
+"91";"he/she/it continued / followed";"siguió"
+"92";"societies";"sociedades"
+"93";"loneliness / solitude";"soledad"
+"94";"he/she/it knew";"supo"
+"95";"rate";"tasa"
+"96";"having / owning";"teniendo"
+"97";"tension";"tensión"
+"98";"tourism";"turismo"
+"99";"vice president";"vicepresidente"
+"100";"trees";"árboles"

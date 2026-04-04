@@ -1,65 +1,65 @@
-word,answer
-more / less,más / menos
-open / closed,abierto / cerrado
-inside / outside,adentro / afuera
-tall [high] / short [low],alto / bajo
-before / after,antes / después
-here / there,aquí / allá
-up / down,arriba / abajo
-cheap / expensive,barato / caro
-white / black,blanco / negro
-pretty / ugly,bonito / feo
-good / bad,bueno / malo
-hot / cold,caliente / frío
-"calm [tranquil] / angry [irritated, upset]",calmado [tranquilo] / enojado
-"capable / incapable [skills, tasks, ability]",capaz / incapaz
-near / far,cerca / lejos
-"clear / confusing [for explanations, instructions, ideas]",claro / confuso
-light [bright] / dark,claro / oscuro
-right / wrong,correcto / incorrecto
-in front / behind,delante / detrás
-skinny / fat,delgado / gordo
-fun [amusing] / serious,divertido / serio
-sweet / salty,dulce / salado
-hard / soft,duro / suave
-polite / rude,educado / grosero
-"on / off [lights, devices, etc.]",encendido / apagado
-energetic / lazy,enérgico / flojo
-to enter / to exit [V],entrar / salir
-outgoing / shy,extrovertido / tímido
-easy / difficult,fácil / difícil
-happy / angry [current/momentary mood],feliz / enojado
-"happy / sad [overall emotional state, mood]",feliz / triste
-"strong / weak [physical strength, power]",fuerte / débil
-"loud [strong] / gentle [mild] [force, intensity – not physical strength]",fuerte / suave
-large / small,grande / pequeño [chico = less formal]
-thick / thin,grueso / delgado
-hungry / not hungry,hambriento / satisfecho
-interested / bored,interesado / aburrido
-"young / older / old [for people, animals]",joven / major / viejo
-long / short,largo / corto
-light / heavy,ligero / pesado
-clean / dirty,limpio / sucio
-older / younger,mayor / menor
-better / worse,mejor / peor
-wet / dry,mojado / seco
-many / few,mucho / poco
-"nervous [anxious, tense] / relaxed",nervioso / tranquilo
-new / old [for objects],nuevo / viejo
-busy / free,ocupado / libre
-tidy / messy,ordenado / desordenado
-allowed [permitted] / prohibited [forbidden],permitido / prohibido
-possible / impossible,posible / imposible
-first / last,primero / último
-fast / slow,rápido / lento
-rich / poor,rico / pobre
-safe / dangerous,seguro / peligroso
-always / sometimes / never,siempre / a veces / nunca
-sober / drunk,sobrio / borracho
-to go up / to go down [V],subir / bajar
-enough [sufficient] / not enough [insufficient],suficiente / insuficiente
-early / late,temprano / tarde
-empty / full [state of a container or stomach],vacío / lleno
-fearless / afraid,valiente / miedoso
-true / false,verdadero / falso
-alive / dead,vivo / muerto
+"id","word","answer"
+"1","open / closed","abierto / cerrado"
+"2","inside / outside","adentro / afuera"
+"3","tall [high] / short [low]","alto / bajo"
+"4","before / after","antes / después"
+"5","here / there","aquí / allá"
+"6","up / down","arriba / abajo"
+"7","cheap / expensive","barato / caro"
+"8","white / black","blanco / negro"
+"9","pretty / ugly","bonito / feo"
+"10","good / bad","bueno / malo"
+"11","hot / cold","caliente / frío"
+"12","calm [tranquil] / angry [irritated, upset]","calmado [tranquilo] / enojado"
+"13","capable / incapable [skills, tasks, ability]","capaz / incapaz"
+"14","near / far","cerca / lejos"
+"15","clear / confusing [for explanations, instructions, ideas]","claro / confuso"
+"16","light [bright] / dark","claro / oscuro"
+"17","right / wrong","correcto / incorrecto"
+"18","in front / behind","delante / detrás"
+"19","skinny / fat","delgado / gordo"
+"20","fun [amusing] / serious","divertido / serio"
+"21","sweet / salty","dulce / salado"
+"22","hard / soft","duro / suave"
+"23","polite / rude","educado / grosero"
+"24","on / off [lights, devices, etc.]","encendido / apagado"
+"25","to enter / to exit [V]","entrar / salir"
+"26","energetic / lazy","enérgico / flojo"
+"27","outgoing / shy","extrovertido / tímido"
+"28","happy / angry [current/momentary mood]","feliz / enojado"
+"29","happy / sad [overall emotional state, mood]","feliz / triste"
+"30","strong / weak [physical strength, power]","fuerte / débil"
+"31","loud [strong] / gentle [mild] [force, intensity – not physical strength]","fuerte / suave"
+"32","easy / difficult","fácil / difícil"
+"33","large / small","grande / pequeño [chico = less formal]"
+"34","thick / thin","grueso / delgado"
+"35","hungry / not hungry","hambriento / satisfecho"
+"36","interested / bored","interesado / aburrido"
+"37","young / older / old [for people, animals]","joven / major / viejo"
+"38","long / short","largo / corto"
+"39","light / heavy","ligero / pesado"
+"40","clean / dirty","limpio / sucio"
+"41","older / younger","mayor / menor"
+"42","better / worse","mejor / peor"
+"43","wet / dry","mojado / seco"
+"44","many / few","mucho / poco"
+"45","more / less","más / menos"
+"46","nervous [anxious, tense] / relaxed","nervioso / tranquilo"
+"47","new / old [for objects]","nuevo / viejo"
+"48","busy / free","ocupado / libre"
+"49","tidy / messy","ordenado / desordenado"
+"50","allowed [permitted] / prohibited [forbidden]","permitido / prohibido"
+"51","possible / impossible","posible / imposible"
+"52","first / last","primero / último"
+"53","rich / poor","rico / pobre"
+"54","fast / slow","rápido / lento"
+"55","safe / dangerous","seguro / peligroso"
+"56","always / sometimes / never","siempre / a veces / nunca"
+"57","sober / drunk","sobrio / borracho"
+"58","to go up / to go down [V]","subir / bajar"
+"59","enough [sufficient] / not enough [insufficient]","suficiente / insuficiente"
+"60","early / late","temprano / tarde"
+"61","empty / full [state of a container or stomach]","vacío / lleno"
+"62","fearless / afraid","valiente / miedoso"
+"63","true / false","verdadero / falso"
+"64","alive / dead","vivo / muerto"

@@ -1,101 +1,101 @@
-word;answer
-he/she/it continued / followed [imperfect];seguía
-business;negocio
-sexual;sexual
-teaching;enseñanza
-he/she/it added;agregó
-lips;labios
-resolution;resolución
-foundation;fundación
-he/she/it will do / will make;hará
-he/she/it depends;depende
-actor;actor
-technical / technicians;técnicos
-beauty;belleza
-headline;titular
-accomplished;logrado
-victims;víctimas
-details;detalles
-European [M, pl];europeos
-horse;caballo
-strike;huelga
-road;carretera
-North American;norteamericano
-to produce;producir
-old / antique [F];antigua
-alliance;alianza
-physical [M];físico
-to take out;sacar
-advertisement / advertising;publicidad
-foreseen / provided;previsto
-surrounding / environment;entorno
-concern;preocupación
-resistance;resistencia
-he/she/it died;murió
-they know;saben
-generally;generalmente
-to sleep;dormir
-individual;individuo
-bodies;cuerpos
-short;corto
-organisms;organismos
-special [pl];especiales
-internet;internet
-benches / banks;bancos
-player;jugador
-efforts;esfuerzos
-benefits;beneficios
-to finish;terminar
-balance;equilibrio
-hearing / ear;oído
-reading;lectura
-pieces;piezas
-limits / boundaries;límites
-approximately / about;aproximadamente
-it opens;abre
-taken [M];llevado
-private [M];privado
-hall / living room;salón
-current;actuales
-serious [pl];graves
-smile;sonrisa
-photo / picture;foto
-perspective;perspectiva
-number / figure;cifra
-credit;crédito
-interesting;interesante
-constitutional;constitucional
-to accept;aceptar
-produced [M];producido
-bag;bolsa
-factor;factor
-nights;noches
-recognition;reconocimiento
-youth;juventud
-usual / regular;habitual
-category;categoría
-he/she/it requires;requiere
-that he/she/it were [subjunctive];fuese
-impression;impresión
-to call;llamar
-hard [M];duro
-universal;universal
-to explain;explicar
-they present;presentan
-realization / completion;realización
-quick / fast;rápido
-scientists [M];científicos
-serious [M];serio
-scientist [M];científico
-to understand;comprender
-kingdom;reino
-preparation;preparación
-symptoms;síntomas
-recovery;recuperación
-use;utilización
-strong [pl];fuertes
-sound;sonido
-intelligence;inteligencia
-conversation;conversación
-he/she/it establishes;establece
-if I/he/she/it had [subjunctive];hubiese
+"id";"word";"answer"
+"1";"it opens";"abre"
+"2";"to accept";"aceptar"
+"3";"actor";"actor"
+"4";"current";"actuales"
+"5";"he/she/it added";"agregó"
+"6";"alliance";"alianza"
+"7";"old / antique [F]";"antigua"
+"8";"approximately / about";"aproximadamente"
+"9";"benches / banks";"bancos"
+"10";"beauty";"belleza"
+"11";"benefits";"beneficios"
+"12";"bag";"bolsa"
+"13";"horse";"caballo"
+"14";"road";"carretera"
+"15";"category";"categoría"
+"16";"scientist [M]";"científico"
+"17";"scientists [M]";"científicos"
+"18";"number / figure";"cifra"
+"19";"to understand";"comprender"
+"20";"constitutional";"constitucional"
+"21";"conversation";"conversación"
+"22";"short";"corto"
+"23";"credit";"crédito"
+"24";"bodies";"cuerpos"
+"25";"he/she/it depends";"depende"
+"26";"details";"detalles"
+"27";"to sleep";"dormir"
+"28";"hard [M]";"duro"
+"29";"teaching";"enseñanza"
+"30";"surrounding / environment";"entorno"
+"31";"balance";"equilibrio"
+"32";"efforts";"esfuerzos"
+"33";"special [pl]";"especiales"
+"34";"he/she/it establishes";"establece"
+"35";"European [M, pl]";"europeos"
+"36";"to explain";"explicar"
+"37";"factor";"factor"
+"38";"photo / picture";"foto"
+"39";"strong [pl]";"fuertes"
+"40";"that he/she/it were [subjunctive]";"fuese"
+"41";"foundation";"fundación"
+"42";"physical [M]";"físico"
+"43";"generally";"generalmente"
+"44";"serious [pl]";"graves"
+"45";"usual / regular";"habitual"
+"46";"he/she/it will do / will make";"hará"
+"47";"if I/he/she/it had [subjunctive]";"hubiese"
+"48";"strike";"huelga"
+"49";"impression";"impresión"
+"50";"individual";"individuo"
+"51";"intelligence";"inteligencia"
+"52";"interesting";"interesante"
+"53";"internet";"internet"
+"54";"player";"jugador"
+"55";"youth";"juventud"
+"56";"lips";"labios"
+"57";"reading";"lectura"
+"58";"to call";"llamar"
+"59";"taken [M]";"llevado"
+"60";"accomplished";"logrado"
+"61";"limits / boundaries";"límites"
+"62";"he/she/it died";"murió"
+"63";"business";"negocio"
+"64";"nights";"noches"
+"65";"North American";"norteamericano"
+"66";"organisms";"organismos"
+"67";"hearing / ear";"oído"
+"68";"perspective";"perspectiva"
+"69";"pieces";"piezas"
+"70";"concern";"preocupación"
+"71";"preparation";"preparación"
+"72";"they present";"presentan"
+"73";"foreseen / provided";"previsto"
+"74";"private [M]";"privado"
+"75";"produced [M]";"producido"
+"76";"to produce";"producir"
+"77";"advertisement / advertising";"publicidad"
+"78";"realization / completion";"realización"
+"79";"recognition";"reconocimiento"
+"80";"recovery";"recuperación"
+"81";"kingdom";"reino"
+"82";"he/she/it requires";"requiere"
+"83";"resistance";"resistencia"
+"84";"resolution";"resolución"
+"85";"quick / fast";"rápido"
+"86";"they know";"saben"
+"87";"to take out";"sacar"
+"88";"hall / living room";"salón"
+"89";"he/she/it continued / followed [imperfect]";"seguía"
+"90";"serious [M]";"serio"
+"91";"sexual";"sexual"
+"92";"sound";"sonido"
+"93";"smile";"sonrisa"
+"94";"symptoms";"síntomas"
+"95";"to finish";"terminar"
+"96";"headline";"titular"
+"97";"technical / technicians";"técnicos"
+"98";"universal";"universal"
+"99";"use";"utilización"
+"100";"victims";"víctimas"

@@ -1,101 +1,101 @@
-word;answer
-town hall;ayuntamiento
-plants;plantas
-girl;niña
-cold;frío
-tone / shade;tono
-companions / classmates / workmates;compañeros
-they want;quieren
-pesos;pesos
-in front of;delante
-own / of one’s own [F, pl];propias
-plan / flat;plano
-diseases;enfermedades
-institution;institución
-building;edificio
-note / he/she/it notes / you note [imperative];nota
-to play;jugar
-he/she/it represents;representa
-gesture;gesto
-message;mensaje
-Basque [M];vasco
-could [subjunctive];pudiera
-influence;influencia
-little / few [F, pl];pocas
-done / carried out [participle];realizado
-behaviour;conducta
-objects;objetos
-size;tamaño
-province;provincia
-European;europeo
-green;verde
-he/she/it informed;informó
-to write;escribir
-materials;materiales
-to comply / to fulfill;cumplir
-he/she/it asked / ordered;pidió
-students;alumnos
-ambit / scope / field;ámbito
-dead [pl];muertos
-he/she/it explains;explica
-consequences;consecuencias
-he/she/it refers / means;refiere
-to eat;comer
-purposes / end / endings;fines
-version;versión
-open;abierto
-debate;debate
-neighborhood;barrio
-work / labour;labor
-funds / backgrounds;fondos
-just / fair;justo
-tradition;tradición
-different;diferente
-he/she/it thinks;piensa
-technology;tecnología
-he/she/it maintains / supports;mantiene
-situations;situaciones
-phase;fase
-historic / historical [M];histórico
-agents / officers;agentes
-plant;planta
-acting / performance;actuación
-they went / used to go [imperfect];iban
-acts / ceremonies;actos
-possible [pl];posibles
-lion;león
-mom;mamá
-speed;velocidad
-relatives / familiar [pl];familiares
-species [pl];especies
-it fits;cabe
-assembly;asamblea
-communities;comunidades
-museum;museo
-conference;conferencia
-practically;prácticamente
-authority;autoridad
-subject / guy;sujeto
-to try;tratar
-to do it to oneself / to get something done;hacerse
-loss / leak;pérdida
-difficulties;dificultades
-time / while;rato
-to pay;pagar
-school / college;colegio
-you know;sabes
-character;personaje
-areas;áreas
-audience / public;audiencia
-twelve;doce
-that I make / that he/she/it makes [subjunctive];haga
-newspaper / journal;periódico
-distribution;distribución
-absence;ausencia
-interview;entrevista
-he/she/it received;recibió
-he/she/it added;añadió
-kitchen;cocina
-editing / edition;edición
-economic [M, pl];económicos
-natural [pl];naturales
+"id";"word";"answer"
+"1";"open";"abierto"
+"2";"acts / ceremonies";"actos"
+"3";"acting / performance";"actuación"
+"4";"agents / officers";"agentes"
+"5";"students";"alumnos"
+"6";"assembly";"asamblea"
+"7";"audience / public";"audiencia"
+"8";"absence";"ausencia"
+"9";"authority";"autoridad"
+"10";"town hall";"ayuntamiento"
+"11";"he/she/it added";"añadió"
+"12";"neighborhood";"barrio"
+"13";"it fits";"cabe"
+"14";"kitchen";"cocina"
+"15";"school / college";"colegio"
+"16";"to eat";"comer"
+"17";"companions / classmates / workmates";"compañeros"
+"18";"communities";"comunidades"
+"19";"behaviour";"conducta"
+"20";"conference";"conferencia"
+"21";"consequences";"consecuencias"
+"22";"to comply / to fulfill";"cumplir"
+"23";"debate";"debate"
+"24";"in front of";"delante"
+"25";"different";"diferente"
+"26";"difficulties";"dificultades"
+"27";"distribution";"distribución"
+"28";"twelve";"doce"
+"29";"economic [M, pl]";"económicos"
+"30";"editing / edition";"edición"
+"31";"building";"edificio"
+"32";"diseases";"enfermedades"
+"33";"interview";"entrevista"
+"34";"to write";"escribir"
+"35";"species [pl]";"especies"
+"36";"European";"europeo"
+"37";"he/she/it explains";"explica"
+"38";"relatives / familiar [pl]";"familiares"
+"39";"phase";"fase"
+"40";"purposes / end / endings";"fines"
+"41";"funds / backgrounds";"fondos"
+"42";"cold";"frío"
+"43";"gesture";"gesto"
+"44";"to do it to oneself / to get something done";"hacerse"
+"45";"that I make / that he/she/it makes [subjunctive]";"haga"
+"46";"historic / historical [M]";"histórico"
+"47";"they went / used to go [imperfect]";"iban"
+"48";"influence";"influencia"
+"49";"he/she/it informed";"informó"
+"50";"institution";"institución"
+"51";"to play";"jugar"
+"52";"just / fair";"justo"
+"53";"work / labour";"labor"
+"54";"lion";"león"
+"55";"mom";"mamá"
+"56";"he/she/it maintains / supports";"mantiene"
+"57";"materials";"materiales"
+"58";"message";"mensaje"
+"59";"dead [pl]";"muertos"
+"60";"museum";"museo"
+"61";"natural [pl]";"naturales"
+"62";"girl";"niña"
+"63";"note / he/she/it notes / you note [imperative]";"nota"
+"64";"objects";"objetos"
+"65";"to pay";"pagar"
+"66";"newspaper / journal";"periódico"
+"67";"character";"personaje"
+"68";"pesos";"pesos"
+"69";"he/she/it asked / ordered";"pidió"
+"70";"he/she/it thinks";"piensa"
+"71";"plan / flat";"plano"
+"72";"plant";"planta"
+"73";"plants";"plantas"
+"74";"little / few [F, pl]";"pocas"
+"75";"possible [pl]";"posibles"
+"76";"own / of one’s own [F, pl]";"propias"
+"77";"province";"provincia"
+"78";"practically";"prácticamente"
+"79";"could [subjunctive]";"pudiera"
+"80";"loss / leak";"pérdida"
+"81";"they want";"quieren"
+"82";"time / while";"rato"
+"83";"done / carried out [participle]";"realizado"
+"84";"he/she/it received";"recibió"
+"85";"he/she/it refers / means";"refiere"
+"86";"he/she/it represents";"representa"
+"87";"you know";"sabes"
+"88";"situations";"situaciones"
+"89";"subject / guy";"sujeto"
+"90";"size";"tamaño"
+"91";"technology";"tecnología"
+"92";"tone / shade";"tono"
+"93";"tradition";"tradición"
+"94";"to try";"tratar"
+"95";"Basque [M]";"vasco"
+"96";"speed";"velocidad"
+"97";"green";"verde"
+"98";"version";"versión"
+"99";"ambit / scope / field";"ámbito"
+"100";"areas";"áreas"

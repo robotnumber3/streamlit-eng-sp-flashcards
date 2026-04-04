@@ -1,51 +1,51 @@
-word;answer
-to be [identity, origin, permanent traits, time/date];ser
-to be [location, temporary state, emotion, ongoing action];estar
-to have [irregular, yo‑go verb];tener
-to go [irregular];ir
-to do [irregular, yo‑go verb];hacer
-to make [irregular, yo‑go verb];hacer
-to want [stem‑changing: e→ie];querer
-to be able to [stem‑changing: o→ue];poder
-to need;necesitar
-to like [+ I.O., works like 'to be pleasing to'];gustar
-to know (facts/skills) [irregular];saber
-to know (people/places);conocer
-to come [irregular, stem‑changing: e→ie, yo‑go verb];venir
-to bring [irregular, yo‑go verb];traer
-to leave / to go out [irregular, yo‑go verb];salir
-to arrive;llegar
-to take / to drink [+ D.O.];tomar
-to put [irregular, yo‑go verb];poner
-to give [+ I.O., requires a recipient];dar
-to say / to tell [irregular, stem‑changing: e→i, yo‑go verb, + I.O., information goes to someone];decir
-to speak;hablar
-to ask (a question) [+ I.O., ask a person, not 'a question'];preguntar
-to call (phone) [+ I.O., call a person];llamar
-to eat [+ D.O.];comer
-to live;vivir
-to see [irregular];ver
-to buy [+ D.O.];comprar
-to play (guitar, piano) [+ D.O.];tocar
-to pay [+ D.O.];pagar
-to visit (a place) [+ D.O.];visitar
-to travel;viajar
-to drink (tea, milk, beer) [+ D.O.];beber
-to shop (for clothes, etc.);comprar
-to cook [+ D.O.];cocinar
-to sleep [stem‑changing: o→ue];dormir
-to shower [reflexive];duchar[se]
-to walk (to some place);caminar
-to drive (a car);manejar
-to write (poetry, etc.) [+ D.O.];escribir
-to read (a book) [+ D.O.];leer
-to understand [stem‑changing: e→ie];entender
-to hear (a sound, music) [irregular];oír
-to text (someone) [+ I.O., message goes to a person];textear
-to swim (in the ocean, pool);nadar
-to photograph / to take photos of [+ D.O.];fotografiar
-to carry (something) [+ D.O.];llevar
-to sing (a song) [+ D.O.];cantar
-to program computers [+ D.O.];programar
-to wear (a coat, etc.) [+ D.O.];llevar
-to exercise;hacer ejercicio
+"id";"word";"answer"
+"1";"to drink (tea, milk, beer) [+ D.O.]";"beber"
+"2";"to walk (to some place)";"caminar"
+"3";"to sing (a song) [+ D.O.]";"cantar"
+"4";"to cook [+ D.O.]";"cocinar"
+"5";"to eat [+ D.O.]";"comer"
+"6";"to buy [+ D.O.]";"comprar"
+"7";"to shop (for clothes, etc.)";"comprar"
+"8";"to know (people/places)";"conocer"
+"9";"to give [+ I.O., requires a recipient]";"dar"
+"10";"to say / to tell [irregular, stem‑changing: e→i, yo‑go verb, + I.O., information goes to someone]";"decir"
+"11";"to sleep [stem‑changing: o→ue]";"dormir"
+"12";"to shower [reflexive]";"duchar[se]"
+"13";"to understand [stem‑changing: e→ie]";"entender"
+"14";"to write (poetry, etc.) [+ D.O.]";"escribir"
+"15";"to be [location, temporary state, emotion, ongoing action]";"estar"
+"16";"to photograph / to take photos of [+ D.O.]";"fotografiar"
+"17";"to like [+ I.O., works like 'to be pleasing to']";"gustar"
+"18";"to speak";"hablar"
+"19";"to do [irregular, yo‑go verb]";"hacer"
+"20";"to make [irregular, yo‑go verb]";"hacer"
+"21";"to exercise";"hacer ejercicio"
+"22";"to go [irregular]";"ir"
+"23";"to read (a book) [+ D.O.]";"leer"
+"24";"to call (phone) [+ I.O., call a person]";"llamar"
+"25";"to arrive";"llegar"
+"26";"to carry (something) [+ D.O.]";"llevar"
+"27";"to wear (a coat, etc.) [+ D.O.]";"llevar"
+"28";"to drive (a car)";"manejar"
+"29";"to swim (in the ocean, pool)";"nadar"
+"30";"to need";"necesitar"
+"31";"to hear (a sound, music) [irregular]";"oír"
+"32";"to pay [+ D.O.]";"pagar"
+"33";"to be able to [stem‑changing: o→ue]";"poder"
+"34";"to put [irregular, yo‑go verb]";"poner"
+"35";"to ask (a question) [+ I.O., ask a person, not 'a question']";"preguntar"
+"36";"to program computers [+ D.O.]";"programar"
+"37";"to want [stem‑changing: e→ie]";"querer"
+"38";"to know (facts/skills) [irregular]";"saber"
+"39";"to leave / to go out [irregular, yo‑go verb]";"salir"
+"40";"to be [identity, origin, permanent traits, time/date]";"ser"
+"41";"to have [irregular, yo‑go verb]";"tener"
+"42";"to text (someone) [+ I.O., message goes to a person]";"textear"
+"43";"to play (guitar, piano) [+ D.O.]";"tocar"
+"44";"to take / to drink [+ D.O.]";"tomar"
+"45";"to bring [irregular, yo‑go verb]";"traer"
+"46";"to come [irregular, stem‑changing: e→ie, yo‑go verb]";"venir"
+"47";"to see [irregular]";"ver"
+"48";"to travel";"viajar"
+"49";"to visit (a place) [+ D.O.]";"visitar"
+"50";"to live";"vivir"

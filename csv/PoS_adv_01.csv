@@ -1,123 +1,123 @@
-word;answer
-not;no
-more;más
-hardly;apenas
-also;también
-already;ya
-very;muy
-basically;básicamente
-only;solo
-later;después
-now;ahora
-thus;así
-well;bien
-always;siempre
-before;antes
-SO;tan
-how;cómo
-yes;sí
-today;hoy
-then;entonces
-then;luego
-in addition;además
-never;nunca
-almost;casi
-sparsely;poco
-here;aquí
-least;menos
-such;tanto
-however;sin embargo
-a lot;mucho
-still;aún
-within;dentro
-yesterday;ayer
-there;allí
-inclusive;incluso
-there;ahí
-loudly;ruidosamente
-still;todavía
-even;hasta
-nor;tampoco
-near;cerca
-there;allá
-barely;apenas
-perhaps;a lo mejor
-carefully;cuidadosamente
-soon;pronto
-normally;normalmente
-out;fuera
-behind;atrás
-above;encima
-afternoon;tarde
-finally;finalmente
-especially;especialmente
-maybe;tal vez
-far;lejos
-too;demasiado
-maybe;quizá
-badly;mal
-perfectly;perfectamente
-quite a lot;bastante
-daily;diariamente
-forward;adelante
-back;detrás
-likewise;igual
-not even;ni siquiera
-first;primero
-currently;actualmente
-as well as;así como
-precisely;precisamente
-up;arriba
-actually;realmente
-never;jamás
-maybe;quizás
-just;recién
-also;asimismo
-however;no obstante
-with difficulty;difícilmente
-around;alrededor
-only;solamente
-even;aun
-of course;por supuesto
-in front;delante
-below;abajo
-not at all;para nada
-easily;fácilmente
-simply;simplemente
-directly;directamente
-slowly;lentamente
-under;debajo
-therefore;por tanto
-mainly;principalmente
-therefore;por lo tanto
-totally;totalmente
-often;a menudo
-at least;por lo menos
-here;acá
-probably;probablemente
-practically;prácticamente
-surely;seguramente
-frequently;frecuentemente
-approximately;aproximadamente
-completely;completamente
-later;posteriormente
-again;nuevamente
-finally;por fin
-equally;igualmente
-never;jamás
-perhaps;acaso
-just;justo
-recently;recientemente
-kindly;por favor
-quickly;rápidamente
-only;únicamente
-outside;afuera
-respectively;respectivamente
-immediately;inmediatamente
-exactly;exactamente
-clearly;claramente
-generally;generalmente
-perfectly;perfectamente
-right away;enseguida
-early;temprano
-inside;adentro
+"id";"word";"answer"
+"1";"perhaps";"a lo mejor"
+"2";"often";"a menudo"
+"3";"below";"abajo"
+"4";"perhaps";"acaso"
+"5";"currently";"actualmente"
+"6";"here";"acá"
+"7";"forward";"adelante"
+"8";"in addition";"además"
+"9";"inside";"adentro"
+"10";"outside";"afuera"
+"11";"now";"ahora"
+"12";"there";"ahí"
+"13";"there";"allá"
+"14";"there";"allí"
+"15";"around";"alrededor"
+"16";"before";"antes"
+"17";"hardly";"apenas"
+"18";"barely";"apenas"
+"19";"approximately";"aproximadamente"
+"20";"here";"aquí"
+"21";"up";"arriba"
+"22";"also";"asimismo"
+"23";"thus";"así"
+"24";"as well as";"así como"
+"25";"behind";"atrás"
+"26";"even";"aun"
+"27";"yesterday";"ayer"
+"28";"still";"aún"
+"29";"quite a lot";"bastante"
+"30";"well";"bien"
+"31";"basically";"básicamente"
+"32";"almost";"casi"
+"33";"near";"cerca"
+"34";"clearly";"claramente"
+"35";"completely";"completamente"
+"36";"carefully";"cuidadosamente"
+"37";"how";"cómo"
+"38";"under";"debajo"
+"39";"in front";"delante"
+"40";"too";"demasiado"
+"41";"within";"dentro"
+"42";"later";"después"
+"43";"back";"detrás"
+"44";"daily";"diariamente"
+"45";"with difficulty";"difícilmente"
+"46";"directly";"directamente"
+"47";"above";"encima"
+"48";"right away";"enseguida"
+"49";"then";"entonces"
+"50";"especially";"especialmente"
+"51";"exactly";"exactamente"
+"52";"finally";"finalmente"
+"53";"frequently";"frecuentemente"
+"54";"out";"fuera"
+"55";"easily";"fácilmente"
+"56";"generally";"generalmente"
+"57";"even";"hasta"
+"58";"today";"hoy"
+"59";"likewise";"igual"
+"60";"equally";"igualmente"
+"61";"inclusive";"incluso"
+"62";"immediately";"inmediatamente"
+"63";"never";"jamás"
+"64";"never";"jamás"
+"65";"just";"justo"
+"66";"far";"lejos"
+"67";"slowly";"lentamente"
+"68";"then";"luego"
+"69";"badly";"mal"
+"70";"least";"menos"
+"71";"a lot";"mucho"
+"72";"very";"muy"
+"73";"more";"más"
+"74";"not even";"ni siquiera"
+"75";"not";"no"
+"76";"however";"no obstante"
+"77";"normally";"normalmente"
+"78";"again";"nuevamente"
+"79";"never";"nunca"
+"80";"not at all";"para nada"
+"81";"perfectly";"perfectamente"
+"82";"perfectly";"perfectamente"
+"83";"sparsely";"poco"
+"84";"kindly";"por favor"
+"85";"finally";"por fin"
+"86";"at least";"por lo menos"
+"87";"therefore";"por lo tanto"
+"88";"of course";"por supuesto"
+"89";"therefore";"por tanto"
+"90";"later";"posteriormente"
+"91";"precisely";"precisamente"
+"92";"first";"primero"
+"93";"mainly";"principalmente"
+"94";"probably";"probablemente"
+"95";"soon";"pronto"
+"96";"practically";"prácticamente"
+"97";"maybe";"quizá"
+"98";"maybe";"quizás"
+"99";"actually";"realmente"
+"100";"recently";"recientemente"
+"101";"just";"recién"
+"102";"respectively";"respectivamente"
+"103";"loudly";"ruidosamente"
+"104";"quickly";"rápidamente"
+"105";"surely";"seguramente"
+"106";"always";"siempre"
+"107";"simply";"simplemente"
+"108";"however";"sin embargo"
+"109";"only";"solamente"
+"110";"only";"solo"
+"111";"yes";"sí"
+"112";"maybe";"tal vez"
+"113";"also";"también"
+"114";"nor";"tampoco"
+"115";"SO";"tan"
+"116";"such";"tanto"
+"117";"afternoon";"tarde"
+"118";"early";"temprano"
+"119";"still";"todavía"
+"120";"totally";"totalmente"
+"121";"already";"ya"
+"122";"only";"únicamente"

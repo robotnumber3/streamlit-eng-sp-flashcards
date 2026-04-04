@@ -1,73 +1,73 @@
-word;answer
-I walk to the store.;Yo camino a la tienda.
-Do you go to the park? [sing];¿Tú vas al parque?
-We talk before the class.;Nosotros hablamos ante la clase.
-Do they stand before the door?;¿Ellos están ante la puerta?
-The cat sleeps under the table.;El gato duerme bajo la mesa.
-Do you put the shoes under the bed? [sing];¿Tú pones los zapatos bajo la cama?
-I live with my brother.;Yo vivo con mi hermano.
-Do you live with your parents? [pl];¿Ustedes viven con sus padres?
-They run against the wind.;Ellos corren contra el viento.
-Do we play against that team?;¿Nosotros jugamos contra ese equipo?
-I drink a cup of tea.;Yo bebo una taza de té.
-Do you read a book about animals? [sing];¿Tú lees un libro de animales?
-We work from home.;Nosotros trabajamos desde casa.
-Do they study from the library?;¿Ellos estudian desde la biblioteca?
-I read during lunch.;Yo leo durante el almuerzo.
-Do you rest during the day? [sing, formal];¿Usted descansa durante el día?
-She sits in the chair.;Ella se sienta en la silla.
-Do you eat in the kitchen? [sing];¿Tú comes en la cocina?
-They walk between the trees.;Ellos caminan entre los árboles.
-Do we sit among friends?;¿Nosotros nos sentamos entre amigos?
-I go toward the door.;Yo voy hacia la puerta.
-Do you walk toward the school? [sing];¿Tú caminas hacia la escuela?
-We work until six.;Nosotros trabajamos hasta las seis.
-Do they stay until the night?;¿Ellos se quedan hasta la noche?
-I learn through practice.;Yo aprendo mediante la práctica.
-Do you travel through the city? [pl];¿Ustedes viajan mediante la ciudad?
-I study for the exam.;Yo estudio para el examen.
-Do you cook for your family? [sing];¿Tú cocinas para tu familia?
-They walk for health.;Ellos caminan por salud.
-Do we pass by the school?;¿Nosotros pasamos por la escuela?
-I act according to the plan.;Yo actúo según el plan.
-Do you work according to the rules? [sing, formal];¿Usted trabaja según las reglas?
-He drinks coffee without sugar.;Él bebe café sin azúcar.
-Do you eat bread without butter? [sing];¿Tú comes pan sin mantequilla?
-The book is on the table.;El libro está sobre la mesa.
-Do they talk about the movie?;¿Ellos hablan sobre la película?
-We walk after the rain.;Nosotros caminamos tras la lluvia.
-Do you run after the dog? [sing];¿Tú corres tras el perro?
-They play versus our team.;Ellos juegan versus nuestro equipo.
-Do you watch the game versus them? [pl];¿Ustedes ven el partido versus ellos?
-I travel via the highway.;Yo viajo vía la carretera.
-Do you go via that street? [sing, formal];¿Usted va vía esa calle?
-We walk throughout the park.;Nosotros caminamos a lo largo del parque.
-Do they run throughout the field?;¿Ellos corren a lo largo del campo?
-I walk around the plaza.;Yo camino alrededor de la plaza.
-Do you drive around the city? [sing];¿Tú manejas alrededor de la ciudad?
-I rest before eating.;Yo descanso antes de comer.
-Do they leave before the class?;¿Ellos salen antes de la clase?
-We talk after dinner.;Nosotros hablamos después de la cena.
-Do you walk after work? [pl];¿Ustedes caminan después del trabajo?
-The dog stays inside the house.;El perro se queda dentro de la casa.
-Do you sleep inside the room? [sing];¿Tú duermes dentro del cuarto?
-They wait outside the store.;Ellos esperan fuera de la tienda.
-Do you eat outside the house? [sing, formal];¿Usted come fuera de la casa?
-I stand in front of the door.;Yo estoy delante de la puerta.
-Do they wait in front of the school?;¿Ellos esperan delante de la escuela?
-The cat hides behind the sofa.;El gato se esconde detrás del sofá.
-Do you put the box behind the chair? [sing];¿Tú pones la caja detrás de la silla?
-The shoes are underneath the table.;Los zapatos están debajo de la mesa.
-Do you look underneath the bed? [pl];¿Ustedes miran debajo de la cama?
-I sit next to my friend.;Yo me siento al lado de mi amigo.
-Do they live next to the park?;¿Ellos viven al lado del parque?
-We live far from the city.;Nosotros vivimos lejos de la ciudad.
-Do you work far from home? [sing];¿Tú trabajas lejos de la casa?
-I walk near the river.;Yo camino cerca del río.
-Do you live near the school? [sing, formal];¿Usted vive cerca de la escuela?
-They talk about the problem.;Ellos hablan acerca del problema.
-Do we read about the history?;¿Nosotros leemos acerca de la historia?
-I work in spite of the noise.;Yo trabajo a pesar del ruido.
-Do you study in spite of the music? [sing];¿Tú estudias a pesar de la música?
-I speak on behalf of the group.;Yo hablo por parte del grupo.
-Do you write on behalf of the team? [pl];¿Ustedes escriben por parte del equipo?
+"id";"word";"answer"
+"1";"The cat sleeps under the table.";"El gato duerme bajo la mesa."
+"2";"The cat hides behind the sofa.";"El gato se esconde detrás del sofá."
+"3";"The book is on the table.";"El libro está sobre la mesa."
+"4";"The dog stays inside the house.";"El perro se queda dentro de la casa."
+"5";"She sits in the chair.";"Ella se sienta en la silla."
+"6";"They walk between the trees.";"Ellos caminan entre los árboles."
+"7";"They walk for health.";"Ellos caminan por salud."
+"8";"They run against the wind.";"Ellos corren contra el viento."
+"9";"They wait outside the store.";"Ellos esperan fuera de la tienda."
+"10";"They talk about the problem.";"Ellos hablan acerca del problema."
+"11";"They play versus our team.";"Ellos juegan versus nuestro equipo."
+"12";"The shoes are underneath the table.";"Los zapatos están debajo de la mesa."
+"13";"We walk throughout the park.";"Nosotros caminamos a lo largo del parque."
+"14";"We walk after the rain.";"Nosotros caminamos tras la lluvia."
+"15";"We talk before the class.";"Nosotros hablamos ante la clase."
+"16";"We talk after dinner.";"Nosotros hablamos después de la cena."
+"17";"We work from home.";"Nosotros trabajamos desde casa."
+"18";"We work until six.";"Nosotros trabajamos hasta las seis."
+"19";"We live far from the city.";"Nosotros vivimos lejos de la ciudad."
+"20";"I act according to the plan.";"Yo actúo según el plan."
+"21";"I learn through practice.";"Yo aprendo mediante la práctica."
+"22";"I drink a cup of tea.";"Yo bebo una taza de té."
+"23";"I walk to the store.";"Yo camino a la tienda."
+"24";"I walk around the plaza.";"Yo camino alrededor de la plaza."
+"25";"I walk near the river.";"Yo camino cerca del río."
+"26";"I rest before eating.";"Yo descanso antes de comer."
+"27";"I stand in front of the door.";"Yo estoy delante de la puerta."
+"28";"I study for the exam.";"Yo estudio para el examen."
+"29";"I speak on behalf of the group.";"Yo hablo por parte del grupo."
+"30";"I read during lunch.";"Yo leo durante el almuerzo."
+"31";"I sit next to my friend.";"Yo me siento al lado de mi amigo."
+"32";"I work in spite of the noise.";"Yo trabajo a pesar del ruido."
+"33";"I travel via the highway.";"Yo viajo vía la carretera."
+"34";"I live with my brother.";"Yo vivo con mi hermano."
+"35";"I go toward the door.";"Yo voy hacia la puerta."
+"36";"Do they run throughout the field?";"¿Ellos corren a lo largo del campo?"
+"37";"Do they wait in front of the school?";"¿Ellos esperan delante de la escuela?"
+"38";"Do they study from the library?";"¿Ellos estudian desde la biblioteca?"
+"39";"Do they stand before the door?";"¿Ellos están ante la puerta?"
+"40";"Do they talk about the movie?";"¿Ellos hablan sobre la película?"
+"41";"Do they leave before the class?";"¿Ellos salen antes de la clase?"
+"42";"Do they stay until the night?";"¿Ellos se quedan hasta la noche?"
+"43";"Do they live next to the park?";"¿Ellos viven al lado del parque?"
+"44";"Do we play against that team?";"¿Nosotros jugamos contra ese equipo?"
+"45";"Do we read about the history?";"¿Nosotros leemos acerca de la historia?"
+"46";"Do we sit among friends?";"¿Nosotros nos sentamos entre amigos?"
+"47";"Do we pass by the school?";"¿Nosotros pasamos por la escuela?"
+"48";"Do you walk toward the school? [sing]";"¿Tú caminas hacia la escuela?"
+"49";"Do you cook for your family? [sing]";"¿Tú cocinas para tu familia?"
+"50";"Do you eat in the kitchen? [sing]";"¿Tú comes en la cocina?"
+"51";"Do you eat bread without butter? [sing]";"¿Tú comes pan sin mantequilla?"
+"52";"Do you run after the dog? [sing]";"¿Tú corres tras el perro?"
+"53";"Do you sleep inside the room? [sing]";"¿Tú duermes dentro del cuarto?"
+"54";"Do you study in spite of the music? [sing]";"¿Tú estudias a pesar de la música?"
+"55";"Do you read a book about animals? [sing]";"¿Tú lees un libro de animales?"
+"56";"Do you drive around the city? [sing]";"¿Tú manejas alrededor de la ciudad?"
+"57";"Do you put the box behind the chair? [sing]";"¿Tú pones la caja detrás de la silla?"
+"58";"Do you put the shoes under the bed? [sing]";"¿Tú pones los zapatos bajo la cama?"
+"59";"Do you work far from home? [sing]";"¿Tú trabajas lejos de la casa?"
+"60";"Do you go to the park? [sing]";"¿Tú vas al parque?"
+"61";"Do you eat outside the house? [sing, formal]";"¿Usted come fuera de la casa?"
+"62";"Do you rest during the day? [sing, formal]";"¿Usted descansa durante el día?"
+"63";"Do you work according to the rules? [sing, formal]";"¿Usted trabaja según las reglas?"
+"64";"Do you go via that street? [sing, formal]";"¿Usted va vía esa calle?"
+"65";"Do you live near the school? [sing, formal]";"¿Usted vive cerca de la escuela?"
+"66";"Do you walk after work? [pl]";"¿Ustedes caminan después del trabajo?"
+"67";"Do you write on behalf of the team? [pl]";"¿Ustedes escriben por parte del equipo?"
+"68";"Do you look underneath the bed? [pl]";"¿Ustedes miran debajo de la cama?"
+"69";"Do you watch the game versus them? [pl]";"¿Ustedes ven el partido versus ellos?"
+"70";"Do you travel through the city? [pl]";"¿Ustedes viajan mediante la ciudad?"
+"71";"Do you live with your parents? [pl]";"¿Ustedes viven con sus padres?"
+"72";"He drinks coffee without sugar.";"Él bebe café sin azúcar."

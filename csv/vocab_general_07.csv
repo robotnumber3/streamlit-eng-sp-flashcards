@@ -1,100 +1,100 @@
-word,answer
-there was / there were,hubo
-goal / objective,objetivo
-shapes / ways,formas
-unique / only [F],única
-he/she/it can [subj],pueda
-origin,origen
-white [M],blanco
-"same [M, pl]",mismos
-it takes / he takes / she takes,lleva
-economic [M],económico
-opinion,opinión
-help,ayuda
-official,oficial
-silence / quiet,silencio
-"good [M, pl]",buenos
-to think / to believe,pensar
-republic,república
-where / wherever,donde
-blood,sangre
-meeting / encounter,encuentro
-not even,ni siquiera
-author,autor
-meeting,reunión
-doing / making,haciendo
-soil / ground / floor,suelo
-it/he/she shows / show / exhibit,muestra
-old [M],viejo
-on top of / on,encima
-it turns out,resulta
-to take / to drink,tomar
-pretty / very,bastante
-seven,siete
-fight / struggle,lucha
-it could / he could / she could [past],pudo
-friends [M],amigos
-line,línea
-south,sur
-"little / few [M, pl]",pocos
-measures,medidas
-north,norte
-parts,partes
-church,iglesia
-treatment,tratamiento
-existence,existencia
-charge / position,cargo
-big / large (after noun),grande
-mouth,boca
-square / park,plaza
-foot,pie
-workers,trabajadores
-to put / to place,poner
-they exist / there are,existen
-he/she/it comes,viene
-he/she/it allows,permite
-analysis,análisis
-act / event,acto
-facts,hechos
-times,tiempos
-politics / policies,políticas
-radio,radio
-I can,puedo
-growth,crecimiento
-company,compañía
-friend [M],amigo
-authorities,autoridades
-to make,realizar
-actions / stocks,acciones
-parents / fathers,padres
-journal / newspaper / diary,diario
-he sees / she sees / it sees,ve
-right,derecha
-environment / atmosphere,ambiente
-there will be,habrá
-precisely,precisamente
-disease / illness,enfermedad
-species,especie
-army,ejército
-saint [F],santa
-changes,cambios
-river,río
-I knew / he knew / she knew [past],sabía
-safe / sure [M],seguro
-you wait [imp] / he waits / she waits,espera
-moments / time,momentos
-trip,viaje
-I wanted / he wanted / she wanted [past],quería
-eight,ocho
-to live,vivir
-region,región
-formation / training / education,formación
-school,escuela
-fourth / quarter / room,cuarto
-values / prices,valores
-it remained / turned out [past],quedó
-participation,participación
-success,éxito
-short / low [F],baja
-article,artículo
-main [pl],principales
+"id","word","answer"
+"1","actions / stocks","acciones"
+"2","act / event","acto"
+"3","environment / atmosphere","ambiente"
+"4","friend [M]","amigo"
+"5","friends [M]","amigos"
+"6","analysis","análisis"
+"7","article","artículo"
+"8","author","autor"
+"9","authorities","autoridades"
+"10","help","ayuda"
+"11","short / low [F]","baja"
+"12","pretty / very","bastante"
+"13","white [M]","blanco"
+"14","mouth","boca"
+"15","good [M, pl]","buenos"
+"16","changes","cambios"
+"17","charge / position","cargo"
+"18","company","compañía"
+"19","growth","crecimiento"
+"20","fourth / quarter / room","cuarto"
+"21","right","derecha"
+"22","journal / newspaper / diary","diario"
+"23","where / wherever","donde"
+"24","economic [M]","económico"
+"25","army","ejército"
+"26","on top of / on","encima"
+"27","meeting / encounter","encuentro"
+"28","disease / illness","enfermedad"
+"29","school","escuela"
+"30","species","especie"
+"31","you wait [imp] / he waits / she waits","espera"
+"32","they exist / there are","existen"
+"33","existence","existencia"
+"34","formation / training / education","formación"
+"35","shapes / ways","formas"
+"36","big / large (after noun)","grande"
+"37","there will be","habrá"
+"38","doing / making","haciendo"
+"39","facts","hechos"
+"40","there was / there were","hubo"
+"41","church","iglesia"
+"42","it takes / he takes / she takes","lleva"
+"43","fight / struggle","lucha"
+"44","line","línea"
+"45","measures","medidas"
+"46","same [M, pl]","mismos"
+"47","moments / time","momentos"
+"48","it/he/she shows / show / exhibit","muestra"
+"49","not even","ni siquiera"
+"50","north","norte"
+"51","goal / objective","objetivo"
+"52","eight","ocho"
+"53","official","oficial"
+"54","opinion","opinión"
+"55","origin","origen"
+"56","parents / fathers","padres"
+"57","parts","partes"
+"58","participation","participación"
+"59","to think / to believe","pensar"
+"60","he/she/it allows","permite"
+"61","foot","pie"
+"62","square / park","plaza"
+"63","little / few [M, pl]","pocos"
+"64","politics / policies","políticas"
+"65","to put / to place","poner"
+"66","precisely","precisamente"
+"67","main [pl]","principales"
+"68","it could / he could / she could [past]","pudo"
+"69","he/she/it can [subj]","pueda"
+"70","I can","puedo"
+"71","it remained / turned out [past]","quedó"
+"72","I wanted / he wanted / she wanted [past]","quería"
+"73","radio","radio"
+"74","to make","realizar"
+"75","region","región"
+"76","republic","república"
+"77","it turns out","resulta"
+"78","meeting","reunión"
+"79","river","río"
+"80","I knew / he knew / she knew [past]","sabía"
+"81","blood","sangre"
+"82","saint [F]","santa"
+"83","safe / sure [M]","seguro"
+"84","seven","siete"
+"85","silence / quiet","silencio"
+"86","soil / ground / floor","suelo"
+"87","south","sur"
+"88","times","tiempos"
+"89","to take / to drink","tomar"
+"90","workers","trabajadores"
+"91","treatment","tratamiento"
+"92","values / prices","valores"
+"93","he sees / she sees / it sees","ve"
+"94","trip","viaje"
+"95","old [M]","viejo"
+"96","he/she/it comes","viene"
+"97","to live","vivir"
+"98","success","éxito"
+"99","unique / only [F]","única"

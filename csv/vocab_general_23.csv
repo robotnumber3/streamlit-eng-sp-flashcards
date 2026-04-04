@@ -1,101 +1,101 @@
-word;answer
-difficulty;dificultad
-similar [pl];similares
-he/she/it understands;entiende
-moral [pl];morales
-nutrition / nourishment / diet;alimentación
-norm / rule;norma
-mental;mental
-solutions;soluciones
-adequate / suitable;adecuado
-how much;cuánto
-saints;santos
-friendship;amistad
-defeat;derrota
-he/she/it achieved / got;consiguió
-positive [M];positivo
-companies;compañías
-execution;ejecución
-he/she/it expressed;expresó
-ambassador;embajador
-sweet;dulce
-average;promedio
-letters;letras
-academy;academia
-charge / command;mando
-custom;costumbre
-collective;colectivo
-stones / rocks;piedras
-features;rasgos
-industrial [pl];industriales
-mine [F];mía
-demonstration / strike / protest;protesta
-trips / travels;viajes
-girl / young woman;chica
-newspapers;periódicos
-currency / coin;moneda
-organs;órganos
-statement;comunicado
-maintenance;mantenimiento
-geography;geografía
-driving / handling;manejo
-cold [F];fría
-heritage;patrimonio
-exclusively;exclusivamente
-old [pl];antiguos
-universities;universidades
-frequent;frecuente
-job / occupation;oficio
-to help;ayudar
-request / order;pedido
-to overcome;superar
-car;auto
-story;relato
-united / close [M];unido
-sitting [M];sentado
-I wish / he/she/it wishes / would like to;quisiera
-detail;detalle
-they remained;quedaron
-mandatory / forced / required [M];obligado
-free [pl];libres
-it ended / it’s over / it finished;acabó
-airport;aeropuerto
-poverty;pobreza
-meditation / thinking / consideration;reflexión
-summit / top / peak;cumbre
-imagination;imaginación
-Cuban [M];cubano
-solar / sun;solar
-cost;costo
-they would have / had;hubieran
-thesis;tesis
-Catalan;catalán
-I did / I made;hice
-to hear;oír
-stability;estabilidad
-glass;vaso
-mechanism;mecanismo
-he/she/it writes;escribe
-to learn;aprender
-changed [M];cambiado
-naturally;naturalmente
-potence / power;potencia
-bulls;toros
-pure [M];puro
-to choose;elegir
-faculty / power / capability;facultad
-he/she/it occupies / takes care of;ocupa
-patio;patio
-to recover / make up for;recuperar
-short [F];corta
-that I/he/she/it passes / you pass [imp];pase
-needed [pl];necesarios
-to answer / to respond / to reply;responder
-reunions / meetings;reuniones
-damage / hurt;daño
-he/she/it works / you work [imp];trabaja
-promotion;promoción
-ingredients;ingredientes
-to discover;descubrir
-households / houses;viviendas
-signal;señal
+"id";"word";"answer"
+"1";"it ended / it’s over / it finished";"acabó"
+"2";"academy";"academia"
+"3";"adequate / suitable";"adecuado"
+"4";"airport";"aeropuerto"
+"5";"nutrition / nourishment / diet";"alimentación"
+"6";"friendship";"amistad"
+"7";"old [pl]";"antiguos"
+"8";"to learn";"aprender"
+"9";"car";"auto"
+"10";"to help";"ayudar"
+"11";"changed [M]";"cambiado"
+"12";"Catalan";"catalán"
+"13";"girl / young woman";"chica"
+"14";"collective";"colectivo"
+"15";"companies";"compañías"
+"16";"statement";"comunicado"
+"17";"he/she/it achieved / got";"consiguió"
+"18";"short [F]";"corta"
+"19";"cost";"costo"
+"20";"custom";"costumbre"
+"21";"Cuban [M]";"cubano"
+"22";"summit / top / peak";"cumbre"
+"23";"how much";"cuánto"
+"24";"damage / hurt";"daño"
+"25";"defeat";"derrota"
+"26";"to discover";"descubrir"
+"27";"detail";"detalle"
+"28";"difficulty";"dificultad"
+"29";"sweet";"dulce"
+"30";"execution";"ejecución"
+"31";"to choose";"elegir"
+"32";"ambassador";"embajador"
+"33";"he/she/it understands";"entiende"
+"34";"he/she/it writes";"escribe"
+"35";"stability";"estabilidad"
+"36";"exclusively";"exclusivamente"
+"37";"he/she/it expressed";"expresó"
+"38";"faculty / power / capability";"facultad"
+"39";"frequent";"frecuente"
+"40";"cold [F]";"fría"
+"41";"geography";"geografía"
+"42";"I did / I made";"hice"
+"43";"they would have / had";"hubieran"
+"44";"imagination";"imaginación"
+"45";"industrial [pl]";"industriales"
+"46";"ingredients";"ingredientes"
+"47";"letters";"letras"
+"48";"free [pl]";"libres"
+"49";"charge / command";"mando"
+"50";"driving / handling";"manejo"
+"51";"maintenance";"mantenimiento"
+"52";"mechanism";"mecanismo"
+"53";"mental";"mental"
+"54";"currency / coin";"moneda"
+"55";"moral [pl]";"morales"
+"56";"mine [F]";"mía"
+"57";"naturally";"naturalmente"
+"58";"needed [pl]";"necesarios"
+"59";"norm / rule";"norma"
+"60";"mandatory / forced / required [M]";"obligado"
+"61";"he/she/it occupies / takes care of";"ocupa"
+"62";"job / occupation";"oficio"
+"63";"to hear";"oír"
+"64";"that I/he/she/it passes / you pass [imp]";"pase"
+"65";"patio";"patio"
+"66";"heritage";"patrimonio"
+"67";"request / order";"pedido"
+"68";"newspapers";"periódicos"
+"69";"stones / rocks";"piedras"
+"70";"poverty";"pobreza"
+"71";"positive [M]";"positivo"
+"72";"potence / power";"potencia"
+"73";"average";"promedio"
+"74";"promotion";"promoción"
+"75";"demonstration / strike / protest";"protesta"
+"76";"pure [M]";"puro"
+"77";"they remained";"quedaron"
+"78";"I wish / he/she/it wishes / would like to";"quisiera"
+"79";"features";"rasgos"
+"80";"to recover / make up for";"recuperar"
+"81";"meditation / thinking / consideration";"reflexión"
+"82";"story";"relato"
+"83";"to answer / to respond / to reply";"responder"
+"84";"reunions / meetings";"reuniones"
+"85";"saints";"santos"
+"86";"sitting [M]";"sentado"
+"87";"signal";"señal"
+"88";"similar [pl]";"similares"
+"89";"solar / sun";"solar"
+"90";"solutions";"soluciones"
+"91";"to overcome";"superar"
+"92";"thesis";"tesis"
+"93";"bulls";"toros"
+"94";"he/she/it works / you work [imp]";"trabaja"
+"95";"united / close [M]";"unido"
+"96";"universities";"universidades"
+"97";"glass";"vaso"
+"98";"trips / travels";"viajes"
+"99";"households / houses";"viviendas"
+"100";"organs";"órganos"

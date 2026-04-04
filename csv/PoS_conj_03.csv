@@ -1,92 +1,92 @@
-word,answer
-because of,a causa de
-in order that / so that,a fin de que
-unless,a menos que
-despite,a pesar de
-in spite of,a pesar de que
-besides / in addition to,además
-wherever,adondequiera que
-in the end,al final
-before [+ noun or infinitive],antes de
-before [+ clause with verb],antes que
-as soon as,apenas
-so / this way / like this,así
-therefore / so,así que
-as…as / both…and,así…como
-even [adverb],aun
-even so / nevertheless,aun así
-even though / even if,aun cuando
-even if,aun si
-although / even though / even if,aunque
-even if [+ subjunctive],aunque
-sometimes…sometimes,bien…bien
-every time,cada vez que
-as [comparative],como
-like,como
-because / since  [+ clause],como
-as if [+ subjunctive],como si
-provided that / as long as,con tal (de) que
-when,cuando
-so that / in such a way that,de forma que
-so that / in such a way that,de manera que
- / in such a way that,de modo que
-because of / due to,debido a
-since (the moment that) [+ verb],desde que
-after / afterwards / later,después
-after  [+ verb],después de que [+ verb]
-where,donde
-during,durante
-in case (that) [subjunctive],en caso de que
-as soon as,en cuanto
-so / then / in that case,entonces
-except,excepto
-except that,excepto que
-finally / in the end,finalmente
-until,hasta que
-just as,igual que
-even (adverb),incluso
-then / next / after that,luego
-but [literary/formal],mas
-more…than,más…que
-while / as long as,mientras
-while,mientras que
-meanwhile,mientras tanto
-nor,ni
-neither…nor,ni…ni
-not only…but also,no solo…sino también
-or,o [u before o/ho]
-either…or,o…o
-now…now / at times…at times,ora…ora
-to / in order to [+ infinitive],para
-so that / in order that [+ subjunctive],para que
-but,pero
-because of,por
-therefore / that’s why / for that reason,por eso
-finally / at last,por fin
-in case / just in case,por si acaso
-because,porque
-first,primero
-since / as [explanatory],pues
-since / as (given that),puesto que
-[más + adjective +] than [comparative],que
-that [+ subordinate clause],que
-whether…or,sea…sea
-if,si
-if not,si no
-as long as,siempre que
-whenever,siempre que
-provided that,siempre y cuando
-however / nevertheless,sin embargo
-but (rather) / but instead,sino (que)
-also,también
-as soon as,tan pronto como
-so [+ adjective +] that,tan…que
-so much that,tanto que
-whether or not,tanto si…como si
-both…and,tanto…como
-after,tras
-once,una vez que
-and,y [e before i/hi]
-because,ya que
-since / given that / because,ya que
-now…now / sometimes…sometimes,ya…ya
+"id","word","answer"
+"1","because of","a causa de"
+"2","in order that / so that","a fin de que"
+"3","unless","a menos que"
+"4","despite","a pesar de"
+"5","in spite of","a pesar de que"
+"6","besides / in addition to","además"
+"7","wherever","adondequiera que"
+"8","in the end","al final"
+"9","before [+ noun or infinitive]","antes de"
+"10","before [+ clause with verb]","antes que"
+"11","as soon as","apenas"
+"12","so / this way / like this","así"
+"13","therefore / so","así que"
+"14","as…as / both…and","así…como"
+"15","even [adverb]","aun"
+"16","even so / nevertheless","aun así"
+"17","even though / even if","aun cuando"
+"18","even if","aun si"
+"19","although / even though / even if","aunque"
+"20","even if [+ subjunctive]","aunque"
+"21","sometimes…sometimes","bien…bien"
+"22","every time","cada vez que"
+"23","as [comparative]","como"
+"24","like","como"
+"25","because / since  [+ clause]","como"
+"26","as if [+ subjunctive]","como si"
+"27","provided that / as long as","con tal (de) que"
+"28","when","cuando"
+"29","so that / in such a way that","de forma que"
+"30","so that / in such a way that","de manera que"
+"31"," / in such a way that","de modo que"
+"32","because of / due to","debido a"
+"33","since (the moment that) [+ verb]","desde que"
+"34","after / afterwards / later","después"
+"35","after  [+ verb]","después de que [+ verb]"
+"36","where","donde"
+"37","during","durante"
+"38","in case (that) [subjunctive]","en caso de que"
+"39","as soon as","en cuanto"
+"40","so / then / in that case","entonces"
+"41","except","excepto"
+"42","except that","excepto que"
+"43","finally / in the end","finalmente"
+"44","until","hasta que"
+"45","just as","igual que"
+"46","even (adverb)","incluso"
+"47","then / next / after that","luego"
+"48","but [literary/formal]","mas"
+"49","while / as long as","mientras"
+"50","while","mientras que"
+"51","meanwhile","mientras tanto"
+"52","more…than","más…que"
+"53","nor","ni"
+"54","neither…nor","ni…ni"
+"55","not only…but also","no solo…sino también"
+"56","or","o [u before o/ho]"
+"57","now…now / at times…at times","ora…ora"
+"58","either…or","o…o"
+"59","to / in order to [+ infinitive]","para"
+"60","so that / in order that [+ subjunctive]","para que"
+"61","but","pero"
+"62","because of","por"
+"63","therefore / that’s why / for that reason","por eso"
+"64","finally / at last","por fin"
+"65","in case / just in case","por si acaso"
+"66","because","porque"
+"67","first","primero"
+"68","since / as [explanatory]","pues"
+"69","since / as (given that)","puesto que"
+"70","[más + adjective +] than [comparative]","que"
+"71","that [+ subordinate clause]","que"
+"72","whether…or","sea…sea"
+"73","if","si"
+"74","if not","si no"
+"75","as long as","siempre que"
+"76","whenever","siempre que"
+"77","provided that","siempre y cuando"
+"78","however / nevertheless","sin embargo"
+"79","but (rather) / but instead","sino (que)"
+"80","also","también"
+"81","as soon as","tan pronto como"
+"82","so much that","tanto que"
+"83","whether or not","tanto si…como si"
+"84","both…and","tanto…como"
+"85","so [+ adjective +] that","tan…que"
+"86","after","tras"
+"87","once","una vez que"
+"88","and","y [e before i/hi]"
+"89","because","ya que"
+"90","since / given that / because","ya que"
+"91","now…now / sometimes…sometimes","ya…ya"

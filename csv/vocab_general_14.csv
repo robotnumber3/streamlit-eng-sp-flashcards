@@ -1,101 +1,101 @@
-word;answer
-apparently;al parecer
-saint [M];santo
-old [F];vieja
-it corresponds;corresponde
-he/she/it decided;decidió
-arrival;llegada
-he/she/it begins / starts;comienza
-organizations;organizaciones
-tendency;tendencia
-stage;escenario
-definitely / in short;en definitiva
-he/she/it will have to;deberá
-he/she/it indicated / showed;indicó
-news [singular];noticia
-English;inglés
-queen;reina
-you [pl];ustedes
-wood;madera
-German;alemán
-inhabitants / people;habitantes
-to receive;recibir
-except;salvo
-families;familias
-member [M];miembro
-writer [M];escritor
-he/she/it knows;conoce
-care;cuidado
-identity;identidad
-he/she/it wanted to;quiso
-couple;pareja
-evident;evidente
-certain [M, pl];ciertos
-they continue / they follow;siguen
-statement;declaración
-chain;cadena
-he/she/it ends / finishes / has just;acaba
-it consists;consiste
-presentation;presentación
-accounts / mathematical operations;cuentas
-blue;azul
-decade;década
-doors;puertas
-food;comida
-immediately / right away;de inmediato
-brand / mark;marca
-antique / old;antiguo
-red [M];rojo
-we must;debemos
-instant;instante
-operations / surgeries;operaciones
-initiative;iniciativa
-to fall;caer
-moon;luna
-he/she/it saw [imperfect];veía
-true;verdadero
-room;habitación
-he/she/it manifested / expressed;manifestó
-uncle;tío
-stayed / remained [participle];quedado
-Tuesday;martes
-full / complete / mid [M];pleno
-he/she/it declared / testified;declaró
-games;juegos
-minimum;mínimo
-apparition / appearance;aparición
-he/she/it will be;estará
-transport / transportation;transporte
-they see;ven
-he/she/it pretends / intends / expects;pretende
-so many [F];tantas
-headquarters;sede
-behaviour;comportamiento
-journalists;periodistas
-animal;animal
-turned into / become [M, participle];convertido
-arm;brazo
-brothers / siblings;hermanos
-rich / tasty / delicious [M];rico
-he/she/it announced;anunció
-budget;presupuesto
-strategy;estrategia
-nations;naciones
-to use;utilizar
-good [F, pl];buenas
-compromise / engagement;compromiso
-perhaps / maybe / by any chance;acaso
-complete / entire [M];completo
-hair;pelo
-stone / rock;piedra
-medicine;medicina
-fields;campos
-league;liga
-that I go / that he/she/it goes [subjunctive] / you go [formal imperative];vaya
-disposition / arrangement;disposición
-permanent;permanente
-method;método
-felt / was feeling [imperfect];sentía
-next [F];próxima
-lands;tierras
-mistake / error;error
+"id";"word";"answer"
+"1";"he/she/it ends / finishes / has just";"acaba"
+"2";"perhaps / maybe / by any chance";"acaso"
+"3";"apparently";"al parecer"
+"4";"German";"alemán"
+"5";"animal";"animal"
+"6";"antique / old";"antiguo"
+"7";"he/she/it announced";"anunció"
+"8";"apparition / appearance";"aparición"
+"9";"blue";"azul"
+"10";"arm";"brazo"
+"11";"good [F, pl]";"buenas"
+"12";"chain";"cadena"
+"13";"to fall";"caer"
+"14";"fields";"campos"
+"15";"certain [M, pl]";"ciertos"
+"16";"food";"comida"
+"17";"he/she/it begins / starts";"comienza"
+"18";"complete / entire [M]";"completo"
+"19";"behaviour";"comportamiento"
+"20";"compromise / engagement";"compromiso"
+"21";"he/she/it knows";"conoce"
+"22";"it consists";"consiste"
+"23";"turned into / become [M, participle]";"convertido"
+"24";"it corresponds";"corresponde"
+"25";"accounts / mathematical operations";"cuentas"
+"26";"care";"cuidado"
+"27";"immediately / right away";"de inmediato"
+"28";"we must";"debemos"
+"29";"he/she/it will have to";"deberá"
+"30";"he/she/it decided";"decidió"
+"31";"statement";"declaración"
+"32";"he/she/it declared / testified";"declaró"
+"33";"disposition / arrangement";"disposición"
+"34";"decade";"década"
+"35";"definitely / in short";"en definitiva"
+"36";"mistake / error";"error"
+"37";"stage";"escenario"
+"38";"writer [M]";"escritor"
+"39";"he/she/it will be";"estará"
+"40";"strategy";"estrategia"
+"41";"evident";"evidente"
+"42";"families";"familias"
+"43";"room";"habitación"
+"44";"inhabitants / people";"habitantes"
+"45";"brothers / siblings";"hermanos"
+"46";"identity";"identidad"
+"47";"he/she/it indicated / showed";"indicó"
+"48";"English";"inglés"
+"49";"initiative";"iniciativa"
+"50";"instant";"instante"
+"51";"games";"juegos"
+"52";"league";"liga"
+"53";"arrival";"llegada"
+"54";"moon";"luna"
+"55";"wood";"madera"
+"56";"he/she/it manifested / expressed";"manifestó"
+"57";"brand / mark";"marca"
+"58";"Tuesday";"martes"
+"59";"medicine";"medicina"
+"60";"member [M]";"miembro"
+"61";"method";"método"
+"62";"minimum";"mínimo"
+"63";"nations";"naciones"
+"64";"news [singular]";"noticia"
+"65";"operations / surgeries";"operaciones"
+"66";"organizations";"organizaciones"
+"67";"couple";"pareja"
+"68";"hair";"pelo"
+"69";"journalists";"periodistas"
+"70";"permanent";"permanente"
+"71";"stone / rock";"piedra"
+"72";"full / complete / mid [M]";"pleno"
+"73";"presentation";"presentación"
+"74";"budget";"presupuesto"
+"75";"he/she/it pretends / intends / expects";"pretende"
+"76";"next [F]";"próxima"
+"77";"doors";"puertas"
+"78";"stayed / remained [participle]";"quedado"
+"79";"he/she/it wanted to";"quiso"
+"80";"to receive";"recibir"
+"81";"queen";"reina"
+"82";"rich / tasty / delicious [M]";"rico"
+"83";"red [M]";"rojo"
+"84";"except";"salvo"
+"85";"saint [M]";"santo"
+"86";"headquarters";"sede"
+"87";"felt / was feeling [imperfect]";"sentía"
+"88";"they continue / they follow";"siguen"
+"89";"so many [F]";"tantas"
+"90";"tendency";"tendencia"
+"91";"lands";"tierras"
+"92";"transport / transportation";"transporte"
+"93";"uncle";"tío"
+"94";"you [pl]";"ustedes"
+"95";"to use";"utilizar"
+"96";"that I go / that he/she/it goes [subjunctive] / you go [formal imperative]";"vaya"
+"97";"they see";"ven"
+"98";"true";"verdadero"
+"99";"he/she/it saw [imperfect]";"veía"
+"100";"old [F]";"vieja"

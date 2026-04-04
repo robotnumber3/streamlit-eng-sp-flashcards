@@ -1,169 +1,169 @@
-word,answer
-I drink,yo bebo
-you drink,tú bebes
-he drinks,él bebe
-she drinks,ella bebe
-we drink,nosotros bebemos
-you drink (plural),ustedes beben
-they drink,ellos beben
-I depend,yo dependo
-you depend,tú dependes
-he depends,él depende
-she depends,ella depende
-we depend,nosotros dependemos
-you depend (plural),ustedes dependen
-they depend,ellos dependen
-I appear,yo apareco
-you appear,tú apareces
-he appears,él aparece
-she appears,ella aparece
-we appear,nosotros aparecemos
-you appear (plural),ustedes aparecen
-they appear,ellos aparecen
-I put in,yo meto
-you put in,tú metes
-he puts in,él mete
-she puts in,ella mete
-we put in,nosotros metemos
-you put in (plural),ustedes meten
-they put in,ellos meten
-I owe,yo debo
-you owe,tú debes
-he owes,él debe
-she owes,ella debe
-we owe,nosotros debemos
-you owe (plural),ustedes deben
-they owe,ellos deben
-I own,yo poseo
-you own,tú posees
-he owns,él posee
-she owns,ella posee
-we own,nosotros poseemos
-you own (plural),ustedes poseen
-they own,ellos poseen
-I promise,yo prometo
-you promise,tú prometes
-he promises,él promete
-she promises,ella promete
-we promise,nosotros prometemos
-you promise (plural),ustedes prometen
-they promise,ellos prometen
-I respond,yo respondo
-you respond,tú respondes
-he responds,él responde
-she responds,ella responde
-we respond,nosotros respondemos
-you respond (plural),ustedes responden
-they respond,ellos responden
-I turn on,yo prendo
-you turn on,tú prendes
-he turns on,él prende
-she turns on,ella prende
-we turn on,nosotros prendemos
-you turn on (plural),ustedes prenden
-they turn on,ellos prenden
-I fear,yo temo
-you fear,tú temes
-he fears,él teme
-she fears,ella teme
-we fear,nosotros tememos
-you fear (plural),ustedes temen
-they fear,ellos temen
-I sew,yo coso
-you sew,tú coses
-he sews,él cose
-she sews,ella cose
-we sew,nosotros cosemos
-you sew (plural),ustedes cosen
-they sew,ellos cosen
-I understand,yo comprendo
-you understand,tú comprendes
-he understands,él comprende
-she understands,ella comprende
-we understand,nosotros comprendemos
-you understand (plural),ustedes comprenden
-they understand,ellos comprenden
-I break,yo rompo
-you break,tú rompes
-he breaks,él rompe
-she breaks,ella rompe
-we break,nosotros rompemos
-you break (plural),ustedes rompen
-they break,ellos rompen
-I believe,yo creo
-you believe,tú crees
-he believes,él cree
-she believes,ella cree
-we believe,nosotros creemos
-you believe (plural),ustedes creen
-they believe,ellos creen
-I happen,yo sucedo
-you happen,tú sucedes
-he happens,él sucede
-she happens,ella sucede
-we happen,nosotros sucedemos
-you happen (plural),ustedes suceden
-they happen,ellos suceden
-I read,yo leo
-you read,tú lees
-he reads,él lee
-she reads,ella lee
-we read,nosotros leemos
-you read (plural),ustedes leen
-they read,ellos leen
-I sell,yo vendo
-you sell,tú vendes
-he sells,él vende
-she sells,ella vende
-we sell,nosotros vendemos
-you sell (plural),ustedes venden
-they sell,ellos venden
-I learn,yo aprendo
-you learn,tú aprendes
-he learns,él aprende
-she learns,ella aprende
-we learn,nosotros aprendemos
-you learn (plural),ustedes aprenden
-they learn,ellos aprenden
-I hide,yo escondo
-you hide,tú escondes
-he hides,él esconde
-she hides,ella esconde
-we hide,nosotros escondemos
-you hide (plural),ustedes esconden
-they hide,ellos esconden
-I go back,yo retrocedo
-you go back,tú retrocedes
-he goes back,él retrocede
-she goes back,ella retrocede
-we go back,nosotros retrocedemos
-you go back (plural),ustedes retroceden
-they go back,ellos retroceden
-I run,yo corro
-you run,tú corres
-he runs,él corre
-she runs,ella corre
-we run,nosotros corremos
-you run (plural),ustedes corren
-they run,ellos corren
-I surprise,yo sorprendo
-you surprise,tú sorprendes
-he surprises,él sorprende
-she surprises,ella sorprende
-we surprise,nosotros sorprendemos
-you surprise (plural),ustedes sorprenden
-they surprise,ellos sorprenden
-I sweep,yo barro
-you sweep,tú barres
-he sweeps,él barre
-she sweeps,ella barre
-we sweep,nosotros barremos
-you sweep (plural),ustedes barren
-they sweep,ellos barren
-I eat,yo como
-you eat,tú comes
-he eats,él come
-she eats,ella come
-we eat,nosotros comemos
-you eat (plural),ustedes comen
-they eat,ellos comen
+"id","word","answer"
+"1","she appears","ella aparece"
+"2","she learns","ella aprende"
+"3","she sweeps","ella barre"
+"4","she drinks","ella bebe"
+"5","she eats","ella come"
+"6","she understands","ella comprende"
+"7","she runs","ella corre"
+"8","she sews","ella cose"
+"9","she believes","ella cree"
+"10","she owes","ella debe"
+"11","she depends","ella depende"
+"12","she hides","ella esconde"
+"13","she reads","ella lee"
+"14","she puts in","ella mete"
+"15","she owns","ella posee"
+"16","she turns on","ella prende"
+"17","she promises","ella promete"
+"18","she responds","ella responde"
+"19","she goes back","ella retrocede"
+"20","she breaks","ella rompe"
+"21","she surprises","ella sorprende"
+"22","she happens","ella sucede"
+"23","she fears","ella teme"
+"24","she sells","ella vende"
+"25","they appear","ellos aparecen"
+"26","they learn","ellos aprenden"
+"27","they sweep","ellos barren"
+"28","they drink","ellos beben"
+"29","they eat","ellos comen"
+"30","they understand","ellos comprenden"
+"31","they run","ellos corren"
+"32","they sew","ellos cosen"
+"33","they believe","ellos creen"
+"34","they owe","ellos deben"
+"35","they depend","ellos dependen"
+"36","they hide","ellos esconden"
+"37","they read","ellos leen"
+"38","they put in","ellos meten"
+"39","they own","ellos poseen"
+"40","they turn on","ellos prenden"
+"41","they promise","ellos prometen"
+"42","they respond","ellos responden"
+"43","they go back","ellos retroceden"
+"44","they break","ellos rompen"
+"45","they surprise","ellos sorprenden"
+"46","they happen","ellos suceden"
+"47","they fear","ellos temen"
+"48","they sell","ellos venden"
+"49","we appear","nosotros aparecemos"
+"50","we learn","nosotros aprendemos"
+"51","we sweep","nosotros barremos"
+"52","we drink","nosotros bebemos"
+"53","we eat","nosotros comemos"
+"54","we understand","nosotros comprendemos"
+"55","we run","nosotros corremos"
+"56","we sew","nosotros cosemos"
+"57","we believe","nosotros creemos"
+"58","we owe","nosotros debemos"
+"59","we depend","nosotros dependemos"
+"60","we hide","nosotros escondemos"
+"61","we read","nosotros leemos"
+"62","we put in","nosotros metemos"
+"63","we own","nosotros poseemos"
+"64","we turn on","nosotros prendemos"
+"65","we promise","nosotros prometemos"
+"66","we respond","nosotros respondemos"
+"67","we go back","nosotros retrocedemos"
+"68","we break","nosotros rompemos"
+"69","we surprise","nosotros sorprendemos"
+"70","we happen","nosotros sucedemos"
+"71","we fear","nosotros tememos"
+"72","we sell","nosotros vendemos"
+"73","you appear","tú apareces"
+"74","you learn","tú aprendes"
+"75","you sweep","tú barres"
+"76","you drink","tú bebes"
+"77","you eat","tú comes"
+"78","you understand","tú comprendes"
+"79","you run","tú corres"
+"80","you sew","tú coses"
+"81","you believe","tú crees"
+"82","you owe","tú debes"
+"83","you depend","tú dependes"
+"84","you hide","tú escondes"
+"85","you read","tú lees"
+"86","you put in","tú metes"
+"87","you own","tú posees"
+"88","you turn on","tú prendes"
+"89","you promise","tú prometes"
+"90","you respond","tú respondes"
+"91","you go back","tú retrocedes"
+"92","you break","tú rompes"
+"93","you surprise","tú sorprendes"
+"94","you happen","tú sucedes"
+"95","you fear","tú temes"
+"96","you sell","tú vendes"
+"97","you appear (plural)","ustedes aparecen"
+"98","you learn (plural)","ustedes aprenden"
+"99","you sweep (plural)","ustedes barren"
+"100","you drink (plural)","ustedes beben"
+"101","you eat (plural)","ustedes comen"
+"102","you understand (plural)","ustedes comprenden"
+"103","you run (plural)","ustedes corren"
+"104","you sew (plural)","ustedes cosen"
+"105","you believe (plural)","ustedes creen"
+"106","you owe (plural)","ustedes deben"
+"107","you depend (plural)","ustedes dependen"
+"108","you hide (plural)","ustedes esconden"
+"109","you read (plural)","ustedes leen"
+"110","you put in (plural)","ustedes meten"
+"111","you own (plural)","ustedes poseen"
+"112","you turn on (plural)","ustedes prenden"
+"113","you promise (plural)","ustedes prometen"
+"114","you respond (plural)","ustedes responden"
+"115","you go back (plural)","ustedes retroceden"
+"116","you break (plural)","ustedes rompen"
+"117","you surprise (plural)","ustedes sorprenden"
+"118","you happen (plural)","ustedes suceden"
+"119","you fear (plural)","ustedes temen"
+"120","you sell (plural)","ustedes venden"
+"121","I appear","yo apareco"
+"122","I learn","yo aprendo"
+"123","I sweep","yo barro"
+"124","I drink","yo bebo"
+"125","I eat","yo como"
+"126","I understand","yo comprendo"
+"127","I run","yo corro"
+"128","I sew","yo coso"
+"129","I believe","yo creo"
+"130","I owe","yo debo"
+"131","I depend","yo dependo"
+"132","I hide","yo escondo"
+"133","I read","yo leo"
+"134","I put in","yo meto"
+"135","I own","yo poseo"
+"136","I turn on","yo prendo"
+"137","I promise","yo prometo"
+"138","I respond","yo respondo"
+"139","I go back","yo retrocedo"
+"140","I break","yo rompo"
+"141","I surprise","yo sorprendo"
+"142","I happen","yo sucedo"
+"143","I fear","yo temo"
+"144","I sell","yo vendo"
+"145","he appears","él aparece"
+"146","he learns","él aprende"
+"147","he sweeps","él barre"
+"148","he drinks","él bebe"
+"149","he eats","él come"
+"150","he understands","él comprende"
+"151","he runs","él corre"
+"152","he sews","él cose"
+"153","he believes","él cree"
+"154","he owes","él debe"
+"155","he depends","él depende"
+"156","he hides","él esconde"
+"157","he reads","él lee"
+"158","he puts in","él mete"
+"159","he owns","él posee"
+"160","he turns on","él prende"
+"161","he promises","él promete"
+"162","he responds","él responde"
+"163","he goes back","él retrocede"
+"164","he breaks","él rompe"
+"165","he surprises","él sorprende"
+"166","he happens","él sucede"
+"167","he fears","él teme"
+"168","he sells","él vende"

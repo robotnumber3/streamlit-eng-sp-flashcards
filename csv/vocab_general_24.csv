@@ -1,101 +1,101 @@
-word;answer
-clinic;clínica
-traditional;tradicionales
-crazy [M];loco
-walk / stroll;paseo
-sand;arena
-consideration;consideración
-they will have to;deberán
-scheme;esquema
-created [M];creado
-used [M];utilizado
-established;establecido
-concert;concierto
-manifestation / demonstration;manifestación
-sick / ill [pl];enfermos
-rejection;rechazo
-stepped out / left / gone out [M];salido
-they leave / let;dejan
-conscious / aware;consciente
-he/she/it proposes;propone
-manifesto;manifiesto
-published [M];publicado
-examples;ejemplos
-he/she/it called;llamaba
-ship / vessel / boat;barco
-to use;usar
-sign;signo
-affects;afecta
-tree;árbol
-richness / wealth;riqueza
-dissemination;difusión
-I/he/she/it wants [subj];quiera
-discipline;disciplina
-we see / watch;vemos
-happiness;felicidad
-improvement;mejora
-he/she/it runs / directs / manages;dirige
-to run;correr
-dimension;dimensión
-request / petition;petición
-transformation;transformación
-notable / considerable / remarkable;notable
-clue;pista
-realized / made [F];realizada
-to apply;aplicar
-dinner;cena
-electric [F];eléctrica
-sent [M];enviado
-modes / ways;modos
-fortune;fortuna
-conflicts;conflictos
-childhood;infancia
-he/she/it allowed;permitió
-farmers / country people / peasants;campesinos
-third [M];tercero
-he/she/it wishes / you wish (formal) / that you want [subj];desea
-obligation;obligación
-east;oriente
-collection;colección
-effective;eficaz
-excess;exceso
-evidence;evidencia
-powers;poderes
-to demonstrate;demostrar
-they show;muestran
-the main character / the lead / the protagonist;protagonista
-it is enough;alcanza
-memories;recuerdos
-mountain;montaña
-dictatorship;dictadura
-he/she/it observes;observa
-native [F, pl];indígenas
-they go through / they pass / they happen;pasan
-clarity;claridad
-I/he/she/it were [subj];estuviera
-query / question;consulta
-financial;financiero
-inflation;inflación
-senate;senado
-troops;tropas
-Mexican [F];mexicana
-corresponding [pl];correspondientes
-he/she/it lifted / got up;levantó
-flight;vuelo
-empire;imperio
-he/she/it wins;gana
-agent / officer;agente
-answers;respuestas
-civil [pl] / civilians;civiles
-he/she/it loses;pierde
-modern;moderno
-tribute / homage;homenaje
-settling / establishment;establecimiento
-he/she/it creates;crea
-parties;fiestas
-numbers;números
-to control;controlar
-trying to;tratando
-he/she/it tries;intenta
-circulation;circulación
-booking / reservation;reserva
+"id";"word";"answer"
+"1";"affects";"afecta"
+"2";"agent / officer";"agente"
+"3";"it is enough";"alcanza"
+"4";"to apply";"aplicar"
+"5";"sand";"arena"
+"6";"ship / vessel / boat";"barco"
+"7";"farmers / country people / peasants";"campesinos"
+"8";"dinner";"cena"
+"9";"circulation";"circulación"
+"10";"civil [pl] / civilians";"civiles"
+"11";"clarity";"claridad"
+"12";"clinic";"clínica"
+"13";"collection";"colección"
+"14";"concert";"concierto"
+"15";"conflicts";"conflictos"
+"16";"conscious / aware";"consciente"
+"17";"consideration";"consideración"
+"18";"query / question";"consulta"
+"19";"to control";"controlar"
+"20";"to run";"correr"
+"21";"corresponding [pl]";"correspondientes"
+"22";"he/she/it creates";"crea"
+"23";"created [M]";"creado"
+"24";"they will have to";"deberán"
+"25";"they leave / let";"dejan"
+"26";"to demonstrate";"demostrar"
+"27";"he/she/it wishes / you wish (formal) / that you want [subj]";"desea"
+"28";"dictatorship";"dictadura"
+"29";"dissemination";"difusión"
+"30";"dimension";"dimensión"
+"31";"he/she/it runs / directs / manages";"dirige"
+"32";"discipline";"disciplina"
+"33";"effective";"eficaz"
+"34";"examples";"ejemplos"
+"35";"electric [F]";"eléctrica"
+"36";"sick / ill [pl]";"enfermos"
+"37";"sent [M]";"enviado"
+"38";"scheme";"esquema"
+"39";"established";"establecido"
+"40";"settling / establishment";"establecimiento"
+"41";"I/he/she/it were [subj]";"estuviera"
+"42";"evidence";"evidencia"
+"43";"excess";"exceso"
+"44";"happiness";"felicidad"
+"45";"parties";"fiestas"
+"46";"financial";"financiero"
+"47";"fortune";"fortuna"
+"48";"he/she/it wins";"gana"
+"49";"tribute / homage";"homenaje"
+"50";"empire";"imperio"
+"51";"native [F, pl]";"indígenas"
+"52";"childhood";"infancia"
+"53";"inflation";"inflación"
+"54";"he/she/it tries";"intenta"
+"55";"he/she/it lifted / got up";"levantó"
+"56";"he/she/it called";"llamaba"
+"57";"crazy [M]";"loco"
+"58";"manifestation / demonstration";"manifestación"
+"59";"manifesto";"manifiesto"
+"60";"improvement";"mejora"
+"61";"Mexican [F]";"mexicana"
+"62";"modern";"moderno"
+"63";"modes / ways";"modos"
+"64";"mountain";"montaña"
+"65";"they show";"muestran"
+"66";"notable / considerable / remarkable";"notable"
+"67";"numbers";"números"
+"68";"obligation";"obligación"
+"69";"he/she/it observes";"observa"
+"70";"east";"oriente"
+"71";"they go through / they pass / they happen";"pasan"
+"72";"walk / stroll";"paseo"
+"73";"he/she/it allowed";"permitió"
+"74";"request / petition";"petición"
+"75";"he/she/it loses";"pierde"
+"76";"clue";"pista"
+"77";"powers";"poderes"
+"78";"he/she/it proposes";"propone"
+"79";"the main character / the lead / the protagonist";"protagonista"
+"80";"published [M]";"publicado"
+"81";"I/he/she/it wants [subj]";"quiera"
+"82";"realized / made [F]";"realizada"
+"83";"rejection";"rechazo"
+"84";"memories";"recuerdos"
+"85";"booking / reservation";"reserva"
+"86";"answers";"respuestas"
+"87";"richness / wealth";"riqueza"
+"88";"stepped out / left / gone out [M]";"salido"
+"89";"senate";"senado"
+"90";"sign";"signo"
+"91";"third [M]";"tercero"
+"92";"traditional";"tradicionales"
+"93";"transformation";"transformación"
+"94";"trying to";"tratando"
+"95";"troops";"tropas"
+"96";"to use";"usar"
+"97";"used [M]";"utilizado"
+"98";"we see / watch";"vemos"
+"99";"flight";"vuelo"
+"100";"tree";"árbol"

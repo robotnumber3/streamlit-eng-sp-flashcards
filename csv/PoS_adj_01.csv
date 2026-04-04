@@ -1,39 +1,39 @@
-word,answer
-agreeable,agradable
-angry,enojado
-beautiful,hermoso
-big,grande
-"delicious (exceptional, indulgent)",delicioso
-"tasty (most common, flavorful)",sabroso
-difficult,difícil
-easy,fácil
-excellent,excelente
-expensive,caro
-fantastic,fantástico
-fat,gordo
-fragile,frágil
-good,bueno
-great,estupendo
-handsome,guapo
-"happy (in a good mood, right now)",alegre
-"happy (internal, lasting)",feliz
-horrible,horrible
-inexpensive,barato
-intelligent,inteligente
-interesting,interesante
-little,pequeño
-nice,simpático
-old,viejo
-poor,pobre
-pretty,bonito
-rich,rico
-sad,triste
-sick,enfermo
-sincere,sincero
-stingy,tacaño
-strong,fuerte
-thin,flaco
-tired,cansado
-typical,típico
-weak,débil
-young,joven
+id,word,answer
+1,agreeable,agradable
+2,"happy (in a good mood, right now)",alegre
+3,inexpensive,barato
+4,pretty,bonito
+5,good,bueno
+6,tired,cansado
+7,expensive,caro
+8,"delicious (exceptional, indulgent)",delicioso
+9,difficult,difícil
+10,weak,débil
+11,sick,enfermo
+12,angry,enojado
+13,great,estupendo
+14,excellent,excelente
+15,fantastic,fantástico
+16,"happy (internal, lasting)",feliz
+17,thin,flaco
+18,fragile,frágil
+19,strong,fuerte
+20,easy,fácil
+21,fat,gordo
+22,big,grande
+23,handsome,guapo
+24,beautiful,hermoso
+25,horrible,horrible
+26,intelligent,inteligente
+27,interesting,interesante
+28,young,joven
+29,little,pequeño
+30,poor,pobre
+31,rich,rico
+32,"tasty (most common, flavorful)",sabroso
+33,nice,simpático
+34,sincere,sincero
+35,stingy,tacaño
+36,sad,triste
+37,typical,típico
+38,old,viejo

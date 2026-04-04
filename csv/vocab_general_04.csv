@@ -1,102 +1,102 @@
-word,answer
-director,director
-said / told,dicho
-true / a certain,cierto
-cases / situations,casos
-hands,manos
-level,nivel
-I could / he could / she could / it could (past),podía
-family,familia
-long [M],largo
-to split / to depart,partir
-it misses / it lacks / how long until...,falta
-to arrive,llegar
-of one’s own / own [M],propio
-minister,ministro
-thing,cosa
-first [M],primero
-security,seguridad
-we have [aux],hemos
-bad / wrong,mal
-he/she/it tries to / you try to,trata
-"some / any [M, before noun]",algún
-he had / she had / it had,tuvo
-respect,respecto
-week,semana
-various / several / some,varios
-real,real
-I know,sé
-voice,voz
-step / passage,paso
-sir / mister,señor
-a thousand,mil
-who [pl],quienes
-project,proyecto
-market,mercado
-most of / majority,mayoría
-light,luz
-light / clear,claro
-I/he/she/it used to go / went,iba
-order,orden
-Spanish,español
-good [F],buena
-he wants / she wants / it wants,quiere
-that [F],aquella
-program / show,programa
-words,palabras
-international,internacional
-they go,van
-those [F],esas
-second [F],segunda
-enterprise / company,empresa
-position / post / place / stall,puesto
-there,ahí
-of one’s own / own [F],propia
-book,libro
-same / equal / too,igual
-politic / political,político
-person,persona
-"last [M, pl]",últimos
-they [F],ellas
-total,total
-I think / I believe,creo
-I have,tengo
-Spanish [F],española
-conditions,condiciones
-strength,fuerza
-unique / only [M],único
-action,acción
-love,amor
-police,policía
-door,puerta
-to weigh,pesar
-zone / area,zona
-he knows / she knows / it knows,sabe
-street,calle
-interior / inside / within,interior
-neither / nor,tampoco
-music,música
-no / none,ningún
-view,vista
-countryside / field,campo
-good [before noun],buen
-I/he/she/it would have,hubiera
-to know,saber
-works / plays / construction sites,obras
-reason,razón
-children / kids,niños
-presence,presencia
-subject / theme / topic,tema
-money,dinero
-service,servicio
-son,hijo
-last [F],última
-a hundred and...,ciento
-I am,estoy
-to talk / to speak,hablar
-he gave / she gave / it gave,dio
-minutes,minutos
-production,producción
-road,camino
-six,seis
-who,quién
+"id","word","answer"
+"1","action","acción"
+"2","there","ahí"
+"3","some / any [M, before noun]","algún"
+"4","love","amor"
+"5","that [F]","aquella"
+"6","good [before noun]","buen"
+"7","good [F]","buena"
+"8","street","calle"
+"9","road","camino"
+"10","countryside / field","campo"
+"11","cases / situations","casos"
+"12","a hundred and...","ciento"
+"13","true / a certain","cierto"
+"14","light / clear","claro"
+"15","conditions","condiciones"
+"16","thing","cosa"
+"17","I think / I believe","creo"
+"18","said / told","dicho"
+"19","money","dinero"
+"20","he gave / she gave / it gave","dio"
+"21","director","director"
+"22","they [F]","ellas"
+"23","enterprise / company","empresa"
+"24","those [F]","esas"
+"25","Spanish","español"
+"26","Spanish [F]","española"
+"27","I am","estoy"
+"28","it misses / it lacks / how long until...","falta"
+"29","family","familia"
+"30","strength","fuerza"
+"31","to talk / to speak","hablar"
+"32","we have [aux]","hemos"
+"33","son","hijo"
+"34","I/he/she/it would have","hubiera"
+"35","I/he/she/it used to go / went","iba"
+"36","same / equal / too","igual"
+"37","interior / inside / within","interior"
+"38","international","internacional"
+"39","long [M]","largo"
+"40","book","libro"
+"41","to arrive","llegar"
+"42","light","luz"
+"43","bad / wrong","mal"
+"44","hands","manos"
+"45","most of / majority","mayoría"
+"46","market","mercado"
+"47","a thousand","mil"
+"48","minister","ministro"
+"49","minutes","minutos"
+"50","music","música"
+"51","no / none","ningún"
+"52","level","nivel"
+"53","children / kids","niños"
+"54","works / plays / construction sites","obras"
+"55","order","orden"
+"56","words","palabras"
+"57","to split / to depart","partir"
+"58","step / passage","paso"
+"59","person","persona"
+"60","to weigh","pesar"
+"61","I could / he could / she could / it could (past)","podía"
+"62","police","policía"
+"63","politic / political","político"
+"64","presence","presencia"
+"65","first [M]","primero"
+"66","production","producción"
+"67","program / show","programa"
+"68","of one’s own / own [F]","propia"
+"69","of one’s own / own [M]","propio"
+"70","project","proyecto"
+"71","door","puerta"
+"72","position / post / place / stall","puesto"
+"73","who [pl]","quienes"
+"74","he wants / she wants / it wants","quiere"
+"75","who","quién"
+"76","reason","razón"
+"77","real","real"
+"78","respect","respecto"
+"79","he knows / she knows / it knows","sabe"
+"80","to know","saber"
+"81","second [F]","segunda"
+"82","security","seguridad"
+"83","six","seis"
+"84","week","semana"
+"85","service","servicio"
+"86","sir / mister","señor"
+"87","I know","sé"
+"88","neither / nor","tampoco"
+"89","subject / theme / topic","tema"
+"90","I have","tengo"
+"91","total","total"
+"92","he/she/it tries to / you try to","trata"
+"93","he had / she had / it had","tuvo"
+"94","they go","van"
+"95","various / several / some","varios"
+"96","view","vista"
+"97","voice","voz"
+"98","zone / area","zona"
+"99","last [F]","última"
+"100","last [M, pl]","últimos"
+"101","unique / only [M]","único"

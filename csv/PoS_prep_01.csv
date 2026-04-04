@@ -1,38 +1,38 @@
-word,answer
-"to, at",a
-"throughout, during the whole of",a lo largo de
-"before, in the presence of, compared to",ante
-"around, about (approximate)",alrededor de
-"under, below",bajo
-with,con
-according to,conforme a
-against,contra
-"of, from, about",de
-inside of,dentro de
-"from, since",desde
-after (time),después de
-during,durante
-"in, on, at",en
-instead of,en vez de
-"between, among",entre
-outside of,fuera de
-"toward, towards",hacia
-"until, up to, as far as",hasta
-"by means of, through",mediante
-"for (purpose, recipient)",para
-"for (cause, means), by, through",por
-"on, over, about",sobre
-before (time),antes de
-behind,detrás de
-in front of,delante de
-underneath,debajo de
-"next to, beside",al lado de
-far from,lejos de
-"close to, near",cerca de
-"about, concerning",acerca de
-in spite of,a pesar de
-without,sin
-"after, behind",tras
-"versus, against",versus
-"via, by way of",vía
-on behalf of,por parte de
+"id","word","answer"
+"1","to, at","a"
+"2","throughout, during the whole of","a lo largo de"
+"3","in spite of","a pesar de"
+"4","about, concerning","acerca de"
+"5","next to, beside","al lado de"
+"6","around, about (approximate)","alrededor de"
+"7","before, in the presence of, compared to","ante"
+"8","before (time)","antes de"
+"9","under, below","bajo"
+"10","close to, near","cerca de"
+"11","with","con"
+"12","according to","conforme a"
+"13","against","contra"
+"14","of, from, about","de"
+"15","underneath","debajo de"
+"16","in front of","delante de"
+"17","inside of","dentro de"
+"18","from, since","desde"
+"19","after (time)","después de"
+"20","behind","detrás de"
+"21","during","durante"
+"22","in, on, at","en"
+"23","instead of","en vez de"
+"24","between, among","entre"
+"25","outside of","fuera de"
+"26","toward, towards","hacia"
+"27","until, up to, as far as","hasta"
+"28","far from","lejos de"
+"29","by means of, through","mediante"
+"30","for (purpose, recipient)","para"
+"31","for (cause, means), by, through","por"
+"32","on behalf of","por parte de"
+"33","without","sin"
+"34","on, over, about","sobre"
+"35","after, behind","tras"
+"36","versus, against","versus"
+"37","via, by way of","vía"

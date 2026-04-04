@@ -1,103 +1,103 @@
-word,answer
-children,hijos
-justice,justicia
-world / worldwide,mundial
-game,juego
-economic,económica
-politicians / political [pl],políticos
-doubt,duda
-resources,recursos
-public [F],pública
-crisis,crisis
-next,próximo
-we have,tenemos
-decision,decisión
-various / several / many [F],varias
-popular,popular
-had,tenido
-barely,apenas
-time / epoch / age / era,época
-bench / bank,banco
-present,presente
-minor / little / younger / underage,menor
-I want,quiero
-to pass / to go through,pasar
-result / outcome,resultado
-television,televisión
-it’s found / it’s located / it is,se encuentra
-thanks,gracias
-ministry,ministerio
-set / combination,conjunto
-defense,defensa
-someone / somebody,alguien
-it remains / to have left / to be left,queda
-they do / you (ustedes) do,hacen
-he/she passes / it happens / you go through,pasa
-the rest,resto
-cause / reason,causa
-to follow,seguir
-there,allá
-word,palabra
-I go,voy
-whose [F],cuya
-we go / let’s go,vamos
-sea,mar
-studies,estudios
-rights / straight [pl],derechos
-importance,importancia
-which [pl],cuales
-contrary / opposite,contrario
-strong,fuerte
-sun,sol
-young [pl],jóvenes
-support,apoyo
-there would be / it would be,habría
-civilian / civil,civil
-parties / matches / games,partidos
-free,libre
-sources / fountains,fuentes
-administration / management,administración
-common / normal / regular,común
-to leave / to let,dejar
-cinema / movies,cine
-to go out,salir
-communication,comunicación
-experience,experiencia
-too much,demasiado
-plan,plan
-answer / response / reply,respuesta
-energy,energía
-left,izquierda
-function,función
-main,principal
-superior,superior
-nature,naturaleza
-we can,podemos
-union,unión
-specially / especially,especialmente
-king,rey
-Sunday,domingo
-favor,favor
-quantity / amount,cantidad
-elections,elecciones
-class,clase
-products,productos
-Spanish [pl],españoles
-to know / to meet,conocer
-theatre,teatro
-important [pl],importantes
-to avoid,evitar
-color,color
-activities,actividades
-table,mesa
-I said / he said / she said / it said,decía
-whose [M],cuyo
-due to,devido
-tall [F],alta
-secretary [M],secretario
-object,objeto
-maybe / perhaps,quizá
-position / location,posicion
-I seemed / he seemed / she seemed / it seemed,parecía
-natural,natural
-elements,elementos
+"id","word","answer"
+"1","activities","actividades"
+"2","administration / management","administración"
+"3","someone / somebody","alguien"
+"4","there","allá"
+"5","tall [F]","alta"
+"6","barely","apenas"
+"7","support","apoyo"
+"8","bench / bank","banco"
+"9","quantity / amount","cantidad"
+"10","cause / reason","causa"
+"11","cinema / movies","cine"
+"12","civilian / civil","civil"
+"13","class","clase"
+"14","color","color"
+"15","communication","comunicación"
+"16","common / normal / regular","común"
+"17","set / combination","conjunto"
+"18","to know / to meet","conocer"
+"19","contrary / opposite","contrario"
+"20","crisis","crisis"
+"21","which [pl]","cuales"
+"22","whose [F]","cuya"
+"23","whose [M]","cuyo"
+"24","decision","decisión"
+"25","I said / he said / she said / it said","decía"
+"26","defense","defensa"
+"27","to leave / to let","dejar"
+"28","too much","demasiado"
+"29","rights / straight [pl]","derechos"
+"30","due to","devido"
+"31","Sunday","domingo"
+"32","doubt","duda"
+"33","economic","económica"
+"34","elections","elecciones"
+"35","elements","elementos"
+"36","energy","energía"
+"37","Spanish [pl]","españoles"
+"38","specially / especially","especialmente"
+"39","studies","estudios"
+"40","to avoid","evitar"
+"41","experience","experiencia"
+"42","favor","favor"
+"43","sources / fountains","fuentes"
+"44","strong","fuerte"
+"45","function","función"
+"46","thanks","gracias"
+"47","there would be / it would be","habría"
+"48","they do / you (ustedes) do","hacen"
+"49","children","hijos"
+"50","importance","importancia"
+"51","important [pl]","importantes"
+"52","left","izquierda"
+"53","game","juego"
+"54","justice","justicia"
+"55","young [pl]","jóvenes"
+"56","free","libre"
+"57","sea","mar"
+"58","minor / little / younger / underage","menor"
+"59","table","mesa"
+"60","ministry","ministerio"
+"61","world / worldwide","mundial"
+"62","natural","natural"
+"63","nature","naturaleza"
+"64","object","objeto"
+"65","word","palabra"
+"66","I seemed / he seemed / she seemed / it seemed","parecía"
+"67","parties / matches / games","partidos"
+"68","he/she passes / it happens / you go through","pasa"
+"69","to pass / to go through","pasar"
+"70","plan","plan"
+"71","we can","podemos"
+"72","politicians / political [pl]","políticos"
+"73","popular","popular"
+"74","position / location","posicion"
+"75","present","presente"
+"76","main","principal"
+"77","products","productos"
+"78","next","próximo"
+"79","public [F]","pública"
+"80","it remains / to have left / to be left","queda"
+"81","I want","quiero"
+"82","maybe / perhaps","quizá"
+"83","resources","recursos"
+"84","answer / response / reply","respuesta"
+"85","the rest","resto"
+"86","result / outcome","resultado"
+"87","king","rey"
+"88","to go out","salir"
+"89","it’s found / it’s located / it is","se encuentra"
+"90","secretary [M]","secretario"
+"91","to follow","seguir"
+"92","sun","sol"
+"93","superior","superior"
+"94","theatre","teatro"
+"95","television","televisión"
+"96","we have","tenemos"
+"97","had","tenido"
+"98","union","unión"
+"99","we go / let’s go","vamos"
+"100","various / several / many [F]","varias"
+"101","I go","voy"
+"102","time / epoch / age / era","época"

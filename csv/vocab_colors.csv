@@ -1,21 +1,21 @@
-word,answer
-yellow,amarillo
-orange,anaranjado
-blue,azul
-light blue,azul claro
-dark blue,azul oscuro
-beige,beige
-white,blanco
-brown,café
-gold,dorado
-gray,gris
-purple,morado
-black,negro
-silver,plateado
-red,rojo
-pink,rosado
-turquoise,turquesa
-green,verde
-light green,verde claro
-dark green,verde oscuro
-violet,violeta
+"id","word","answer"
+"1","yellow","amarillo"
+"2","orange","anaranjado"
+"3","blue","azul"
+"4","light blue","azul claro"
+"5","dark blue","azul oscuro"
+"6","beige","beige"
+"7","white","blanco"
+"8","brown","café"
+"9","gold","dorado"
+"10","gray","gris"
+"11","purple","morado"
+"12","black","negro"
+"13","silver","plateado"
+"14","red","rojo"
+"15","pink","rosado"
+"16","turquoise","turquesa"
+"17","green","verde"
+"18","light green","verde claro"
+"19","dark green","verde oscuro"
+"20","violet","violeta"

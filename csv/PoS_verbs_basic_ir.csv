@@ -1,169 +1,169 @@
-word,answer
-I open,yo abro
-you open,tú abres
-he opens,él abre
-she opens,ella abre
-we open,nosotros abrimos
-you open (plural),ustedes abren
-they open,ellos abren
-I admit,yo admito
-you admit,tú admites
-he admits,él admite
-she admits,ella admite
-we admit,nosotros admitimos
-you admit (plural),ustedes admiten
-they admit,ellos admiten
-I add,yo añado
-you add,tú añades
-he adds,él añade
-she adds,ella añade
-we add,nosotros añadimos
-you add (plural),ustedes añaden
-they add,ellos añaden
-I attend,yo asisto
-you attend,tú asistes
-he attends,él asiste
-she attends,ella asiste
-we attend,nosotros asistimos
-you attend (plural),ustedes asisten
-they attend,ellos asisten
-I share,yo comparto
-you share,tú compartes
-he shares,él comparte
-she shares,ella comparte
-we share,nosotros compartimos
-you share (plural),ustedes comparten
-they share,ellos comparten
-I consume,yo consumo
-you consume,tú consumes
-he consumes,él consume
-she consumes,ella consume
-we consume,nosotros consumimos
-you consume (plural),ustedes consumen
-they consume,ellos consumen
-I cover,yo cubro
-you cover,tú cubres
-he covers,él cubre
-she covers,ella cubre
-we cover,nosotros cubrimos
-you cover (plural),ustedes cubren
-they cover,ellos cubren
-I decide,yo decido
-you decide,tú decides
-he decides,él decide
-she decides,ella decide
-we decide,nosotros decidimos
-you decide (plural),ustedes deciden
-they decide,ellos deciden
-I describe,yo describo
-you describe,tú describes
-he describes,él describe
-she describes,ella describe
-we describe,nosotros describimos
-you describe (plural),ustedes describen
-they describe,ellos describen
-I discuss,yo discuto
-you discuss,tú discutes
-he discusses,él discute
-she discusses,ella discute
-we discuss,nosotros discutimos
-you discuss (plural),ustedes discuten
-they discuss,ellos discuten
-I divide,yo divido
-you divide,tú divides
-he divides,él divide
-she divides,ella divide
-we divide,nosotros dividimos
-you divide (plural),ustedes dividen
-they divide,ellos dividen
-I write,yo escribo
-you write,tú escribes
-he writes,él escribe
-she writes,ella escribe
-we write,nosotros escribimos
-you write (plural),ustedes escriben
-they write,ellos escriben
-I exist,yo existo
-you exist,tú existes
-he exists,él existe
-she exists,ella existe
-we exist,nosotros existimos
-you exist (plural),ustedes existen
-they exist,ellos existen
-I print,yo imprimo
-you print,tú imprimes
-he prints,él imprime
-she prints,ella imprime
-we print,nosotros imprimimos
-you print (plural),ustedes imprimen
-they print,ellos imprimen
-I insist,yo insisto
-you insist,tú insistes
-he insists,él insiste
-she insists,ella insiste
-we insist,nosotros insistimos
-you insist (plural),ustedes insisten
-they insist,ellos insisten
-I omit,yo omito
-you omit,tú omites
-he omits,él omite
-she omits,ella omite
-we omit,nosotros omitimos
-you omit (plural),ustedes omiten
-they omit,ellos omiten
-I allow,yo permito
-you allow,tú permites
-he allows,él permite
-she allows,ella permite
-we allow,nosotros permitimos
-you allow (plural),ustedes permiten
-they allow,ellos permiten
-I receive,yo recibo
-you receive,tú recibes
-he receives,él recibe
-she receives,ella recibe
-we receive,nosotros recibimos
-you receive (plural),ustedes reciben
-they receive,ellos reciben
-I distribute,yo reparto
-you distribute,tú repartes
-he distributes,él reparte
-she distributes,ella reparte
-we distribute,nosotros repartimos
-you distribute (plural),ustedes reparten
-they distribute,ellos reparten
-I shake,yo sacudo
-you shake,tú sacudes
-he shakes,él sacude
-she shakes,ella sacude
-we shake,nosotros sacudimos
-you shake (plural),ustedes sacuden
-they shake,ellos sacuden
-I go up,yo subo
-you go up,tú subes
-he goes up,él sube
-she goes up,ella sube
-we go up,nosotros subimos
-you go up (plural),ustedes suben
-they go up,ellos suben
-I suffer,yo sufro
-you suffer,tú sufres
-he suffers,él sufre
-she suffers,ella sufre
-we suffer,nosotros sufrimos
-you suffer (plural),ustedes sufren
-they suffer,ellos sufren
-I join,yo uno
-you join,tú unes
-he joins,él une
-she joins,ella une
-we join,nosotros unimos
-you join (plural),ustedes unen
-they join,ellos unen
-I live,yo vivo
-you live,tú vives
-he lives,él vive
-she lives,ella vive
-we live,nosotros vivimos
-you live (plural),ustedes viven
-they live,ellos viven
+"id","word","answer"
+"1","she opens","ella abre"
+"2","she admits","ella admite"
+"3","she attends","ella asiste"
+"4","she adds","ella añade"
+"5","she shares","ella comparte"
+"6","she consumes","ella consume"
+"7","she covers","ella cubre"
+"8","she decides","ella decide"
+"9","she describes","ella describe"
+"10","she discusses","ella discute"
+"11","she divides","ella divide"
+"12","she writes","ella escribe"
+"13","she exists","ella existe"
+"14","she prints","ella imprime"
+"15","she insists","ella insiste"
+"16","she omits","ella omite"
+"17","she allows","ella permite"
+"18","she receives","ella recibe"
+"19","she distributes","ella reparte"
+"20","she shakes","ella sacude"
+"21","she goes up","ella sube"
+"22","she suffers","ella sufre"
+"23","she joins","ella une"
+"24","she lives","ella vive"
+"25","they open","ellos abren"
+"26","they admit","ellos admiten"
+"27","they attend","ellos asisten"
+"28","they add","ellos añaden"
+"29","they share","ellos comparten"
+"30","they consume","ellos consumen"
+"31","they cover","ellos cubren"
+"32","they decide","ellos deciden"
+"33","they describe","ellos describen"
+"34","they discuss","ellos discuten"
+"35","they divide","ellos dividen"
+"36","they write","ellos escriben"
+"37","they exist","ellos existen"
+"38","they print","ellos imprimen"
+"39","they insist","ellos insisten"
+"40","they omit","ellos omiten"
+"41","they allow","ellos permiten"
+"42","they receive","ellos reciben"
+"43","they distribute","ellos reparten"
+"44","they shake","ellos sacuden"
+"45","they go up","ellos suben"
+"46","they suffer","ellos sufren"
+"47","they join","ellos unen"
+"48","they live","ellos viven"
+"49","we open","nosotros abrimos"
+"50","we admit","nosotros admitimos"
+"51","we attend","nosotros asistimos"
+"52","we add","nosotros añadimos"
+"53","we share","nosotros compartimos"
+"54","we consume","nosotros consumimos"
+"55","we cover","nosotros cubrimos"
+"56","we decide","nosotros decidimos"
+"57","we describe","nosotros describimos"
+"58","we discuss","nosotros discutimos"
+"59","we divide","nosotros dividimos"
+"60","we write","nosotros escribimos"
+"61","we exist","nosotros existimos"
+"62","we print","nosotros imprimimos"
+"63","we insist","nosotros insistimos"
+"64","we omit","nosotros omitimos"
+"65","we allow","nosotros permitimos"
+"66","we receive","nosotros recibimos"
+"67","we distribute","nosotros repartimos"
+"68","we shake","nosotros sacudimos"
+"69","we go up","nosotros subimos"
+"70","we suffer","nosotros sufrimos"
+"71","we join","nosotros unimos"
+"72","we live","nosotros vivimos"
+"73","you open","tú abres"
+"74","you admit","tú admites"
+"75","you attend","tú asistes"
+"76","you add","tú añades"
+"77","you share","tú compartes"
+"78","you consume","tú consumes"
+"79","you cover","tú cubres"
+"80","you decide","tú decides"
+"81","you describe","tú describes"
+"82","you discuss","tú discutes"
+"83","you divide","tú divides"
+"84","you write","tú escribes"
+"85","you exist","tú existes"
+"86","you print","tú imprimes"
+"87","you insist","tú insistes"
+"88","you omit","tú omites"
+"89","you allow","tú permites"
+"90","you receive","tú recibes"
+"91","you distribute","tú repartes"
+"92","you shake","tú sacudes"
+"93","you go up","tú subes"
+"94","you suffer","tú sufres"
+"95","you join","tú unes"
+"96","you live","tú vives"
+"97","you open (plural)","ustedes abren"
+"98","you admit (plural)","ustedes admiten"
+"99","you attend (plural)","ustedes asisten"
+"100","you add (plural)","ustedes añaden"
+"101","you share (plural)","ustedes comparten"
+"102","you consume (plural)","ustedes consumen"
+"103","you cover (plural)","ustedes cubren"
+"104","you decide (plural)","ustedes deciden"
+"105","you describe (plural)","ustedes describen"
+"106","you discuss (plural)","ustedes discuten"
+"107","you divide (plural)","ustedes dividen"
+"108","you write (plural)","ustedes escriben"
+"109","you exist (plural)","ustedes existen"
+"110","you print (plural)","ustedes imprimen"
+"111","you insist (plural)","ustedes insisten"
+"112","you omit (plural)","ustedes omiten"
+"113","you allow (plural)","ustedes permiten"
+"114","you receive (plural)","ustedes reciben"
+"115","you distribute (plural)","ustedes reparten"
+"116","you shake (plural)","ustedes sacuden"
+"117","you go up (plural)","ustedes suben"
+"118","you suffer (plural)","ustedes sufren"
+"119","you join (plural)","ustedes unen"
+"120","you live (plural)","ustedes viven"
+"121","I open","yo abro"
+"122","I admit","yo admito"
+"123","I attend","yo asisto"
+"124","I add","yo añado"
+"125","I share","yo comparto"
+"126","I consume","yo consumo"
+"127","I cover","yo cubro"
+"128","I decide","yo decido"
+"129","I describe","yo describo"
+"130","I discuss","yo discuto"
+"131","I divide","yo divido"
+"132","I write","yo escribo"
+"133","I exist","yo existo"
+"134","I print","yo imprimo"
+"135","I insist","yo insisto"
+"136","I omit","yo omito"
+"137","I allow","yo permito"
+"138","I receive","yo recibo"
+"139","I distribute","yo reparto"
+"140","I shake","yo sacudo"
+"141","I go up","yo subo"
+"142","I suffer","yo sufro"
+"143","I join","yo uno"
+"144","I live","yo vivo"
+"145","he opens","él abre"
+"146","he admits","él admite"
+"147","he attends","él asiste"
+"148","he adds","él añade"
+"149","he shares","él comparte"
+"150","he consumes","él consume"
+"151","he covers","él cubre"
+"152","he decides","él decide"
+"153","he describes","él describe"
+"154","he discusses","él discute"
+"155","he divides","él divide"
+"156","he writes","él escribe"
+"157","he exists","él existe"
+"158","he prints","él imprime"
+"159","he insists","él insiste"
+"160","he omits","él omite"
+"161","he allows","él permite"
+"162","he receives","él recibe"
+"163","he distributes","él reparte"
+"164","he shakes","él sacude"
+"165","he goes up","él sube"
+"166","he suffers","él sufre"
+"167","he joins","él une"
+"168","he lives","él vive"
