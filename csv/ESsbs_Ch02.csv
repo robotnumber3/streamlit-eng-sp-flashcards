@@ -1,134 +1,134 @@
-word,answer
-I,yo
-you,tú
-we,nosotros
-you,vosotros
-he,él
-they,ellos
-she,ella
-they,ellas
-you,usted
-you,ustedes
-I am,yo estoy
-you are,tú estás
-he is,él está
-she is,ella está
-you are,Ud. está
-we are,nosotros estamos
-you are,vosotros estáis
-they are,ellos están
-they are,ellas están
-you are,Uds. están
-I am in the class.,Yo estoy en la clase.
-We are in the car.,Nosotros estamos en el carro.
-The restaurant is in the city.,El restaurante está en la ciudad.
-They are in the bathroom.,Ellas están en el baño.
-Are you in the hospital?,¿Estás tú en el hospital?
-"I am fine, thanks.","Yo estoy bien, gracias."
-She is sick.,Ella está enferma.
-The doctors are sick.,Los doctores están enfermos.
-How are you?,¿Cómo están Uds.?
-We are well.,Estamos bien.
-The girl is happy.,La muchacha está contenta.
-I am happy.,Estoy feliz.
-The men are tired.,Los hombres están cansados.
-We are happy.,Estamos alegres.
-Are you angry?,¿Estás enojado?
-The meal is good.,La comida está buena.
-The fish is delicious.,El pescado está delicioso.
-The soup is delicious.,La sopa está sabrosa.
-She is pretty today.,Ella está hermosa hoy.
-He is handsome.,Él está guapo.
-how?,¿cómo?
-where?,¿dónde?
-who?,¿quién?
-here,"aquí, acá"
-there,"allí, allá"
-happy [merry],alegre
-pretty,bonito
-good,bueno
-tired,cansado
-happy [contented],contento
-delicious,delicioso
-sick,enfermo
-angry,enojado
-happy,feliz
-"beautiful, handsome",guapo
-"beautiful, handsome",hermoso
-pretty,lindo
-delicious,sabroso
-I am,yo soy
-you are,tú eres
-he is,él es
-she is,ella es
-you are,Ud. es
-we are,nosotros somos
-you are,vosotros sois
-they are,ellos son
-they are,ellas son
-you are,Uds. son
-The house is red.,La casa es roja.
-The book is blue.,El libro es azul.
-The cars are old.,Los carros son viejos.
-We are nice.,Somos simpáticos.
-Is the flower yellow?,¿Es la flor amarilla?
-I am a student.,Yo soy estudiante.
-He is an architect.,Él es arquitecto.
-They are excellent teachers.,Ellas son maestras excelentes.
-We are doctors.,Somos doctores.
-Robert is a lawyer.,Roberto es abogado.
-Are you an engineer?,¿Eres tú ingeniero?
-Where are you from? [sing.],¿De dónde es Ud.?
-Where are you from? [pl.],¿De dónde son Uds.?
-I am from New York.,Yo soy de Nueva York.
-Where is she from?,¿De dónde es ella?
-We are from Italy.,Somos de Italia.
-They are from the United States.,Ellos son de los Estados Unidos.
-The wine is from Portugal.,El vino es de Portugal.
-The beer is from Mexico.,La cerveza es de México.
-The coffee is from Brazil.,El café es de Brazil.
-We are friends.,Somos amigos.
-Joe and Ed are brothers.,José y Eduardo son hermanos.
-Paul is Spanish.,Pablo es español.
-Are you Cuban?,¿Eres tú cubano?
-She is Catholic.,Ella es católica.
-The table is of wood.,La mesa es de madera.
-The bag is of plastic.,La bolsa es de plástico.
-The shoes are of leather.,Los zapatos son de cuero.
-The windows are of glass.,Las ventanas son de vidrio.
-The house is of stone.,La casa es de piedra.
-the bedroom,la alcoba
-the rug,la alfombra
-the ballpoint pen,el bolígrafo
-the kitchen,la cocina
-the collection,la colección
-the dining room,el comedor
-the curtain,la cortina
-the notebook,el cuaderno
-the mirror,el espejo
-the study,el estudio
-the stove,la estufa
-the cabinet,el gabinete
-the oven,el horno
-the pencil,el lápiz
-the wood,la madera
-the refrigerator,la nevera
-the wall,la pared
-the yard,el patio
-the living room,la sala
-the easy chair,el sillón
-the entryway,el vestíbulo
-the video,el video
-ample,amplio
-old,antiguo
-navy blue,azul marino
-comfortable,cómodo
-"fine, delicate",fino
-thick,grueso
-clean,limpio
-"my [sing., pl.]","mi, mis"
-private,privado
-simple,sencillo
-all,todo
-enough,bastante
-still,todavía
+id,word,answer
+1,all,todo
+2,ample,amplio
+3,angry,enojado
+4,Are you an engineer?,¿Eres tú ingeniero?
+5,Are you angry?,¿Estás enojado?
+6,Are you Cuban?,¿Eres tú cubano?
+7,Are you in the hospital?,¿Estás tú en el hospital?
+8,"beautiful, handsome",guapo
+9,"beautiful, handsome",hermoso
+10,clean,limpio
+11,comfortable,cómodo
+12,delicious,delicioso
+13,delicious,sabroso
+14,enough,bastante
+15,"fine, delicate",fino
+16,good,bueno
+17,happy,feliz
+18,happy [contented],contento
+19,happy [merry],alegre
+20,he,él
+21,he is,él está
+22,he is,él es
+23,He is an architect.,Él es arquitecto.
+24,He is handsome.,Él está guapo.
+25,here,"aquí, acá"
+26,How are you?,¿Cómo están Uds.?
+27,how?,¿cómo?
+28,I,yo
+29,I am,yo estoy
+30,I am,yo soy
+31,I am a student.,Yo soy estudiante.
+32,"I am fine, thanks.","Yo estoy bien, gracias."
+33,I am from New York.,Yo soy de Nueva York.
+34,I am happy.,Estoy feliz.
+35,I am in the class.,Yo estoy en la clase.
+36,Is the flower yellow?,¿Es la flor amarilla?
+37,Joe and Ed are brothers.,José y Eduardo son hermanos.
+38,"my [sing., pl.]","mi, mis"
+39,navy blue,azul marino
+40,old,antiguo
+41,Paul is Spanish.,Pablo es español.
+42,pretty,bonito
+43,pretty,lindo
+44,private,privado
+45,Robert is a lawyer.,Roberto es abogado.
+46,she,ella
+47,she is,ella está
+48,she is,ella es
+49,She is Catholic.,Ella es católica.
+50,She is pretty today.,Ella está hermosa hoy.
+51,She is sick.,Ella está enferma.
+52,sick,enfermo
+53,simple,sencillo
+54,still,todavía
+55,The bag is of plastic.,La bolsa es de plástico.
+56,the ballpoint pen,el bolígrafo
+57,the bedroom,la alcoba
+58,The beer is from Mexico.,La cerveza es de México.
+59,The book is blue.,El libro es azul.
+60,the cabinet,el gabinete
+61,The cars are old.,Los carros son viejos.
+62,The coffee is from Brazil.,El café es de Brazil.
+63,the collection,la colección
+64,the curtain,la cortina
+65,the dining room,el comedor
+66,The doctors are sick.,Los doctores están enfermos.
+67,the easy chair,el sillón
+68,the entryway,el vestíbulo
+69,The fish is delicious.,El pescado está delicioso.
+70,The girl is happy.,La muchacha está contenta.
+71,The house is of stone.,La casa es de piedra.
+72,The house is red.,La casa es roja.
+73,the kitchen,la cocina
+74,the living room,la sala
+75,The meal is good.,La comida está buena.
+76,The men are tired.,Los hombres están cansados.
+77,the mirror,el espejo
+78,the notebook,el cuaderno
+79,the oven,el horno
+80,the pencil,el lápiz
+81,the refrigerator,la nevera
+82,The restaurant is in the city.,El restaurante está en la ciudad.
+83,the rug,la alfombra
+84,The shoes are of leather.,Los zapatos son de cuero.
+85,The soup is delicious.,La sopa está sabrosa.
+86,the stove,la estufa
+87,the study,el estudio
+88,The table is of wood.,La mesa es de madera.
+89,the video,el video
+90,the wall,la pared
+91,The windows are of glass.,Las ventanas son de vidrio.
+92,The wine is from Portugal.,El vino es de Portugal.
+93,the wood,la madera
+94,the yard,el patio
+95,there,"allí, allá"
+96,they,ellos
+97,they,ellas
+98,they are,ellos están
+99,they are,ellas están
+100,they are,ellos son
+101,they are,ellas son
+102,They are excellent teachers.,Ellas son maestras excelentes.
+103,They are from the United States.,Ellos son de los Estados Unidos.
+104,They are in the bathroom.,Ellas están en el baño.
+105,thick,grueso
+106,tired,cansado
+107,we,nosotros
+108,we are,nosotros estamos
+109,we are,nosotros somos
+110,We are doctors.,Somos doctores.
+111,We are friends.,Somos amigos.
+112,We are from Italy.,Somos de Italia.
+113,We are happy.,Estamos alegres.
+114,We are in the car.,Nosotros estamos en el carro.
+115,We are nice.,Somos simpáticos.
+116,We are well.,Estamos bien.
+117,Where are you from? [pl.],¿De dónde son Uds.?
+118,Where are you from? [sing.],¿De dónde es Ud.?
+119,Where is she from?,¿De dónde es ella?
+120,where?,¿dónde?
+121,who?,¿quién?
+122,you,tú
+123,you,vosotros
+124,you,usted
+125,you,ustedes
+126,you are,tú estás
+127,you are,Ud. está
+128,you are,vosotros estáis
+129,you are,Uds. están
+130,you are,tú eres
+131,you are,Ud. es
+132,you are,vosotros sois
+133,you are,Uds. son

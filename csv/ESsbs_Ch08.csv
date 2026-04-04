@@ -1,296 +1,293 @@
-"word";"answer"
-"my [sing]";"mi"
-"my [pl]";"mis"
-"My sister wants to go to Spain.";"Mi hermana quiere ir a España."
-"My friends want to go to Portugal.";"Mis amigos quieren ir a Portugal."
-"your [sing, inf]";"tu"
-"your [pl, inf]";"tus"
-"Your book is on the table.";"Tu libro está en la mesa."
-"Your pencils are on the chair.";"Tus lápices están en la silla."
-"his, her, your [sing, formal], their";"su"
-"his, her, your [pl, formal], their";"sus"
-"Peter and Linda are here.";"Pedro y Linda están aquí."
-"I need his/her/their car.";"Necesito su carro."
-"His car or her car?";"¿El carro de él o el carro de ella?"
-"Your/his/her/their ideas are fantastic.";"Sus ideas son fantásticas."
-"Whose ideas?";"¿Las ideas de quién?"
-"Your ideas.";"Las ideas de Uds."
-"They live in the mountains.";"Ellos viven en las montañas."
-"Their house is big.";"Su casa es grande."
-"She writes a lot.";"Ella escribe mucho."
-"Her articles are interesting.";"Sus artículos son interesantes."
-"our [sing]";"nuestro"
-"our [sing, fem]";"nuestra"
-"our [pl]";"nuestros"
-"our [pl, fem]";"nuestras"
-"Our train is coming.";"Nuestro tren viene."
-"Our party is going to be fantastic.";"Nuestra fiesta va a ser fantástica."
-"Our books are old.";"Nuestros libros son viejos."
-"Our computers are new.";"Nuestras computadoras son nuevas."
-"your [sing, formal]";"vuestro"
-"your [sing, formal, fem]";"vuestra"
-"your [pl, formal]";"vuestros"
-"your [pl, formal, fem]";"vuestras"
-"Your friend is from Spain.";"Vuestro amigo es de España."
-"Your house is in Madrid.";"Vuestra casa está en Madrid."
-"Are your teachers Spanish?";"¿Son españoles vuestros maestros?"
-"Your friends are Spanish.";"Vuestras amigas son españolas."
-"this [M]";"este"
-"this [F]";"esta"
-"these [M]";"estos"
-"these [F]";"estas"
-"that [M]";"ese"
-"that [F]";"esa"
-"those [M]";"esos"
-"those [F]";"esas"
-"that [over there, M]";"aquel"
-"that [over there, F]";"aquella"
-"those [over there, M]";"aquellos"
-"those [over there, F]";"aquellas"
-
-
-"This newspaper is interesting.";"Este periódico es interesante."
-"This magazine is interesting also.";"Esta revista es interesante también."
-"These men are strong.";"Estos hombres son fuertes."
-"These women are strong also.";"Estas mujeres son fuertes también."
-"That piano is old.";"Ese piano es viejo."
-"That guitar is new.";"Esa guitarra es nueva."
-"Those books are expensive.";"Esos libros son caros."
-"Those pens are costly.";"Esas plumas son costosas."
-"That suit [over there] is ugly.";"Aquel traje es feo."
-"That blouse [over there] is prettier.";"Aquella blusa es más bonita."
-"Those trees [over there] are enormous.";"Aquellos árboles son enormes."
-"Those houses [over there] are small.";"Aquellas casas son pequeñas."
-
-"this";"esto"
-"that";"eso"
-"that [farther away in place or time]";"aquello"
-"What is this? What is that?";"¿Qué es esto? ¿Qué es eso?"
-"That is not necessary.";"Aquello no es necesario."
-"Spanish";"español"
-"the Spanish restaurant";"el restaurante español"
-"the Spanish meal";"la comida española"
-"English";"inglés"
-"the English man";"el hombre inglés"
-"the English woman";"la mujer inglesa"
-"Japanese";"japonés"
-"the Japanese boy";"el muchacho japonés"
-"the Japanese girl";"la muchacha japonesa"
-"good";"bueno"
-"This child is a good student.";"Este niño es un buen estudiante."
-"His sister is a good student.";"Su hermana es una buena estudiante."
-"They are good students.";"Ellos son buenos estudiantes."
-"They have good teachers.";"Ellos tienen buenas maestras."
-"bad";"malo"
-"She has a bad dog.";"Ella tiene un mal perro."
-"Her friend has a bad idea.";"Su amiga tiene una mala idea."
-"They have three bad cats.";"Ellas tienen tres malos gatos."
-"They are bad situations.";"Son malas situaciones."
-"a lot of, much, many";"mucho"
-"He doesn't have a lot of money.";"Él no tiene mucho dinero."
-"He has a lot of friends.";"Tiene muchos amigos."
-"They prepare a lot of food for a lot of people.";"Ellas preparan mucha comida para muchas personas."
-"a little bit, a few, not much, not many";"poco"
-"There is not much money in this bank and not many clients.";"Hay poco dinero en este banco y hay pocos clientes."
-"Not many people live on this street, and there are few houses.";"Poca gente vive en esta calle y hay pocas casas."
-"enough";"bastante, suficiente"
-"They earn enough money and they have enough work.";"Ellos ganan suficiente dinero y tienen bastante trabajo."
-"both";"ambos"
-"Spain and Portugal are beautiful.";"España y Portugal son bellos."
-"The travelers are going to visit both countries.";"Los viajeros van a visitar ambos países."
-"each";"cada"
-"Each house has two bathrooms.";"Cada casa tiene dos baños."
-"Each apartment has a kitchen.";"Cada apartamento tiene una cocina."
-"several";"varios"
-"Several restaurants serve tacos.";"Varios restaurantes sirven tacos."
-"Several stores sell burritos.";"Varias tiendas venden burritos."
-"some";"alguno"
-"He is going to return some day.";"Él va a volver algún día."
-"Is there some pharmacy nearby?";"¿Hay alguna farmacia cerca?"
-"Some thoughts are good.";"Algunos pensamientos son buenos."
-"Some ideas are bad.";"Algunas ideas son malas."
-"other, another";"otro"
-"He wants another car.";"Él quiere otro carro."
-"She wants another house.";"Ella quiere otra casa."
-"He has other difficult problems.";"Él tiene otros problemas difíciles."
-"She is going to buy other things.";"Ella va a comprar otras cosas."
-"all, every";"todo"
-"She reads all day.";"Ella lee todo el día."
-"Everyone [all the world] is here.";"Todo el mundo está aquí."
-"I read all the information.";"Leo toda la información."
-"He writes every day [all the days].";"Él escribe todos los días."
-"She asks all the questions.";"Ella hace todas las preguntas."
-"next";"próximo"
-"We are going to travel next year.";"Vamos a viajar el próximo año."
-"The next lesson is interesting.";"La próxima lección es interesante."
-"What is going to happen in the next years and in the next generations?";"¿Qué va a pasar en los próximos años y en las próximas generaciones?"
-"only";"único"
-"Ricardo is the only Mexican here.";"Ricardo es el único mexicano aquí."
-"She is the only Spaniard.";"Ella es la única española."
-"last, final";"último"
-"The last month of the year is December.";"El último mes del año es diciembre."
-"Today is the last class of the semester.";"Hoy es la última clase del semestre."
-"her former boyfriend [antiguo, before noun]";"su antiguo novio"
-"an ancient civilization [antiguo, after noun]";"una civilización antigua"
-"a certain day [cierto, before noun]";"cierto día"
-"a sure thing [cierto, after noun]";"una cosa cierta"
-"the great man [grande/gran, before noun]";"el gran hombre"
-"the great woman [grande/gran, before noun]";"la gran mujer"
-"the big man [grande, after noun]";"el hombre grande"
-"the big woman [grande, after noun]";"la mujer grande"
-"the poor, unfortunate little boy [pobre, before noun]";"el pobre niño"
-"the poor man [without money] [pobre, after noun]";"el hombre pobre"
-"the same book [mismo, before noun]";"el mismo libro"
-"the same idea [mismo, before noun]";"la misma idea"
-"the professor himself [mismo, after noun]";"el profesor mismo"
-"the longtime friends [viejo, before noun]";"los viejos amigos"
-"the old friends [in years] [viejo, after noun]";"los amigos viejos"
-"more + adj + than";"más + adj + que"
-"Julia is stronger than John.";"Julia es más fuerte que Juan."
-"The magazine is more interesting than the book.";"La revista es más interesante que el libro."
-"less + adj + than";"menos + adj + que"
-"The book is less interesting than the magazine.";"El libro es menos interesante que la revista."
-"The shirts are less expensive than the dresses.";"Las camisas son menos caras que los vestidos."
-"as + adj + as";"tan + adj + como"
-"These cakes are as sweet as those pastries.";"Estas tortas son tan dulces como esos pasteles."
-"Is the dog as intelligent as the cat?";"¿Es el perro tan inteligente como el gato?"
-"the most + adj + of [superlative]";"el (la) más + adj + de"
-"the least + adj + of [superlative]";"el (la) menos + adj + de"
-"Who is the strongest person in your family?";"¿Quién es la persona más fuerte de su familia?"
-"Which is the least interesting class in the school?";"¿Cuál es la clase menos interesante de la escuela?"
-"good";"bueno"
-"better";"mejor"
-"the best [sing]";"el mejor, la mejor"
-"the best [pl]";"los mejores, las mejores"
-"This cake is good.";"Esta torta es buena."
-"The pastry that you have is better.";"El pastel que Ud. tiene es mejor."
-"These desserts are the best of all.";"Estos postres son los mejores de todos."
-"bad";"malo"
-"worse";"peor"
-"the worst [sing]";"el peor, la peor"
-"the worst [pl]";"los peores, las peores"
-"He is bad.";"Él es malo."
-"She is worse.";"Ella es peor."
-"She is the worst in her school.";"Ella es la peor de su escuela."
-"young";"joven"
-"younger [people only]";"menor"
-"the youngest [sing, people only]";"el menor, la menor"
-"the youngest [pl, people only]";"los menores, las menores"
-"The child is young.";"El niño es joven."
-"His brother is younger.";"Su hermano es menor."
-"His sister is the youngest in their family.";"Su hermana es la menor de su familia."
-"old";"viejo"
-"older [people only]";"mayor"
-"the oldest [sing, people only]";"el mayor, la mayor"
-"the oldest [pl, people only]";"los mayores, las mayores"
-"She is old.";"Ella es vieja."
-"Her mother is older.";"Su madre es mayor."
-"Her grandmother is the oldest of all.";"Su abuela es la mayor de todas."
-"more + noun + than";"más + nombre + que"
-"less + noun + than";"menos + nombre + que"
-"I have more pencils than Maria.";"Tengo más lápices que María."
-"She has fewer books than I.";"Ella tiene menos libros que yo."
-"as much + noun + as, as many + noun + as";"tanto + nombre + como"
-"He runs as many meters as his son.";"Él corre tantos metros como su hijo."
-"She works as many hours as you.";"Ella trabaja tantas horas como Ud."
-"Joe has as much music as Sarah.";"José tiene tanta música como Sara."
-"He has as much hair as his uncle.";"Él tiene tanto pelo como su tío."
-"more than [comparing verbs]";"más que"
-"less than [comparing verbs]";"menos que"
-"as much as [comparing verbs]";"tanto como"
-"I study more than you.";"Yo estudio más que tú."
-"You read less than I.";"Tú lees menos que yo."
-"She learns as much as he.";"Ella aprende tanto como él."
-"clear [adj]";"claro"
-"clearly [adv]";"claramente"
-"rapid [adj]";"rápido"
-"rapidly [adv]";"rápidamente"
-"slow [adj]";"lento"
-"slowly [adv]";"lentamente"
-"frank [adj]";"franco"
-"frankly [adv]";"francamente"
-"honest [adj]";"honesto"
-"honestly [adv]";"honestamente"
-"intimate [adj]";"íntimo"
-"intimately [adv]";"íntimamente"
-"last [adj]";"último"
-"lastly [adv]";"últimamente"
-"happy [adj]";"alegre"
-"happily [adv]";"alegremente"
-"happy [adj]";"feliz"
-"happily [adv]";"felizmente"
-"sad [adj]";"triste"
-"sadly [adv]";"tristemente"
-"easy [adj]";"fácil"
-"easily [adv]";"fácilmente"
-"frequent [adj]";"frecuente"
-"frequently [adv]";"frecuentemente"
-"He walks frequently and happily.";"Él camina frecuente y alegremente."
-"He runs slowly and sadly.";"Él corre lenta y tristemente."
-"I speak clearly and concisely.";"Hablo clara y concisamente."
-"She lives calmly and freely.";"Ella vive tranquila y libremente."
-"a lot [adv]";"mucho"
-"so much [adv]";"tanto"
-"a little bit [adv]";"poco"
-"almost [adv]";"casi"
-"more [adv]";"más"
-"less [adv]";"menos"
-"too much [adv]";"demasiado"
-"well [adv]";"bien"
-"badly [adv]";"mal"
-"better [adv]";"mejor"
-"worse [adv]";"peor"
-"sometimes";"a veces"
-"now";"ahora"
-"right now";"ahora mismo"
-"always";"siempre"
-"still, yet; no, not yet";"todavía"
-"already";"ya"
-"no longer";"ya no"
-"early";"temprano"
-"late";"tarde"
-"here, there [stationary]";"aquí, allí"
-"here, there [with motion]";"acá, allá"
-"nearby";"cerca"
-"up, up there";"en lo alto"
-"far off";"lejos"
-"in front";"adelante"
-"in back, at the bottom";"al fondo"
-"in back";"atrás"
-"up, upstairs";"arriba"
-"down, downstairs";"abajo"
-"inside";"adentro"
-"outside";"afuera"
-"to the right";"a la derecha"
-"to the left";"a la izquierda"
-"straight ahead";"derecho, recto"
-"I already know that she is here.";"Ya sé que ella está aquí."
-"He always does his homework well.";"Él siempre hace bien su tarea."
-"The children cook a little bit.";"Los niños cocinan poco."
-"Why don't you come here?";"¿Por qué no vienes acá?"
-"María arrives early.";"María llega temprano."
-"Her friend arrives late.";"Su amiga llega tarde."
-"To the right, there is a church.";"A la derecha, hay una iglesia."
-"To the left, there is a bank.";"A la izquierda, hay un banco."
-"to turn off";"apagar"
-"upon entering";"al entrar"
-"to imagine";"imaginar"
-"to smile";"sonreír"
-"the atmosphere";"el ambiente"
-"the host, the hostess";"el anfitrión, la anfitriona"
-"the snack";"el bocadillo"
-"the bottle";"la botella"
-"the breeze";"la brisa"
-"the acquaintance";"la conocida"
-"the appetizer";"el entremés"
-"the guest";"el invitado"
-"the words [of a song]";"la letra"
-"the couple";"la pareja"
-"the soda";"la soda, la gaseosa"
-"the candle";"la vela"
-"the closet, the wardrobe";"el vestuario"
-"about [prep]";"acerca de"
-"on top of";"encima de"
-"the wrong hour";"la hora equivocada"
-"with themselves";"consigo"
-"loudly";"en alto volumen"
+id,word,answer
+1,"a certain day [cierto, before noun]",cierto día
+2,a little bit [adv],poco
+3,"a little bit, a few, not much, not many",poco
+4,a lot [adv],mucho
+5,"a lot of, much, many",mucho
+6,"a sure thing [cierto, after noun]",una cosa cierta
+7,about [prep],acerca de
+8,"all, every",todo
+9,almost [adv],casi
+10,already,ya
+11,always,siempre
+12,"an ancient civilization [antiguo, after noun]",una civilización antigua
+13,Are your teachers Spanish?,¿Son españoles vuestros maestros?
+14,as + adj + as,tan + adj + como
+15,"as much + noun + as, as many + noun + as",tanto + nombre + como
+16,as much as [comparing verbs],tanto como
+17,bad,malo
+18,bad,malo
+19,badly [adv],mal
+20,better,mejor
+21,better [adv],mejor
+22,both,ambos
+23,clear [adj],claro
+24,clearly [adv],claramente
+25,"down, downstairs",abajo
+26,each,cada
+27,Each apartment has a kitchen.,Cada apartamento tiene una cocina.
+28,Each house has two bathrooms.,Cada casa tiene dos baños.
+29,early,temprano
+30,easily [adv],fácilmente
+31,easy [adj],fácil
+32,English,inglés
+33,enough,"bastante, suficiente"
+34,Everyone [all the world] is here.,Todo el mundo está aquí.
+35,far off,lejos
+36,frank [adj],franco
+37,frankly [adv],francamente
+38,frequent [adj],frecuente
+39,frequently [adv],frecuentemente
+40,good,bueno
+41,good,bueno
+42,happily [adv],alegremente
+43,happily [adv],felizmente
+44,happy [adj],alegre
+45,happy [adj],feliz
+46,He always does his homework well.,Él siempre hace bien su tarea.
+47,He doesn't have a lot of money.,Él no tiene mucho dinero.
+48,He has a lot of friends.,Tiene muchos amigos.
+49,He has as much hair as his uncle.,Él tiene tanto pelo como su tío.
+50,He has other difficult problems.,Él tiene otros problemas difíciles.
+51,He is bad.,Él es malo.
+52,He is going to return some day.,Él va a volver algún día.
+53,He runs as many meters as his son.,Él corre tantos metros como su hijo.
+54,He runs slowly and sadly.,Él corre lenta y tristemente.
+55,He walks frequently and happily.,Él camina frecuente y alegremente.
+56,He wants another car.,Él quiere otro carro.
+57,He writes every day [all the days].,Él escribe todos los días.
+58,Her articles are interesting.,Sus artículos son interesantes.
+59,"her former boyfriend [antiguo, before noun]",su antiguo novio
+60,Her friend arrives late.,Su amiga llega tarde.
+61,Her friend has a bad idea.,Su amiga tiene una mala idea.
+62,Her grandmother is the oldest of all.,Su abuela es la mayor de todas.
+63,Her mother is older.,Su madre es mayor.
+64,"here, there [stationary]","aquí, allí"
+65,"here, there [with motion]","acá, allá"
+66,His brother is younger.,Su hermano es menor.
+67,His car or her car?,¿El carro de él o el carro de ella?
+68,His sister is a good student.,Su hermana es una buena estudiante.
+69,His sister is the youngest in their family.,Su hermana es la menor de su familia.
+70,"his, her, your [pl, formal], their",sus
+71,"his, her, your [sing, formal], their",su
+72,honest [adj],honesto
+73,honestly [adv],honestamente
+74,I already know that she is here.,Ya sé que ella está aquí.
+75,I have more pencils than Maria.,Tengo más lápices que María.
+76,I need his/her/their car.,Necesito su carro.
+77,I read all the information.,Leo toda la información.
+78,I speak clearly and concisely.,Hablo clara y concisamente.
+79,I study more than you.,Yo estudio más que tú.
+80,in back,atrás
+81,"in back, at the bottom",al fondo
+82,in front,adelante
+83,inside,adentro
+84,intimate [adj],íntimo
+85,intimately [adv],íntimamente
+86,Is the dog as intelligent as the cat?,¿Es el perro tan inteligente como el gato?
+87,Is there some pharmacy nearby?,¿Hay alguna farmacia cerca?
+88,Japanese,japonés
+89,Joe has as much music as Sarah.,José tiene tanta música como Sara.
+90,Julia is stronger than John.,Julia es más fuerte que Juan.
+91,last [adj],último
+92,"last, final",último
+93,lastly [adv],últimamente
+94,late,tarde
+95,less [adv],menos
+96,less + adj + than,menos + adj + que
+97,less + noun + than,menos + nombre + que
+98,less than [comparing verbs],menos que
+99,loudly,en alto volumen
+100,María arrives early.,María llega temprano.
+101,more [adv],más
+102,more + adj + than,más + adj + que
+103,more + noun + than,más + nombre + que
+104,more than [comparing verbs],más que
+105,my [pl],mis
+106,my [sing],mi
+107,My friends want to go to Portugal.,Mis amigos quieren ir a Portugal.
+108,My sister wants to go to Spain.,Mi hermana quiere ir a España.
+109,nearby,cerca
+110,next,próximo
+111,no longer,ya no
+112,"Not many people live on this street, and there are few houses.",Poca gente vive en esta calle y hay pocas casas.
+113,now,ahora
+114,old,viejo
+115,older [people only],mayor
+116,on top of,encima de
+117,only,único
+118,"other, another",otro
+119,"our [pl, fem]",nuestras
+120,our [pl],nuestros
+121,"our [sing, fem]",nuestra
+122,our [sing],nuestro
+123,Our books are old.,Nuestros libros son viejos.
+124,Our computers are new.,Nuestras computadoras son nuevas.
+125,Our party is going to be fantastic.,Nuestra fiesta va a ser fantástica.
+126,Our train is coming.,Nuestro tren viene.
+127,outside,afuera
+128,Peter and Linda are here.,Pedro y Linda están aquí.
+129,rapid [adj],rápido
+130,rapidly [adv],rápidamente
+131,Ricardo is the only Mexican here.,Ricardo es el único mexicano aquí.
+132,right now,ahora mismo
+133,sad [adj],triste
+134,sadly [adv],tristemente
+135,several,varios
+136,Several restaurants serve tacos.,Varios restaurantes sirven tacos.
+137,Several stores sell burritos.,Varias tiendas venden burritos.
+138,She asks all the questions.,Ella hace todas las preguntas.
+139,She has a bad dog.,Ella tiene un mal perro.
+140,She has fewer books than I.,Ella tiene menos libros que yo.
+141,She is going to buy other things.,Ella va a comprar otras cosas.
+142,She is old.,Ella es vieja.
+143,She is the only Spaniard.,Ella es la única española.
+144,She is the worst in her school.,Ella es la peor de su escuela.
+145,She is worse.,Ella es peor.
+146,She learns as much as he.,Ella aprende tanto como él.
+147,She lives calmly and freely.,Ella vive tranquila y libremente.
+148,She reads all day.,Ella lee todo el día.
+149,She wants another house.,Ella quiere otra casa.
+150,She works as many hours as you.,Ella trabaja tantas horas como Ud.
+151,She writes a lot.,Ella escribe mucho.
+152,slow [adj],lento
+153,slowly [adv],lentamente
+154,so much [adv],tanto
+155,some,alguno
+156,Some ideas are bad.,Algunas ideas son malas.
+157,Some thoughts are good.,Algunos pensamientos son buenos.
+158,sometimes,a veces
+159,Spain and Portugal are beautiful.,España y Portugal son bellos.
+160,Spanish,español
+161,"still, yet; no, not yet",todavía
+162,straight ahead,"derecho, recto"
+163,that,eso
+164,that [F],esa
+165,that [farther away in place or time],aquello
+166,that [M],ese
+167,"that [over there, F]",aquella
+168,"that [over there, M]",aquel
+169,That blouse [over there] is prettier.,Aquella blusa es más bonita.
+170,That guitar is new.,Esa guitarra es nueva.
+171,That is not necessary.,Aquello no es necesario.
+172,That piano is old.,Ese piano es viejo.
+173,That suit [over there] is ugly.,Aquel traje es feo.
+174,the acquaintance,la conocida
+175,the appetizer,el entremés
+176,the atmosphere,el ambiente
+177,the best [pl],"los mejores, las mejores"
+178,the best [sing],"el mejor, la mejor"
+179,"the big man [grande, after noun]",el hombre grande
+180,"the big woman [grande, after noun]",la mujer grande
+181,The book is less interesting than the magazine.,El libro es menos interesante que la revista.
+182,the bottle,la botella
+183,the breeze,la brisa
+184,the candle,la vela
+185,The child is young.,El niño es joven.
+186,The children cook a little bit.,Los niños cocinan poco.
+187,"the closet, the wardrobe",el vestuario
+188,the couple,la pareja
+189,the English man,el hombre inglés
+190,the English woman,la mujer inglesa
+191,"the great man [grande/gran, before noun]",el gran hombre
+192,"the great woman [grande/gran, before noun]",la gran mujer
+193,the guest,el invitado
+194,"the host, the hostess","el anfitrión, la anfitriona"
+195,the Japanese boy,el muchacho japonés
+196,the Japanese girl,la muchacha japonesa
+197,The last month of the year is December.,El último mes del año es diciembre.
+198,the least + adj + of [superlative],el (la) menos + adj + de
+199,"the longtime friends [viejo, before noun]",los viejos amigos
+200,The magazine is more interesting than the book.,La revista es más interesante que el libro.
+201,the most + adj + of [superlative],el (la) más + adj + de
+202,The next lesson is interesting.,La próxima lección es interesante.
+203,"the old friends [in years] [viejo, after noun]",los amigos viejos
+204,"the oldest [pl, people only]","los mayores, las mayores"
+205,"the oldest [sing, people only]","el mayor, la mayor"
+206,The pastry that you have is better.,El pastel que Ud. tiene es mejor.
+207,"the poor man [without money] [pobre, after noun]",el hombre pobre
+208,"the poor, unfortunate little boy [pobre, before noun]",el pobre niño
+209,"the professor himself [mismo, after noun]",el profesor mismo
+210,"the same book [mismo, before noun]",el mismo libro
+211,"the same idea [mismo, before noun]",la misma idea
+212,The shirts are less expensive than the dresses.,Las camisas son menos caras que los vestidos.
+213,the snack,el bocadillo
+214,the soda,"la soda, la gaseosa"
+215,the Spanish meal,la comida española
+216,the Spanish restaurant,el restaurante español
+217,The travelers are going to visit both countries.,Los viajeros van a visitar ambos países.
+218,the words [of a song],la letra
+219,the worst [pl],"los peores, las peores"
+220,the worst [sing],"el peor, la peor"
+221,the wrong hour,la hora equivocada
+222,"the youngest [pl, people only]","los menores, las menores"
+223,"the youngest [sing, people only]","el menor, la menor"
+224,Their house is big.,Su casa es grande.
+225,There is not much money in this bank and not many clients.,Hay poco dinero en este banco y hay pocos clientes.
+226,these [F],estas
+227,these [M],estos
+228,These cakes are as sweet as those pastries.,Estas tortas son tan dulces como esos pasteles.
+229,These desserts are the best of all.,Estos postres son los mejores de todos.
+230,These men are strong.,Estos hombres son fuertes.
+231,These women are strong also.,Estas mujeres son fuertes también.
+232,They are bad situations.,Son malas situaciones.
+233,They are good students.,Ellos son buenos estudiantes.
+234,They earn enough money and they have enough work.,Ellos ganan suficiente dinero y tienen bastante trabajo.
+235,They have good teachers.,Ellos tienen buenas maestras.
+236,They have three bad cats.,Ellas tienen tres malos gatos.
+237,They live in the mountains.,Ellos viven en las montañas.
+238,They prepare a lot of food for a lot of people.,Ellas preparan mucha comida para muchas personas.
+239,this,esto
+240,this [F],esta
+241,this [M],este
+242,This cake is good.,Esta torta es buena.
+243,This child is a good student.,Este niño es un buen estudiante.
+244,This magazine is interesting also.,Esta revista es interesante también.
+245,This newspaper is interesting.,Este periódico es interesante.
+246,those [F],esas
+247,those [M],esos
+248,"those [over there, F]",aquellas
+249,"those [over there, M]",aquellos
+250,Those books are expensive.,Esos libros son caros.
+251,Those houses [over there] are small.,Aquellas casas son pequeñas.
+252,Those pens are costly.,Esas plumas son costosas.
+253,Those trees [over there] are enormous.,Aquellos árboles son enormes.
+254,to imagine,imaginar
+255,to smile,sonreír
+256,to the left,a la izquierda
+257,"To the left, there is a bank.","A la izquierda, hay un banco."
+258,to the right,a la derecha
+259,"To the right, there is a church.","A la derecha, hay una iglesia."
+260,to turn off,apagar
+261,Today is the last class of the semester.,Hoy es la última clase del semestre.
+262,too much [adv],demasiado
+263,"up, up there",en lo alto
+264,"up, upstairs",arriba
+265,upon entering,al entrar
+266,We are going to travel next year.,Vamos a viajar el próximo año.
+267,well [adv],bien
+268,What is going to happen in the next years and in the next generations?,¿Qué va a pasar en los próximos años y en las próximas generaciones?
+269,What is this? What is that?,¿Qué es esto? ¿Qué es eso?
+270,Which is the least interesting class in the school?,¿Cuál es la clase menos interesante de la escuela?
+271,Who is the strongest person in your family?,¿Quién es la persona más fuerte de su familia?
+272,Whose ideas?,¿Las ideas de quién?
+273,Why don't you come here?,¿Por qué no vienes acá?
+274,with themselves,consigo
+275,worse,peor
+276,worse [adv],peor
+277,You read less than I.,Tú lees menos que yo.
+278,young,joven
+279,younger [people only],menor
+280,"your [pl, formal, fem]",vuestras
+281,"your [pl, formal]",vuestros
+282,"your [pl, inf]",tus
+283,"your [sing, formal, fem]",vuestra
+284,"your [sing, formal]",vuestro
+285,"your [sing, inf]",tu
+286,Your book is on the table.,Tu libro está en la mesa.
+287,Your friend is from Spain.,Vuestro amigo es de España.
+288,Your friends are Spanish.,Vuestras amigas son españolas.
+289,Your house is in Madrid.,Vuestra casa está en Madrid.
+290,Your ideas.,Las ideas de Uds.
+291,Your pencils are on the chair.,Tus lápices están en la silla.
+292,Your/his/her/their ideas are fantastic.,Sus ideas son fantásticas.

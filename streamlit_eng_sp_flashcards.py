@@ -362,6 +362,40 @@ def clear_deck_progress(person, filename):
         save_progress_data(st.session_state.progress_data)
 
 
+def review_add_back_count(completed_count):
+    if completed_count <= 0:
+        return 0
+    return max(1, int(completed_count * 0.25 + 0.5))
+
+
+def restore_completed_cards(person, filename, restore_count):
+    if restore_count <= 0:
+        return 0
+
+    deck_data = load_regular_deck(filename)
+    valid_ids = {card["id"] for card in deck_data["cards"] if card.get("id")}
+    completed_ids = list(completed_ids_for(person, filename) & valid_ids)
+    restore_count = min(restore_count, len(completed_ids))
+    if restore_count <= 0:
+        return 0
+
+    restored_ids = set(random.sample(completed_ids, restore_count))
+    person_progress = st.session_state.progress_data.setdefault(person, {})
+    remaining_completed_ids = [
+        card_id
+        for card_id in person_progress.get(filename, [])
+        if card_id not in restored_ids
+    ]
+
+    if remaining_completed_ids:
+        person_progress[filename] = remaining_completed_ids
+    elif filename in person_progress:
+        del person_progress[filename]
+
+    save_progress_data(st.session_state.progress_data)
+    return restore_count
+
+
 def deck_progress_stats(filename, person):
     deck_data = load_regular_deck(filename)
     cards = deck_data["cards"]
@@ -669,6 +703,12 @@ def activate_deck(deck_value):
     st.session_state.study_mode = "all" if is_review_deck(deck_value) else None
     st.session_state.person_selector_visible = False
     st.session_state.direction = effective_direction(deck_value)
+
+
+def go_back_to_deck_picker():
+    st.session_state.menu_open = False
+    st.session_state.erase_review_confirm = False
+    reset_study_state(reset_selected=True)
 
 
 def current_review_person():
@@ -1265,6 +1305,33 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 0.9rem;
     font-weight: 600;
     color: {t['fg']};
+}}
+.st-key-deckstrip_row_wrap [data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.45rem !important;
+    flex-wrap: nowrap !important;
+}}
+.st-key-deckstrip_row_wrap [data-testid="stColumn"] {{
+    min-width: 0 !important;
+}}
+.st-key-deckstrip_row_wrap [data-testid="stColumn"]:first-child {{
+    flex: 1 1 auto !important;
+}}
+.st-key-deckstrip_row_wrap [data-testid="stColumn"]:last-child {{
+    flex: 0 0 auto !important;
+    width: auto !important;
+}}
+.st-key-changedeck_wrap div[data-testid="stButton"] > button {{
+    min-height: 1.65rem !important;
+    width: 1.9rem !important;
+    padding: 0 !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+    border-radius: 999px !important;
+    background-color: {t['bg']} !important;
+    border-color: {t['border']} !important;
+    color: {t['muted']} !important;
 }}
 
 /* ---- Stats card ---- */
@@ -1974,11 +2041,19 @@ def render_deck_strip():
     if not st.session_state.selected_csv:
         return
     deck_name = display_deck_name(st.session_state.selected_csv)
-    st.markdown(
-        '<div class="deck-strip">'
-        '<span class="deck-strip-label">Deck</span>'
-        '<span class="deck-strip-name">' + deck_name + '</span>'
-        '</div>', unsafe_allow_html=True)
+    with st.container(key="deckstrip_row_wrap"):
+        info_col, back_col = st.columns([1, 0.08], gap="small")
+        with info_col:
+            st.markdown(
+                '<div class="deck-strip">'
+                '<span class="deck-strip-label">Deck</span>'
+                '<span class="deck-strip-name">' + deck_name + '</span>'
+                '</div>', unsafe_allow_html=True)
+        with back_col:
+            with st.container(key="changedeck_wrap"):
+                if st.button("←", key="change_deck_btn"):
+                    go_back_to_deck_picker()
+                    st.rerun()
 
 
 def render_study_mode_picker():
@@ -1993,6 +2068,8 @@ def render_study_mode_picker():
     completed_cards = progress_stats["completed"]
     remaining_cards = progress_stats["remaining"]
     remaining_disabled = completed_cards == 0 or remaining_cards == 0
+    review_restore_count = review_add_back_count(completed_cards)
+    review_disabled = completed_cards == 0 or remaining_cards <= 10 or review_restore_count == 0
     reset_disabled = completed_cards == 0
 
     st.markdown(
@@ -2017,6 +2094,22 @@ def render_study_mode_picker():
         ):
             st.session_state.study_mode = "remaining"
             st.rerun()
+
+        review_label = (
+            "Remaining + 25%"
+            if review_restore_count == 0
+            else f"Remaining + 25% ({review_restore_count} added)"
+        )
+        if st.button(
+            review_label,
+            key="study_review_add_btn",
+            use_container_width=True,
+            disabled=review_disabled,
+        ):
+            restored_count = restore_completed_cards(person, filename, review_restore_count)
+            if restored_count > 0:
+                st.session_state.study_mode = "remaining"
+                st.rerun()
 
         if st.button(
             "Reset",

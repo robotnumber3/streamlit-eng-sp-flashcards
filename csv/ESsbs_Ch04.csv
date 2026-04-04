@@ -1,236 +1,236 @@
-word,answer
-zero,cero
-one,uno
-two,dos
-three,tres
-four,cuatro
-five,cinco
-six,seis
-seven,siete
-eight,ocho
-nine,nueve
-ten,diez
-eleven,once
-twelve,doce
-thirteen,trece
-fourteen,catorce
-fifteen,quince
-sixteen,dieciséis
-seventeen,diecisiete
-eighteen,dieciocho
-nineteen,diecinueve
-twenty,veinte
-twenty-one,veintiuno
-twenty-two,veintidós
-twenty-three,veintitrés
-twenty-four,veinticuatro
-twenty-five,veinticinco
-twenty-six,veintiséis
-twenty-seven,veintisiete
-twenty-eight,veintiocho
-twenty-nine,veintinueve
-thirty,treinta
-thirty-one,treinta y uno
-thirty-two,treinta y dos
-thirty-three,treinta y tres
-thirty-four,treinta y cuatro
-thirty-five,treinta y cinco
-thirty-six,treinta y seis
-thirty-seven,treinta y siete
-thirty-eight,treinta y ocho
-thirty-nine,treinta y nueve
-forty,cuarenta
-fifty,cincuenta
-sixty,sesenta
-seventy,setenta
-eighty,ochenta
-ninety,noventa
-21 years,veintiún años
-31 books,treinta y un libros
-51 cats,cincuenta y un gatos
-61 men,sesenta y un hombres
-91 friends,noventa y un amigos
-41 women,cuarenta y una mujeres
-71 girls,setenta y una muchachas
-81 friends,ochenta y una amigas
-100,cien
-101,ciento uno
-150,ciento cincuenta
-199,ciento noventa y nueve
-100 books,cien libros
-100 houses,cien casas
-100 men,cien hombres
-100 women,cien mujeres
-200,doscientos
-200 hotels,doscientos hoteles
-200 doors,doscientas puertas
-300,trescientos
-300 cats,trescientos gatos
-300 stores,trescientas tiendas
-400,cuatrocientos
-400 trains,cuatrocientos trenes
-400 lights,cuatrocientas luces
-500,quinientos
-500 animals,quinientos animales
-500 flowers,quinientas flores
-600,seiscientos
-600 trees,seiscientos árboles
-600 parties,seiscientas fiestas
-700,setecientos
-700 boats,setecientos barcos
-700 plants,setecientas plantas
-800,ochocientos
-800 dreams,ochocientos sueños
-800 tables,ochocientas mesas
-900,novecientos
-900 mirrors,novecientos espejos
-900 naps,novecientas siestas
-first,primero
-second,segundo
-third,tercero
-fourth,cuarto
-fifth,quinto
-sixth,sexto
-seventh,séptimo
-eighth,octavo
-ninth,noveno
-tenth,décimo
-the first man,el primer hombre
-the first woman,la primera mujer
-the second month,el segundo mes
-the second part,la segunda parte
-the third day,el tercer día
-the third week,la tercera semana
-the fourth floor,el cuarto piso
-the fourth lesson,la cuarta lección
-the fifth month,el quinto mes
-Fifth Avenue [the fifth avenue],la quinta avenida
-the sixth train,el sexto tren
-Sixth Street [the sixth street],la sexta calle
-the seventh chapter,el séptimo capítulo
-the seventh page,la séptima página
-the eighth book,el octavo libro
-the eighth question,la octava pregunta
-the ninth president,el noveno presidente
-the ninth party,la novena fiesta
-the tenth dream,el décimo sueño
-the tenth reason,la décima razón
-Where is Fifth Avenue?,¿Dónde está la quinta avenida?
-There is a bookstore on Sixth Street.,Hay una librería en la sexta calle.
-The third chapter is interesting.,El tercer capítulo es interesante.
-The doctor's office is on the sixth floor.,La oficina del doctor está en el sexto piso.
-Ana and María are the first students in the class.,Ana y María son las primeras estudiantes en la clase.
-the fourteenth floor [the floor fourteen],el piso catorce
-Eleventh Street [the street eleven],la calle once
-the twenty-third lesson [the lesson twenty-three],la lección veintitrés
-the one hundred and third floor [the floor one hundred and three],el piso ciento tres
-What is today's date?,¿Cuál es la fecha de hoy?
-Today is May 5.,Hoy es el cinco de mayo.
-Tomorrow is May 6.,Mañana es el seis de mayo.
-It is February 28.,Es el veintiOcho de febrero.
-It is October 31.,Es el treinta y uno de octubre.
-Today is June 1.,Hoy es el primero de junio.
-Tomorrow is October 1.,Mañana es el primero de octubre.
-What hour is it?,¿Qué hora es?
-What time is it?,¿Qué hora es?
-It is one o'clock.,Es la una.
-It is two o'clock.,Son las dos.
-It is three o'clock.,Son las tres.
-It is four o'clock.,Son las cuatro.
-It is five o'clock.,Son las cinco.
-It is six o'clock.,Son las seis.
-It is seven o'clock.,Son las siete.
-It is eight o'clock.,Son las ocho.
-It is nine o'clock.,Son las nueve.
-It is ten o'clock.,Son las diez.
-It is eleven o'clock.,Son las once.
-It is twelve o'clock.,Son las doce.
-"[of the] morning, A.M.",de la mañana
-"[of the] afternoon, P.M.",de la tarde
-"[of the] night, P.M.",de la noche
-It is two o'clock in the morning.,Son las dos de la mañana.
-It is one o'clock in the afternoon.,Es la una de la tarde.
-It is eight o'clock at night.,Son las ocho de la noche.
-It is 1:20.,Es la una y veinte.
-It is 5:10.,Son las cinco y diez.
-It is 2:05.,Son las dos y cinco.
-It is 3:15.,Son las tres y quince.
-It is 6:15. ,Son las seis y cuarto.
-It is 9:30.,Son las nueve y treinta.
-It is 8:30.,Son las ocho y media.
-It is 2:50.,Son las tres menos diez.
-It is 10:55.,Son las once menos cinco.
-It is 8:45.,Son las nueve menos cuarto.
-It is 11:45.,Son las doce menos quince.
-At what hour?,¿A qué hora?
-At what time?,¿A qué hora?
-At one o'clock.,A la una.
-At two o'clock.,A las dos.
-At three o'clock.,A las tres.
-At 4:10.,A las cuatro y diez.
-At 5:15.,A las cinco y cuarto.
-At 6:05.,A las seis y cinco.
-At 7:03.,A las siete y tres.
-At 8:30.,A las ocho y media.
-At 8:45.,A las nueve menos quince.
-At 9:40.,A las diez menos veinte.
-At 10:35.,A las once menos veinticinco.
-At 12:50.,A la una menos diez.
-the water,el agua
-the lunch,el almuerzo
-the waiter,el camarero
-the menu,la carta
-the supper,la cena
-the check,el cheque
-the kitchen,la cocina
-the dining room,el comedor
-the meal,la comida
-the spoon,la cuchara
-the knife,el cuchillo
-"the check, the bill",la cuenta
-the breakfast,el desayuno
-the tax,el impuesto
-the tablecloth,el mantel
-the menu,el menú
-the waiter,el mozo
-the plate,el plato
-the tip,la propina
-the napkin,la servilleta
-the credit card,la tarjeta de crédito
-the fork,el tenedor
-the glass,el vaso
-"warm, hot",caliente
-delicious,delicioso
-fresh,fresco
-cold,frío
-clean,limpio
-full,lleno
-spicy,picante
-delicious,sabroso
-healthy,sano
-dry,seco
-dirty,sucio
-empty,vacío
-"one time, once",una vez
-double,doble
-"two times, twice",dos veces
-triple,triple
-three times,tres veces
-[a] half,la mitad
-the pillow,la almohada
-the vacuum cleaner,la aspiradora
-the birthday,el cumpleaños
-a mess,un desorden
-the bedroom,el dormitorio
-the broom,la escoba
-the sponge,la esponja
-the ice cream,el helado
-the dishwasher,el lavaplatos
-the stain,la mancha
-"the work, the job",el oficio
-the dust,el polvo
-the clothes,la ropa
-the sheet,la sábana
-at the beginning,al principio
-it's another story,es otro cuento
-at least,por lo menos
+id,word,answer
+1,100,cien
+2,101,ciento uno
+3,150,ciento cincuenta
+4,199,ciento noventa y nueve
+5,200,doscientos
+6,300,trescientos
+7,400,cuatrocientos
+8,500,quinientos
+9,600,seiscientos
+10,700,setecientos
+11,800,ochocientos
+12,900,novecientos
+13,[a] half,la mitad
+14,"[of the] afternoon, P.M.",de la tarde
+15,"[of the] morning, A.M.",de la mañana
+16,"[of the] night, P.M.",de la noche
+17,100 books,cien libros
+18,100 houses,cien casas
+19,100 men,cien hombres
+20,100 women,cien mujeres
+21,200 doors,doscientas puertas
+22,200 hotels,doscientos hoteles
+23,21 years,veintiún años
+24,300 cats,trescientos gatos
+25,300 stores,trescientas tiendas
+26,31 books,treinta y un libros
+27,400 lights,cuatrocientas luces
+28,400 trains,cuatrocientos trenes
+29,41 women,cuarenta y una mujeres
+30,500 animals,quinientos animales
+31,500 flowers,quinientas flores
+32,51 cats,cincuenta y un gatos
+33,600 parties,seiscientas fiestas
+34,600 trees,seiscientos árboles
+35,61 men,sesenta y un hombres
+36,700 boats,setecientos barcos
+37,700 plants,setecientas plantas
+38,71 girls,setenta y una muchachas
+39,800 dreams,ochocientos sueños
+40,800 tables,ochocientas mesas
+41,81 friends,ochenta y una amigas
+42,900 mirrors,novecientos espejos
+43,900 naps,novecientas siestas
+44,91 friends,noventa y un amigos
+45,a mess,un desorden
+46,Ana and María are the first students in the class.,Ana y María son las primeras estudiantes en la clase.
+47,At 10:35.,A las once menos veinticinco.
+48,At 12:50.,A la una menos diez.
+49,At 4:10.,A las cuatro y diez.
+50,At 5:15.,A las cinco y cuarto.
+51,At 6:05.,A las seis y cinco.
+52,At 7:03.,A las siete y tres.
+53,At 8:30.,A las ocho y media.
+54,At 8:45.,A las nueve menos quince.
+55,At 9:40.,A las diez menos veinte.
+56,at least,por lo menos
+57,At one o'clock.,A la una.
+58,at the beginning,al principio
+59,At three o'clock.,A las tres.
+60,At two o'clock.,A las dos.
+61,At what hour?,¿A qué hora?
+62,At what time?,¿A qué hora?
+63,clean,limpio
+64,cold,frío
+65,delicious,delicioso
+66,delicious,sabroso
+67,dirty,sucio
+68,double,doble
+69,dry,seco
+70,eight,ocho
+71,eighteen,dieciocho
+72,eighth,octavo
+73,eighty,ochenta
+74,eleven,once
+75,Eleventh Street [the street eleven],la calle once
+76,empty,vacío
+77,fifteen,quince
+78,fifth,quinto
+79,Fifth Avenue [the fifth avenue],la quinta avenida
+80,fifty,cincuenta
+81,first,primero
+82,five,cinco
+83,forty,cuarenta
+84,four,cuatro
+85,fourteen,catorce
+86,fourth,cuarto
+87,fresh,fresco
+88,full,lleno
+89,healthy,sano
+90,It is 1:20.,Es la una y veinte.
+91,It is 10:55.,Son las once menos cinco.
+92,It is 11:45.,Son las doce menos quince.
+93,It is 2:05.,Son las dos y cinco.
+94,It is 2:50.,Son las tres menos diez.
+95,It is 3:15.,Son las tres y quince.
+96,It is 5:10.,Son las cinco y diez.
+97,It is 6:15.,Son las seis y cuarto.
+98,It is 8:30.,Son las ocho y media.
+99,It is 8:45.,Son las nueve menos cuarto.
+100,It is 9:30.,Son las nueve y treinta.
+101,It is eight o'clock at night.,Son las ocho de la noche.
+102,It is eight o'clock.,Son las ocho.
+103,It is eleven o'clock.,Son las once.
+104,It is February 28.,Es el veintiOcho de febrero.
+105,It is five o'clock.,Son las cinco.
+106,It is four o'clock.,Son las cuatro.
+107,It is nine o'clock.,Son las nueve.
+108,It is October 31.,Es el treinta y uno de octubre.
+109,It is one o'clock in the afternoon.,Es la una de la tarde.
+110,It is one o'clock.,Es la una.
+111,It is seven o'clock.,Son las siete.
+112,It is six o'clock.,Son las seis.
+113,It is ten o'clock.,Son las diez.
+114,It is three o'clock.,Son las tres.
+115,It is twelve o'clock.,Son las doce.
+116,It is two o'clock in the morning.,Son las dos de la mañana.
+117,It is two o'clock.,Son las dos.
+118,it's another story,es otro cuento
+119,nine,nueve
+120,nineteen,diecinueve
+121,ninety,noventa
+122,ninth,noveno
+123,one,uno
+124,"one time, once",una vez
+125,second,segundo
+126,seven,siete
+127,seventeen,diecisiete
+128,seventh,séptimo
+129,seventy,setenta
+130,six,seis
+131,sixteen,dieciséis
+132,sixth,sexto
+133,Sixth Street [the sixth street],la sexta calle
+134,sixty,sesenta
+135,spicy,picante
+136,ten,diez
+137,tenth,décimo
+138,the bedroom,el dormitorio
+139,the birthday,el cumpleaños
+140,the breakfast,el desayuno
+141,the broom,la escoba
+142,the check,el cheque
+143,"the check, the bill",la cuenta
+144,the clothes,la ropa
+145,the credit card,la tarjeta de crédito
+146,the dining room,el comedor
+147,the dishwasher,el lavaplatos
+148,The doctor's office is on the sixth floor.,La oficina del doctor está en el sexto piso.
+149,the dust,el polvo
+150,the eighth book,el octavo libro
+151,the eighth question,la octava pregunta
+152,the fifth month,el quinto mes
+153,the first man,el primer hombre
+154,the first woman,la primera mujer
+155,the fork,el tenedor
+156,the fourteenth floor [the floor fourteen],el piso catorce
+157,the fourth floor,el cuarto piso
+158,the fourth lesson,la cuarta lección
+159,the glass,el vaso
+160,the ice cream,el helado
+161,the kitchen,la cocina
+162,the knife,el cuchillo
+163,the lunch,el almuerzo
+164,the meal,la comida
+165,the menu,la carta
+166,the menu,el menú
+167,the napkin,la servilleta
+168,the ninth party,la novena fiesta
+169,the ninth president,el noveno presidente
+170,the one hundred and third floor [the floor one hundred and three],el piso ciento tres
+171,the pillow,la almohada
+172,the plate,el plato
+173,the second month,el segundo mes
+174,the second part,la segunda parte
+175,the seventh chapter,el séptimo capítulo
+176,the seventh page,la séptima página
+177,the sheet,la sábana
+178,the sixth train,el sexto tren
+179,the sponge,la esponja
+180,the spoon,la cuchara
+181,the stain,la mancha
+182,the supper,la cena
+183,the tablecloth,el mantel
+184,the tax,el impuesto
+185,the tenth dream,el décimo sueño
+186,the tenth reason,la décima razón
+187,The third chapter is interesting.,El tercer capítulo es interesante.
+188,the third day,el tercer día
+189,the third week,la tercera semana
+190,the tip,la propina
+191,the twenty-third lesson [the lesson twenty-three],la lección veintitrés
+192,the vacuum cleaner,la aspiradora
+193,the waiter,el camarero
+194,the waiter,el mozo
+195,the water,el agua
+196,"the work, the job",el oficio
+197,There is a bookstore on Sixth Street.,Hay una librería en la sexta calle.
+198,third,tercero
+199,thirteen,trece
+200,thirty,treinta
+201,thirty-eight,treinta y ocho
+202,thirty-five,treinta y cinco
+203,thirty-four,treinta y cuatro
+204,thirty-nine,treinta y nueve
+205,thirty-one,treinta y uno
+206,thirty-seven,treinta y siete
+207,thirty-six,treinta y seis
+208,thirty-three,treinta y tres
+209,thirty-two,treinta y dos
+210,three,tres
+211,three times,tres veces
+212,Today is June 1.,Hoy es el primero de junio.
+213,Today is May 5.,Hoy es el cinco de mayo.
+214,Tomorrow is May 6.,Mañana es el seis de mayo.
+215,Tomorrow is October 1.,Mañana es el primero de octubre.
+216,triple,triple
+217,twelve,doce
+218,twenty,veinte
+219,twenty-eight,veintiocho
+220,twenty-five,veinticinco
+221,twenty-four,veinticuatro
+222,twenty-nine,veintinueve
+223,twenty-one,veintiuno
+224,twenty-seven,veintisiete
+225,twenty-six,veintiséis
+226,twenty-three,veintitrés
+227,twenty-two,veintidós
+228,two,dos
+229,"two times, twice",dos veces
+230,"warm, hot",caliente
+231,What hour is it?,¿Qué hora es?
+232,What is today's date?,¿Cuál es la fecha de hoy?
+233,What time is it?,¿Qué hora es?
+234,Where is Fifth Avenue?,¿Dónde está la quinta avenida?
+235,zero,cero
