@@ -1549,7 +1549,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"]:first-child,
 .st-key-storytranslation_row_wrap [data-testid="stColumn"]:first-child,
 .st-key-storyaudio_row_wrap [data-testid="stColumn"]:first-child {{
-    flex: 0 0 6.2rem !important;
+    flex: 0 0 5.2rem !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"]:last-child,
 .st-key-storytranslation_row_wrap [data-testid="stColumn"]:last-child,
@@ -1561,7 +1561,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storyaudio_row_wrap [data-testid="stRadio"] > div {{
     flex-direction: row !important;
     justify-content: flex-start !important;
-    gap: 0.95rem !important;
+    gap: 0.72rem !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] label,
 .st-key-storytranslation_row_wrap [data-testid="stRadio"] label,
@@ -1587,8 +1587,43 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
 .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
 .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
     margin: 0 !important;
     padding: 0 !important;
+}}
+.st-key-storycontrol_row_wrap [data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+}}
+.st-key-storycontrol_row_wrap [data-testid="stColumn"] {{
+    flex: 0 0 calc((100% - 1rem) / 3) !important;
+    width: calc((100% - 1rem) / 3) !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+}}
+.st-key-storycontrol_row_wrap [data-testid="stColumn"] > div,
+.st-key-storycontrol_row_wrap div[data-testid="stButton"],
+.st-key-storycontrol_row_wrap div[data-testid="stButton"] > div {{
+    width: 100% !important;
+}}
+.st-key-storycontrol_row_wrap div[data-testid="stButton"] > button {{
+    width: 100% !important;
+    min-height: 2.9rem !important;
+    font-size: 1.05rem !important;
+    padding-left: 0.4rem !important;
+    padding-right: 0.4rem !important;
+}}
+.story-control-spacer {{
+    width: 100%;
+    min-height: 2.9rem;
 }}
 .story-progress {{
     margin: 0.18rem 0 0.42rem 0;
@@ -1990,6 +2025,60 @@ def render_story_box_shield_handler():
     )
 
 
+def render_story_start_unlock_handler():
+    components.html(
+        """
+        <script>
+        (function() {
+            var doc = window.parent.document;
+            var synth = window.parent.speechSynthesis || window.speechSynthesis;
+            var button = doc.querySelector('.st-key-storystart_wrap button');
+            var eventNames = ['pointerdown', 'touchstart', 'mousedown', 'click'];
+
+            if (!doc || !synth || !button) return;
+
+            function unlockSpeech() {
+                var now = Date.now();
+                if (doc._storySpeechUnlockedAt && now - doc._storySpeechUnlockedAt < 1200) {
+                    return;
+                }
+
+                try {
+                    var unlockUtterance = new SpeechSynthesisUtterance('.');
+                    unlockUtterance.volume = 0;
+                    unlockUtterance.rate = 1;
+                    unlockUtterance.lang = 'es-ES';
+                    synth.cancel();
+                    synth.speak(unlockUtterance);
+                    window.setTimeout(function() {
+                        try {
+                            synth.cancel();
+                        } catch (error) {
+                        }
+                    }, 25);
+                    doc._storySpeechUnlocked = true;
+                    doc._storySpeechUnlockedAt = now;
+                } catch (error) {
+                }
+            }
+
+            if (doc._storyStartUnlockHandler) {
+                eventNames.forEach(function(eventName) {
+                    button.removeEventListener(eventName, doc._storyStartUnlockHandler, true);
+                });
+            }
+
+            doc._storyStartUnlockHandler = unlockSpeech;
+            eventNames.forEach(function(eventName) {
+                button.addEventListener(eventName, unlockSpeech, true);
+            });
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
 def render_story_paused_cleanup():
     story_index = st.session_state.index
     story_run_token = st.session_state.story_run_token
@@ -2271,10 +2360,17 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                 var voices = synth.getVoices ? synth.getVoices() : [];
                 var voice = pickVoice(voices);
                 var completionHandled = false;
+                var speechStarted = false;
+                var startWatchdog = null;
 
                 function handleSpeechCompletion() {{
                     if (completionHandled) return;
                     completionHandled = true;
+
+                    if (startWatchdog) {{
+                        clearTimeout(startWatchdog);
+                        startWatchdog = null;
+                    }}
 
                     var pauseRequested = doc._storyPauseRequested
                         && doc._storyPauseRequested.runToken === storyRunToken
@@ -2299,6 +2395,15 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                 utterance.lang = voice ? voice.lang : 'es-ES';
                 utterance.rate = speechRate;
                 if (voice) utterance.voice = voice;
+                utterance.onstart = function() {{
+                    speechStarted = true;
+                    doc._storySpeechUnlocked = true;
+                    doc._storySpeechUnlockedAt = Date.now();
+                    if (startWatchdog) {{
+                        clearTimeout(startWatchdog);
+                        startWatchdog = null;
+                    }}
+                }};
                 utterance.onend = handleSpeechCompletion;
                 utterance.onerror = function() {{
                     var pauseRequested = doc._storyPauseRequested
@@ -2310,7 +2415,17 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
 
                 doc._storyLastSpeechKey = speechKey;
                 synth.cancel();
+                if (typeof synth.resume === 'function') {{
+                    synth.resume();
+                }}
                 synth.speak(utterance);
+
+                startWatchdog = window.setTimeout(function() {{
+                    if (completionHandled || speechStarted) return;
+                    if (synth.speaking || synth.pending) return;
+                    doc._storyLastSpeechKey = null;
+                    handleSpeechCompletion();
+                }}, 1400);
             }}
 
             if (synth.getVoices && synth.getVoices().length) {{
@@ -2347,8 +2462,8 @@ def render_story_view():
     story_total = len(st.session_state.cards)
     story_progress_pct = (story_position / story_total * 100) if story_total else 0
     playback_options = {
-        "continuous": "continuous",
-        "stop on every line": "stop on every line",
+        "auto": "continuous",
+        "step": "stop on every line",
     }
 
     st.markdown(
@@ -2414,30 +2529,39 @@ def render_story_view():
         st.rerun()
 
     if st.session_state.story_running:
-        control_cols = st.columns(2, gap="small")
-        with control_cols[0]:
-            with st.container(key="storypause_wrap"):
-                if st.button("PAUSE", key="story_pause_btn", use_container_width=True):
-                    pause_story()
-                    st.rerun()
-        with control_cols[1]:
-            with st.container(key="storystop_wrap"):
-                if st.button("STOP", key="story_stop_btn", use_container_width=True):
-                    stop_story()
-                    st.rerun()
+        with st.container(key="storycontrol_row_wrap"):
+            control_cols = st.columns(3, gap="small")
+            with control_cols[0]:
+                st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
+            with control_cols[1]:
+                with st.container(key="storypause_wrap"):
+                    if st.button("PAUSE", key="story_pause_btn", use_container_width=True):
+                        pause_story()
+                        st.rerun()
+            with control_cols[2]:
+                with st.container(key="storystop_wrap"):
+                    if st.button("STOP", key="story_stop_btn", use_container_width=True):
+                        stop_story()
+                        st.rerun()
     else:
-        control_cols = st.columns(2, gap="small")
-        with control_cols[0]:
-            with st.container(key="storystart_wrap"):
-                start_label = "RESUME" if st.session_state.story_started else "START"
-                if st.button(start_label, key="story_start_btn", use_container_width=True):
-                    start_story()
-                    st.rerun()
-        with control_cols[1]:
-            with st.container(key="storystop_wrap"):
-                if st.button("STOP", key="story_stop_btn_idle", use_container_width=True):
-                    stop_story()
-                    st.rerun()
+        with st.container(key="storycontrol_row_wrap"):
+            control_cols = st.columns(3, gap="small")
+            with control_cols[0]:
+                with st.container(key="storystart_wrap"):
+                    start_label = "RESUME" if st.session_state.story_started else "START"
+                    if st.button(start_label, key="story_start_btn", use_container_width=True):
+                        start_story()
+                        st.rerun()
+            with control_cols[1]:
+                st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
+            with control_cols[2]:
+                with st.container(key="storystop_wrap"):
+                    if st.button("STOP", key="story_stop_btn_idle", use_container_width=True):
+                        stop_story()
+                        st.rerun()
+
+    if audio_enabled:
+        render_story_start_unlock_handler()
 
     if not st.session_state.story_started:
         return
