@@ -2041,7 +2041,16 @@ def render_story_box_shield_handler():
     )
 
 
-def render_story_start_unlock_handler(story_lines, current_index, auto_advance=False, delay_seconds=0, running=False, resume_next=False):
+def render_story_start_unlock_handler(
+    story_lines,
+    spanish_html_lines,
+    translation_html_lines,
+    current_index,
+    auto_advance=False,
+    delay_seconds=0,
+    running=False,
+    resume_next=False,
+):
     spoken_lines = [strip_spoken_text(text) for text in story_lines]
     speech_rate = speech_rate_value()
     delay_ms = max(int(delay_seconds * 1000), 0)
@@ -2060,6 +2069,8 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
                 storyKey: {json.dumps(story_key)},
                 storyRunToken: {story_run_token},
                 lines: {json.dumps(spoken_lines)},
+                spanishHtmlLines: {json.dumps(spanish_html_lines)},
+                translationHtmlLines: {json.dumps(translation_html_lines)},
                 serverIndex: {current_index},
                 autoAdvance: {str(auto_advance).lower()},
                 delayMs: {delay_ms},
@@ -2101,6 +2112,30 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
                 }}
             }}
 
+            function renderLocalStoryView(index) {{
+                if (index < 0 || index >= controller.lines.length) return;
+
+                var progressValue = doc.getElementById('story-progress-value');
+                var progressFill = doc.getElementById('story-progress-fill');
+                var spanishContent = doc.getElementById('story-spanish-content');
+                var translationContent = doc.getElementById('story-translation-content');
+                var total = controller.lines.length || 1;
+                var pct = ((index + 1) / total) * 100;
+
+                if (progressValue) {{
+                    progressValue.textContent = (index + 1) + ' of ' + total;
+                }}
+                if (progressFill) {{
+                    progressFill.style.width = pct.toFixed(2) + '%';
+                }}
+                if (spanishContent) {{
+                    spanishContent.innerHTML = controller.spanishHtmlLines[index] || '';
+                }}
+                if (translationContent) {{
+                    translationContent.innerHTML = controller.translationHtmlLines[index] || '<div class="fc-word-placeholder">&nbsp;</div>';
+                }}
+            }}
+
             function pickVoice(voices) {{
                 return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
                     || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
@@ -2138,15 +2173,20 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
             function scheduleNextLine(nextIndex) {{
                 if (!controller.running || !controller.autoAdvance) return;
                 cancelTimers();
+                controller.queuedNextIndex = nextIndex;
                 controller.advanceTimer = window.setTimeout(function() {{
                     if (!controller.running) return;
-                    controller.pendingSpeakIndex = nextIndex;
-                    controller.localIndex = nextIndex;
-                    syncAdvanceButton();
                     if (nextIndex >= controller.lines.length) {{
                         controller.running = false;
                         controller.active = false;
+                        controller.queuedNextIndex = null;
+                        return;
                     }}
+                    controller.localIndex = nextIndex;
+                    controller.queuedNextIndex = null;
+                    renderLocalStoryView(nextIndex);
+                    syncAdvanceButton();
+                    speakLine(nextIndex);
                 }}, controller.delayMs);
             }}
 
@@ -2252,16 +2292,30 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
                 cancelTimers();
                 var startButton = doc.querySelector('.st-key-storystart_wrap button');
                 var startMode = startButton && startButton.textContent ? startButton.textContent.trim().toUpperCase() : '';
-                var targetIndex = controller.serverIndex;
-                if (startMode === 'RESUME' && controller.resumeNext && targetIndex < controller.lines.length - 1) {{
-                    targetIndex += 1;
+                var targetIndex = typeof controller.localIndex === 'number' ? controller.localIndex : controller.serverIndex;
+                if (startMode === 'RESUME') {{
+                    if (typeof controller.resumeTargetIndex === 'number') {{
+                        targetIndex = controller.resumeTargetIndex;
+                    }} else if (controller.resumeNext && targetIndex < controller.lines.length - 1) {{
+                        targetIndex += 1;
+                    }}
                 }}
+                controller.resumeTargetIndex = null;
+                controller.localIndex = targetIndex;
+                renderLocalStoryView(targetIndex);
                 speakLine(targetIndex);
             }}
 
             function pauseFromGesture() {{
                 if (controller.ignorePauseUntil && Date.now() < controller.ignorePauseUntil) {{
                     return;
+                }}
+                if (controller.isSpeaking) {{
+                    controller.resumeTargetIndex = controller.localIndex;
+                }} else if (typeof controller.queuedNextIndex === 'number') {{
+                    controller.resumeTargetIndex = controller.queuedNextIndex;
+                }} else {{
+                    controller.resumeTargetIndex = controller.localIndex;
                 }}
                 controller.running = false;
                 controller.active = true;
@@ -2295,38 +2349,45 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
                 controller.localIndex = config.serverIndex;
                 controller.lastSpokenIndex = null;
                 controller.lastCompletedIndex = null;
-                controller.pendingSpeakIndex = null;
+                controller.queuedNextIndex = null;
+                controller.resumeTargetIndex = null;
             }}
 
             controller.storyKey = config.storyKey;
             controller.storyRunToken = config.storyRunToken;
             controller.lines = config.lines;
+            controller.spanishHtmlLines = config.spanishHtmlLines;
+            controller.translationHtmlLines = config.translationHtmlLines;
             controller.serverIndex = config.serverIndex;
             controller.autoAdvance = config.autoAdvance;
             controller.delayMs = config.delayMs;
             controller.resumeNext = config.resumeNext;
+
+            if (typeof controller.localIndex !== 'number') {{
+                controller.localIndex = config.serverIndex;
+            }}
 
             attachHandler('.st-key-storystart_wrap button', '_storyMobileStartHandler', startFromGesture);
             attachHandler('.st-key-storypause_wrap button', '_storyMobilePauseHandler', pauseFromGesture);
             attachHandler('.st-key-storystop_wrap button', '_storyMobileStopHandler', stopFromGesture);
 
             if (!config.running) {{
-                controller.localIndex = config.serverIndex;
-                 controller.pendingSpeakIndex = null;
+                if (!controller.active) {{
+                    controller.localIndex = config.serverIndex;
+                }}
                 cancelSpeech();
             }}
+
+            renderLocalStoryView(controller.localIndex);
 
             if (
                 config.running
                 && controller.active
                 && !controller.isSpeaking
-                && (
-                    controller.pendingSpeakIndex === config.serverIndex
-                    || controller.lastSpokenIndex !== config.serverIndex
-                )
+                && !controller.autoAdvance
+                && controller.lastSpokenIndex !== controller.localIndex
             ) {{
-                controller.pendingSpeakIndex = null;
-                speakLine(config.serverIndex);
+                speakLine(controller.localIndex);
             }}
         }})();
         </script>
@@ -2795,6 +2856,16 @@ def render_story_view():
         st.session_state.story_audio_on = audio_enabled
         st.rerun()
 
+    story_spanish_html_lines = [
+        format_word(card["answer"], 'fc-word', 'fc-note')
+        for card in st.session_state.cards
+    ]
+    story_translation_html_lines = [
+        format_word(card["word"], 'fc-answer', 'fc-answer-note')
+        if translation_enabled else '<div class="fc-word-placeholder">&nbsp;</div>'
+        for card in st.session_state.cards
+    ]
+
     if st.session_state.story_running:
         with st.container(key="storycontrol_row_wrap"):
             control_cols = st.columns(3, gap="small")
@@ -2830,6 +2901,8 @@ def render_story_view():
     if audio_enabled:
         render_story_start_unlock_handler(
             [card["answer"] for card in st.session_state.cards],
+            story_spanish_html_lines,
+            story_translation_html_lines,
             st.session_state.index,
             auto_advance=st.session_state.story_playback_mode == "continuous",
             delay_seconds=story_pause_seconds(),
@@ -2844,10 +2917,10 @@ def render_story_view():
         "<div class='story-progress'>"
         "<div class='story-progress-head'>"
         "<div class='story-progress-label'>Sentence</div>"
-        f"<div class='story-progress-value'>{story_position} of {story_total}</div>"
+        f"<div class='story-progress-value' id='story-progress-value'>{story_position} of {story_total}</div>"
         "</div>"
         "<div class='story-progress-track'>"
-        f"<div class='story-progress-fill' style='width:{story_progress_pct:.2f}%'></div>"
+        f"<div class='story-progress-fill' id='story-progress-fill' style='width:{story_progress_pct:.2f}%'></div>"
         "</div>"
         "</div>",
         unsafe_allow_html=True,
@@ -2859,7 +2932,9 @@ def render_story_view():
         '<div class="story-display-block">'
         + story_box_shield +
         '<div class="fc-section-label">Spanish</div>'
+        + '<div id="story-spanish-content">'
         + format_word(spanish_text, 'fc-word', 'fc-note')
+        + '</div>'
         + '</div>'
     )
     st.markdown(spanish_html, unsafe_allow_html=True)
@@ -2876,7 +2951,9 @@ def render_story_view():
             '<div class="story-display-block">'
             + story_box_shield +
             '<div class="fc-section-label">Translation</div>'
+            + '<div id="story-translation-content">'
             + translation_inner
+            + '</div>'
             + '</div>'
         )
     else:
@@ -2884,7 +2961,7 @@ def render_story_view():
             '<div class="story-display-block story-display-block-empty">'
             + story_box_shield +
             '<div class="fc-section-label">Translation</div>'
-            '<div class="fc-word-placeholder">&nbsp;</div>'
+            '<div id="story-translation-content"><div class="fc-word-placeholder">&nbsp;</div></div>'
             '</div>'
         )
     st.markdown(translation_html, unsafe_allow_html=True)
