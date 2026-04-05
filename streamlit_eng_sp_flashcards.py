@@ -2088,6 +2088,13 @@ def render_story_start_unlock_handler(
 
             if (!doc || !synth || !isPhoneStoryMode()) return;
 
+            function setDebug(message) {{
+                var debugEl = doc.getElementById('story-mobile-debug');
+                if (!debugEl) return;
+                debugEl.style.display = 'block';
+                debugEl.textContent = message;
+            }}
+
             var controller = doc._storyMobileController || {{}};
             doc._storyMobileController = controller;
 
@@ -2174,17 +2181,20 @@ def render_story_start_unlock_handler(
                 if (!controller.running || !controller.autoAdvance) return;
                 cancelTimers();
                 controller.queuedNextIndex = nextIndex;
+                setDebug('queued next: ' + (nextIndex + 1));
                 controller.advanceTimer = window.setTimeout(function() {{
                     if (!controller.running) return;
                     if (nextIndex >= controller.lines.length) {{
                         controller.running = false;
                         controller.active = false;
                         controller.queuedNextIndex = null;
+                        setDebug('finished story');
                         return;
                     }}
                     controller.localIndex = nextIndex;
                     controller.queuedNextIndex = null;
                     renderLocalStoryView(nextIndex);
+                    setDebug('speaking next: ' + (nextIndex + 1));
                     speakLine(nextIndex);
                     window.setTimeout(function() {{
                         if (!controller.running) return;
@@ -2197,6 +2207,7 @@ def render_story_start_unlock_handler(
                 controller.isSpeaking = false;
                 controller.speakingKey = null;
                 controller.lastCompletedIndex = index;
+                setDebug('completed: ' + (index + 1));
                 if (doc._storyPauseResumeState) {{
                     doc._storyPauseResumeState.speechFinished = true;
                 }}
@@ -2261,6 +2272,7 @@ def render_story_start_unlock_handler(
                         controller.lastSpokenIndex = index;
                         controller.isSpeaking = true;
                         controller.speakingKey = speechKey;
+                        setDebug('onstart: ' + (index + 1));
                         doc._storyPauseResumeState = {{
                             runToken: controller.storyRunToken,
                             storyIndex: index,
@@ -2273,16 +2285,19 @@ def render_story_start_unlock_handler(
                                 return;
                             }}
                             if (!synth.speaking && !synth.pending) {{
+                                setDebug('poll idle: ' + (index + 1));
                                 finishLine();
                             }}
                         }}, 150);
                     }};
                     utterance.onend = function() {{
+                        setDebug('onend: ' + (index + 1));
                         finishLine();
                     }};
                     utterance.onerror = function() {{
                         controller.isSpeaking = false;
                         controller.speakingKey = null;
+                        setDebug('onerror: ' + (index + 1));
                         finishLine();
                     }};
 
@@ -2294,11 +2309,13 @@ def render_story_start_unlock_handler(
                     completionTimer = window.setTimeout(function() {{
                         if (!controller.running) return;
                         if (!controller.isSpeaking && controller.lastCompletedIndex === index) return;
+                        setDebug('timeout finish: ' + (index + 1));
                         finishLine();
                     }}, estimatedDurationMs());
                 }} catch (error) {{
                     controller.isSpeaking = false;
                     controller.speakingKey = null;
+                    setDebug('catch error: ' + (index + 1));
                 }}
             }}
 
@@ -2325,6 +2342,7 @@ def render_story_start_unlock_handler(
                 controller.resumeTargetIndex = null;
                 controller.localIndex = targetIndex;
                 renderLocalStoryView(targetIndex);
+                setDebug('start gesture: ' + (targetIndex + 1));
                 speakLine(targetIndex);
             }}
 
@@ -2341,6 +2359,7 @@ def render_story_start_unlock_handler(
                 }}
                 controller.running = false;
                 controller.active = true;
+                setDebug('paused at: ' + (controller.resumeTargetIndex + 1));
                 cancelSpeech();
             }}
 
@@ -2348,6 +2367,7 @@ def render_story_start_unlock_handler(
                 controller.running = false;
                 controller.active = false;
                 controller.localIndex = controller.serverIndex;
+                setDebug('stopped');
                 cancelSpeech();
             }}
 
@@ -2389,6 +2409,16 @@ def render_story_start_unlock_handler(
                 controller.localIndex = config.serverIndex;
             }}
 
+            if (
+                !controller.isSpeaking
+                && typeof config.serverIndex === 'number'
+                && config.serverIndex !== controller.localIndex
+            ) {{
+                controller.localIndex = config.serverIndex;
+                controller.queuedNextIndex = null;
+                setDebug('synced to server: ' + (controller.localIndex + 1));
+            }}
+
             attachHandler('.st-key-storystart_wrap button', '_storyMobileStartHandler', startFromGesture);
             attachHandler('.st-key-storypause_wrap button', '_storyMobilePauseHandler', pauseFromGesture);
             attachHandler('.st-key-storystop_wrap button', '_storyMobileStopHandler', stopFromGesture);
@@ -2401,6 +2431,7 @@ def render_story_start_unlock_handler(
             }}
 
             renderLocalStoryView(controller.localIndex);
+            setDebug('ready: ' + (controller.localIndex + 1) + ' running=' + config.running + ' auto=' + controller.autoAdvance);
 
             if (
                 config.running
@@ -2409,6 +2440,7 @@ def render_story_start_unlock_handler(
                 && !controller.autoAdvance
                 && controller.lastSpokenIndex !== controller.localIndex
             ) {{
+                setDebug('step speak: ' + (controller.localIndex + 1));
                 speakLine(controller.localIndex);
             }}
         }})();
@@ -2934,6 +2966,11 @@ def render_story_view():
 
     if not st.session_state.story_started:
         return
+
+    st.markdown(
+        "<div id='story-mobile-debug' style='display:none;font-size:0.72rem;color:#e6b85c;margin:0.1rem 0 0.35rem 0;'></div>",
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         "<div class='story-progress'>"
