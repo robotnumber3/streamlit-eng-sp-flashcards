@@ -2128,9 +2128,10 @@ def render_story_start_unlock_handler(
             function renderLocalStoryView(index) {{
                 if (index < 0 || index >= controller.lines.length) return;
 
-                var progressValue = doc.getElementById('story-progress-value');
-                var progressFill = doc.getElementById('story-progress-fill');
-                var spanishContent = doc.getElementById('story-spanish-content');
+
+                    let speechText = rawSpeechText;
+                    let lineDelay = cumulativeDelay;
+                    let lineDuration = estimatedDurationMs(rawSpeechText);
                 var translationContent = doc.getElementById('story-translation-content');
                 var total = controller.lines.length || 1;
                 var pct = ((index + 1) / total) * 100;
@@ -2219,6 +2220,13 @@ def render_story_start_unlock_handler(
                 }}
                 if (controller.running && controller.autoAdvance) {{
                     scheduleNextLine(index + 1);
+
+                    scheduleVisual(lineDelay, function() {{
+                        if (!controller.running) return;
+                        controller.localIndex = idx;
+                        renderLocalStoryView(idx);
+                        setDebug('queue render: ' + (idx + 1));
+                    }});
                 }}
             }}
 
@@ -2226,15 +2234,8 @@ def render_story_start_unlock_handler(
                 if (startIndex < 0 || startIndex >= controller.lines.length) return;
 
                 cancelSpeech();
-                controller.queueToken = (controller.queueToken || 0) + 1;
-                var queueToken = controller.queueToken;
-                var voices = synth.getVoices ? synth.getVoices() : [];
-                var voice = pickVoice(voices);
-                controller.visualTimers = [];
 
-                function buildPauseUtterance() {{
-                    if (controller.delayMs <= 0) return null;
-                    var pauseUnits = Math.max(1, Math.round(controller.delayMs / 450));
+                    cumulativeDelay += lineDuration + controller.delayMs;
                     var pauseText = Array(pauseUnits + 1).join('. ');
                     var pauseUtterance = new SpeechSynthesisUtterance(pauseText);
                     pauseUtterance.lang = voice ? voice.lang : 'es-ES';
