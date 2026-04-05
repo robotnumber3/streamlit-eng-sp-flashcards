@@ -2232,10 +2232,15 @@ def render_story_start_unlock_handler(
                 var voice = pickVoice(voices);
                 controller.visualTimers = [];
 
-                function queuedSpeechText(text, needsPause) {{
-                    if (!needsPause || controller.delayMs <= 0) return text;
-                    var pauseMarks = Math.max(1, Math.round(controller.delayMs / 500));
-                    return text + ' ' + Array(pauseMarks + 1).join('... ');
+                function buildPauseUtterance() {{
+                    if (controller.delayMs <= 0) return null;
+                    var pauseUnits = Math.max(1, Math.round(controller.delayMs / 450));
+                    var pauseText = Array(pauseUnits + 1).join('. ');
+                    var pauseUtterance = new SpeechSynthesisUtterance(pauseText);
+                    pauseUtterance.lang = voice ? voice.lang : 'es-ES';
+                    pauseUtterance.rate = 0.35;
+                    pauseUtterance.volume = 0;
+                    return pauseUtterance;
                 }}
 
                 function estimatedDurationMs(text) {{
@@ -2267,7 +2272,7 @@ def render_story_start_unlock_handler(
                     if (!rawSpeechText) {{
                         continue;
                     }}
-                    let speechText = queuedSpeechText(rawSpeechText, idx < controller.lines.length - 1);
+                    let speechText = rawSpeechText;
 
                     let speechKey = controller.storyKey + '|queue|' + idx + '|' + speechText + '|' + speechRate;
                     let utterance = new SpeechSynthesisUtterance(speechText);
@@ -2311,6 +2316,13 @@ def render_story_start_unlock_handler(
                     }};
 
                     synth.speak(utterance);
+
+                    if (idx < controller.lines.length - 1 && controller.delayMs > 0) {{
+                        let pauseUtterance = buildPauseUtterance();
+                        if (pauseUtterance) {{
+                            synth.speak(pauseUtterance);
+                        }}
+                    }}
 
                     (function(lineIndex, lineDelay, lineDuration) {{
                         scheduleVisual(lineDelay, function() {{
