@@ -2025,29 +2025,65 @@ def render_story_box_shield_handler():
     )
 
 
-def render_story_start_unlock_handler(text, auto_advance=False, delay_seconds=0, initial_start_only=False):
-    speech_text = strip_spoken_text(text)
+def render_story_start_unlock_handler(story_lines, current_index, auto_advance=False, delay_seconds=0, running=False, resume_next=False):
+    spoken_lines = [strip_spoken_text(text) for text in story_lines]
     speech_rate = speech_rate_value()
-    story_index = st.session_state.index
-    upcoming_story_run_token = st.session_state.story_run_token + 1
     delay_ms = max(int(delay_seconds * 1000), 0)
+    story_key = st.session_state.selected_csv or ""
+    story_run_token = st.session_state.story_run_token + (0 if running else 1)
     components.html(
         f"""
         <script>
         (function() {{
             var doc = window.parent.document;
-            var synth = window.parent.speechSynthesis || window.speechSynthesis;
-            var button = doc.querySelector('.st-key-storystart_wrap button');
+            var parentWindow = window.parent;
+            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
             var eventNames = ['pointerdown', 'touchstart', 'mousedown', 'click'];
-            var speechText = {json.dumps(speech_text)};
             var speechRate = {speech_rate};
-            var storyIndex = {story_index};
-            var storyRunToken = {upcoming_story_run_token};
-            var autoAdvance = {str(auto_advance).lower()};
-            var delayMs = {delay_ms};
-            var initialStartOnly = {str(initial_start_only).lower()};
+            var config = {{
+                storyKey: {json.dumps(story_key)},
+                storyRunToken: {story_run_token},
+                lines: {json.dumps(spoken_lines)},
+                serverIndex: {current_index},
+                autoAdvance: {str(auto_advance).lower()},
+                delayMs: {delay_ms},
+                running: {str(running).lower()},
+                resumeNext: {str(resume_next).lower()},
+            }};
 
-            if (!doc || !synth || !button) return;
+            function isPhoneStoryMode() {{
+                var nav = parentWindow.navigator || window.navigator;
+                var ua = nav && nav.userAgent ? nav.userAgent : '';
+                var hasTouch = !!(('ontouchstart' in parentWindow) || (nav && nav.maxTouchPoints > 0));
+                var narrow = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 767px)').matches);
+                return narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua));
+            }}
+
+            if (!doc || !synth || !isPhoneStoryMode()) return;
+
+            var controller = doc._storyMobileController || {{}};
+            doc._storyMobileController = controller;
+
+            function cancelTimers() {{
+                if (controller.advanceTimer) {{
+                    clearTimeout(controller.advanceTimer);
+                    controller.advanceTimer = null;
+                }}
+                if (controller.advanceRetryTimer) {{
+                    clearInterval(controller.advanceRetryTimer);
+                    controller.advanceRetryTimer = null;
+                }}
+            }}
+
+            function cancelSpeech() {{
+                cancelTimers();
+                controller.isSpeaking = false;
+                controller.speakingKey = null;
+                try {{
+                    synth.cancel();
+                }} catch (error) {{
+                }}
+            }}
 
             function pickVoice(voices) {{
                 return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
@@ -2066,77 +2102,88 @@ def render_story_start_unlock_handler(text, auto_advance=False, delay_seconds=0,
                 return true;
             }}
 
-            function scheduleAdvanceAfterSpeech() {{
-                if (!autoAdvance) return;
-                if (doc._storyAutoAdvanceTimer) {{
-                    clearTimeout(doc._storyAutoAdvanceTimer);
-                }}
-
-                doc._storyAutoAdvanceIndex = storyIndex;
-                doc._storyAutoAdvanceTimer = window.setTimeout(function() {{
-                    if (doc._storyAutoAdvanceIndex !== storyIndex) {{
-                        return;
+            function syncAdvanceButton() {{
+                if (clickAdvanceButton()) return;
+                var attempts = 0;
+                controller.advanceRetryTimer = window.setInterval(function() {{
+                    attempts += 1;
+                    if (clickAdvanceButton() || attempts >= 10) {{
+                        clearInterval(controller.advanceRetryTimer);
+                        controller.advanceRetryTimer = null;
                     }}
-                    if (clickAdvanceButton()) return;
-                    var attempts = 0;
-                    var timer = window.setInterval(function() {{
-                        attempts += 1;
-                        if (clickAdvanceButton() || attempts >= 10) {{
-                            clearInterval(timer);
-                        }}
-                    }}, 150);
-                }}, delayMs);
+                }}, 150);
             }}
 
-            function speakFromStartGesture() {{
-                var startMode = button.textContent ? button.textContent.trim().toUpperCase() : '';
-                if (initialStartOnly && startMode !== 'START') {{
-                    return;
+            function scheduleNextLine(nextIndex) {{
+                if (!controller.running || !controller.autoAdvance) return;
+                cancelTimers();
+                controller.advanceTimer = window.setTimeout(function() {{
+                    if (!controller.running) return;
+                    controller.localIndex = nextIndex;
+                    syncAdvanceButton();
+                    if (nextIndex < controller.lines.length) {{
+                        speakLine(nextIndex);
+                    }} else {{
+                        controller.running = false;
+                        controller.active = false;
+                    }}
+                }}, controller.delayMs);
+            }}
+
+            function handleLineComplete(index) {{
+                controller.isSpeaking = false;
+                controller.speakingKey = null;
+                controller.lastCompletedIndex = index;
+                if (doc._storyPauseResumeState) {{
+                    doc._storyPauseResumeState.speechFinished = true;
                 }}
+                if (controller.running && controller.autoAdvance) {{
+                    scheduleNextLine(index + 1);
+                }}
+            }}
+
+            function speakLine(index) {{
+                if (!controller.running) return;
+                if (index < 0 || index >= controller.lines.length) return;
+
+                var speechText = controller.lines[index];
                 if (!speechText) {{
+                    handleLineComplete(index);
                     return;
                 }}
 
-                var speechKey = storyRunToken + '|' + storyIndex + '|' + speechText + '|' + speechRate;
-                if (doc._storyStartGestureSpeechKey === speechKey) {{
+                var speechKey = controller.storyKey + '|' + index + '|' + speechText + '|' + speechRate;
+                if (controller.speakingKey === speechKey && controller.isSpeaking) {{
                     return;
                 }}
-                doc._storyStartGestureSpeechKey = speechKey;
 
                 try {{
                     var utterance = new SpeechSynthesisUtterance(speechText);
                     var voices = synth.getVoices ? synth.getVoices() : [];
                     var voice = pickVoice(voices);
-                    var completionHandled = false;
-
-                    function handleSpeechCompletion() {{
-                        if (completionHandled) return;
-                        completionHandled = true;
-                        scheduleAdvanceAfterSpeech();
-                    }}
 
                     utterance.lang = voice ? voice.lang : 'es-ES';
                     utterance.rate = speechRate;
                     if (voice) utterance.voice = voice;
+
                     utterance.onstart = function() {{
-                        doc._storyLastSpeechKey = speechKey;
-                        doc._storySpeechUnlocked = true;
-                        doc._storySpeechUnlockedAt = Date.now();
+                        controller.localIndex = index;
+                        controller.lastSpokenIndex = index;
+                        controller.isSpeaking = true;
+                        controller.speakingKey = speechKey;
                         doc._storyPauseResumeState = {{
-                            runToken: storyRunToken,
-                            storyIndex: storyIndex,
+                            runToken: controller.storyRunToken,
+                            storyIndex: index,
                             speechFinished: false
                         }};
                         doc._storyPauseRequested = null;
                     }};
                     utterance.onend = function() {{
-                        if (doc._storyPauseResumeState && doc._storyPauseResumeState.runToken === storyRunToken && doc._storyPauseResumeState.storyIndex === storyIndex) {{
-                            doc._storyPauseResumeState.speechFinished = true;
-                        }}
-                        handleSpeechCompletion();
+                        handleLineComplete(index);
                     }};
                     utterance.onerror = function() {{
-                        doc._storyStartGestureSpeechKey = null;
+                        controller.isSpeaking = false;
+                        controller.speakingKey = null;
                     }};
 
                     synth.cancel();
@@ -2145,20 +2192,79 @@ def render_story_start_unlock_handler(text, auto_advance=False, delay_seconds=0,
                     }}
                     synth.speak(utterance);
                 }} catch (error) {{
-                    doc._storyStartGestureSpeechKey = null;
+                    controller.isSpeaking = false;
+                    controller.speakingKey = null;
                 }}
             }}
 
-            if (doc._storyStartUnlockHandler) {{
+            function startFromGesture() {{
+                controller.active = true;
+                controller.running = true;
+                cancelTimers();
+                var startButton = doc.querySelector('.st-key-storystart_wrap button');
+                var startMode = startButton && startButton.textContent ? startButton.textContent.trim().toUpperCase() : '';
+                var targetIndex = controller.serverIndex;
+                if (startMode === 'RESUME' && controller.resumeNext && targetIndex < controller.lines.length - 1) {{
+                    targetIndex += 1;
+                }}
+                speakLine(targetIndex);
+            }}
+
+            function pauseFromGesture() {{
+                controller.running = false;
+                controller.active = true;
+                cancelSpeech();
+            }}
+
+            function stopFromGesture() {{
+                controller.running = false;
+                controller.active = false;
+                controller.localIndex = controller.serverIndex;
+                cancelSpeech();
+            }}
+
+            function attachHandler(selector, key, handler) {{
+                var element = doc.querySelector(selector);
+                if (!element) return;
+                if (doc[key]) {{
+                    eventNames.forEach(function(eventName) {{
+                        element.removeEventListener(eventName, doc[key], true);
+                    }});
+                }}
+                doc[key] = handler;
                 eventNames.forEach(function(eventName) {{
-                    button.removeEventListener(eventName, doc._storyStartUnlockHandler, true);
+                    element.addEventListener(eventName, handler, true);
                 }});
             }}
 
-            doc._storyStartUnlockHandler = speakFromStartGesture;
-            eventNames.forEach(function(eventName) {{
-                button.addEventListener(eventName, speakFromStartGesture, true);
-            }});
+            if (controller.storyKey !== config.storyKey) {{
+                cancelSpeech();
+                controller.active = false;
+                controller.localIndex = config.serverIndex;
+                controller.lastSpokenIndex = null;
+                controller.lastCompletedIndex = null;
+            }}
+
+            controller.storyKey = config.storyKey;
+            controller.storyRunToken = config.storyRunToken;
+            controller.lines = config.lines;
+            controller.serverIndex = config.serverIndex;
+            controller.autoAdvance = config.autoAdvance;
+            controller.delayMs = config.delayMs;
+            controller.resumeNext = config.resumeNext;
+
+            attachHandler('.st-key-storystart_wrap button', '_storyMobileStartHandler', startFromGesture);
+            attachHandler('.st-key-storypause_wrap button', '_storyMobilePauseHandler', pauseFromGesture);
+            attachHandler('.st-key-storystop_wrap button', '_storyMobileStopHandler', stopFromGesture);
+
+            if (!config.running) {{
+                controller.localIndex = config.serverIndex;
+                cancelSpeech();
+            }}
+
+            if (config.running && controller.active && !controller.autoAdvance && !controller.isSpeaking && controller.lastSpokenIndex !== config.serverIndex) {{
+                speakLine(config.serverIndex);
+            }}
         }})();
         </script>
         """,
@@ -2388,6 +2494,13 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
         f"""
         <script>
         (function() {{
+            var parentWindow = window.parent;
+            var nav = parentWindow.navigator || window.navigator;
+            var ua = nav && nav.userAgent ? nav.userAgent : '';
+            var hasTouch = !!(('ontouchstart' in parentWindow) || (nav && nav.maxTouchPoints > 0));
+            var narrow = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 767px)').matches);
+            if (narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua))) return;
+
             var speechText = {json.dumps(speech_text)};
             var speechRate = {speech_rate};
             var storyIndex = {story_index};
@@ -2649,10 +2762,12 @@ def render_story_view():
 
     if audio_enabled:
         render_story_start_unlock_handler(
-            spanish_text,
+            [card["answer"] for card in st.session_state.cards],
+            st.session_state.index,
             auto_advance=st.session_state.story_playback_mode == "continuous",
             delay_seconds=story_pause_seconds(),
-            initial_start_only=not st.session_state.story_started,
+            running=st.session_state.story_running,
+            resume_next=st.session_state.story_resume_next,
         )
 
     if not st.session_state.story_started:
