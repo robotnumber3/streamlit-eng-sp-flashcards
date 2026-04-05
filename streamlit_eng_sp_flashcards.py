@@ -2199,6 +2199,7 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
             function startFromGesture() {{
                 controller.active = true;
                 controller.running = true;
+                controller.ignorePauseUntil = Date.now() + 1200;
                 cancelTimers();
                 var startButton = doc.querySelector('.st-key-storystart_wrap button');
                 var startMode = startButton && startButton.textContent ? startButton.textContent.trim().toUpperCase() : '';
@@ -2210,6 +2211,9 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
             }}
 
             function pauseFromGesture() {{
+                if (controller.ignorePauseUntil && Date.now() < controller.ignorePauseUntil) {{
+                    return;
+                }}
                 controller.running = false;
                 controller.active = true;
                 cancelSpeech();
