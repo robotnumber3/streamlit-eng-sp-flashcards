@@ -2237,6 +2237,16 @@ def render_story_start_unlock_handler(
                     synth.resume();
                 }}
 
+                function estimatedDurationMs(text) {{
+                    var rawText = text || '';
+                    var chars = rawText.length || 1;
+                    var words = rawText.trim() ? rawText.trim().split(/\\s+/).length : 1;
+                    var punctuationPauses = (rawText.match(/[,:;.!?]/g) || []).length;
+                    var rate = speechRate > 0 ? speechRate : 1;
+                    var estimate = (words * 520) + (chars * 38) + (punctuationPauses * 240) + 650;
+                    return Math.max(2200, Math.round(estimate / rate));
+                }}
+
                 function speakOne(idx) {{
                     if (controller.queueToken !== queueToken) return;
                     if (!controller.running) return;
@@ -2263,14 +2273,21 @@ def render_story_start_unlock_handler(
                     utterance.rate = speechRate;
                     if (voice) utterance.voice = voice;
 
-                    utterance.onstart = function() {{
-                        if (controller.queueToken !== queueToken || !controller.running) return;
-                        controller.lastSpokenIndex = idx;
-                        controller.pendingManualSpeakIndex = null;
-                        controller.isSpeaking = true;
-                        controller.speakingKey = speechKey;
-                        setDebug('speak: ' + (idx + 1));
-                    }};
+                    var doneFired = false;
+                    var watchdogTimerId = null;
+                    var pollTimerId = null;
+                    var sawSpeaking = false;
+
+                    function clearLocalTimers() {{
+                        if (watchdogTimerId !== null) {{
+                            parentWindow.clearTimeout(watchdogTimerId);
+                            watchdogTimerId = null;
+                        }}
+                        if (pollTimerId !== null) {{
+                            parentWindow.clearTimeout(pollTimerId);
+                            pollTimerId = null;
+                        }}
+                    }}
 
                     function scheduleNext() {{
                         if (controller.queueToken !== queueToken) return;
@@ -2290,23 +2307,55 @@ def render_story_start_unlock_handler(
                         controller.visualTimers.push(timerId);
                     }}
 
-                    utterance.onend = function() {{
-                        if (controller.queueToken !== queueToken) return;
+                    function finishAndAdvance(reason) {{
+                        if (doneFired) return;
+                        doneFired = true;
+                        clearLocalTimers();
                         controller.isSpeaking = false;
                         controller.speakingKey = null;
                         controller.lastCompletedIndex = idx;
-                        setDebug('onend: ' + (idx + 1));
+                        setDebug('done(' + reason + '): ' + (idx + 1));
                         scheduleNext();
+                    }}
+
+                    utterance.onstart = function() {{
+                        if (controller.queueToken !== queueToken || !controller.running) return;
+                        controller.lastSpokenIndex = idx;
+                        controller.pendingManualSpeakIndex = null;
+                        controller.isSpeaking = true;
+                        controller.speakingKey = speechKey;
+                        sawSpeaking = true;
+                        setDebug('speak: ' + (idx + 1));
                     }};
 
-                    utterance.onerror = function() {{
+                    utterance.onend = function() {{ finishAndAdvance('onend'); }};
+                    utterance.onerror = function() {{ finishAndAdvance('onerror'); }};
+
+                    // iOS Safari frequently drops onend; poll synth.speaking as a backup.
+                    function pollSpeaking() {{
+                        if (doneFired) return;
                         if (controller.queueToken !== queueToken) return;
-                        controller.isSpeaking = false;
-                        controller.speakingKey = null;
-                        controller.lastCompletedIndex = idx;
-                        setDebug('onerror: ' + (idx + 1));
-                        scheduleNext();
-                    }};
+                        try {{
+                            if (synth.speaking || synth.pending) {{
+                                sawSpeaking = true;
+                            }} else if (sawSpeaking) {{
+                                finishAndAdvance('poll');
+                                return;
+                            }}
+                        }} catch (e) {{}}
+                        pollTimerId = parentWindow.setTimeout(pollSpeaking, 250);
+                        controller.visualTimers.push(pollTimerId);
+                    }}
+                    pollTimerId = parentWindow.setTimeout(pollSpeaking, 400);
+                    controller.visualTimers.push(pollTimerId);
+
+                    // Hard watchdog: if nothing else fires within 3x estimated duration, advance anyway.
+                    var durMs = estimatedDurationMs(rawSpeechText);
+                    var watchdogMs = durMs * 3 + 4000;
+                    watchdogTimerId = parentWindow.setTimeout(function() {{
+                        finishAndAdvance('watchdog');
+                    }}, watchdogMs);
+                    controller.visualTimers.push(watchdogTimerId);
 
                     synth.speak(utterance);
                 }}
