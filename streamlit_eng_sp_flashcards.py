@@ -2220,13 +2220,6 @@ def render_story_start_unlock_handler(
                 }}
                 if (controller.running && controller.autoAdvance) {{
                     scheduleNextLine(index + 1);
-
-                    scheduleVisual(lineDelay, function() {{
-                        if (!controller.running) return;
-                        controller.localIndex = idx;
-                        renderLocalStoryView(idx);
-                        setDebug('queue render: ' + (idx + 1));
-                    }});
                 }}
             }}
 
@@ -2235,7 +2228,15 @@ def render_story_start_unlock_handler(
 
                 cancelSpeech();
 
-                    cumulativeDelay += lineDuration + controller.delayMs;
+                controller.queueToken = (controller.queueToken || 0) + 1;
+                var queueToken = controller.queueToken;
+                var voices = synth.getVoices ? synth.getVoices() : [];
+                var voice = pickVoice(voices);
+                controller.visualTimers = [];
+
+                function buildPauseUtterance() {{
+                    if (controller.delayMs <= 0) return null;
+                    var pauseUnits = Math.max(1, Math.round(controller.delayMs / 450));
                     var pauseText = Array(pauseUnits + 1).join('. ');
                     var pauseUtterance = new SpeechSynthesisUtterance(pauseText);
                     pauseUtterance.lang = voice ? voice.lang : 'es-ES';
@@ -2275,6 +2276,7 @@ def render_story_start_unlock_handler(
                     }}
                     let speechText = rawSpeechText;
                     let lineDelay = cumulativeDelay;
+                    let lineDuration = estimatedDurationMs(rawSpeechText);
 
                     let speechKey = controller.storyKey + '|queue|' + idx + '|' + speechText + '|' + speechRate;
                     let utterance = new SpeechSynthesisUtterance(speechText);
@@ -2292,13 +2294,6 @@ def render_story_start_unlock_handler(
                         setDebug('queue onstart: ' + (idx + 1));
                     }};
 
-
-                                        scheduleVisual(lineDelay, function() {{
-                                            if (!controller.running) return;
-                                            controller.localIndex = idx;
-                                            renderLocalStoryView(idx);
-                                            setDebug('queue render: ' + (idx + 1));
-                                        }});
                     utterance.onend = function() {{
                         if (controller.queueToken !== queueToken) return;
                         controller.isSpeaking = false;
@@ -2306,8 +2301,6 @@ def render_story_start_unlock_handler(
                         controller.lastCompletedIndex = idx;
                         setDebug('queue onend: ' + (idx + 1));
                         if (idx >= controller.lines.length - 1) {{
-
-                            cumulativeDelay += estimatedDurationMs(rawSpeechText) + controller.delayMs;
                             controller.running = false;
                             controller.active = false;
                             setDebug('finished story');
@@ -2328,6 +2321,13 @@ def render_story_start_unlock_handler(
 
                     synth.speak(utterance);
 
+                    scheduleVisual(lineDelay, function() {{
+                        if (!controller.running) return;
+                        controller.localIndex = idx;
+                        renderLocalStoryView(idx);
+                        setDebug('queue render: ' + (idx + 1));
+                    }});
+
                     if (idx < controller.lines.length - 1 && controller.delayMs > 0) {{
                         let pauseUtterance = buildPauseUtterance();
                         if (pauseUtterance) {{
@@ -2335,24 +2335,15 @@ def render_story_start_unlock_handler(
                         }}
                     }}
 
-                    (function(lineIndex, lineDelay, lineDuration) {{
-                        scheduleVisual(lineDelay, function() {{
-                            if (!controller.running) return;
-                            controller.localIndex = lineIndex;
-                            renderLocalStoryView(lineIndex);
-                            setDebug('queue render: ' + (lineIndex + 1));
+                    if (idx >= controller.lines.length - 1) {{
+                        scheduleVisual(lineDelay + lineDuration, function() {{
+                            controller.running = false;
+                            controller.active = false;
+                            setDebug('finished story');
                         }});
+                    }}
 
-                        if (lineIndex >= controller.lines.length - 1) {{
-                            scheduleVisual(lineDelay + lineDuration, function() {{
-                                controller.running = false;
-                                controller.active = false;
-                                setDebug('finished story');
-                            }});
-                        }}
-                    }})(idx, cumulativeDelay, estimatedDurationMs(speechText));
-
-                    cumulativeDelay += estimatedDurationMs(speechText) + controller.delayMs;
+                    cumulativeDelay += lineDuration + controller.delayMs;
                 }}
             }}
 
