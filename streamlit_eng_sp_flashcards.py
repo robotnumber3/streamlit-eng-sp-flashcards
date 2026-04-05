@@ -2107,6 +2107,12 @@ def render_story_start_unlock_handler(
                     clearInterval(controller.advanceRetryTimer);
                     controller.advanceRetryTimer = null;
                 }}
+                if (controller.visualTimers) {{
+                    controller.visualTimers.forEach(function(timerId) {{
+                        clearTimeout(timerId);
+                    }});
+                    controller.visualTimers = [];
+                }}
             }}
 
             function cancelSpeech() {{
@@ -2224,11 +2230,15 @@ def render_story_start_unlock_handler(
                 var queueToken = controller.queueToken;
                 var voices = synth.getVoices ? synth.getVoices() : [];
                 var voice = pickVoice(voices);
+                controller.visualTimers = [];
 
-                function buildPauseText() {{
-                    var pauseUnits = Math.max(1, Math.round(controller.delayMs / 450));
-                    return Array(pauseUnits).fill('.').join(' ');
+                function estimatedDurationMs(text) {{
+                    var chars = (text || '').length || 1;
+                    var rate = speechRate > 0 ? speechRate : 1;
+                    return Math.max(1600, Math.round((chars * 85) / rate) + 700);
                 }}
+
+                var cumulativeDelay = 0;
 
                 if (typeof synth.resume === 'function') {{
                     synth.resume();
@@ -2253,7 +2263,6 @@ def render_story_start_unlock_handler(
                         controller.pendingManualSpeakIndex = null;
                         controller.isSpeaking = true;
                         controller.speakingKey = speechKey;
-                        renderLocalStoryView(idx);
                         setDebug('queue onstart: ' + (idx + 1));
                     }};
 
@@ -2263,6 +2272,15 @@ def render_story_start_unlock_handler(
                         controller.speakingKey = null;
                         controller.lastCompletedIndex = idx;
                         setDebug('queue onend: ' + (idx + 1));
+                        if (controller.running && idx < controller.lines.length - 1 && controller.delayMs > 0 && typeof synth.pause === 'function') {{
+                            synth.pause();
+                            window.setTimeout(function() {{
+                                if (!controller.running || controller.queueToken !== queueToken) return;
+                                if (typeof synth.resume === 'function') {{
+                                    synth.resume();
+                                }}
+                            }}, controller.delayMs);
+                        }}
                         if (idx >= controller.lines.length - 1) {{
                             controller.running = false;
                             controller.active = false;
@@ -2284,13 +2302,17 @@ def render_story_start_unlock_handler(
 
                     synth.speak(utterance);
 
-                    if (idx < controller.lines.length - 1 && controller.delayMs > 0) {{
-                        let pauseUtterance = new SpeechSynthesisUtterance(buildPauseText());
-                        pauseUtterance.lang = voice ? voice.lang : 'es-ES';
-                        pauseUtterance.rate = 0.6;
-                        pauseUtterance.volume = 0;
-                        synth.speak(pauseUtterance);
-                    }}
+                    (function(lineIndex, delayBefore) {{
+                        var timerId = window.setTimeout(function() {{
+                            if (!controller.running || controller.queueToken !== queueToken) return;
+                            controller.localIndex = lineIndex;
+                            renderLocalStoryView(lineIndex);
+                            setDebug('queue render: ' + (lineIndex + 1));
+                        }}, delayBefore);
+                        controller.visualTimers.push(timerId);
+                    }})(idx, cumulativeDelay);
+
+                    cumulativeDelay += estimatedDurationMs(speechText) + controller.delayMs;
                 }}
             }}
 
