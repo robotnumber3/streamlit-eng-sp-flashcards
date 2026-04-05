@@ -1737,7 +1737,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-storytransaudio_row_wrap .story-option-row {{
         position: relative !important;
-        top: 0.2rem !important;
+        top: -0.45rem !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(1) {{
         flex: 0 0 auto !important;
