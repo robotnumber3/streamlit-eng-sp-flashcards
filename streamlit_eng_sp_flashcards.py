@@ -2216,6 +2216,75 @@ def render_story_start_unlock_handler(
                 }}
             }}
 
+            function queueAutoFrom(startIndex) {{
+                if (startIndex < 0 || startIndex >= controller.lines.length) return;
+
+                cancelSpeech();
+                controller.queueToken = (controller.queueToken || 0) + 1;
+                var queueToken = controller.queueToken;
+                var voices = synth.getVoices ? synth.getVoices() : [];
+                var voice = pickVoice(voices);
+
+                if (typeof synth.resume === 'function') {{
+                    synth.resume();
+                }}
+
+                for (let idx = startIndex; idx < controller.lines.length; idx += 1) {{
+                    let speechText = controller.lines[idx];
+                    if (!speechText) {{
+                        continue;
+                    }}
+
+                    let speechKey = controller.storyKey + '|queue|' + idx + '|' + speechText + '|' + speechRate;
+                    let utterance = new SpeechSynthesisUtterance(speechText);
+                    utterance.lang = voice ? voice.lang : 'es-ES';
+                    utterance.rate = speechRate;
+                    if (voice) utterance.voice = voice;
+
+                    utterance.onstart = function() {{
+                        if (controller.queueToken !== queueToken || !controller.running) return;
+                        controller.localIndex = idx;
+                        controller.lastSpokenIndex = idx;
+                        controller.pendingManualSpeakIndex = null;
+                        controller.isSpeaking = true;
+                        controller.speakingKey = speechKey;
+                        renderLocalStoryView(idx);
+                        setDebug('queue onstart: ' + (idx + 1));
+                        window.setTimeout(function() {{
+                            if (!controller.running || controller.queueToken !== queueToken) return;
+                            syncAdvanceButton();
+                        }}, 250);
+                    }};
+
+                    utterance.onend = function() {{
+                        if (controller.queueToken !== queueToken) return;
+                        controller.isSpeaking = false;
+                        controller.speakingKey = null;
+                        controller.lastCompletedIndex = idx;
+                        setDebug('queue onend: ' + (idx + 1));
+                        if (idx >= controller.lines.length - 1) {{
+                            controller.running = false;
+                            controller.active = false;
+                            setDebug('finished story');
+                        }}
+                    }};
+
+                    utterance.onerror = function() {{
+                        if (controller.queueToken !== queueToken) return;
+                        controller.isSpeaking = false;
+                        controller.speakingKey = null;
+                        controller.lastCompletedIndex = idx;
+                        setDebug('queue onerror: ' + (idx + 1));
+                        if (idx >= controller.lines.length - 1) {{
+                            controller.running = false;
+                            controller.active = false;
+                        }}
+                    }};
+
+                    synth.speak(utterance);
+                }}
+            }}
+
             function speakLine(index) {{
                 if (!controller.running) return;
                 if (index < 0 || index >= controller.lines.length) return;
@@ -2343,7 +2412,25 @@ def render_story_start_unlock_handler(
                 controller.localIndex = targetIndex;
                 renderLocalStoryView(targetIndex);
                 setDebug('start gesture: ' + (targetIndex + 1));
+                if (controller.autoAdvance) {{
+                    queueAutoFrom(targetIndex);
+                    return;
+                }}
+                controller.pendingManualSpeakIndex = targetIndex;
                 speakLine(targetIndex);
+            }}
+
+            function stepAdvanceFromGesture() {{
+                if (controller.autoAdvance) return;
+                var nextIndex = Math.min(controller.localIndex + 1, controller.lines.length - 1);
+                if (nextIndex === controller.localIndex) return;
+                controller.active = true;
+                controller.running = true;
+                controller.localIndex = nextIndex;
+                controller.pendingManualSpeakIndex = nextIndex;
+                renderLocalStoryView(nextIndex);
+                setDebug('step gesture: ' + (nextIndex + 1));
+                speakLine(nextIndex);
             }}
 
             function pauseFromGesture() {{
@@ -2422,6 +2509,7 @@ def render_story_start_unlock_handler(
             attachHandler('.st-key-storystart_wrap button', '_storyMobileStartHandler', startFromGesture);
             attachHandler('.st-key-storypause_wrap button', '_storyMobilePauseHandler', pauseFromGesture);
             attachHandler('.st-key-storystop_wrap button', '_storyMobileStopHandler', stopFromGesture);
+            attachHandler('.st-key-showanswer_wrap button', '_storyMobileStepHandler', stepAdvanceFromGesture);
 
             if (!config.running) {{
                 if (!controller.active) {{
@@ -2438,12 +2526,80 @@ def render_story_start_unlock_handler(
                 && controller.active
                 && !controller.isSpeaking
                 && !controller.autoAdvance
+                && controller.pendingManualSpeakIndex !== controller.localIndex
                 && controller.lastSpokenIndex !== controller.localIndex
             ) {{
                 setDebug('step speak: ' + (controller.localIndex + 1));
                 speakLine(controller.localIndex);
             }}
         }})();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def render_story_mobile_controller_cleanup():
+    components.html(
+        """
+        <script>
+        (function() {
+            var doc = window.parent.document;
+            var parentWindow = window.parent;
+            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
+            var controller = doc._storyMobileController;
+            var bindings = [
+                ['.st-key-storystart_wrap button', '_storyMobileStartHandler'],
+                ['.st-key-storypause_wrap button', '_storyMobilePauseHandler'],
+                ['.st-key-storystop_wrap button', '_storyMobileStopHandler'],
+                ['.st-key-showanswer_wrap button', '_storyMobileStepHandler'],
+            ];
+            var eventNames = ['click', 'touchend'];
+            var debugEl = doc.getElementById('story-mobile-debug');
+
+            bindings.forEach(function(binding) {
+                var element = doc.querySelector(binding[0]);
+                var handler = doc[binding[1]];
+                if (!element || !handler) return;
+                eventNames.forEach(function(eventName) {
+                    element.removeEventListener(eventName, handler, true);
+                });
+                doc[binding[1]] = null;
+            });
+
+            if (controller) {
+                if (controller.advanceTimer) {
+                    clearTimeout(controller.advanceTimer);
+                    controller.advanceTimer = null;
+                }
+                if (controller.advanceRetryTimer) {
+                    clearInterval(controller.advanceRetryTimer);
+                    controller.advanceRetryTimer = null;
+                }
+                if (controller.queueToken) {
+                    controller.queueToken += 1;
+                }
+                controller.running = false;
+                controller.active = false;
+                controller.isSpeaking = false;
+                controller.speakingKey = null;
+                controller.queuedNextIndex = null;
+                controller.pendingManualSpeakIndex = null;
+                controller.resumeTargetIndex = null;
+            }
+
+            if (synth) {
+                try {
+                    synth.cancel();
+                } catch (error) {
+                }
+            }
+
+            if (debugEl) {
+                debugEl.style.display = 'none';
+                debugEl.textContent = '';
+            }
+        })();
         </script>
         """,
         height=0,
@@ -2909,6 +3065,9 @@ def render_story_view():
     if audio_enabled != st.session_state.story_audio_on:
         st.session_state.story_audio_on = audio_enabled
         st.rerun()
+
+    if not audio_enabled:
+        render_story_mobile_controller_cleanup()
 
     story_spanish_html_lines = [
         format_word(card["answer"], 'fc-word', 'fc-note')
