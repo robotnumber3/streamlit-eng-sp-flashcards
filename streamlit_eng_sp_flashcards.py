@@ -2181,6 +2181,28 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
                     var utterance = new SpeechSynthesisUtterance(speechText);
                     var voices = synth.getVoices ? synth.getVoices() : [];
                     var voice = pickVoice(voices);
+                    var completionHandled = false;
+                    var completionTimer = null;
+
+                    function clearCompletionTimer() {{
+                        if (completionTimer) {{
+                            clearTimeout(completionTimer);
+                            completionTimer = null;
+                        }}
+                    }}
+
+                    function finishLine() {{
+                        if (completionHandled) return;
+                        completionHandled = true;
+                        clearCompletionTimer();
+                        handleLineComplete(index);
+                    }}
+
+                    function estimatedDurationMs() {{
+                        var chars = speechText.length || 1;
+                        var rate = speechRate > 0 ? speechRate : 1;
+                        return Math.max(1600, Math.round((chars * 85) / rate) + 700);
+                    }}
 
                     utterance.lang = voice ? voice.lang : 'es-ES';
                     utterance.rate = speechRate;
@@ -2199,11 +2221,12 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
                         doc._storyPauseRequested = null;
                     }};
                     utterance.onend = function() {{
-                        handleLineComplete(index);
+                        finishLine();
                     }};
                     utterance.onerror = function() {{
                         controller.isSpeaking = false;
                         controller.speakingKey = null;
+                        clearCompletionTimer();
                     }};
 
                     synth.cancel();
@@ -2211,6 +2234,11 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
                         synth.resume();
                     }}
                     synth.speak(utterance);
+                    completionTimer = window.setTimeout(function() {{
+                        if (!controller.running) return;
+                        if (!controller.isSpeaking && controller.lastCompletedIndex === index) return;
+                        finishLine();
+                    }}, estimatedDurationMs());
                 }} catch (error) {{
                     controller.isSpeaking = false;
                     controller.speakingKey = null;
