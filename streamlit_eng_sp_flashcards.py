@@ -2185,8 +2185,11 @@ def render_story_start_unlock_handler(
                     controller.localIndex = nextIndex;
                     controller.queuedNextIndex = null;
                     renderLocalStoryView(nextIndex);
-                    syncAdvanceButton();
                     speakLine(nextIndex);
+                    window.setTimeout(function() {{
+                        if (!controller.running) return;
+                        syncAdvanceButton();
+                    }}, 250);
                 }}, controller.delayMs);
             }}
 
