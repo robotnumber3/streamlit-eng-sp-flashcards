@@ -2226,11 +2226,16 @@ def render_story_start_unlock_handler(
                     var voice = pickVoice(voices);
                     var completionHandled = false;
                     var completionTimer = null;
+                    var speakingPollTimer = null;
 
                     function clearCompletionTimer() {{
                         if (completionTimer) {{
                             clearTimeout(completionTimer);
                             completionTimer = null;
+                        }}
+                        if (speakingPollTimer) {{
+                            clearInterval(speakingPollTimer);
+                            speakingPollTimer = null;
                         }}
                     }}
 
@@ -2262,6 +2267,15 @@ def render_story_start_unlock_handler(
                             speechFinished: false
                         }};
                         doc._storyPauseRequested = null;
+                        speakingPollTimer = window.setInterval(function() {{
+                            if (!controller.running || completionHandled) {{
+                                clearCompletionTimer();
+                                return;
+                            }}
+                            if (!synth.speaking && !synth.pending) {{
+                                finishLine();
+                            }}
+                        }}, 150);
                     }};
                     utterance.onend = function() {{
                         finishLine();
