@@ -2119,11 +2119,10 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
                 cancelTimers();
                 controller.advanceTimer = window.setTimeout(function() {{
                     if (!controller.running) return;
+                    controller.pendingSpeakIndex = nextIndex;
                     controller.localIndex = nextIndex;
                     syncAdvanceButton();
-                    if (nextIndex < controller.lines.length) {{
-                        speakLine(nextIndex);
-                    }} else {{
+                    if (nextIndex >= controller.lines.length) {{
                         controller.running = false;
                         controller.active = false;
                     }}
@@ -2243,6 +2242,7 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
                 controller.localIndex = config.serverIndex;
                 controller.lastSpokenIndex = null;
                 controller.lastCompletedIndex = null;
+                controller.pendingSpeakIndex = null;
             }}
 
             controller.storyKey = config.storyKey;
@@ -2259,10 +2259,20 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
 
             if (!config.running) {{
                 controller.localIndex = config.serverIndex;
+                 controller.pendingSpeakIndex = null;
                 cancelSpeech();
             }}
 
-            if (config.running && controller.active && !controller.autoAdvance && !controller.isSpeaking && controller.lastSpokenIndex !== config.serverIndex) {{
+            if (
+                config.running
+                && controller.active
+                && !controller.isSpeaking
+                && (
+                    controller.pendingSpeakIndex === config.serverIndex
+                    || controller.lastSpokenIndex !== config.serverIndex
+                )
+            ) {{
+                controller.pendingSpeakIndex = null;
                 speakLine(config.serverIndex);
             }}
         }})();
