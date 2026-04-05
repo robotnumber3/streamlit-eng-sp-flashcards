@@ -2233,77 +2233,70 @@ def render_story_start_unlock_handler(
                 var voice = pickVoice(voices);
                 controller.visualTimers = [];
 
-                function buildPauseUtterance() {{
-                    if (controller.delayMs <= 0) return null;
-                    var pauseUnits = Math.max(1, Math.round(controller.delayMs / 450));
-                    var pauseText = Array(pauseUnits + 1).join('. ');
-                    var pauseUtterance = new SpeechSynthesisUtterance(pauseText);
-                    pauseUtterance.lang = voice ? voice.lang : 'es-ES';
-                    pauseUtterance.rate = 0.35;
-                    pauseUtterance.volume = 0;
-                    return pauseUtterance;
-                }}
-
-                function estimatedDurationMs(text) {{
-                    var rawText = text || '';
-                    var chars = rawText.length || 1;
-                    var words = rawText.trim() ? rawText.trim().split(/\\s+/).length : 1;
-                    var punctuationPauses = (rawText.match(/[,:;.!?]/g) || []).length;
-                    var rate = speechRate > 0 ? speechRate : 1;
-                    var estimate = (words * 520) + (chars * 38) + (punctuationPauses * 240) + 650;
-                    return Math.max(2200, Math.round(estimate / rate));
-                }}
-
-                function scheduleVisual(delay, callback) {{
-                    var timerId = parentWindow.setTimeout(function() {{
-                        if (controller.queueToken !== queueToken) return;
-                        callback();
-                    }}, delay);
-                    controller.visualTimers.push(timerId);
-                }}
-
-                var cumulativeDelay = 0;
-
                 if (typeof synth.resume === 'function') {{
                     synth.resume();
                 }}
 
-                for (let idx = startIndex; idx < controller.lines.length; idx += 1) {{
-                    let rawSpeechText = controller.lines[idx];
-                    if (!rawSpeechText) {{
-                        continue;
+                function speakOne(idx) {{
+                    if (controller.queueToken !== queueToken) return;
+                    if (!controller.running) return;
+                    if (idx >= controller.lines.length) {{
+                        controller.running = false;
+                        controller.active = false;
+                        setDebug('finished story');
+                        return;
                     }}
-                    let speechText = rawSpeechText;
-                    let lineDelay = cumulativeDelay;
-                    let lineDuration = estimatedDurationMs(rawSpeechText);
 
-                    let speechKey = controller.storyKey + '|queue|' + idx + '|' + speechText + '|' + speechRate;
-                    let utterance = new SpeechSynthesisUtterance(speechText);
+                    var rawSpeechText = controller.lines[idx];
+                    if (!rawSpeechText) {{
+                        speakOne(idx + 1);
+                        return;
+                    }}
+
+                    // Update the DOM synchronously at the moment this line begins.
+                    controller.localIndex = idx;
+                    renderLocalStoryView(idx);
+
+                    var speechKey = controller.storyKey + '|queue|' + idx + '|' + rawSpeechText + '|' + speechRate;
+                    var utterance = new SpeechSynthesisUtterance(rawSpeechText);
                     utterance.lang = voice ? voice.lang : 'es-ES';
                     utterance.rate = speechRate;
                     if (voice) utterance.voice = voice;
 
                     utterance.onstart = function() {{
                         if (controller.queueToken !== queueToken || !controller.running) return;
-                        controller.localIndex = idx;
                         controller.lastSpokenIndex = idx;
                         controller.pendingManualSpeakIndex = null;
                         controller.isSpeaking = true;
                         controller.speakingKey = speechKey;
-                        setDebug('queue onstart: ' + (idx + 1));
+                        setDebug('speak: ' + (idx + 1));
                     }};
+
+                    function scheduleNext() {{
+                        if (controller.queueToken !== queueToken) return;
+                        if (!controller.running) return;
+                        if (idx >= controller.lines.length - 1) {{
+                            controller.running = false;
+                            controller.active = false;
+                            setDebug('finished story');
+                            return;
+                        }}
+                        var waitMs = controller.delayMs > 0 ? controller.delayMs : 0;
+                        var timerId = parentWindow.setTimeout(function() {{
+                            if (controller.queueToken !== queueToken) return;
+                            if (!controller.running) return;
+                            speakOne(idx + 1);
+                        }}, waitMs);
+                        controller.visualTimers.push(timerId);
+                    }}
 
                     utterance.onend = function() {{
                         if (controller.queueToken !== queueToken) return;
                         controller.isSpeaking = false;
                         controller.speakingKey = null;
                         controller.lastCompletedIndex = idx;
-                        setDebug('queue onend: ' + (idx + 1));
-                        if (idx >= controller.lines.length - 1) {{
-                            controller.running = false;
-                            controller.active = false;
-                            setDebug('finished story');
-                        }}
+                        setDebug('onend: ' + (idx + 1));
+                        scheduleNext();
                     }};
 
                     utterance.onerror = function() {{
@@ -2311,39 +2304,14 @@ def render_story_start_unlock_handler(
                         controller.isSpeaking = false;
                         controller.speakingKey = null;
                         controller.lastCompletedIndex = idx;
-                        setDebug('queue onerror: ' + (idx + 1));
-                        if (idx >= controller.lines.length - 1) {{
-                            controller.running = false;
-                            controller.active = false;
-                        }}
+                        setDebug('onerror: ' + (idx + 1));
+                        scheduleNext();
                     }};
 
                     synth.speak(utterance);
-
-                    scheduleVisual(lineDelay, function() {{
-                        if (!controller.running) return;
-                        controller.localIndex = idx;
-                        renderLocalStoryView(idx);
-                        setDebug('queue render: ' + (idx + 1));
-                    }});
-
-                    if (idx < controller.lines.length - 1 && controller.delayMs > 0) {{
-                        let pauseUtterance = buildPauseUtterance();
-                        if (pauseUtterance) {{
-                            synth.speak(pauseUtterance);
-                        }}
-                    }}
-
-                    if (idx >= controller.lines.length - 1) {{
-                        scheduleVisual(lineDelay + lineDuration, function() {{
-                            controller.running = false;
-                            controller.active = false;
-                            setDebug('finished story');
-                        }});
-                    }}
-
-                    cumulativeDelay += lineDuration + controller.delayMs;
                 }}
+
+                speakOne(startIndex);
             }}
 
             function speakLine(index) {{
