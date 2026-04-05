@@ -1223,10 +1223,26 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: 5.8rem !important;
 }}
 .st-key-storyadvance_hidden_wrap {{
-    display: none !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }}
 .st-key-storyresumenext_hidden_wrap {{
-    display: none !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }}
 
 /* ---- Header row ---- */
@@ -1525,70 +1541,91 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap,
-.st-key-storytranslation_row_wrap,
-.st-key-storyaudio_row_wrap {{
+.st-key-storytransaudio_row_wrap {{
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"],
-.st-key-storytranslation_row_wrap [data-testid="stHorizontalBlock"],
-.st-key-storyaudio_row_wrap [data-testid="stHorizontalBlock"] {{
+.st-key-storytransaudio_row_wrap [data-testid="stHorizontalBlock"] {{
     align-items: center !important;
     gap: 0.25rem !important;
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"],
-.st-key-storytranslation_row_wrap [data-testid="stColumn"],
-.st-key-storyaudio_row_wrap [data-testid="stColumn"] {{
+.st-key-storytransaudio_row_wrap [data-testid="stColumn"] {{
     padding: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"] > div,
-.st-key-storytranslation_row_wrap [data-testid="stColumn"] > div,
-.st-key-storyaudio_row_wrap [data-testid="stColumn"] > div {{
+.st-key-storytransaudio_row_wrap [data-testid="stColumn"] > div {{
     padding: 0 !important;
 }}
-.st-key-storyplayback_row_wrap [data-testid="stColumn"]:first-child,
-.st-key-storytranslation_row_wrap [data-testid="stColumn"]:first-child,
-.st-key-storyaudio_row_wrap [data-testid="stColumn"]:first-child {{
-    flex: 0 0 6.2rem !important;
+.st-key-storyplayback_row_wrap [data-testid="stColumn"]:first-child {{
+    flex: 0 0 5.2rem !important;
 }}
-.st-key-storyplayback_row_wrap [data-testid="stColumn"]:last-child,
-.st-key-storytranslation_row_wrap [data-testid="stColumn"]:last-child,
-.st-key-storyaudio_row_wrap [data-testid="stColumn"]:last-child {{
+.st-key-storyplayback_row_wrap [data-testid="stColumn"]:last-child {{
     flex: 1 1 auto !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] > div,
-.st-key-storytranslation_row_wrap [data-testid="stRadio"] > div,
-.st-key-storyaudio_row_wrap [data-testid="stRadio"] > div {{
+.st-key-storytransaudio_row_wrap [data-testid="stRadio"] > div {{
     flex-direction: row !important;
     justify-content: flex-start !important;
-    gap: 0.95rem !important;
+    gap: 0.72rem !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] label,
-.st-key-storytranslation_row_wrap [data-testid="stRadio"] label,
-.st-key-storyaudio_row_wrap [data-testid="stRadio"] label {{
+.st-key-storytransaudio_row_wrap [data-testid="stRadio"] label {{
     margin-bottom: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stMarkdownContainer"] p,
-.st-key-storytranslation_row_wrap [data-testid="stMarkdownContainer"] p,
-.st-key-storyaudio_row_wrap [data-testid="stMarkdownContainer"] p {{
+.st-key-storytransaudio_row_wrap [data-testid="stMarkdownContainer"] p {{
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"],
-.st-key-storytranslation_row_wrap [data-testid="stRadio"],
-.st-key-storyaudio_row_wrap [data-testid="stRadio"] {{
+.st-key-storytransaudio_row_wrap [data-testid="stRadio"] {{
     margin: 0 !important;
     padding: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] > label,
-.st-key-storytranslation_row_wrap [data-testid="stRadio"] > label,
-.st-key-storyaudio_row_wrap [data-testid="stRadio"] > label {{
+.st-key-storytransaudio_row_wrap [data-testid="stRadio"] > label {{
     display: none !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
-.st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
-.st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+.st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
     margin: 0 !important;
     padding: 0 !important;
+}}
+.st-key-storycontrol_row_wrap [data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+}}
+.st-key-storycontrol_row_wrap [data-testid="stColumn"] {{
+    flex: 0 0 calc((100% - 1rem) / 3) !important;
+    width: calc((100% - 1rem) / 3) !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+}}
+.st-key-storycontrol_row_wrap [data-testid="stColumn"] > div,
+.st-key-storycontrol_row_wrap div[data-testid="stButton"],
+.st-key-storycontrol_row_wrap div[data-testid="stButton"] > div {{
+    width: 100% !important;
+}}
+.st-key-storycontrol_row_wrap div[data-testid="stButton"] > button {{
+    width: 100% !important;
+    min-height: 2.9rem !important;
+    font-size: 1.05rem !important;
+    padding-left: 0.4rem !important;
+    padding-right: 0.4rem !important;
+}}
+.story-control-spacer {{
+    width: 100%;
+    min-height: 2.9rem;
 }}
 .story-progress {{
     margin: 0.18rem 0 0.42rem 0;
@@ -1677,6 +1714,61 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-review_miguel_inactive_wrap [data-testid="stButton"] > button,
     .st-key-review_david_inactive_wrap [data-testid="stButton"] > button {{
         color: {t['muted']} !important;
+    }}
+
+    /* ---- Phone: Translate + Audio checkboxes ---- */
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"] {{
+        min-width: 0 !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+        position: relative !important;
+        min-height: 1.9rem !important;
+        min-width: 2.0rem !important;
+        width: 2.0rem !important;
+        display: block !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 2.0rem !important;
+        height: 1.9rem !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        opacity: 0 !important;
+        cursor: pointer !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {{
+        z-index: 1 !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:not(:checked)) {{
+        z-index: 2 !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"]::before {{
+        content: '';
+        position: absolute;
+        top: 0.15rem;
+        left: 0.2rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: 2px solid {t['border']};
+        border-radius: 4px;
+        pointer-events: none;
+        box-sizing: border-box;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"]:has(> label:first-child input:checked)::after {{
+        content: '\\2715';
+        position: absolute;
+        top: 0.15rem;
+        left: 0.2rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.45rem;
+        text-align: center;
+        color: {t['accent']};
+        pointer-events: none;
     }}
 }}
 </style>
@@ -1990,6 +2082,649 @@ def render_story_box_shield_handler():
     )
 
 
+def render_story_start_unlock_handler(
+    story_lines,
+    spanish_html_lines,
+    translation_html_lines,
+    current_index,
+    auto_advance=False,
+    delay_seconds=0,
+    running=False,
+    resume_next=False,
+):
+    spoken_lines = [strip_spoken_text(text) for text in story_lines]
+    speech_rate = speech_rate_value()
+    delay_ms = max(int(delay_seconds * 1000), 0)
+    story_key = st.session_state.selected_csv or ""
+    story_run_token = st.session_state.story_run_token + (0 if running else 1)
+    components.html(
+        f"""
+        <script>
+        (function() {{
+            var doc = window.parent.document;
+            var parentWindow = window.parent;
+            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
+            var eventNames = ['click', 'touchend'];
+            var speechRate = {speech_rate};
+            var config = {{
+                storyKey: {json.dumps(story_key)},
+                storyRunToken: {story_run_token},
+                lines: {json.dumps(spoken_lines)},
+                spanishHtmlLines: {json.dumps(spanish_html_lines)},
+                translationHtmlLines: {json.dumps(translation_html_lines)},
+                serverIndex: {current_index},
+                autoAdvance: {str(auto_advance).lower()},
+                delayMs: {delay_ms},
+                running: {str(running).lower()},
+                resumeNext: {str(resume_next).lower()},
+            }};
+
+            function isPhoneStoryMode() {{
+                var nav = parentWindow.navigator || window.navigator;
+                var ua = nav && nav.userAgent ? nav.userAgent : '';
+                var hasTouch = !!(('ontouchstart' in parentWindow) || (nav && nav.maxTouchPoints > 0));
+                var narrow = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 767px)').matches);
+                return narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua));
+            }}
+
+            if (!doc || !synth || !isPhoneStoryMode()) return;
+
+            function setDebug(message) {{
+                var debugEl = doc.getElementById('story-mobile-debug');
+                if (!debugEl) return;
+                debugEl.style.display = 'block';
+                debugEl.textContent = message;
+            }}
+
+            var controller = doc._storyMobileController || {{}};
+            doc._storyMobileController = controller;
+
+            function cancelTimers() {{
+                if (controller.advanceTimer) {{
+                    parentWindow.clearTimeout(controller.advanceTimer);
+                    controller.advanceTimer = null;
+                }}
+                if (controller.advanceRetryTimer) {{
+                    parentWindow.clearInterval(controller.advanceRetryTimer);
+                    controller.advanceRetryTimer = null;
+                }}
+                if (controller.visualTimers) {{
+                    controller.visualTimers.forEach(function(timerId) {{
+                        parentWindow.clearTimeout(timerId);
+                    }});
+                    controller.visualTimers = [];
+                }}
+            }}
+
+            function cancelSpeech() {{
+                cancelTimers();
+                controller.isSpeaking = false;
+                controller.speakingKey = null;
+                try {{
+                    synth.cancel();
+                }} catch (error) {{
+                }}
+            }}
+
+            function renderLocalStoryView(index) {{
+                if (index < 0 || index >= controller.lines.length) return;
+
+                var spanishContent = doc.getElementById('story-spanish-content');
+                var translationContent = doc.getElementById('story-translation-content');
+                var progressValue = doc.getElementById('story-progress-value');
+                var progressFill = doc.getElementById('story-progress-fill');
+                var total = controller.lines.length || 1;
+                var pct = ((index + 1) / total) * 100;
+
+                if (progressValue) {{
+                    progressValue.textContent = (index + 1) + ' of ' + total;
+                }}
+                if (progressFill) {{
+                    progressFill.style.width = pct.toFixed(2) + '%';
+                }}
+                if (spanishContent) {{
+                    spanishContent.innerHTML = controller.spanishHtmlLines[index] || '';
+                }}
+                if (translationContent) {{
+                    translationContent.innerHTML = controller.translationHtmlLines[index] || '<div class="fc-word-placeholder">&nbsp;</div>';
+                }}
+            }}
+
+            function pickVoice(voices) {{
+                return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
+                    || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
+                    || voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
+                    || voices.find(function(voice) {{ return voice.lang && voice.lang.toLowerCase().startsWith('es'); }})
+                    || null;
+            }}
+
+            function clickAdvanceButton() {{
+                var hiddenButton = doc.querySelector('.st-key-storyadvance_hidden_wrap button');
+                if (!hiddenButton) {{
+                    return false;
+                }}
+                hiddenButton.click();
+                hiddenButton.dispatchEvent(new MouseEvent('click', {{ bubbles: true }}));
+                return true;
+            }}
+
+            function syncAdvanceButton() {{
+                clickAdvanceButton();
+                var attempts = 0;
+                if (controller.advanceRetryTimer) {{
+                    parentWindow.clearInterval(controller.advanceRetryTimer);
+                    controller.advanceRetryTimer = null;
+                }}
+                controller.advanceRetryTimer = parentWindow.setInterval(function() {{
+                    attempts += 1;
+                    if (clickAdvanceButton() || attempts >= 10) {{
+                        parentWindow.clearInterval(controller.advanceRetryTimer);
+                        controller.advanceRetryTimer = null;
+                    }}
+                }}, 150);
+            }}
+
+            function scheduleNextLine(nextIndex) {{
+                if (!controller.running || !controller.autoAdvance) return;
+                cancelTimers();
+                controller.queuedNextIndex = nextIndex;
+                setDebug('queued next: ' + (nextIndex + 1));
+                controller.advanceTimer = parentWindow.setTimeout(function() {{
+                    if (!controller.running) return;
+                    if (nextIndex >= controller.lines.length) {{
+                        controller.running = false;
+                        controller.active = false;
+                        controller.queuedNextIndex = null;
+                        setDebug('finished story');
+                        return;
+                    }}
+                    controller.localIndex = nextIndex;
+                    controller.queuedNextIndex = null;
+                    renderLocalStoryView(nextIndex);
+                    setDebug('speaking next: ' + (nextIndex + 1));
+                    speakLine(nextIndex);
+                    parentWindow.setTimeout(function() {{
+                        if (!controller.running) return;
+                        syncAdvanceButton();
+                    }}, 250);
+                }}, controller.delayMs);
+            }}
+
+            function handleLineComplete(index) {{
+                controller.isSpeaking = false;
+                controller.speakingKey = null;
+                controller.lastCompletedIndex = index;
+                setDebug('completed: ' + (index + 1));
+                if (doc._storyPauseResumeState) {{
+                    doc._storyPauseResumeState.speechFinished = true;
+                }}
+                if (controller.running && controller.autoAdvance) {{
+                    scheduleNextLine(index + 1);
+                }}
+            }}
+
+            function queueAutoFrom(startIndex) {{
+                if (startIndex < 0 || startIndex >= controller.lines.length) return;
+
+                cancelSpeech();
+
+                controller.queueToken = (controller.queueToken || 0) + 1;
+                var queueToken = controller.queueToken;
+                var voices = synth.getVoices ? synth.getVoices() : [];
+                var voice = pickVoice(voices);
+                controller.visualTimers = [];
+
+                if (typeof synth.resume === 'function') {{
+                    synth.resume();
+                }}
+
+                function estimatedDurationMs(text) {{
+                    var rawText = text || '';
+                    var chars = rawText.length || 1;
+                    var words = rawText.trim() ? rawText.trim().split(/\\s+/).length : 1;
+                    var punctuationPauses = (rawText.match(/[,:;.!?]/g) || []).length;
+                    var rate = speechRate > 0 ? speechRate : 1;
+                    var estimate = (words * 520) + (chars * 38) + (punctuationPauses * 240) + 650;
+                    return Math.max(2200, Math.round(estimate / rate));
+                }}
+
+                function speakOne(idx) {{
+                    if (controller.queueToken !== queueToken) return;
+                    if (!controller.running) return;
+                    if (idx >= controller.lines.length) {{
+                        controller.running = false;
+                        controller.active = false;
+                        setDebug('finished story');
+                        return;
+                    }}
+
+                    var rawSpeechText = controller.lines[idx];
+                    if (!rawSpeechText) {{
+                        speakOne(idx + 1);
+                        return;
+                    }}
+
+                    // Update the DOM synchronously at the moment this line begins.
+                    controller.localIndex = idx;
+                    renderLocalStoryView(idx);
+
+                    var speechKey = controller.storyKey + '|queue|' + idx + '|' + rawSpeechText + '|' + speechRate;
+                    var utterance = new SpeechSynthesisUtterance(rawSpeechText);
+                    utterance.lang = voice ? voice.lang : 'es-ES';
+                    utterance.rate = speechRate;
+                    if (voice) utterance.voice = voice;
+
+                    var doneFired = false;
+                    var watchdogTimerId = null;
+                    var pollTimerId = null;
+                    var sawSpeaking = false;
+
+                    function clearLocalTimers() {{
+                        if (watchdogTimerId !== null) {{
+                            parentWindow.clearTimeout(watchdogTimerId);
+                            watchdogTimerId = null;
+                        }}
+                        if (pollTimerId !== null) {{
+                            parentWindow.clearTimeout(pollTimerId);
+                            pollTimerId = null;
+                        }}
+                    }}
+
+                    function scheduleNext() {{
+                        if (controller.queueToken !== queueToken) return;
+                        if (!controller.running) return;
+                        if (idx >= controller.lines.length - 1) {{
+                            controller.running = false;
+                            controller.active = false;
+                            setDebug('finished story');
+                            return;
+                        }}
+                        var waitMs = controller.delayMs > 0 ? controller.delayMs : 0;
+                        var timerId = parentWindow.setTimeout(function() {{
+                            if (controller.queueToken !== queueToken) return;
+                            if (!controller.running) return;
+                            speakOne(idx + 1);
+                        }}, waitMs);
+                        controller.visualTimers.push(timerId);
+                    }}
+
+                    function finishAndAdvance(reason) {{
+                        if (doneFired) return;
+                        doneFired = true;
+                        clearLocalTimers();
+                        controller.isSpeaking = false;
+                        controller.speakingKey = null;
+                        controller.lastCompletedIndex = idx;
+                        setDebug('done(' + reason + '): ' + (idx + 1));
+                        scheduleNext();
+                    }}
+
+                    utterance.onstart = function() {{
+                        if (controller.queueToken !== queueToken || !controller.running) return;
+                        controller.lastSpokenIndex = idx;
+                        controller.pendingManualSpeakIndex = null;
+                        controller.isSpeaking = true;
+                        controller.speakingKey = speechKey;
+                        sawSpeaking = true;
+                        setDebug('speak: ' + (idx + 1));
+                    }};
+
+                    utterance.onend = function() {{ finishAndAdvance('onend'); }};
+                    utterance.onerror = function() {{ finishAndAdvance('onerror'); }};
+
+                    // iOS Safari frequently drops onend; poll synth.speaking as a backup.
+                    function pollSpeaking() {{
+                        if (doneFired) return;
+                        if (controller.queueToken !== queueToken) return;
+                        try {{
+                            if (synth.speaking || synth.pending) {{
+                                sawSpeaking = true;
+                            }} else if (sawSpeaking) {{
+                                finishAndAdvance('poll');
+                                return;
+                            }}
+                        }} catch (e) {{}}
+                        pollTimerId = parentWindow.setTimeout(pollSpeaking, 250);
+                        controller.visualTimers.push(pollTimerId);
+                    }}
+                    pollTimerId = parentWindow.setTimeout(pollSpeaking, 400);
+                    controller.visualTimers.push(pollTimerId);
+
+                    // Hard watchdog: if nothing else fires within 3x estimated duration, advance anyway.
+                    var durMs = estimatedDurationMs(rawSpeechText);
+                    var watchdogMs = durMs * 3 + 4000;
+                    watchdogTimerId = parentWindow.setTimeout(function() {{
+                        finishAndAdvance('watchdog');
+                    }}, watchdogMs);
+                    controller.visualTimers.push(watchdogTimerId);
+
+                    synth.speak(utterance);
+                }}
+
+                speakOne(startIndex);
+            }}
+
+            function speakLine(index) {{
+                if (!controller.running) return;
+                if (index < 0 || index >= controller.lines.length) return;
+
+                var speechText = controller.lines[index];
+                if (!speechText) {{
+                    handleLineComplete(index);
+                    return;
+                }}
+
+                var speechKey = controller.storyKey + '|' + index + '|' + speechText + '|' + speechRate;
+                if (controller.speakingKey === speechKey && controller.isSpeaking) {{
+                    return;
+                }}
+
+                try {{
+                    var utterance = new SpeechSynthesisUtterance(speechText);
+                    var voices = synth.getVoices ? synth.getVoices() : [];
+                    var voice = pickVoice(voices);
+                    var completionHandled = false;
+                    var completionTimer = null;
+                    var speakingPollTimer = null;
+
+                    function clearCompletionTimer() {{
+                        if (completionTimer) {{
+                            parentWindow.clearTimeout(completionTimer);
+                            completionTimer = null;
+                        }}
+                        if (speakingPollTimer) {{
+                            parentWindow.clearInterval(speakingPollTimer);
+                            speakingPollTimer = null;
+                        }}
+                    }}
+
+                    function finishLine() {{
+                        if (completionHandled) return;
+                        completionHandled = true;
+                        clearCompletionTimer();
+                        handleLineComplete(index);
+                    }}
+
+                    function estimatedDurationMs() {{
+                        var chars = speechText.length || 1;
+                        var rate = speechRate > 0 ? speechRate : 1;
+                        return Math.max(1600, Math.round((chars * 85) / rate) + 700);
+                    }}
+
+                    utterance.lang = voice ? voice.lang : 'es-ES';
+                    utterance.rate = speechRate;
+                    if (voice) utterance.voice = voice;
+
+                    utterance.onstart = function() {{
+                        controller.localIndex = index;
+                        controller.lastSpokenIndex = index;
+                        controller.isSpeaking = true;
+                        controller.speakingKey = speechKey;
+                        setDebug('onstart: ' + (index + 1));
+                        doc._storyPauseResumeState = {{
+                            runToken: controller.storyRunToken,
+                            storyIndex: index,
+                            speechFinished: false
+                        }};
+                        doc._storyPauseRequested = null;
+                        speakingPollTimer = parentWindow.setInterval(function() {{
+                            if (!controller.running || completionHandled) {{
+                                clearCompletionTimer();
+                                return;
+                            }}
+                            if (!synth.speaking && !synth.pending) {{
+                                setDebug('poll idle: ' + (index + 1));
+                                finishLine();
+                            }}
+                        }}, 150);
+                    }};
+                    utterance.onend = function() {{
+                        setDebug('onend: ' + (index + 1));
+                        finishLine();
+                    }};
+                    utterance.onerror = function() {{
+                        controller.isSpeaking = false;
+                        controller.speakingKey = null;
+                        setDebug('onerror: ' + (index + 1));
+                        finishLine();
+                    }};
+
+                    synth.cancel();
+                    if (typeof synth.resume === 'function') {{
+                        synth.resume();
+                    }}
+                    synth.speak(utterance);
+                    completionTimer = parentWindow.setTimeout(function() {{
+                        if (!controller.running) return;
+                        if (!controller.isSpeaking && controller.lastCompletedIndex === index) return;
+                        setDebug('timeout finish: ' + (index + 1));
+                        finishLine();
+                    }}, estimatedDurationMs());
+                }} catch (error) {{
+                    controller.isSpeaking = false;
+                    controller.speakingKey = null;
+                    setDebug('catch error: ' + (index + 1));
+                }}
+            }}
+
+            function startFromGesture() {{
+                var now = Date.now();
+                if (controller.lastStartGestureAt && now - controller.lastStartGestureAt < 900) {{
+                    return;
+                }}
+                controller.lastStartGestureAt = now;
+                controller.active = true;
+                controller.running = true;
+                controller.ignorePauseUntil = Date.now() + 1200;
+                cancelTimers();
+                var startButton = doc.querySelector('.st-key-storystart_wrap button');
+                var startMode = startButton && startButton.textContent ? startButton.textContent.trim().toUpperCase() : '';
+                var targetIndex = typeof controller.localIndex === 'number' ? controller.localIndex : controller.serverIndex;
+                if (startMode === 'RESUME') {{
+                    if (typeof controller.resumeTargetIndex === 'number') {{
+                        targetIndex = controller.resumeTargetIndex;
+                    }} else if (controller.resumeNext && targetIndex < controller.lines.length - 1) {{
+                        targetIndex += 1;
+                    }}
+                }}
+                controller.resumeTargetIndex = null;
+                controller.localIndex = targetIndex;
+                renderLocalStoryView(targetIndex);
+                setDebug('start gesture: ' + (targetIndex + 1));
+                if (controller.autoAdvance) {{
+                    queueAutoFrom(targetIndex);
+                    return;
+                }}
+                controller.pendingManualSpeakIndex = targetIndex;
+                speakLine(targetIndex);
+            }}
+
+            function stepAdvanceFromGesture() {{
+                if (controller.autoAdvance) return;
+                var nextIndex = Math.min(controller.localIndex + 1, controller.lines.length - 1);
+                if (nextIndex === controller.localIndex) return;
+                controller.active = true;
+                controller.running = true;
+                controller.localIndex = nextIndex;
+                controller.pendingManualSpeakIndex = nextIndex;
+                renderLocalStoryView(nextIndex);
+                setDebug('step gesture: ' + (nextIndex + 1));
+                speakLine(nextIndex);
+            }}
+
+            function pauseFromGesture() {{
+                if (controller.ignorePauseUntil && Date.now() < controller.ignorePauseUntil) {{
+                    return;
+                }}
+                if (controller.isSpeaking) {{
+                    controller.resumeTargetIndex = controller.localIndex;
+                }} else if (typeof controller.queuedNextIndex === 'number') {{
+                    controller.resumeTargetIndex = controller.queuedNextIndex;
+                }} else {{
+                    controller.resumeTargetIndex = controller.localIndex;
+                }}
+                controller.running = false;
+                controller.active = true;
+                setDebug('paused at: ' + (controller.resumeTargetIndex + 1));
+                cancelSpeech();
+            }}
+
+            function stopFromGesture() {{
+                controller.running = false;
+                controller.active = false;
+                controller.localIndex = controller.serverIndex;
+                setDebug('stopped');
+                cancelSpeech();
+            }}
+
+            function attachHandler(selector, key, handler) {{
+                var element = doc.querySelector(selector);
+                if (!element) return;
+                if (doc[key]) {{
+                    eventNames.forEach(function(eventName) {{
+                        element.removeEventListener(eventName, doc[key], true);
+                    }});
+                }}
+                doc[key] = handler;
+                eventNames.forEach(function(eventName) {{
+                    element.addEventListener(eventName, handler, true);
+                }});
+            }}
+
+            if (controller.storyKey !== config.storyKey) {{
+                cancelSpeech();
+                controller.active = false;
+                controller.localIndex = config.serverIndex;
+                controller.lastSpokenIndex = null;
+                controller.lastCompletedIndex = null;
+                controller.queuedNextIndex = null;
+                controller.resumeTargetIndex = null;
+            }}
+
+            controller.storyKey = config.storyKey;
+            controller.storyRunToken = config.storyRunToken;
+            controller.lines = config.lines;
+            controller.spanishHtmlLines = config.spanishHtmlLines;
+            controller.translationHtmlLines = config.translationHtmlLines;
+            controller.serverIndex = config.serverIndex;
+            controller.autoAdvance = config.autoAdvance;
+            controller.delayMs = config.delayMs;
+            controller.resumeNext = config.resumeNext;
+
+            if (typeof controller.localIndex !== 'number') {{
+                controller.localIndex = config.serverIndex;
+            }}
+
+            if (
+                !controller.isSpeaking
+                && typeof config.serverIndex === 'number'
+                && config.serverIndex !== controller.localIndex
+            ) {{
+                controller.localIndex = config.serverIndex;
+                controller.queuedNextIndex = null;
+                setDebug('synced to server: ' + (controller.localIndex + 1));
+            }}
+
+            attachHandler('.st-key-storystart_wrap button', '_storyMobileStartHandler', startFromGesture);
+            attachHandler('.st-key-storypause_wrap button', '_storyMobilePauseHandler', pauseFromGesture);
+            attachHandler('.st-key-storystop_wrap button', '_storyMobileStopHandler', stopFromGesture);
+            attachHandler('.st-key-showanswer_wrap button', '_storyMobileStepHandler', stepAdvanceFromGesture);
+
+            if (!config.running) {{
+                if (!controller.active) {{
+                    controller.localIndex = config.serverIndex;
+                }}
+                cancelSpeech();
+            }}
+
+            renderLocalStoryView(controller.localIndex);
+            setDebug('ready: ' + (controller.localIndex + 1) + ' running=' + config.running + ' auto=' + controller.autoAdvance);
+
+            if (
+                config.running
+                && controller.active
+                && !controller.isSpeaking
+                && !controller.autoAdvance
+                && controller.pendingManualSpeakIndex !== controller.localIndex
+                && controller.lastSpokenIndex !== controller.localIndex
+            ) {{
+                setDebug('step speak: ' + (controller.localIndex + 1));
+                speakLine(controller.localIndex);
+            }}
+        }})();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def render_story_mobile_controller_cleanup():
+    components.html(
+        """
+        <script>
+        (function() {
+            var doc = window.parent.document;
+            var parentWindow = window.parent;
+            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
+            var controller = doc._storyMobileController;
+            var bindings = [
+                ['.st-key-storystart_wrap button', '_storyMobileStartHandler'],
+                ['.st-key-storypause_wrap button', '_storyMobilePauseHandler'],
+                ['.st-key-storystop_wrap button', '_storyMobileStopHandler'],
+                ['.st-key-showanswer_wrap button', '_storyMobileStepHandler'],
+            ];
+            var eventNames = ['click', 'touchend'];
+            var debugEl = doc.getElementById('story-mobile-debug');
+
+            bindings.forEach(function(binding) {
+                var element = doc.querySelector(binding[0]);
+                var handler = doc[binding[1]];
+                if (!element || !handler) return;
+                eventNames.forEach(function(eventName) {
+                    element.removeEventListener(eventName, handler, true);
+                });
+                doc[binding[1]] = null;
+            });
+
+            if (controller) {
+                if (controller.advanceTimer) {
+                    clearTimeout(controller.advanceTimer);
+                    controller.advanceTimer = null;
+                }
+                if (controller.advanceRetryTimer) {
+                    clearInterval(controller.advanceRetryTimer);
+                    controller.advanceRetryTimer = null;
+                }
+                if (controller.queueToken) {
+                    controller.queueToken += 1;
+                }
+                controller.running = false;
+                controller.active = false;
+                controller.isSpeaking = false;
+                controller.speakingKey = null;
+                controller.queuedNextIndex = null;
+                controller.pendingManualSpeakIndex = null;
+                controller.resumeTargetIndex = null;
+            }
+
+            if (synth) {
+                try {
+                    synth.cancel();
+                } catch (error) {
+                }
+            }
+
+            if (debugEl) {
+                debugEl.style.display = 'block';
+                debugEl.textContent = 'DEBUG: inactive';
+            }
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
 def render_story_paused_cleanup():
     story_index = st.session_state.index
     story_run_token = st.session_state.story_run_token
@@ -2012,6 +2747,7 @@ def render_story_paused_cleanup():
                 if (pauseState && pauseState.runToken === {story_run_token} && pauseState.storyIndex === {story_index} && pauseState.speechFinished) {{
                     var resumeNextButton = doc.querySelector('.st-key-storyresumenext_hidden_wrap button');
                     if (resumeNextButton) {{
+                        resumeNextButton.click();
                         resumeNextButton.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
                     }}
                 }}
@@ -2047,6 +2783,7 @@ def render_story_advance_tap_handler():
                 if (!button) {
                     return false;
                 }
+                button.click();
                 button.dispatchEvent(new MouseEvent('click', {bubbles: true}));
                 return true;
             }
@@ -2173,6 +2910,7 @@ def render_story_auto_advance(delay_seconds):
                 if (!button) {{
                     return false;
                 }}
+                button.click();
                 button.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
                 return true;
             }}
@@ -2212,6 +2950,13 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
         f"""
         <script>
         (function() {{
+            var parentWindow = window.parent;
+            var nav = parentWindow.navigator || window.navigator;
+            var ua = nav && nav.userAgent ? nav.userAgent : '';
+            var hasTouch = !!(('ontouchstart' in parentWindow) || (nav && nav.maxTouchPoints > 0));
+            var narrow = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 767px)').matches);
+            if (narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua))) return;
+
             var speechText = {json.dumps(speech_text)};
             var speechRate = {speech_rate};
             var storyIndex = {story_index};
@@ -2230,6 +2975,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                 if (!button) {{
                     return false;
                 }}
+                button.click();
                 button.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
                 return true;
             }}
@@ -2271,10 +3017,17 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                 var voices = synth.getVoices ? synth.getVoices() : [];
                 var voice = pickVoice(voices);
                 var completionHandled = false;
+                var speechStarted = false;
+                var startWatchdog = null;
 
                 function handleSpeechCompletion() {{
                     if (completionHandled) return;
                     completionHandled = true;
+
+                    if (startWatchdog) {{
+                        clearTimeout(startWatchdog);
+                        startWatchdog = null;
+                    }}
 
                     var pauseRequested = doc._storyPauseRequested
                         && doc._storyPauseRequested.runToken === storyRunToken
@@ -2299,6 +3052,15 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                 utterance.lang = voice ? voice.lang : 'es-ES';
                 utterance.rate = speechRate;
                 if (voice) utterance.voice = voice;
+                utterance.onstart = function() {{
+                    speechStarted = true;
+                    doc._storySpeechUnlocked = true;
+                    doc._storySpeechUnlockedAt = Date.now();
+                    if (startWatchdog) {{
+                        clearTimeout(startWatchdog);
+                        startWatchdog = null;
+                    }}
+                }};
                 utterance.onend = handleSpeechCompletion;
                 utterance.onerror = function() {{
                     var pauseRequested = doc._storyPauseRequested
@@ -2310,7 +3072,17 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
 
                 doc._storyLastSpeechKey = speechKey;
                 synth.cancel();
+                if (typeof synth.resume === 'function') {{
+                    synth.resume();
+                }}
                 synth.speak(utterance);
+
+                startWatchdog = window.setTimeout(function() {{
+                    if (completionHandled || speechStarted) return;
+                    if (synth.speaking || synth.pending) return;
+                    doc._storyLastSpeechKey = null;
+                    handleSpeechCompletion();
+                }}, 1400);
             }}
 
             if (synth.getVoices && synth.getVoices().length) {{
@@ -2347,8 +3119,8 @@ def render_story_view():
     story_total = len(st.session_state.cards)
     story_progress_pct = (story_position / story_total * 100) if story_total else 0
     playback_options = {
-        "continuous": "continuous",
-        "stop on every line": "stop on every line",
+        "auto": "continuous",
+        "step": "stop on every line",
     }
 
     st.markdown(
@@ -2372,24 +3144,22 @@ def render_story_view():
                     label_visibility="collapsed",
                     key="story_playback_radio",
                 )
-        with st.container(key="storytranslation_row_wrap"):
-            translation_label_col, translation_radio_col = st.columns([0.34, 0.66], gap="small")
-            with translation_label_col:
-                st.markdown('<div class="story-option-row">Translation:</div>', unsafe_allow_html=True)
-            with translation_radio_col:
+        with st.container(key="storytransaudio_row_wrap"):
+            ta_cols = st.columns([0.28, 0.14, 0.22, 0.14, 0.22], gap="small")
+            with ta_cols[0]:
+                st.markdown('<div class="story-option-row">Translate:</div>', unsafe_allow_html=True)
+            with ta_cols[1]:
                 translation_choice = st.radio(
-                    "Translation",
+                    "Translate",
                     options=["ON", "OFF"],
                     index=0 if st.session_state.story_translation_on else 1,
                     horizontal=True,
                     label_visibility="collapsed",
                     key="story_translation_radio",
                 )
-        with st.container(key="storyaudio_row_wrap"):
-            audio_label_col, audio_radio_col = st.columns([0.34, 0.66], gap="small")
-            with audio_label_col:
+            with ta_cols[2]:
                 st.markdown('<div class="story-option-row">Audio:</div>', unsafe_allow_html=True)
-            with audio_radio_col:
+            with ta_cols[3]:
                 audio_choice = st.radio(
                     "Audio",
                     options=["ON", "OFF"],
@@ -2398,6 +3168,8 @@ def render_story_view():
                     label_visibility="collapsed",
                     key="story_audio_radio",
                 )
+            with ta_cols[4]:
+                st.empty()
     new_playback_mode = playback_options[playback_choice]
     if new_playback_mode != st.session_state.story_playback_mode:
         st.session_state.story_playback_mode = new_playback_mode
@@ -2413,43 +3185,79 @@ def render_story_view():
         st.session_state.story_audio_on = audio_enabled
         st.rerun()
 
+    if not audio_enabled:
+        render_story_mobile_controller_cleanup()
+
+    story_spanish_html_lines = [
+        format_word(card["answer"], 'fc-word', 'fc-note')
+        for card in st.session_state.cards
+    ]
+    story_translation_html_lines = [
+        format_word(card["word"], 'fc-answer', 'fc-answer-note')
+        if translation_enabled else '<div class="fc-word-placeholder">&nbsp;</div>'
+        for card in st.session_state.cards
+    ]
+
     if st.session_state.story_running:
-        control_cols = st.columns(2, gap="small")
-        with control_cols[0]:
-            with st.container(key="storypause_wrap"):
-                if st.button("PAUSE", key="story_pause_btn", use_container_width=True):
-                    pause_story()
-                    st.rerun()
-        with control_cols[1]:
-            with st.container(key="storystop_wrap"):
-                if st.button("STOP", key="story_stop_btn", use_container_width=True):
-                    stop_story()
-                    st.rerun()
+        with st.container(key="storycontrol_row_wrap"):
+            control_cols = st.columns(3, gap="small")
+            with control_cols[0]:
+                with st.container(key="storypause_wrap"):
+                    if st.button("PAUSE", key="story_pause_btn", use_container_width=True):
+                        pause_story()
+                        st.rerun()
+            with control_cols[1]:
+                with st.container(key="storystop_wrap"):
+                    if st.button("STOP", key="story_stop_btn", use_container_width=True):
+                        stop_story()
+                        st.rerun()
+            with control_cols[2]:
+                st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
     else:
-        control_cols = st.columns(2, gap="small")
-        with control_cols[0]:
-            with st.container(key="storystart_wrap"):
-                start_label = "RESUME" if st.session_state.story_started else "START"
-                if st.button(start_label, key="story_start_btn", use_container_width=True):
-                    start_story()
-                    st.rerun()
-        with control_cols[1]:
-            with st.container(key="storystop_wrap"):
-                if st.button("STOP", key="story_stop_btn_idle", use_container_width=True):
-                    stop_story()
-                    st.rerun()
+        with st.container(key="storycontrol_row_wrap"):
+            control_cols = st.columns(3, gap="small")
+            with control_cols[0]:
+                with st.container(key="storystart_wrap"):
+                    start_label = "RESUME" if st.session_state.story_started else "START"
+                    if st.button(start_label, key="story_start_btn", use_container_width=True):
+                        start_story()
+                        st.rerun()
+            with control_cols[1]:
+                with st.container(key="storystop_wrap"):
+                    if st.button("STOP", key="story_stop_btn_idle", use_container_width=True):
+                        stop_story()
+                        st.rerun()
+            with control_cols[2]:
+                st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
+
+    if audio_enabled:
+        render_story_start_unlock_handler(
+            [card["answer"] for card in st.session_state.cards],
+            story_spanish_html_lines,
+            story_translation_html_lines,
+            st.session_state.index,
+            auto_advance=st.session_state.story_playback_mode == "continuous",
+            delay_seconds=story_pause_seconds(),
+            running=st.session_state.story_running,
+            resume_next=st.session_state.story_resume_next,
+        )
 
     if not st.session_state.story_started:
         return
 
     st.markdown(
+        "<div id='story-mobile-debug' style='display:block;font-size:0.72rem;color:#e6b85c;margin:0.1rem 0 0.35rem 0;'>DEBUG: waiting...</div>",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
         "<div class='story-progress'>"
         "<div class='story-progress-head'>"
         "<div class='story-progress-label'>Sentence</div>"
-        f"<div class='story-progress-value'>{story_position} of {story_total}</div>"
+        f"<div class='story-progress-value' id='story-progress-value'>{story_position} of {story_total}</div>"
         "</div>"
         "<div class='story-progress-track'>"
-        f"<div class='story-progress-fill' style='width:{story_progress_pct:.2f}%'></div>"
+        f"<div class='story-progress-fill' id='story-progress-fill' style='width:{story_progress_pct:.2f}%'></div>"
         "</div>"
         "</div>",
         unsafe_allow_html=True,
@@ -2461,7 +3269,9 @@ def render_story_view():
         '<div class="story-display-block">'
         + story_box_shield +
         '<div class="fc-section-label">Spanish</div>'
+        + '<div id="story-spanish-content">'
         + format_word(spanish_text, 'fc-word', 'fc-note')
+        + '</div>'
         + '</div>'
     )
     st.markdown(spanish_html, unsafe_allow_html=True)
@@ -2478,7 +3288,9 @@ def render_story_view():
             '<div class="story-display-block">'
             + story_box_shield +
             '<div class="fc-section-label">Translation</div>'
+            + '<div id="story-translation-content">'
             + translation_inner
+            + '</div>'
             + '</div>'
         )
     else:
@@ -2486,7 +3298,7 @@ def render_story_view():
             '<div class="story-display-block story-display-block-empty">'
             + story_box_shield +
             '<div class="fc-section-label">Translation</div>'
-            '<div class="fc-word-placeholder">&nbsp;</div>'
+            '<div id="story-translation-content"><div class="fc-word-placeholder">&nbsp;</div></div>'
             '</div>'
         )
     st.markdown(translation_html, unsafe_allow_html=True)

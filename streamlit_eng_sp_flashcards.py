@@ -1541,68 +1541,54 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap,
-.st-key-storytranslation_row_wrap,
-.st-key-storyaudio_row_wrap {{
+.st-key-storytransaudio_row_wrap {{
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"],
-.st-key-storytranslation_row_wrap [data-testid="stHorizontalBlock"],
-.st-key-storyaudio_row_wrap [data-testid="stHorizontalBlock"] {{
+.st-key-storytransaudio_row_wrap [data-testid="stHorizontalBlock"] {{
     align-items: center !important;
     gap: 0.25rem !important;
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"],
-.st-key-storytranslation_row_wrap [data-testid="stColumn"],
-.st-key-storyaudio_row_wrap [data-testid="stColumn"] {{
+.st-key-storytransaudio_row_wrap [data-testid="stColumn"] {{
     padding: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"] > div,
-.st-key-storytranslation_row_wrap [data-testid="stColumn"] > div,
-.st-key-storyaudio_row_wrap [data-testid="stColumn"] > div {{
+.st-key-storytransaudio_row_wrap [data-testid="stColumn"] > div {{
     padding: 0 !important;
 }}
-.st-key-storyplayback_row_wrap [data-testid="stColumn"]:first-child,
-.st-key-storytranslation_row_wrap [data-testid="stColumn"]:first-child,
-.st-key-storyaudio_row_wrap [data-testid="stColumn"]:first-child {{
+.st-key-storyplayback_row_wrap [data-testid="stColumn"]:first-child {{
     flex: 0 0 5.2rem !important;
 }}
-.st-key-storyplayback_row_wrap [data-testid="stColumn"]:last-child,
-.st-key-storytranslation_row_wrap [data-testid="stColumn"]:last-child,
-.st-key-storyaudio_row_wrap [data-testid="stColumn"]:last-child {{
+.st-key-storyplayback_row_wrap [data-testid="stColumn"]:last-child {{
     flex: 1 1 auto !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] > div,
-.st-key-storytranslation_row_wrap [data-testid="stRadio"] > div,
-.st-key-storyaudio_row_wrap [data-testid="stRadio"] > div {{
+.st-key-storytransaudio_row_wrap [data-testid="stRadio"] > div {{
     flex-direction: row !important;
     justify-content: flex-start !important;
     gap: 0.72rem !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] label,
-.st-key-storytranslation_row_wrap [data-testid="stRadio"] label,
-.st-key-storyaudio_row_wrap [data-testid="stRadio"] label {{
+.st-key-storytransaudio_row_wrap [data-testid="stRadio"] label {{
     margin-bottom: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stMarkdownContainer"] p,
-.st-key-storytranslation_row_wrap [data-testid="stMarkdownContainer"] p,
-.st-key-storyaudio_row_wrap [data-testid="stMarkdownContainer"] p {{
+.st-key-storytransaudio_row_wrap [data-testid="stMarkdownContainer"] p {{
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"],
-.st-key-storytranslation_row_wrap [data-testid="stRadio"],
-.st-key-storyaudio_row_wrap [data-testid="stRadio"] {{
+.st-key-storytransaudio_row_wrap [data-testid="stRadio"] {{
     margin: 0 !important;
     padding: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] > label,
-.st-key-storytranslation_row_wrap [data-testid="stRadio"] > label,
-.st-key-storyaudio_row_wrap [data-testid="stRadio"] > label {{
+.st-key-storytransaudio_row_wrap [data-testid="stRadio"] > label {{
     display: none !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
-.st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
-.st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+.st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: center !important;
@@ -1730,52 +1716,18 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         color: {t['muted']} !important;
     }}
 
-    /* ---- Phone: Translation + Audio on the same row ---- */
-    .st-key-storyoptions_stack_wrap > [data-testid="stVerticalBlock"] > [data-testid="element-container"],
-    .st-key-storyoptions_stack_wrap > [data-testid="stVerticalBlock"] > div {{
-        margin-bottom: 0 !important;
-    }}
-    .st-key-storyoptions_stack_wrap > [data-testid="stVerticalBlock"] {{
-        display: flex !important;
-        flex-wrap: wrap !important;
-        flex-direction: row !important;
-        gap: 0 !important;
-    }}
-    .st-key-storyplayback_row_wrap {{
-        flex: 0 0 100% !important;
-        width: 100% !important;
-    }}
-    .st-key-storytranslation_row_wrap,
-    .st-key-storyaudio_row_wrap {{
-        flex: 0 0 auto !important;
-        width: auto !important;
-        margin-right: 1.2rem !important;
-    }}
-    .st-key-storytranslation_row_wrap [data-testid="stColumn"]:first-child,
-    .st-key-storyaudio_row_wrap [data-testid="stColumn"]:first-child {{
-        flex: 0 0 auto !important;
+    /* ---- Phone: Translate + Audio checkboxes ---- */
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"] {{
         min-width: 0 !important;
     }}
-    .st-key-storytranslation_row_wrap [data-testid="stColumn"]:last-child,
-    .st-key-storyaudio_row_wrap [data-testid="stColumn"]:last-child {{
-        flex: 0 0 2.0rem !important;
-        min-width: 0 !important;
-    }}
-
-    /* ---- Phone: Translation + Audio rendered as a single checkbox ---- */
-    /* The radiogroup becomes the visible checkbox frame; the two ON/OFF    */
-    /* radio labels are stacked, transparent, with the currently-unchecked  */
-    /* one on top so a tap always flips the state.                          */
-    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
-    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
         position: relative !important;
         min-height: 1.9rem !important;
         min-width: 2.0rem !important;
         width: 2.0rem !important;
         display: block !important;
     }}
-    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label,
-    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
         position: absolute !important;
         top: 0 !important;
         left: 0 !important;
@@ -1786,16 +1738,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         opacity: 0 !important;
         cursor: pointer !important;
     }}
-    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked),
-    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {{
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {{
         z-index: 1 !important;
     }}
-    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:not(:checked)),
-    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:not(:checked)) {{
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:not(:checked)) {{
         z-index: 2 !important;
     }}
-    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"]::before,
-    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"]::before {{
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"]::before {{
         content: '';
         position: absolute;
         top: 0.15rem;
@@ -1807,8 +1756,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         pointer-events: none;
         box-sizing: border-box;
     }}
-    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"]:has(> label:first-child input:checked)::after,
-    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"]:has(> label:first-child input:checked)::after {{
+    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"]:has(> label:first-child input:checked)::after {{
         content: '\\2715';
         position: absolute;
         top: 0.15rem;
@@ -3196,24 +3144,22 @@ def render_story_view():
                     label_visibility="collapsed",
                     key="story_playback_radio",
                 )
-        with st.container(key="storytranslation_row_wrap"):
-            translation_label_col, translation_radio_col = st.columns([0.34, 0.66], gap="small")
-            with translation_label_col:
-                st.markdown('<div class="story-option-row">Translation:</div>', unsafe_allow_html=True)
-            with translation_radio_col:
+        with st.container(key="storytransaudio_row_wrap"):
+            ta_cols = st.columns([0.28, 0.14, 0.22, 0.14, 0.22], gap="small")
+            with ta_cols[0]:
+                st.markdown('<div class="story-option-row">Translate:</div>', unsafe_allow_html=True)
+            with ta_cols[1]:
                 translation_choice = st.radio(
-                    "Translation",
+                    "Translate",
                     options=["ON", "OFF"],
                     index=0 if st.session_state.story_translation_on else 1,
                     horizontal=True,
                     label_visibility="collapsed",
                     key="story_translation_radio",
                 )
-        with st.container(key="storyaudio_row_wrap"):
-            audio_label_col, audio_radio_col = st.columns([0.34, 0.66], gap="small")
-            with audio_label_col:
+            with ta_cols[2]:
                 st.markdown('<div class="story-option-row">Audio:</div>', unsafe_allow_html=True)
-            with audio_radio_col:
+            with ta_cols[3]:
                 audio_choice = st.radio(
                     "Audio",
                     options=["ON", "OFF"],
@@ -3222,6 +3168,8 @@ def render_story_view():
                     label_visibility="collapsed",
                     key="story_audio_radio",
                 )
+            with ta_cols[4]:
+                st.empty()
     new_playback_mode = playback_options[playback_choice]
     if new_playback_mode != st.session_state.story_playback_mode:
         st.session_state.story_playback_mode = new_playback_mode
