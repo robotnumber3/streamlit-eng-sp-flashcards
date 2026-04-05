@@ -149,6 +149,10 @@ def display_deck_name(filename):
     return base_name
 
 
+def is_story_deck(filename):
+    return bool(filename) and not is_review_deck(filename) and "story" in os.path.basename(filename).lower()
+
+
 def is_forced_en_es_deck(filename):
     return bool(filename) and not is_review_deck(filename) and "EN_ES" in os.path.basename(filename)
 
@@ -160,6 +164,7 @@ DEFAULT_THEME = "dark"
 DEFAULT_DIRECTION_MODE = "random"
 DEFAULT_SPEECH_SPEED = 5
 DEFAULT_SHOW_HINTS = True
+DEFAULT_STORY_PAUSE_SECONDS = 5
 
 
 def default_person_prefs():
@@ -168,6 +173,7 @@ def default_person_prefs():
         "direction_mode": DEFAULT_DIRECTION_MODE,
         "speech_speed": DEFAULT_SPEECH_SPEED,
         "show_hints": DEFAULT_SHOW_HINTS,
+        "story_pause_seconds": DEFAULT_STORY_PAUSE_SECONDS,
     }
 
 
@@ -185,11 +191,15 @@ def sanitize_person_prefs(pref_data, fallback=None):
     show_hints = pref_data.get("show_hints", fallback["show_hints"])
     if not isinstance(show_hints, bool):
         show_hints = fallback["show_hints"]
+    story_pause_seconds = pref_data.get("story_pause_seconds", fallback["story_pause_seconds"])
+    if story_pause_seconds not in {1, 2, 3, 4, 5}:
+        story_pause_seconds = fallback["story_pause_seconds"]
     return {
         "theme": theme,
         "direction_mode": direction_mode,
         "speech_speed": speech_speed,
         "show_hints": show_hints,
+        "story_pause_seconds": story_pause_seconds,
     }
 
 
@@ -567,6 +577,7 @@ defaults = {
     "direction_mode": active_person_prefs["direction_mode"],
     "speech_speed":   active_person_prefs["speech_speed"],
     "show_hints":     active_person_prefs["show_hints"],
+    "story_pause_seconds": active_person_prefs["story_pause_seconds"],
     "active_person":  active_person,
     "person_radio":   active_person,
     "person_selector_visible": True,
@@ -585,6 +596,13 @@ defaults = {
     "loaded_csv":     None,
     "erase_review_confirm": False,
     "delete_review_confirm_key": None,
+    "story_playback_mode": "continuous",
+    "story_translation_on": True,
+    "story_audio_on": True,
+    "story_started": False,
+    "story_running": False,
+    "story_run_token": 0,
+    "story_resume_next": False,
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -603,6 +621,7 @@ def sync_menu_widget_state():
     st.session_state.dir_radio = direction_labels[st.session_state.direction_mode]
     st.session_state.speech_speed_radio = st.session_state.speech_speed
     st.session_state.hints_radio = "Hints ON" if st.session_state.show_hints else "Hints OFF"
+    st.session_state.story_pause_radio = st.session_state.story_pause_seconds
 
 
 def store_active_person_prefs():
@@ -611,6 +630,7 @@ def store_active_person_prefs():
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
         "show_hints": st.session_state.show_hints,
+        "story_pause_seconds": st.session_state.story_pause_seconds,
     }
 
 
@@ -661,6 +681,7 @@ def apply_person_prefs(person):
     st.session_state.direction_mode = person_prefs["direction_mode"]
     st.session_state.speech_speed = person_prefs["speech_speed"]
     st.session_state.show_hints = person_prefs["show_hints"]
+    st.session_state.story_pause_seconds = person_prefs["story_pause_seconds"]
     st.session_state.direction = direction_for_mode(person_prefs["direction_mode"])
     sync_menu_widget_state()
 
@@ -695,12 +716,16 @@ def reset_study_state(reset_selected=True):
     st.session_state.quit_requested = False
     st.session_state.final_exit = False
     st.session_state.delete_review_confirm_key = None
+    st.session_state.story_started = False
+    st.session_state.story_running = False
+    st.session_state.story_run_token = 0
+    st.session_state.story_resume_next = False
 
 
 def activate_deck(deck_value):
     reset_study_state(reset_selected=False)
     st.session_state.selected_csv = deck_value
-    st.session_state.study_mode = "all" if is_review_deck(deck_value) else None
+    st.session_state.study_mode = "story" if is_story_deck(deck_value) else ("all" if is_review_deck(deck_value) else None)
     st.session_state.person_selector_visible = False
     st.session_state.direction = effective_direction(deck_value)
 
@@ -929,6 +954,21 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {BUTTON_COLORS['yellow']['bg']} !important;
     border-color: {BUTTON_COLORS['yellow']['border']} !important;
     color: {BUTTON_COLORS['yellow']['fg']} !important;
+}}
+.st-key-storypause_wrap div[data-testid="stButton"] > button {{
+    background-color: #ffd9b0 !important;
+    border-color: #d97706 !important;
+    color: #8a3b00 !important;
+}}
+.st-key-storystop_wrap div[data-testid="stButton"] > button {{
+    background-color: {BUTTON_COLORS['red']['bg']} !important;
+    border-color: {BUTTON_COLORS['red']['border']} !important;
+    color: {BUTTON_COLORS['red']['fg']} !important;
+}}
+.st-key-storystart_wrap div[data-testid="stButton"] > button {{
+    background-color: {BUTTON_COLORS['green']['bg']} !important;
+    border-color: {BUTTON_COLORS['green']['border']} !important;
+    color: {BUTTON_COLORS['green']['fg']} !important;
 }}
 /* ---- Quit before 🛑 ---- */
 .st-key-quitbefore_wrap div[data-testid="stButton"] > button {{
@@ -1182,6 +1222,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mistakesonly_wrap div[data-testid="stButton"] > button {{
     width: 5.8rem !important;
 }}
+.st-key-storyadvance_hidden_wrap {{
+    display: none !important;
+}}
+.st-key-storyresumenext_hidden_wrap {{
+    display: none !important;
+}}
 
 /* ---- Header row ---- */
 .st-key-header_row_wrap [data-testid="stHorizontalBlock"] {{
@@ -1366,7 +1412,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 
 /* ---- Flashcard boxes ---- */
-.fc-block {{
+.fc-block,
+.story-display-block {{
     border: 1px solid {t['border']};
     border-radius: 1rem;
     padding: 0.6rem 0.9rem;
@@ -1376,9 +1423,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     user-select: none;
     -webkit-user-select: none;
     transition: border-color 0.15s ease;
+    position: relative;
 }}
-.fc-block:active {{ border-color: {t['accent']}; }}
-.fc-block-empty {{ opacity: 0.35; }}
+.fc-block:active,
+.story-display-block:active {{ border-color: {t['accent']}; }}
+.fc-block-empty,
+.story-display-block-empty {{ opacity: 0.35; }}
+.story-box-shield {{
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: transparent;
+    border-radius: inherit;
+}}
 .fc-section-label {{
     font-size: 0.60rem; font-weight: 500;
     text-transform: uppercase; letter-spacing: 0.08em;
@@ -1448,6 +1505,123 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {t['muted']}; margin-top: 0.3rem;
     letter-spacing: 0.06em; text-transform: uppercase;
 }}
+.story-title-block {{
+    padding: 0.5rem 0 0.22rem 0;
+}}
+.story-option-row {{
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: {t['fg']};
+    padding-top: 0;
+    line-height: 1.05;
+}}
+.st-key-storyoptions_stack_wrap [data-testid="stVerticalBlock"] {{
+    gap: 0 !important;
+}}
+.st-key-storyoptions_stack_wrap [data-testid="stVerticalBlock"] > * {{
+    margin-bottom: 0 !important;
+}}
+.st-key-storyoptions_stack_wrap [data-testid="stElementContainer"] {{
+    margin: 0 !important;
+}}
+.st-key-storyplayback_row_wrap,
+.st-key-storytranslation_row_wrap,
+.st-key-storyaudio_row_wrap {{
+    margin: 0 !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"],
+.st-key-storytranslation_row_wrap [data-testid="stHorizontalBlock"],
+.st-key-storyaudio_row_wrap [data-testid="stHorizontalBlock"] {{
+    align-items: center !important;
+    gap: 0.25rem !important;
+    margin: 0 !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stColumn"],
+.st-key-storytranslation_row_wrap [data-testid="stColumn"],
+.st-key-storyaudio_row_wrap [data-testid="stColumn"] {{
+    padding: 0 !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stColumn"] > div,
+.st-key-storytranslation_row_wrap [data-testid="stColumn"] > div,
+.st-key-storyaudio_row_wrap [data-testid="stColumn"] > div {{
+    padding: 0 !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stColumn"]:first-child,
+.st-key-storytranslation_row_wrap [data-testid="stColumn"]:first-child,
+.st-key-storyaudio_row_wrap [data-testid="stColumn"]:first-child {{
+    flex: 0 0 6.2rem !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stColumn"]:last-child,
+.st-key-storytranslation_row_wrap [data-testid="stColumn"]:last-child,
+.st-key-storyaudio_row_wrap [data-testid="stColumn"]:last-child {{
+    flex: 1 1 auto !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stRadio"] > div,
+.st-key-storytranslation_row_wrap [data-testid="stRadio"] > div,
+.st-key-storyaudio_row_wrap [data-testid="stRadio"] > div {{
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    gap: 0.95rem !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stRadio"] label,
+.st-key-storytranslation_row_wrap [data-testid="stRadio"] label,
+.st-key-storyaudio_row_wrap [data-testid="stRadio"] label {{
+    margin-bottom: 0 !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stMarkdownContainer"] p,
+.st-key-storytranslation_row_wrap [data-testid="stMarkdownContainer"] p,
+.st-key-storyaudio_row_wrap [data-testid="stMarkdownContainer"] p {{
+    margin: 0 !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stRadio"],
+.st-key-storytranslation_row_wrap [data-testid="stRadio"],
+.st-key-storyaudio_row_wrap [data-testid="stRadio"] {{
+    margin: 0 !important;
+    padding: 0 !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stRadio"] > label,
+.st-key-storytranslation_row_wrap [data-testid="stRadio"] > label,
+.st-key-storyaudio_row_wrap [data-testid="stRadio"] > label {{
+    display: none !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
+.st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
+.st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+    margin: 0 !important;
+    padding: 0 !important;
+}}
+.story-progress {{
+    margin: 0.18rem 0 0.42rem 0;
+}}
+.story-progress-head {{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.22rem;
+}}
+.story-progress-label {{
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: {t['muted']};
+}}
+.story-progress-value {{
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: {t['fg']};
+}}
+.story-progress-track {{
+    height: 0.22rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, {t['border']} 65%, transparent 35%);
+    overflow: hidden;
+}}
+.story-progress-fill {{
+    height: 100%;
+    background: {t['accent']};
+    border-radius: 999px;
+}}
 .soft-divider {{
     border: none; border-top: 1px solid {t['border']}; margin: 0.6rem 0;
 }}
@@ -1489,6 +1663,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] > * {{
         margin-bottom: 0 !important;
+    }}
+    .mobile-deck-divider {{
+        border-top: 1px solid {t['border']};
+        margin: 0.32rem 0 0.28rem 0;
+        opacity: 0.85;
     }}
     .st-key-review_miguel_active_wrap [data-testid="stButton"] > button,
     .st-key-review_david_active_wrap [data-testid="stButton"] > button {{
@@ -1676,6 +1855,664 @@ def advance_card(schedule_current=True):
     st.session_state.delete_review_confirm_key = None
     st.session_state.direction = effective_direction()
 
+
+def story_pause_seconds():
+    return st.session_state.story_pause_seconds
+
+
+def current_story_card():
+    return st.session_state.cards[st.session_state.index]
+
+
+def advance_story_line():
+    st.session_state.index += 1
+    if st.session_state.index >= len(st.session_state.cards):
+        go_back_to_deck_picker()
+
+
+def pause_story():
+    st.session_state.story_started = True
+    st.session_state.story_running = False
+    st.session_state.story_resume_next = not st.session_state.story_audio_on
+
+
+def start_story():
+    if st.session_state.story_resume_next:
+        st.session_state.story_resume_next = False
+        advance_story_line()
+        if st.session_state.selected_csv is None:
+            return
+    st.session_state.story_started = True
+    st.session_state.story_running = True
+    st.session_state.story_run_token += 1
+
+
+def stop_story():
+    go_back_to_deck_picker()
+
+
+def mark_story_resume_next():
+    st.session_state.story_resume_next = True
+
+
+def story_box_event_attrs(is_clickable):
+    if is_clickable:
+        return ""
+    swallow = "event.preventDefault(); event.stopPropagation(); if (event.stopImmediatePropagation) { event.stopImmediatePropagation(); } return false;"
+    return (
+        f' onclick="{swallow}"'
+        f' onmousedown="{swallow}"'
+        f' onmouseup="{swallow}"'
+        f' onpointerdown="{swallow}"'
+        f' onpointerup="{swallow}"'
+        f' ontouchstart="{swallow}"'
+        f' ontouchend="{swallow}"'
+    )
+
+
+def story_box_shield_html(is_clickable):
+    if is_clickable:
+        return ""
+    return '<div class="story-box-shield"' + story_box_event_attrs(False) + '></div>'
+
+
+def render_story_pause_request_guard():
+    story_index = st.session_state.index
+    story_run_token = st.session_state.story_run_token
+    components.html(
+        f"""
+        <script>
+        (function() {{
+            var doc = window.parent.document;
+            var pauseState = {{
+                runToken: {story_run_token},
+                storyIndex: {story_index}
+            }};
+
+            function markPauseRequested() {{
+                doc._storyPauseRequested = pauseState;
+            }}
+
+            function attach(selector, key) {{
+                var button = doc.querySelector(selector);
+                if (!button) return false;
+
+                if (doc[key]) {{
+                    ['pointerdown', 'mousedown', 'touchstart', 'click'].forEach(function(eventName) {{
+                        button.removeEventListener(eventName, doc[key], true);
+                    }});
+                }}
+
+                doc[key] = markPauseRequested;
+                ['pointerdown', 'mousedown', 'touchstart', 'click'].forEach(function(eventName) {{
+                    button.addEventListener(eventName, doc[key], true);
+                }});
+                return true;
+            }}
+
+            attach('.st-key-storypause_wrap button', '_storyPauseButtonHandler');
+            attach('.st-key-storystop_wrap button', '_storyStopButtonHandler');
+        }})();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def render_story_box_shield_handler():
+    components.html(
+        """
+        <script>
+        (function() {
+            var doc = window.parent.document;
+            var shields = doc.querySelectorAll('.story-box-shield');
+            var eventNames = ['click', 'mousedown', 'mouseup', 'pointerdown', 'pointerup', 'touchstart', 'touchend'];
+
+            function swallow(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                if (typeof event.stopImmediatePropagation === 'function') {
+                    event.stopImmediatePropagation();
+                }
+                return false;
+            }
+
+            shields.forEach(function(shield) {
+                shield.style.pointerEvents = 'auto';
+                eventNames.forEach(function(eventName) {
+                    shield.addEventListener(eventName, swallow, true);
+                });
+            });
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def render_story_paused_cleanup():
+    story_index = st.session_state.index
+    story_run_token = st.session_state.story_run_token
+    components.html(
+        f"""
+        <script>
+        (function() {{
+            var synth = window.parent.speechSynthesis || window.speechSynthesis;
+            var doc = window.parent.document;
+            var pauseCaptureKey = '{story_run_token}|' + '{story_index}';
+            var pauseState = doc._storyPauseResumeState;
+
+            doc._storyPauseRequested = {{
+                runToken: {story_run_token},
+                storyIndex: {story_index}
+            }};
+
+            if (doc._storyPauseCaptureKey !== pauseCaptureKey) {{
+                doc._storyPauseCaptureKey = pauseCaptureKey;
+                if (pauseState && pauseState.runToken === {story_run_token} && pauseState.storyIndex === {story_index} && pauseState.speechFinished) {{
+                    var resumeNextButton = doc.querySelector('.st-key-storyresumenext_hidden_wrap button');
+                    if (resumeNextButton) {{
+                        resumeNextButton.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
+                    }}
+                }}
+            }}
+
+            if (doc._storyAutoAdvanceTimer) {{
+                clearTimeout(doc._storyAutoAdvanceTimer);
+                doc._storyAutoAdvanceTimer = null;
+            }}
+
+            doc._storyAutoAdvanceIndex = null;
+            doc._storyLastSpeechKey = null;
+            doc._storyPauseResumeState = null;
+
+            if (synth) {{
+                synth.cancel();
+            }}
+        }})();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def render_story_advance_tap_handler():
+    components.html(
+        """
+        <script>
+        (function() {
+            function clickAdvanceButton() {
+                var doc = window.parent.document;
+                var button = doc.querySelector('.st-key-storyadvance_hidden_wrap button');
+                if (!button) {
+                    return false;
+                }
+                button.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+                return true;
+            }
+
+            function attach() {
+                var doc = window.parent.document;
+                var blocks = doc.querySelectorAll('.fc-story-tappable');
+                if (!blocks.length) return false;
+
+                if (doc._storyTapHandler) {
+                    doc.body.removeEventListener('click', doc._storyTapHandler);
+                }
+
+                doc._storyTapHandler = function(event) {
+                    if (!event.target.closest('.fc-story-tappable')) return;
+                    clickAdvanceButton();
+                };
+
+                doc.body.addEventListener('click', doc._storyTapHandler);
+                return true;
+            }
+
+            var attempts = 0;
+            function tryAttach() {
+                if (attach()) return;
+                attempts += 1;
+                if (attempts < 20) {
+                    setTimeout(tryAttach, 150);
+                }
+            }
+
+            tryAttach();
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def render_story_advance_tap_cleanup():
+    components.html(
+        """
+        <script>
+        (function() {
+            var doc = window.parent.document;
+            if (doc._storyTapHandler) {
+                doc.body.removeEventListener('click', doc._storyTapHandler);
+                doc._storyTapHandler = null;
+            }
+            if (doc._storyIgnoreTapHandler) {
+                ['click', 'mousedown', 'mouseup', 'pointerdown', 'pointerup', 'touchstart', 'touchend'].forEach(function(eventName) {
+                    doc.body.removeEventListener(eventName, doc._storyIgnoreTapHandler, true);
+                });
+                doc._storyIgnoreTapHandler = null;
+            }
+            if (doc._fcHandler) {
+                doc.body.removeEventListener('click', doc._fcHandler);
+                doc._fcHandler = null;
+            }
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def render_story_ignore_tap_handler():
+    components.html(
+        """
+        <script>
+        (function() {
+            var doc = window.parent.document;
+
+            if (doc._storyTapHandler) {
+                doc.body.removeEventListener('click', doc._storyTapHandler);
+                doc._storyTapHandler = null;
+            }
+
+            if (doc._fcHandler) {
+                doc.body.removeEventListener('click', doc._fcHandler);
+                doc._fcHandler = null;
+            }
+
+            if (doc._storyIgnoreTapHandler) {
+                ['click', 'mousedown', 'mouseup', 'pointerdown', 'pointerup', 'touchstart', 'touchend'].forEach(function(eventName) {
+                    doc.body.removeEventListener(eventName, doc._storyIgnoreTapHandler, true);
+                });
+            }
+
+            doc._storyIgnoreTapHandler = function(event) {
+                if (!event.target.closest('.fc-story-static')) return;
+                doc._storyStaticBoxInteraction = {
+                    at: Date.now()
+                };
+                event.preventDefault();
+                event.stopPropagation();
+                if (typeof event.stopImmediatePropagation === 'function') {
+                    event.stopImmediatePropagation();
+                }
+            };
+
+            ['click', 'mousedown', 'mouseup', 'pointerdown', 'pointerup', 'touchstart', 'touchend'].forEach(function(eventName) {
+                doc.body.addEventListener(eventName, doc._storyIgnoreTapHandler, true);
+            });
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def render_story_auto_advance(delay_seconds):
+    delay_ms = max(int(delay_seconds * 1000), 0)
+    story_index = st.session_state.index
+    components.html(
+        f"""
+        <script>
+        (function() {{
+            var doc = window.parent.document;
+            var storyIndex = {story_index};
+
+            function clickAdvanceButton() {{
+                var button = doc.querySelector('.st-key-storyadvance_hidden_wrap button');
+                if (!button) {{
+                    return false;
+                }}
+                button.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
+                return true;
+            }}
+
+            if (doc._storyAutoAdvanceTimer) {{
+                clearTimeout(doc._storyAutoAdvanceTimer);
+            }}
+
+            doc._storyAutoAdvanceIndex = storyIndex;
+            doc._storyAutoAdvanceTimer = setTimeout(function() {{
+                if (doc._storyAutoAdvanceIndex !== storyIndex) {{
+                    return;
+                }}
+                if (clickAdvanceButton()) return;
+                var attempts = 0;
+                var timer = setInterval(function() {{
+                    attempts += 1;
+                    if (clickAdvanceButton() || attempts >= 10) {{
+                        clearInterval(timer);
+                    }}
+                }}, 150);
+            }}, {delay_ms});
+        }})();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
+    speech_text = strip_spoken_text(text)
+    speech_rate = speech_rate_value()
+    story_index = st.session_state.index
+    story_run_token = st.session_state.story_run_token
+    delay_ms = max(int(delay_seconds * 1000), 0)
+    components.html(
+        f"""
+        <script>
+        (function() {{
+            var speechText = {json.dumps(speech_text)};
+            var speechRate = {speech_rate};
+            var storyIndex = {story_index};
+            var storyRunToken = {story_run_token};
+            var autoAdvance = {str(auto_advance).lower()};
+            var delayMs = {delay_ms};
+            var synth = window.parent.speechSynthesis || window.speechSynthesis;
+            var doc = window.parent.document;
+            var speechKey = storyRunToken + '|' + storyIndex + '|' + speechText + '|' + speechRate;
+
+            if (!synth || !speechText) return;
+            if (doc._storyLastSpeechKey === speechKey) return;
+
+            function clickAdvanceButton() {{
+                var button = doc.querySelector('.st-key-storyadvance_hidden_wrap button');
+                if (!button) {{
+                    return false;
+                }}
+                button.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
+                return true;
+            }}
+
+            function scheduleAdvanceAfterSpeech() {{
+                if (!autoAdvance) return;
+                if (doc._storyPauseRequested && doc._storyPauseRequested.runToken === storyRunToken && doc._storyPauseRequested.storyIndex === storyIndex) return;
+
+                if (doc._storyAutoAdvanceTimer) {{
+                    clearTimeout(doc._storyAutoAdvanceTimer);
+                }}
+
+                doc._storyAutoAdvanceIndex = storyIndex;
+                doc._storyAutoAdvanceTimer = setTimeout(function() {{
+                    if (doc._storyAutoAdvanceIndex !== storyIndex) {{
+                        return;
+                    }}
+                    if (clickAdvanceButton()) return;
+                    var attempts = 0;
+                    var timer = setInterval(function() {{
+                        attempts += 1;
+                        if (clickAdvanceButton() || attempts >= 10) {{
+                            clearInterval(timer);
+                        }}
+                    }}, 150);
+                }}, delayMs);
+            }}
+
+            function pickVoice(voices) {{
+                return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
+                    || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
+                    || voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
+                    || voices.find(function(voice) {{ return voice.lang && voice.lang.toLowerCase().startsWith('es'); }})
+                    || null;
+            }}
+
+            function speakNow() {{
+                var utterance = new SpeechSynthesisUtterance(speechText);
+                var voices = synth.getVoices ? synth.getVoices() : [];
+                var voice = pickVoice(voices);
+                var completionHandled = false;
+
+                function handleSpeechCompletion() {{
+                    if (completionHandled) return;
+                    completionHandled = true;
+
+                    var pauseRequested = doc._storyPauseRequested
+                        && doc._storyPauseRequested.runToken === storyRunToken
+                        && doc._storyPauseRequested.storyIndex === storyIndex;
+
+                    if (!pauseRequested && doc._storyPauseResumeState && doc._storyPauseResumeState.runToken === storyRunToken && doc._storyPauseResumeState.storyIndex === storyIndex) {{
+                        doc._storyPauseResumeState.speechFinished = true;
+                    }}
+
+                    if (pauseRequested) return;
+                    doc._storyStaticBoxInteraction = null;
+                    scheduleAdvanceAfterSpeech();
+                }}
+
+                doc._storyPauseResumeState = {{
+                    runToken: storyRunToken,
+                    storyIndex: storyIndex,
+                    speechFinished: false
+                }};
+                doc._storyPauseRequested = null;
+
+                utterance.lang = voice ? voice.lang : 'es-ES';
+                utterance.rate = speechRate;
+                if (voice) utterance.voice = voice;
+                utterance.onend = handleSpeechCompletion;
+                utterance.onerror = function() {{
+                    var pauseRequested = doc._storyPauseRequested
+                        && doc._storyPauseRequested.runToken === storyRunToken
+                        && doc._storyPauseRequested.storyIndex === storyIndex;
+                    if (pauseRequested) return;
+                    handleSpeechCompletion();
+                }};
+
+                doc._storyLastSpeechKey = speechKey;
+                synth.cancel();
+                synth.speak(utterance);
+            }}
+
+            if (synth.getVoices && synth.getVoices().length) {{
+                speakNow();
+                return;
+            }}
+
+            var handled = false;
+            function handleVoicesChanged() {{
+                if (handled) return;
+                handled = true;
+                speakNow();
+            }}
+
+            if (typeof synth.addEventListener === 'function') {{
+                synth.addEventListener('voiceschanged', handleVoicesChanged, {{ once: true }});
+            }} else {{
+                synth.onvoiceschanged = handleVoicesChanged;
+            }}
+
+            setTimeout(handleVoicesChanged, 250);
+        }})();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def render_story_view():
+    story_card = current_story_card()
+    spanish_text = story_card["answer"]
+    translation_text = story_card["word"] if st.session_state.story_translation_on else ""
+    story_position = st.session_state.index + 1
+    story_total = len(st.session_state.cards)
+    story_progress_pct = (story_position / story_total * 100) if story_total else 0
+    playback_options = {
+        "continuous": "continuous",
+        "stop on every line": "stop on every line",
+    }
+
+    st.markdown(
+        "<div class='story-title-block'>"
+        "<div class='title-big'>Story Mode</div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+    with st.container(key="storyoptions_stack_wrap"):
+        with st.container(key="storyplayback_row_wrap"):
+            playback_label_col, playback_radio_col = st.columns([0.34, 0.66], gap="small")
+            with playback_label_col:
+                st.markdown('<div class="story-option-row">Playback:</div>', unsafe_allow_html=True)
+            with playback_radio_col:
+                playback_choice = st.radio(
+                    "Playback",
+                    options=list(playback_options.keys()),
+                    index=0 if st.session_state.story_playback_mode == "continuous" else 1,
+                    horizontal=True,
+                    label_visibility="collapsed",
+                    key="story_playback_radio",
+                )
+        with st.container(key="storytranslation_row_wrap"):
+            translation_label_col, translation_radio_col = st.columns([0.34, 0.66], gap="small")
+            with translation_label_col:
+                st.markdown('<div class="story-option-row">Translation:</div>', unsafe_allow_html=True)
+            with translation_radio_col:
+                translation_choice = st.radio(
+                    "Translation",
+                    options=["ON", "OFF"],
+                    index=0 if st.session_state.story_translation_on else 1,
+                    horizontal=True,
+                    label_visibility="collapsed",
+                    key="story_translation_radio",
+                )
+        with st.container(key="storyaudio_row_wrap"):
+            audio_label_col, audio_radio_col = st.columns([0.34, 0.66], gap="small")
+            with audio_label_col:
+                st.markdown('<div class="story-option-row">Audio:</div>', unsafe_allow_html=True)
+            with audio_radio_col:
+                audio_choice = st.radio(
+                    "Audio",
+                    options=["ON", "OFF"],
+                    index=0 if st.session_state.story_audio_on else 1,
+                    horizontal=True,
+                    label_visibility="collapsed",
+                    key="story_audio_radio",
+                )
+    new_playback_mode = playback_options[playback_choice]
+    if new_playback_mode != st.session_state.story_playback_mode:
+        st.session_state.story_playback_mode = new_playback_mode
+        st.rerun()
+
+    translation_enabled = translation_choice == "ON"
+    if translation_enabled != st.session_state.story_translation_on:
+        st.session_state.story_translation_on = translation_enabled
+        st.rerun()
+
+    audio_enabled = audio_choice == "ON"
+    if audio_enabled != st.session_state.story_audio_on:
+        st.session_state.story_audio_on = audio_enabled
+        st.rerun()
+
+    if st.session_state.story_running:
+        control_cols = st.columns(2, gap="small")
+        with control_cols[0]:
+            with st.container(key="storypause_wrap"):
+                if st.button("PAUSE", key="story_pause_btn", use_container_width=True):
+                    pause_story()
+                    st.rerun()
+        with control_cols[1]:
+            with st.container(key="storystop_wrap"):
+                if st.button("STOP", key="story_stop_btn", use_container_width=True):
+                    stop_story()
+                    st.rerun()
+    else:
+        control_cols = st.columns(2, gap="small")
+        with control_cols[0]:
+            with st.container(key="storystart_wrap"):
+                start_label = "RESUME" if st.session_state.story_started else "START"
+                if st.button(start_label, key="story_start_btn", use_container_width=True):
+                    start_story()
+                    st.rerun()
+        with control_cols[1]:
+            with st.container(key="storystop_wrap"):
+                if st.button("STOP", key="story_stop_btn_idle", use_container_width=True):
+                    stop_story()
+                    st.rerun()
+
+    if not st.session_state.story_started:
+        return
+
+    st.markdown(
+        "<div class='story-progress'>"
+        "<div class='story-progress-head'>"
+        "<div class='story-progress-label'>Sentence</div>"
+        f"<div class='story-progress-value'>{story_position} of {story_total}</div>"
+        "</div>"
+        "<div class='story-progress-track'>"
+        f"<div class='story-progress-fill' style='width:{story_progress_pct:.2f}%'></div>"
+        "</div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+    story_box_shield = story_box_shield_html(False)
+
+    spanish_html = (
+        '<div class="story-display-block">'
+        + story_box_shield +
+        '<div class="fc-section-label">Spanish</div>'
+        + format_word(spanish_text, 'fc-word', 'fc-note')
+        + '</div>'
+    )
+    st.markdown(spanish_html, unsafe_allow_html=True)
+
+    if st.session_state.story_playback_mode == "stop on every line":
+        with st.container(key="showanswer_wrap"):
+            if st.button("➜", key="story_next_btn"):
+                advance_story_line()
+                st.rerun()
+
+    if translation_enabled:
+        translation_inner = format_word(translation_text, 'fc-answer', 'fc-answer-note')
+        translation_html = (
+            '<div class="story-display-block">'
+            + story_box_shield +
+            '<div class="fc-section-label">Translation</div>'
+            + translation_inner
+            + '</div>'
+        )
+    else:
+        translation_html = (
+            '<div class="story-display-block story-display-block-empty">'
+            + story_box_shield +
+            '<div class="fc-section-label">Translation</div>'
+            '<div class="fc-word-placeholder">&nbsp;</div>'
+            '</div>'
+        )
+    st.markdown(translation_html, unsafe_allow_html=True)
+    render_story_box_shield_handler()
+
+    with st.container(key="storyadvance_hidden_wrap"):
+        st.button("__story_next_hidden__", key="story_advance_hidden_btn", on_click=advance_story_line)
+    with st.container(key="storyresumenext_hidden_wrap"):
+        st.button("__story_resume_next_hidden__", key="story_resume_next_hidden_btn", on_click=mark_story_resume_next)
+
+    if not st.session_state.story_running:
+        render_story_paused_cleanup()
+
+    if audio_enabled and st.session_state.story_running:
+        render_story_pause_request_guard()
+        render_story_audio_autoplay(
+            spanish_text,
+            auto_advance=st.session_state.story_playback_mode == "continuous",
+            delay_seconds=story_pause_seconds(),
+        )
+
+    if st.session_state.story_playback_mode == "stop on every line" and st.session_state.story_running:
+        pass
+    elif st.session_state.story_running and not audio_enabled:
+        render_story_auto_advance(story_pause_seconds())
+
 # ------------------------------------------------------------------------
 # UI HELPERS
 # ------------------------------------------------------------------------
@@ -1829,8 +2666,9 @@ def render_speaker_button(text):
             if (!button || !synth || !speechText) return;
 
             function pickVoice(voices) {{
-                return voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
-                    || voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
+                return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
+                    || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
+                    || voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
                     || voices.find(function(voice) {{ return voice.lang && voice.lang.toLowerCase().startsWith('es'); }})
                     || null;
             }}
@@ -2015,6 +2853,22 @@ def render_menu():
         )
         if new_speed != st.session_state.speech_speed:
             st.session_state.speech_speed = new_speed
+            store_active_person_prefs()
+            st.session_state.erase_review_confirm = False
+            st.rerun()
+        st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Story Mode</div>',
+                    unsafe_allow_html=True)
+        story_pause_options = [5, 4, 3, 2, 1]
+        new_story_pause = st.radio(
+            "Pause between sentences",
+            options=story_pause_options,
+            index=story_pause_options.index(st.session_state.story_pause_seconds),
+            horizontal=True,
+            label_visibility="visible",
+            key="story_pause_radio",
+        )
+        if new_story_pause != st.session_state.story_pause_seconds:
+            st.session_state.story_pause_seconds = new_story_pause
             store_active_person_prefs()
             st.session_state.erase_review_confirm = False
             st.rerun()
@@ -2232,11 +3086,25 @@ if st.session_state.selected_csv is None:
                     ):
                         activate_deck(review_value)
                         st.rerun()
-            for csv_file in csv_files:
+            divider_prefix_groups = ("ESsbs", "MAC", "PoS", "sentence")
+            for current_index, csv_file in enumerate(csv_files):
                 deck_display = display_deck_name(csv_file)
                 if st.button(deck_display, key=f"deck_btn_{csv_file}", use_container_width=True):
                     activate_deck(csv_file)
                     st.rerun()
+                current_group = next(
+                    (prefix for prefix in divider_prefix_groups if csv_file.lower().startswith(prefix.lower())),
+                    None,
+                )
+                next_group = None
+                if current_index + 1 < len(csv_files):
+                    next_file = csv_files[current_index + 1]
+                    next_group = next(
+                        (prefix for prefix in divider_prefix_groups if next_file.lower().startswith(prefix.lower())),
+                        None,
+                    )
+                if current_group and current_group != next_group:
+                    st.markdown('<div class="mobile-deck-divider"></div>', unsafe_allow_html=True)
 
     with st.container(key="desktop_deck_picker_wrap"):
         selected = st.selectbox(
@@ -2251,7 +3119,7 @@ if st.session_state.selected_csv is None:
                 st.rerun()
     st.stop()
 
-if not is_review_deck(st.session_state.selected_csv) and st.session_state.study_mode is None:
+if not is_review_deck(st.session_state.selected_csv) and not is_story_deck(st.session_state.selected_csv) and st.session_state.study_mode is None:
     progress_stats = deck_progress_stats(st.session_state.selected_csv, st.session_state.active_person)
     if progress_stats["supported"]:
         render_header()
@@ -2286,13 +3154,15 @@ if st.session_state.loaded_csv != st.session_state.selected_csv or not st.sessio
                 if card.get("id") not in completed_ids
             ]
     st.session_state.order = list(range(len(st.session_state.cards)))
-    random.shuffle(st.session_state.order)
+    if not is_story_deck(st.session_state.selected_csv):
+        random.shuffle(st.session_state.order)
     st.session_state.index = 0
     st.session_state.loaded_csv = st.session_state.selected_csv
     st.session_state.direction = effective_direction()
 
 if (
     not is_review_deck(st.session_state.selected_csv)
+    and not is_story_deck(st.session_state.selected_csv)
     and st.session_state.study_mode == "remaining"
     and not st.session_state.cards
 ):
@@ -2309,6 +3179,23 @@ total_cards   = len(st.session_state.cards)
 shown_cards   = sum(1 for c in st.session_state.cards if c["shown"])
 correct_count = sum(1 for c in st.session_state.cards if c["repeat_score"] == 0 and c["shown"])
 repeat_count  = sum(1 for c in st.session_state.cards if c["error_flag"] == 1)
+
+# ========================================================================
+# STORY MODE
+# ========================================================================
+
+if is_story_deck(st.session_state.selected_csv):
+    if st.session_state.index >= len(st.session_state.cards):
+        go_back_to_deck_picker()
+        st.rerun()
+
+    render_header()
+    render_menu()
+    if st.session_state.menu_open:
+        st.stop()
+    render_deck_strip()
+    render_story_view()
+    st.stop()
 
 # ========================================================================
 # QUIT / SUMMARY
