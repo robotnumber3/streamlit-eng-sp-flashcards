@@ -2232,6 +2232,22 @@ def render_story_start_unlock_handler(
                 var voice = pickVoice(voices);
                 controller.visualTimers = [];
 
+                function estimatedDurationMs(text) {{
+                    var chars = (text || '').length || 1;
+                    var rate = speechRate > 0 ? speechRate : 1;
+                    return Math.max(950, Math.round((chars * 42) / rate) + 260);
+                }}
+
+                function scheduleVisual(delay, callback) {{
+                    var timerId = parentWindow.setTimeout(function() {{
+                        if (controller.queueToken !== queueToken) return;
+                        callback();
+                    }}, delay);
+                    controller.visualTimers.push(timerId);
+                }}
+
+                var cumulativeDelay = 0;
+
                 if (typeof synth.resume === 'function') {{
                     synth.resume();
                 }}
@@ -2255,7 +2271,6 @@ def render_story_start_unlock_handler(
                         controller.pendingManualSpeakIndex = null;
                         controller.isSpeaking = true;
                         controller.speakingKey = speechKey;
-                        renderLocalStoryView(idx);
                         setDebug('queue onstart: ' + (idx + 1));
                     }};
 
@@ -2294,6 +2309,40 @@ def render_story_start_unlock_handler(
                     }};
 
                     synth.speak(utterance);
+
+                    (function(lineIndex, lineDelay, lineDuration) {{
+                        scheduleVisual(lineDelay, function() {{
+                            if (!controller.running) return;
+                            controller.localIndex = lineIndex;
+                            renderLocalStoryView(lineIndex);
+                            setDebug('queue render: ' + (lineIndex + 1));
+                        }});
+
+                        if (lineIndex < controller.lines.length - 1 && controller.delayMs > 0) {{
+                            scheduleVisual(lineDelay + lineDuration, function() {{
+                                if (!controller.running) return;
+                                if (typeof synth.pause === 'function') {{
+                                    synth.pause();
+                                    setDebug('queue pause: ' + (lineIndex + 1));
+                                }}
+                            }});
+                            scheduleVisual(lineDelay + lineDuration + controller.delayMs, function() {{
+                                if (!controller.running) return;
+                                if (typeof synth.resume === 'function') {{
+                                    synth.resume();
+                                    setDebug('queue resume: ' + (lineIndex + 2));
+                                }}
+                            }});
+                        }} else if (lineIndex >= controller.lines.length - 1) {{
+                            scheduleVisual(lineDelay + lineDuration, function() {{
+                                controller.running = false;
+                                controller.active = false;
+                                setDebug('finished story');
+                            }});
+                        }}
+                    }})(idx, cumulativeDelay, estimatedDurationMs(speechText));
+
+                    cumulativeDelay += estimatedDurationMs(speechText) + controller.delayMs;
                 }}
             }}
 
