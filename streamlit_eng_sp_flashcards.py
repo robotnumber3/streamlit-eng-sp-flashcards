@@ -2286,6 +2286,11 @@ def render_story_start_unlock_handler(
             }}
 
             function startFromGesture() {{
+                var now = Date.now();
+                if (controller.lastStartGestureAt && now - controller.lastStartGestureAt < 900) {{
+                    return;
+                }}
+                controller.lastStartGestureAt = now;
                 controller.active = true;
                 controller.running = true;
                 controller.ignorePauseUntil = Date.now() + 1200;
