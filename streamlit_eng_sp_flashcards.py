@@ -2273,6 +2273,7 @@ def render_story_start_unlock_handler(
                         continue;
                     }}
                     let speechText = rawSpeechText;
+                    let lineDelay = cumulativeDelay;
 
                     let speechKey = controller.storyKey + '|queue|' + idx + '|' + speechText + '|' + speechRate;
                     let utterance = new SpeechSynthesisUtterance(speechText);
@@ -2290,6 +2291,13 @@ def render_story_start_unlock_handler(
                         setDebug('queue onstart: ' + (idx + 1));
                     }};
 
+
+                                        scheduleVisual(lineDelay, function() {{
+                                            if (!controller.running) return;
+                                            controller.localIndex = idx;
+                                            renderLocalStoryView(idx);
+                                            setDebug('queue render: ' + (idx + 1));
+                                        }});
                     utterance.onend = function() {{
                         if (controller.queueToken !== queueToken) return;
                         controller.isSpeaking = false;
@@ -2297,6 +2305,8 @@ def render_story_start_unlock_handler(
                         controller.lastCompletedIndex = idx;
                         setDebug('queue onend: ' + (idx + 1));
                         if (idx >= controller.lines.length - 1) {{
+
+                            cumulativeDelay += estimatedDurationMs(rawSpeechText) + controller.delayMs;
                             controller.running = false;
                             controller.active = false;
                             setDebug('finished story');
