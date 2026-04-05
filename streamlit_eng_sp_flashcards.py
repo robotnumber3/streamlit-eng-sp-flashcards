@@ -2063,7 +2063,7 @@ def render_story_start_unlock_handler(
             var doc = window.parent.document;
             var parentWindow = window.parent;
             var synth = parentWindow.speechSynthesis || window.speechSynthesis;
-            var eventNames = ['pointerdown', 'touchstart', 'mousedown', 'click'];
+            var eventNames = ['click', 'touchend'];
             var speechRate = {speech_rate};
             var config = {{
                 storyKey: {json.dumps(story_key)},
