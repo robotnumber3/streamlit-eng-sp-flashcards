@@ -1717,13 +1717,23 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
 
     /* ---- Phone: Translate + Audio checkboxes ---- */
+    .st-key-storytransaudio_row_wrap {{
+        height: 2.2rem !important;
+        overflow: hidden !important;
+    }}
     .st-key-storytransaudio_row_wrap [data-testid="stHorizontalBlock"] {{
         gap: 0 !important;
+        align-items: center !important;
+        height: 2.2rem !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"] {{
         min-width: 0 !important;
         flex: 0 0 auto !important;
         width: auto !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"] > div {{
+        display: flex !important;
+        align-items: center !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(1) {{
         flex: 0 0 auto !important;
