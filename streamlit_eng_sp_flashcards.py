@@ -1717,8 +1717,31 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
 
     /* ---- Phone: Translate + Audio checkboxes ---- */
+    .st-key-storytransaudio_row_wrap [data-testid="stHorizontalBlock"] {{
+        gap: 0 !important;
+    }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"] {{
         min-width: 0 !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(1) {{
+        flex: 0 0 auto !important;
+        padding-right: 0.15rem !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(2) {{
+        flex: 0 0 2.0rem !important;
+        padding-right: 0.6rem !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(3) {{
+        flex: 0 0 auto !important;
+        padding-right: 0.15rem !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(4) {{
+        flex: 0 0 2.0rem !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(5) {{
+        flex: 1 1 auto !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
         position: relative !important;
