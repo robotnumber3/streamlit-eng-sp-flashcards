@@ -2627,8 +2627,8 @@ def render_story_mobile_controller_cleanup():
             }
 
             if (debugEl) {
-                debugEl.style.display = 'none';
-                debugEl.textContent = '';
+                debugEl.style.display = 'block';
+                debugEl.textContent = 'DEBUG: inactive';
             }
         })();
         </script>
@@ -3158,7 +3158,7 @@ def render_story_view():
         return
 
     st.markdown(
-        "<div id='story-mobile-debug' style='display:none;font-size:0.72rem;color:#e6b85c;margin:0.1rem 0 0.35rem 0;'></div>",
+        "<div id='story-mobile-debug' style='display:block;font-size:0.72rem;color:#e6b85c;margin:0.1rem 0 0.35rem 0;'>DEBUG: waiting...</div>",
         unsafe_allow_html=True,
     )
 
