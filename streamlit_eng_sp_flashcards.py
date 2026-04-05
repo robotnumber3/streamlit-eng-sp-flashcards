@@ -1223,10 +1223,26 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: 5.8rem !important;
 }}
 .st-key-storyadvance_hidden_wrap {{
-    display: none !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }}
 .st-key-storyresumenext_hidden_wrap {{
-    display: none !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }}
 
 /* ---- Header row ---- */
@@ -2098,6 +2114,7 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
                 if (!hiddenButton) {{
                     return false;
                 }}
+                hiddenButton.click();
                 hiddenButton.dispatchEvent(new MouseEvent('click', {{ bubbles: true }}));
                 return true;
             }}
@@ -2312,6 +2329,7 @@ def render_story_paused_cleanup():
                 if (pauseState && pauseState.runToken === {story_run_token} && pauseState.storyIndex === {story_index} && pauseState.speechFinished) {{
                     var resumeNextButton = doc.querySelector('.st-key-storyresumenext_hidden_wrap button');
                     if (resumeNextButton) {{
+                        resumeNextButton.click();
                         resumeNextButton.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
                     }}
                 }}
@@ -2347,6 +2365,7 @@ def render_story_advance_tap_handler():
                 if (!button) {
                     return false;
                 }
+                button.click();
                 button.dispatchEvent(new MouseEvent('click', {bubbles: true}));
                 return true;
             }
@@ -2473,6 +2492,7 @@ def render_story_auto_advance(delay_seconds):
                 if (!button) {{
                     return false;
                 }}
+                button.click();
                 button.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
                 return true;
             }}
@@ -2537,6 +2557,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                 if (!button) {{
                     return false;
                 }}
+                button.click();
                 button.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
                 return true;
             }}
