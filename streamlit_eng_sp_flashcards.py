@@ -1735,13 +1735,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         display: flex !important;
         align-items: center !important;
     }}
+    .st-key-storytransaudio_row_wrap .story-option-row {{
+        position: relative !important;
+        top: 0.2rem !important;
+    }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(1) {{
         flex: 0 0 auto !important;
         padding-right: 0.15rem !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(2) {{
         flex: 0 0 2.0rem !important;
-        padding-right: 0.6rem !important;
+        padding-right: 1.0rem !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(3) {{
         flex: 0 0 auto !important;
