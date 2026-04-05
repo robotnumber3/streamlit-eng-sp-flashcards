@@ -1729,6 +1729,67 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-review_david_inactive_wrap [data-testid="stButton"] > button {{
         color: {t['muted']} !important;
     }}
+
+    /* ---- Phone: Translation + Audio rendered as a single checkbox ---- */
+    /* The radiogroup becomes the visible checkbox frame; the two ON/OFF    */
+    /* radio labels are stacked, transparent, with the currently-unchecked  */
+    /* one on top so a tap always flips the state.                          */
+    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
+    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+        position: relative !important;
+        min-height: 1.9rem !important;
+        min-width: 2.0rem !important;
+        width: 2.0rem !important;
+        display: block !important;
+    }}
+    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label,
+    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 2.0rem !important;
+        height: 1.9rem !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        opacity: 0 !important;
+        cursor: pointer !important;
+    }}
+    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked),
+    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {{
+        z-index: 1 !important;
+    }}
+    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:not(:checked)),
+    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:not(:checked)) {{
+        z-index: 2 !important;
+    }}
+    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"]::before,
+    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"]::before {{
+        content: '';
+        position: absolute;
+        top: 0.15rem;
+        left: 0.2rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: 2px solid {t['border']};
+        border-radius: 4px;
+        pointer-events: none;
+        box-sizing: border-box;
+    }}
+    .st-key-storytranslation_row_wrap [data-testid="stRadio"] div[role="radiogroup"]:has(> label:first-child input:checked)::after,
+    .st-key-storyaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"]:has(> label:first-child input:checked)::after {{
+        content: '\\2715';
+        position: absolute;
+        top: 0.15rem;
+        left: 0.2rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.45rem;
+        text-align: center;
+        color: {t['accent']};
+        pointer-events: none;
+    }}
 }}
 </style>
 """, unsafe_allow_html=True)
