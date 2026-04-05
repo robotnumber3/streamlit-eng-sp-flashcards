@@ -2266,7 +2266,7 @@ def render_story_start_unlock_handler(
                     utterance.onerror = function() {{
                         controller.isSpeaking = false;
                         controller.speakingKey = null;
-                        clearCompletionTimer();
+                        finishLine();
                     }};
 
                     synth.cancel();
