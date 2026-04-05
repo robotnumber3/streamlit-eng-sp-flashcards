@@ -2225,6 +2225,11 @@ def render_story_start_unlock_handler(
                 var voices = synth.getVoices ? synth.getVoices() : [];
                 var voice = pickVoice(voices);
 
+                function buildPauseText() {{
+                    var pauseUnits = Math.max(1, Math.round(controller.delayMs / 450));
+                    return Array(pauseUnits).fill('.').join(' ');
+                }}
+
                 if (typeof synth.resume === 'function') {{
                     synth.resume();
                 }}
@@ -2250,10 +2255,6 @@ def render_story_start_unlock_handler(
                         controller.speakingKey = speechKey;
                         renderLocalStoryView(idx);
                         setDebug('queue onstart: ' + (idx + 1));
-                        window.setTimeout(function() {{
-                            if (!controller.running || controller.queueToken !== queueToken) return;
-                            syncAdvanceButton();
-                        }}, 250);
                     }};
 
                     utterance.onend = function() {{
@@ -2282,6 +2283,14 @@ def render_story_start_unlock_handler(
                     }};
 
                     synth.speak(utterance);
+
+                    if (idx < controller.lines.length - 1 && controller.delayMs > 0) {{
+                        let pauseUtterance = new SpeechSynthesisUtterance(buildPauseText());
+                        pauseUtterance.lang = voice ? voice.lang : 'es-ES';
+                        pauseUtterance.rate = 0.6;
+                        pauseUtterance.volume = 0;
+                        synth.speak(pauseUtterance);
+                    }}
                 }}
             }}
 
