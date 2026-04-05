@@ -2232,14 +2232,6 @@ def render_story_start_unlock_handler(
                 var voice = pickVoice(voices);
                 controller.visualTimers = [];
 
-                function estimatedDurationMs(text) {{
-                    var chars = (text || '').length || 1;
-                    var rate = speechRate > 0 ? speechRate : 1;
-                    return Math.max(1600, Math.round((chars * 85) / rate) + 700);
-                }}
-
-                var cumulativeDelay = 0;
-
                 if (typeof synth.resume === 'function') {{
                     synth.resume();
                 }}
@@ -2263,6 +2255,7 @@ def render_story_start_unlock_handler(
                         controller.pendingManualSpeakIndex = null;
                         controller.isSpeaking = true;
                         controller.speakingKey = speechKey;
+                        renderLocalStoryView(idx);
                         setDebug('queue onstart: ' + (idx + 1));
                     }};
 
@@ -2301,18 +2294,6 @@ def render_story_start_unlock_handler(
                     }};
 
                     synth.speak(utterance);
-
-                    (function(lineIndex, delayBefore) {{
-                        var timerId = parentWindow.setTimeout(function() {{
-                            if (!controller.running || controller.queueToken !== queueToken) return;
-                            controller.localIndex = lineIndex;
-                            renderLocalStoryView(lineIndex);
-                            setDebug('queue render: ' + (lineIndex + 1));
-                        }}, delayBefore);
-                        controller.visualTimers.push(timerId);
-                    }})(idx, cumulativeDelay);
-
-                    cumulativeDelay += estimatedDurationMs(speechText) + controller.delayMs;
                 }}
             }}
 
