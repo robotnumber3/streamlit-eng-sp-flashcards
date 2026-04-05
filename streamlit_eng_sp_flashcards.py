@@ -2128,11 +2128,10 @@ def render_story_start_unlock_handler(
             function renderLocalStoryView(index) {{
                 if (index < 0 || index >= controller.lines.length) return;
 
-
-                    let speechText = rawSpeechText;
-                    let lineDelay = cumulativeDelay;
-                    let lineDuration = estimatedDurationMs(rawSpeechText);
+                var spanishContent = doc.getElementById('story-spanish-content');
                 var translationContent = doc.getElementById('story-translation-content');
+                var progressValue = doc.getElementById('story-progress-value');
+                var progressFill = doc.getElementById('story-progress-fill');
                 var total = controller.lines.length || 1;
                 var pct = ((index + 1) / total) * 100;
 
