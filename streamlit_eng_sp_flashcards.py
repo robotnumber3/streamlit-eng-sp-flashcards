@@ -2025,54 +2025,141 @@ def render_story_box_shield_handler():
     )
 
 
-def render_story_start_unlock_handler():
+def render_story_start_unlock_handler(text, auto_advance=False, delay_seconds=0, initial_start_only=False):
+    speech_text = strip_spoken_text(text)
+    speech_rate = speech_rate_value()
+    story_index = st.session_state.index
+    upcoming_story_run_token = st.session_state.story_run_token + 1
+    delay_ms = max(int(delay_seconds * 1000), 0)
     components.html(
-        """
+        f"""
         <script>
-        (function() {
+        (function() {{
             var doc = window.parent.document;
             var synth = window.parent.speechSynthesis || window.speechSynthesis;
             var button = doc.querySelector('.st-key-storystart_wrap button');
             var eventNames = ['pointerdown', 'touchstart', 'mousedown', 'click'];
+            var speechText = {json.dumps(speech_text)};
+            var speechRate = {speech_rate};
+            var storyIndex = {story_index};
+            var storyRunToken = {upcoming_story_run_token};
+            var autoAdvance = {str(auto_advance).lower()};
+            var delayMs = {delay_ms};
+            var initialStartOnly = {str(initial_start_only).lower()};
 
             if (!doc || !synth || !button) return;
 
-            function unlockSpeech() {
-                var now = Date.now();
-                if (doc._storySpeechUnlockedAt && now - doc._storySpeechUnlockedAt < 1200) {
+            function pickVoice(voices) {{
+                return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
+                    || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
+                    || voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
+                    || voices.find(function(voice) {{ return voice.lang && voice.lang.toLowerCase().startsWith('es'); }})
+                    || null;
+            }}
+
+            function clickAdvanceButton() {{
+                var hiddenButton = doc.querySelector('.st-key-storyadvance_hidden_wrap button');
+                if (!hiddenButton) {{
+                    return false;
+                }}
+                hiddenButton.dispatchEvent(new MouseEvent('click', {{ bubbles: true }}));
+                return true;
+            }}
+
+            function scheduleAdvanceAfterSpeech() {{
+                if (!autoAdvance) return;
+                if (doc._storyAutoAdvanceTimer) {{
+                    clearTimeout(doc._storyAutoAdvanceTimer);
+                }}
+
+                doc._storyAutoAdvanceIndex = storyIndex;
+                doc._storyAutoAdvanceTimer = window.setTimeout(function() {{
+                    if (doc._storyAutoAdvanceIndex !== storyIndex) {{
+                        return;
+                    }}
+                    if (clickAdvanceButton()) return;
+                    var attempts = 0;
+                    var timer = window.setInterval(function() {{
+                        attempts += 1;
+                        if (clickAdvanceButton() || attempts >= 10) {{
+                            clearInterval(timer);
+                        }}
+                    }}, 150);
+                }}, delayMs);
+            }}
+
+            function speakFromStartGesture() {{
+                var startMode = button.textContent ? button.textContent.trim().toUpperCase() : '';
+                if (initialStartOnly && startMode !== 'START') {{
                     return;
-                }
+                }}
+                if (!speechText) {{
+                    return;
+                }}
 
-                try {
-                    var unlockUtterance = new SpeechSynthesisUtterance('.');
-                    unlockUtterance.volume = 0;
-                    unlockUtterance.rate = 1;
-                    unlockUtterance.lang = 'es-ES';
+                var speechKey = storyRunToken + '|' + storyIndex + '|' + speechText + '|' + speechRate;
+                if (doc._storyStartGestureSpeechKey === speechKey) {{
+                    return;
+                }}
+                doc._storyStartGestureSpeechKey = speechKey;
+
+                try {{
+                    var utterance = new SpeechSynthesisUtterance(speechText);
+                    var voices = synth.getVoices ? synth.getVoices() : [];
+                    var voice = pickVoice(voices);
+                    var completionHandled = false;
+
+                    function handleSpeechCompletion() {{
+                        if (completionHandled) return;
+                        completionHandled = true;
+                        scheduleAdvanceAfterSpeech();
+                    }}
+
+                    utterance.lang = voice ? voice.lang : 'es-ES';
+                    utterance.rate = speechRate;
+                    if (voice) utterance.voice = voice;
+                    utterance.onstart = function() {{
+                        doc._storyLastSpeechKey = speechKey;
+                        doc._storySpeechUnlocked = true;
+                        doc._storySpeechUnlockedAt = Date.now();
+                        doc._storyPauseResumeState = {{
+                            runToken: storyRunToken,
+                            storyIndex: storyIndex,
+                            speechFinished: false
+                        }};
+                        doc._storyPauseRequested = null;
+                    }};
+                    utterance.onend = function() {{
+                        if (doc._storyPauseResumeState && doc._storyPauseResumeState.runToken === storyRunToken && doc._storyPauseResumeState.storyIndex === storyIndex) {{
+                            doc._storyPauseResumeState.speechFinished = true;
+                        }}
+                        handleSpeechCompletion();
+                    }};
+                    utterance.onerror = function() {{
+                        doc._storyStartGestureSpeechKey = null;
+                    }};
+
                     synth.cancel();
-                    synth.speak(unlockUtterance);
-                    window.setTimeout(function() {
-                        try {
-                            synth.cancel();
-                        } catch (error) {
-                        }
-                    }, 25);
-                    doc._storySpeechUnlocked = true;
-                    doc._storySpeechUnlockedAt = now;
-                } catch (error) {
-                }
-            }
+                    if (typeof synth.resume === 'function') {{
+                        synth.resume();
+                    }}
+                    synth.speak(utterance);
+                }} catch (error) {{
+                    doc._storyStartGestureSpeechKey = null;
+                }}
+            }}
 
-            if (doc._storyStartUnlockHandler) {
-                eventNames.forEach(function(eventName) {
+            if (doc._storyStartUnlockHandler) {{
+                eventNames.forEach(function(eventName) {{
                     button.removeEventListener(eventName, doc._storyStartUnlockHandler, true);
-                });
-            }
+                }});
+            }}
 
-            doc._storyStartUnlockHandler = unlockSpeech;
-            eventNames.forEach(function(eventName) {
-                button.addEventListener(eventName, unlockSpeech, true);
-            });
-        })();
+            doc._storyStartUnlockHandler = speakFromStartGesture;
+            eventNames.forEach(function(eventName) {{
+                button.addEventListener(eventName, speakFromStartGesture, true);
+            }});
+        }})();
         </script>
         """,
         height=0,
@@ -2561,7 +2648,12 @@ def render_story_view():
                         st.rerun()
 
     if audio_enabled:
-        render_story_start_unlock_handler()
+        render_story_start_unlock_handler(
+            spanish_text,
+            auto_advance=st.session_state.story_playback_mode == "continuous",
+            delay_seconds=story_pause_seconds(),
+            initial_start_only=not st.session_state.story_started,
+        )
 
     if not st.session_state.story_started:
         return
