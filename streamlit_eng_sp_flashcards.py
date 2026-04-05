@@ -1730,6 +1730,38 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         color: {t['muted']} !important;
     }}
 
+    /* ---- Phone: Translation + Audio on the same row ---- */
+    .st-key-storyoptions_stack_wrap > [data-testid="stVerticalBlock"] > [data-testid="element-container"],
+    .st-key-storyoptions_stack_wrap > [data-testid="stVerticalBlock"] > div {{
+        margin-bottom: 0 !important;
+    }}
+    .st-key-storyoptions_stack_wrap > [data-testid="stVerticalBlock"] {{
+        display: flex !important;
+        flex-wrap: wrap !important;
+        flex-direction: row !important;
+        gap: 0 !important;
+    }}
+    .st-key-storyplayback_row_wrap {{
+        flex: 0 0 100% !important;
+        width: 100% !important;
+    }}
+    .st-key-storytranslation_row_wrap,
+    .st-key-storyaudio_row_wrap {{
+        flex: 0 0 auto !important;
+        width: auto !important;
+        margin-right: 1.2rem !important;
+    }}
+    .st-key-storytranslation_row_wrap [data-testid="stColumn"]:first-child,
+    .st-key-storyaudio_row_wrap [data-testid="stColumn"]:first-child {{
+        flex: 0 0 auto !important;
+        min-width: 0 !important;
+    }}
+    .st-key-storytranslation_row_wrap [data-testid="stColumn"]:last-child,
+    .st-key-storyaudio_row_wrap [data-testid="stColumn"]:last-child {{
+        flex: 0 0 2.0rem !important;
+        min-width: 0 !important;
+    }}
+
     /* ---- Phone: Translation + Audio rendered as a single checkbox ---- */
     /* The radiogroup becomes the visible checkbox frame; the two ON/OFF    */
     /* radio labels are stacked, transparent, with the currently-unchecked  */
@@ -3222,17 +3254,17 @@ def render_story_view():
         with st.container(key="storycontrol_row_wrap"):
             control_cols = st.columns(3, gap="small")
             with control_cols[0]:
-                st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
-            with control_cols[1]:
                 with st.container(key="storypause_wrap"):
                     if st.button("PAUSE", key="story_pause_btn", use_container_width=True):
                         pause_story()
                         st.rerun()
-            with control_cols[2]:
+            with control_cols[1]:
                 with st.container(key="storystop_wrap"):
                     if st.button("STOP", key="story_stop_btn", use_container_width=True):
                         stop_story()
                         st.rerun()
+            with control_cols[2]:
+                st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
     else:
         with st.container(key="storycontrol_row_wrap"):
             control_cols = st.columns(3, gap="small")
@@ -3243,12 +3275,12 @@ def render_story_view():
                         start_story()
                         st.rerun()
             with control_cols[1]:
-                st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
-            with control_cols[2]:
                 with st.container(key="storystop_wrap"):
                     if st.button("STOP", key="story_stop_btn_idle", use_container_width=True):
                         stop_story()
                         st.rerun()
+            with control_cols[2]:
+                st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
 
     if audio_enabled:
         render_story_start_unlock_handler(
