@@ -2232,10 +2232,20 @@ def render_story_start_unlock_handler(
                 var voice = pickVoice(voices);
                 controller.visualTimers = [];
 
+                function queuedSpeechText(text, needsPause) {{
+                    if (!needsPause || controller.delayMs <= 0) return text;
+                    var pauseMarks = Math.max(1, Math.round(controller.delayMs / 500));
+                    return text + ' ' + Array(pauseMarks + 1).join('... ');
+                }}
+
                 function estimatedDurationMs(text) {{
-                    var chars = (text || '').length || 1;
+                    var rawText = text || '';
+                    var chars = rawText.length || 1;
+                    var words = rawText.trim() ? rawText.trim().split(/\\s+/).length : 1;
+                    var punctuationPauses = (rawText.match(/[,:;.!?]/g) || []).length;
                     var rate = speechRate > 0 ? speechRate : 1;
-                    return Math.max(950, Math.round((chars * 42) / rate) + 260);
+                    var estimate = (words * 520) + (chars * 38) + (punctuationPauses * 240) + 650;
+                    return Math.max(2200, Math.round(estimate / rate));
                 }}
 
                 function scheduleVisual(delay, callback) {{
@@ -2253,10 +2263,11 @@ def render_story_start_unlock_handler(
                 }}
 
                 for (let idx = startIndex; idx < controller.lines.length; idx += 1) {{
-                    let speechText = controller.lines[idx];
-                    if (!speechText) {{
+                    let rawSpeechText = controller.lines[idx];
+                    if (!rawSpeechText) {{
                         continue;
                     }}
+                    let speechText = queuedSpeechText(rawSpeechText, idx < controller.lines.length - 1);
 
                     let speechKey = controller.storyKey + '|queue|' + idx + '|' + speechText + '|' + speechRate;
                     let utterance = new SpeechSynthesisUtterance(speechText);
@@ -2280,15 +2291,6 @@ def render_story_start_unlock_handler(
                         controller.speakingKey = null;
                         controller.lastCompletedIndex = idx;
                         setDebug('queue onend: ' + (idx + 1));
-                        if (controller.running && idx < controller.lines.length - 1 && controller.delayMs > 0 && typeof synth.pause === 'function') {{
-                            synth.pause();
-                            parentWindow.setTimeout(function() {{
-                                if (!controller.running || controller.queueToken !== queueToken) return;
-                                if (typeof synth.resume === 'function') {{
-                                    synth.resume();
-                                }}
-                            }}, controller.delayMs);
-                        }}
                         if (idx >= controller.lines.length - 1) {{
                             controller.running = false;
                             controller.active = false;
@@ -2318,22 +2320,7 @@ def render_story_start_unlock_handler(
                             setDebug('queue render: ' + (lineIndex + 1));
                         }});
 
-                        if (lineIndex < controller.lines.length - 1 && controller.delayMs > 0) {{
-                            scheduleVisual(lineDelay + lineDuration, function() {{
-                                if (!controller.running) return;
-                                if (typeof synth.pause === 'function') {{
-                                    synth.pause();
-                                    setDebug('queue pause: ' + (lineIndex + 1));
-                                }}
-                            }});
-                            scheduleVisual(lineDelay + lineDuration + controller.delayMs, function() {{
-                                if (!controller.running) return;
-                                if (typeof synth.resume === 'function') {{
-                                    synth.resume();
-                                    setDebug('queue resume: ' + (lineIndex + 2));
-                                }}
-                            }});
-                        }} else if (lineIndex >= controller.lines.length - 1) {{
+                        if (lineIndex >= controller.lines.length - 1) {{
                             scheduleVisual(lineDelay + lineDuration, function() {{
                                 controller.running = false;
                                 controller.active = false;
