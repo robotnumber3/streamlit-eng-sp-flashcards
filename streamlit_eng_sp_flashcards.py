@@ -2103,8 +2103,12 @@ def render_story_start_unlock_handler(story_lines, current_index, auto_advance=F
             }}
 
             function syncAdvanceButton() {{
-                if (clickAdvanceButton()) return;
+                clickAdvanceButton();
                 var attempts = 0;
+                if (controller.advanceRetryTimer) {{
+                    clearInterval(controller.advanceRetryTimer);
+                    controller.advanceRetryTimer = null;
+                }}
                 controller.advanceRetryTimer = window.setInterval(function() {{
                     attempts += 1;
                     if (clickAdvanceButton() || attempts >= 10) {{
