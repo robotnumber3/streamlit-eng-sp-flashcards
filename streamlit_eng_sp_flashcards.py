@@ -2100,16 +2100,16 @@ def render_story_start_unlock_handler(
 
             function cancelTimers() {{
                 if (controller.advanceTimer) {{
-                    clearTimeout(controller.advanceTimer);
+                    parentWindow.clearTimeout(controller.advanceTimer);
                     controller.advanceTimer = null;
                 }}
                 if (controller.advanceRetryTimer) {{
-                    clearInterval(controller.advanceRetryTimer);
+                    parentWindow.clearInterval(controller.advanceRetryTimer);
                     controller.advanceRetryTimer = null;
                 }}
                 if (controller.visualTimers) {{
                     controller.visualTimers.forEach(function(timerId) {{
-                        clearTimeout(timerId);
+                        parentWindow.clearTimeout(timerId);
                     }});
                     controller.visualTimers = [];
                 }}
@@ -2171,13 +2171,13 @@ def render_story_start_unlock_handler(
                 clickAdvanceButton();
                 var attempts = 0;
                 if (controller.advanceRetryTimer) {{
-                    clearInterval(controller.advanceRetryTimer);
+                    parentWindow.clearInterval(controller.advanceRetryTimer);
                     controller.advanceRetryTimer = null;
                 }}
-                controller.advanceRetryTimer = window.setInterval(function() {{
+                controller.advanceRetryTimer = parentWindow.setInterval(function() {{
                     attempts += 1;
                     if (clickAdvanceButton() || attempts >= 10) {{
-                        clearInterval(controller.advanceRetryTimer);
+                        parentWindow.clearInterval(controller.advanceRetryTimer);
                         controller.advanceRetryTimer = null;
                     }}
                 }}, 150);
@@ -2188,7 +2188,7 @@ def render_story_start_unlock_handler(
                 cancelTimers();
                 controller.queuedNextIndex = nextIndex;
                 setDebug('queued next: ' + (nextIndex + 1));
-                controller.advanceTimer = window.setTimeout(function() {{
+                controller.advanceTimer = parentWindow.setTimeout(function() {{
                     if (!controller.running) return;
                     if (nextIndex >= controller.lines.length) {{
                         controller.running = false;
@@ -2202,7 +2202,7 @@ def render_story_start_unlock_handler(
                     renderLocalStoryView(nextIndex);
                     setDebug('speaking next: ' + (nextIndex + 1));
                     speakLine(nextIndex);
-                    window.setTimeout(function() {{
+                    parentWindow.setTimeout(function() {{
                         if (!controller.running) return;
                         syncAdvanceButton();
                     }}, 250);
@@ -2274,7 +2274,7 @@ def render_story_start_unlock_handler(
                         setDebug('queue onend: ' + (idx + 1));
                         if (controller.running && idx < controller.lines.length - 1 && controller.delayMs > 0 && typeof synth.pause === 'function') {{
                             synth.pause();
-                            window.setTimeout(function() {{
+                            parentWindow.setTimeout(function() {{
                                 if (!controller.running || controller.queueToken !== queueToken) return;
                                 if (typeof synth.resume === 'function') {{
                                     synth.resume();
@@ -2303,7 +2303,7 @@ def render_story_start_unlock_handler(
                     synth.speak(utterance);
 
                     (function(lineIndex, delayBefore) {{
-                        var timerId = window.setTimeout(function() {{
+                        var timerId = parentWindow.setTimeout(function() {{
                             if (!controller.running || controller.queueToken !== queueToken) return;
                             controller.localIndex = lineIndex;
                             renderLocalStoryView(lineIndex);
@@ -2341,11 +2341,11 @@ def render_story_start_unlock_handler(
 
                     function clearCompletionTimer() {{
                         if (completionTimer) {{
-                            clearTimeout(completionTimer);
+                            parentWindow.clearTimeout(completionTimer);
                             completionTimer = null;
                         }}
                         if (speakingPollTimer) {{
-                            clearInterval(speakingPollTimer);
+                            parentWindow.clearInterval(speakingPollTimer);
                             speakingPollTimer = null;
                         }}
                     }}
@@ -2379,7 +2379,7 @@ def render_story_start_unlock_handler(
                             speechFinished: false
                         }};
                         doc._storyPauseRequested = null;
-                        speakingPollTimer = window.setInterval(function() {{
+                        speakingPollTimer = parentWindow.setInterval(function() {{
                             if (!controller.running || completionHandled) {{
                                 clearCompletionTimer();
                                 return;
@@ -2406,7 +2406,7 @@ def render_story_start_unlock_handler(
                         synth.resume();
                     }}
                     synth.speak(utterance);
-                    completionTimer = window.setTimeout(function() {{
+                    completionTimer = parentWindow.setTimeout(function() {{
                         if (!controller.running) return;
                         if (!controller.isSpeaking && controller.lastCompletedIndex === index) return;
                         setDebug('timeout finish: ' + (index + 1));
