@@ -3222,9 +3222,6 @@ def render_story_view():
         st.session_state.story_audio_on = audio_enabled
         st.rerun()
 
-    if not audio_enabled:
-        render_story_mobile_controller_cleanup()
-
     story_spanish_html_lines = [
         format_word(card["answer"], 'fc-word', 'fc-note')
         for card in st.session_state.cards
@@ -3266,6 +3263,9 @@ def render_story_view():
                         st.rerun()
             with control_cols[2]:
                 st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
+
+    if not audio_enabled:
+        render_story_mobile_controller_cleanup()
 
     if audio_enabled:
         render_story_start_unlock_handler(
