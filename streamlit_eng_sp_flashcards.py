@@ -226,6 +226,9 @@ STORY_EXTRA_WORD_BONUS_EXPONENT = 1.5
 STORY_HIGH_WORD_COUNT_BONUS_SCALE = 0.10
 STORY_HIGH_WORD_COUNT_THRESHOLD = 8
 STORY_HIGH_WORD_COUNT_BONUS_EXPONENT = 2.1
+STORY_VERY_HIGH_WORD_COUNT_BONUS_SCALE = 0.03
+STORY_VERY_HIGH_WORD_COUNT_THRESHOLD = 10
+STORY_VERY_HIGH_WORD_COUNT_BONUS_EXPONENT = 2.4
 STORY_PROCESSING_BUFFER_SECONDS = 0.06
 STORY_MIN_PAUSE_SECONDS = 0.5
 STORY_LEVEL3_EXPONENT = 2
@@ -1058,6 +1061,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {BUTTON_COLORS['red']['fg']} !important;
 }}
 .st-key-storystart_wrap div[data-testid="stButton"] > button {{
+    background-color: {BUTTON_COLORS['green']['bg']} !important;
+    border-color: {BUTTON_COLORS['green']['border']} !important;
+    color: {BUTTON_COLORS['green']['fg']} !important;
+}}
+.st-key-storynext_wrap div[data-testid="stButton"] > button {{
     background-color: {BUTTON_COLORS['green']['bg']} !important;
     border-color: {BUTTON_COLORS['green']['border']} !important;
     color: {BUTTON_COLORS['green']['fg']} !important;
@@ -2313,11 +2321,16 @@ def story_pause_seconds():
         max(word_count - STORY_HIGH_WORD_COUNT_THRESHOLD, 0)
         ** STORY_HIGH_WORD_COUNT_BONUS_EXPONENT
     )
+    very_high_word_count_bonus_seconds = STORY_VERY_HIGH_WORD_COUNT_BONUS_SCALE * (
+        max(word_count - STORY_VERY_HIGH_WORD_COUNT_THRESHOLD, 0)
+        ** STORY_VERY_HIGH_WORD_COUNT_BONUS_EXPONENT
+    )
     t_process = (
         base_process_seconds
         + STORY_BASE_WORD_WEIGHT * word_count
         + extra_word_bonus_seconds
         + high_word_count_bonus_seconds
+        + very_high_word_count_bonus_seconds
         + STORY_PROCESSING_BUFFER_SECONDS
     )
     t5 = max(STORY_MIN_PAUSE_SECONDS, 2 * t_process)
@@ -3645,7 +3658,10 @@ def render_story_view():
                         stop_story()
                         st.rerun()
             with control_cols[2]:
-                st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
+                with st.container(key="storynext_wrap"):
+                    if st.button("NEXT", key="story_next_running_btn", use_container_width=True):
+                        advance_story_line()
+                        st.rerun()
     else:
         with st.container(key="storycontrol_row_wrap"):
             control_cols = st.columns(3, gap="small")
