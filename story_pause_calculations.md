@@ -1,161 +1,125 @@
 # Story Pause Calculations
 
-Both controls now move in the same direction:
+## Goal
 
-- `1` = fastest / shortest time
-- `5` = slowest / longest time
+The current story pause model now uses two user controls:
 
-This is the clean, consistent redesign.
+- reading speed `1-5`
+- pause amount `1-5`
 
-## Core Separation
+And one internal timing model that tries to do two things at once:
 
-Still keep the two independent concepts:
+- keep short simple sentences from feeling too slow
+- give word-heavy sentences noticeably more time, especially for beginners
 
-$$
-\operatorname{reading\ speed}(c) \quad \text{and} \quad \text{pause scaling }(m)
-$$
+## Reading Speed
 
-## 1. Reading Speed \(c)
-
-User profile scale:
-
-- `1` = very fast
-- `2` = fast
-- `3` = medium
-- `4` = slow
-- `5` = very slow
-
-Mapped to letters per second:
+Reading speed is mapped to letters per second:
 
 $$
 c \in \{17, 15, 13, 11, 9\}
 $$
 
+where:
+
+- `1` = fastest
+- `5` = slowest
+
+## Core Processing Model
+
+Let:
+
+- $L$ = number of letters only
+- $W$ = number of words
+
+Processing time is estimated by:
+
+$$
+t_{\mathrm{process}} = \frac{L}{c} + \alpha W + \delta \max(W - W_0, 0)^\gamma + p
+$$
+
+with the current constants:
+
+$$
+\alpha = 0.16, \quad \delta = 0.12, \quad W_0 = 6, \quad \gamma = 1.5, \quad p = 0.8
+$$
+
 Interpretation:
 
-- lower number -> higher speed -> shorter base time
-- higher number -> slower reading -> longer base time
+- $\frac{L}{c}$ handles raw reading length
+- $\alpha W$ is the normal per-word processing cost
+- $\delta \max(W-W_0,0)^\gamma$ is an extra overload bonus that only activates once the sentence gets word-heavy
+- $p$ is a fixed thinking / translation buffer
 
-## 2. Pause Between Lines (m)
+## Why The Extra Word Bonus Helps
 
-Story mode pause scale:
+A constant word weight alone is not enough:
 
-- `1` = minimal pause
-- `2` = short pause
-- `3` = medium pause
-- `4` = long pause
-- `5` = very long pause
+- if it is large enough for `12-15` word sentences, it makes `4-6` word sentences too long
+- if it is small enough for short sentences, it underestimates longer sentences made of many short words
 
-Mapped to pause multipliers:
+The thresholded bonus solves that problem because it stays small for short sentences and grows only after the word count passes `6`.
 
-$$
-m \in \{0.15, 0.35, 0.60, 1.00, 2.00\}
-$$
+For example, the extra bonus term is:
 
-Interpretation:
+- `0.00` at `6` words or fewer
+- `0.12` at `7` words
+- `0.34` at `8` words
+- `0.62` at `9` words
+- `1.34` at `11` words
 
-- `1` -> almost no extra time
-- `5` -> about two full readbacks
+That is exactly the intended behavior: mild effect on short sentences, stronger effect on crowded ones.
 
-## 3. Timing Model
+## Pause Ladder
 
-Base reading time:
+The pause ladder still works the same way once $t_{\mathrm{process}}$ is known.
 
-$$
-t_{\text{base}} = \frac{L}{c}
-$$
-
-Pause time:
+Longest pause:
 
 $$
-t_{\text{pause}} = T\left(1 - e^{-m t_{\text{base}} / T}\right)
+t_5 = \max\left(0.5, 2t_{\mathrm{process}}\right)
 $$
 
-with:
+Long pause:
 
 $$
-T \approx 12 \text{ to } 20
+t_4 = \max\left(0.5, 0.5 + \sqrt{0.5}(t_5 - 0.5)\right)
 $$
 
-If you want units stated explicitly, use:
+Define:
 
 $$
-T \approx 12 \text{ to } 20 \text{ seconds}
+g = t_4 - 0.5
 $$
 
-## 4. Behavior
+Then:
 
-If the user picks:
+$$
+t_3 = 0.5 + g\left(\frac{2}{3}\right)^2
+$$
 
-- Speed = `1` (very fast)
-- Pause = `1` (minimal)
+$$
+t_2 = \frac{t_1 + t_3}{2}
+$$
 
-Then the result is the fastest possible experience.
+$$
+t_1 = 0.5
+$$
 
-If the user picks:
+So the user-facing meaning remains:
 
-- Speed = `5` (very slow)
-- Pause = `5` (very long)
-
-Then the result is maximum support: slow reading plus multiple repeats.
-
-Mixed example:
-
-- Speed = `2` (fast)
-- Pause = `5` (very long)
-
-That means a fast reader who still wants time to repeat carefully. This is an important language-learning case.
-
-## 5. Why This Ordering Is Better
-
-Now both controls obey the same rule:
-
-- smaller number = faster / less time
-- larger number = slower / more time
-
-There is no cognitive mismatch. Users do not need to mentally invert one slider.
-
-## 6. If You Use Only One 1-5 Scale
-
-Define combined presets like this:
-
-| Level | Meaning | $c$ (letters/sec) | $m$ |
-| --- | --- | ---: | ---: |
-| 1 | very fast | 17 | 0.15 |
-| 2 | fast | 15 | 0.35 |
-| 3 | medium | 13 | 0.60 |
-| 4 | slow | 11 | 1.00 |
-| 5 | very slow | 9 | 2.00 |
-
-So:
-
-- `1` = minimal wait + fast reading
-- `5` = maximum wait + slow reading
-
-This keeps everything consistent, but removes flexibility.
-
-## 7. Final Recommendation
-
-Best design:
-
-- Reading speed: `1-5` (fast -> slow)
-- Pause length: `1-5` (short -> long)
-
-Both are aligned:
-
-- `1` = shortest time everywhere
+- pause `5` = longest
+- pause `4` = long
+- pause `3` = medium
+- pause `2` = short
+- pause `1` = shortest
 
 ## Bottom Line
 
-You now have:
+The model now uses:
 
-- a calibrated human-speed model
-- a nonlinear curve that prevents long waits
-- a UI that is cognitively consistent
+- letters for base reading duration
+- words for normal linguistic load
+- an extra nonlinear bonus for sentences with many words
 
-That combination is what makes a system like this feel right instead of mechanical.
-
-If needed later, the exact $c$ and $m$ values can be tuned so that:
-
-- 30-letter sentences do not feel rushed
-- 200-letter sentences never exceed a specific maximum, for example 12 seconds
+That makes it better suited for beginners who need disproportionately more time once a sentence becomes crowded with words, even when the words themselves are short.

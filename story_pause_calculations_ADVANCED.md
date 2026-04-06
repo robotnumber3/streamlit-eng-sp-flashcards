@@ -32,20 +32,34 @@ Let:
 
 - $W$ = number of words
 - $L$ = number of letters only
-- $\alpha = 0.22$
+- $\alpha = 0.16$
+- $\delta = 0.12$
+- $W_0 = 6$
+- $\gamma = 1.5$
 - $p = 0.8$
 
 Processing estimate:
 
 $$
-t_{\text{process}} = \frac{L}{c} + \alpha W + p
+t_{\text{process}} = \frac{L}{c} + \alpha W + \delta \max(W-W_0, 0)^\gamma + p
 $$
 
 This combines:
 
 - raw sentence length through $L$
 - extra beginner processing load through $W$
+- extra overload time only after the sentence becomes word-heavy
 - a fixed grammar and translation buffer through $p$
+
+With the current constants, the extra overload term is:
+
+- `0.00` at `6` words or fewer
+- `0.12` at `7` words
+- `0.34` at `8` words
+- `0.62` at `9` words
+- `1.34` at `11` words
+
+That is why short sentences do not get over-penalized while longer ones get noticeably more time.
 
 ## Pause Anchors
 
@@ -54,7 +68,7 @@ This combines:
 Keep the longest pause exactly the same as before:
 
 $$
-t_5 = 2\left(\frac{L}{9} + 0.22W + 0.8\right)
+t_5 = 2\left(\frac{L}{9} + 0.16W + 0.12\max(W-6, 0)^{1.5} + 0.8\right)
 $$
 
 Interpretation:
@@ -67,7 +81,7 @@ Interpretation:
 Set pause `4` equal to the previous values that were already calculated for the old medium setting:
 
 $$
-t_4 = 0.5 + \sqrt{0.5}\left(2\left(\frac{L}{13} + 0.22W + 0.8\right) - 0.5\right)
+t_4 = 0.5 + \sqrt{0.5}\left(2\left(\frac{L}{13} + 0.16W + 0.12\max(W-6, 0)^{1.5} + 0.8\right) - 0.5\right)
 $$
 
 Interpretation:
@@ -159,22 +173,25 @@ Score order:
 - `P4` = pause level `4`
 - `P5` = pause level `5`
 
-1. Mi casa pequeña tiene una puerta azul. -> `0.50 s | 1.91 s | 3.31 s | 6.83 s | 11.57 s`
-2. Hoy compro pan fresco y queso en casa. -> `0.50 s | 1.95 s | 3.40 s | 7.03 s | 11.79 s`
-3. La niña inteligente escribe cartas largas, pero claras. -> `0.50 s | 2.34 s | 4.18 s | 8.77 s | 15.34 s`
-4. Mi hermano alto cocina sopa caliente cada domingo. -> `0.50 s | 2.24 s | 3.98 s | 8.34 s | 14.45 s`
-5. Nosotros hablamos despacio, y la profesora sonríe mucho. -> `0.50 s | 2.36 s | 4.22 s | 8.88 s | 15.56 s`
-6. El gato gris duerme sobre libros viejos y limpios. -> `0.50 s | 2.29 s | 4.07 s | 8.54 s | 14.67 s`
-7. Yo miro la ventana abierta mientras tomo té tranquilo. -> `0.50 s | 2.39 s | 4.27 s | 8.97 s | 15.56 s`
-8. Tu amigo amable vende flores rojas en el mercado. -> `0.50 s | 2.26 s | 4.02 s | 8.43 s | 14.45 s`
-9. Ellos estudian gramática básica, pronunciación y verbos aquí. -> `0.50 s | 2.49 s | 4.47 s | 9.42 s | 16.68 s`
-10. La ciudad tranquila parece pequeña, aunque tiene restaurantes excelentes. -> `0.50 s | 2.82 s | 5.14 s | 10.93 s | 19.56 s`
+1. Mi casa pequeña tiene una puerta azul. -> `0.50 s | 2.15 s | 3.79 s | 7.90 s | 10.97 s`
+2. Hoy compro pan fresco y queso en casa. -> `0.50 s | 2.23 s | 3.96 s | 8.28 s | 11.51 s`
+3. La niña inteligente escribe cartas largas, pero claras. -> `0.50 s | 2.79 s | 5.08 s | 10.80 s | 15.06 s`
+4. Mi hermano alto cocina sopa caliente cada domingo. -> `0.50 s | 2.65 s | 4.80 s | 10.17 s | 14.17 s`
+5. Nosotros hablamos despacio, y la profesora sonríe mucho. -> `0.50 s | 2.82 s | 5.15 s | 10.95 s | 15.28 s`
+6. El gato gris duerme sobre libros viejos y limpios. -> `0.50 s | 2.75 s | 5.01 s | 10.64 s | 14.84 s`
+7. Yo miro la ventana abierta mientras tomo té tranquilo. -> `0.50 s | 2.89 s | 5.29 s | 11.27 s | 15.73 s`
+8. Tu amigo amable vende flores rojas en el mercado. -> `0.50 s | 2.72 s | 4.94 s | 10.48 s | 14.62 s`
+9. Ellos estudian gramática básica, pronunciación y verbos aquí. -> `0.50 s | 3.00 s | 5.50 s | 11.74 s | 16.39 s`
+10. La ciudad tranquila parece pequeña, aunque tiene restaurantes excelentes. -> `0.50 s | 3.52 s | 6.54 s | 14.10 s | 19.73 s`
 
 ## Summary Of The Final Advanced Model
 
 Internal constants:
 
-- $\alpha = 0.22$
+- $\alpha = 0.16$
+- $\delta = 0.12$
+- $W_0 = 6$
+- $\gamma = 1.5$
 - $p = 0.8$
 - $\beta = 2$
 
@@ -195,7 +212,10 @@ If you test these aloud and they still need adjustment, change only one thing at
 
 - change $\beta$ if level `3` is too short or too long
 - move $t_2$ closer to $t_1$ or $t_3$ if level `2` still needs adjustment
-- change $\alpha$ if many short words still feel underweighted
+- change $\alpha$ if the normal per-word cost is too high or too low across all sentence lengths
+- change $\delta$ if crowded sentences need more or less extra help
+- change $W_0$ if the overload bonus should start earlier or later
+- change $\gamma$ if the high-word-count bonus grows too slowly or too aggressively
 - change $p$ if every sentence needs more or less fixed thinking time
 - change the factor `2` in $t_5$ only if the maximum pause itself stops feeling right
 
