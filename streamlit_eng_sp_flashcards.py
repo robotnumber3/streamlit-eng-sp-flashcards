@@ -2839,9 +2839,10 @@ def render_story_start_unlock_handler(
                     pollTimerId = parentWindow.setTimeout(pollSpeaking, 400);
                     controller.visualTimers.push(pollTimerId);
 
-                    // Hard watchdog: if nothing else fires within 3x estimated duration, advance anyway.
+                    // Hard watchdog: keep this close to the estimated speech duration so short lines
+                    // do not get stretched into multi-second extra waits when Safari drops events.
                     var durMs = estimatedDurationMs(rawSpeechText);
-                    var watchdogMs = durMs * 3 + 4000;
+                    var watchdogMs = Math.max(durMs + 1600, 3200);
                     watchdogTimerId = parentWindow.setTimeout(function() {{
                         finishAndAdvance('watchdog');
                     }}, watchdogMs);
