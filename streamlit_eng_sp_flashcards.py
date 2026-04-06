@@ -624,6 +624,7 @@ defaults = {
     "story_playback_mode": "continuous",
     "story_translation_on": True,
     "story_audio_on": True,
+    "story_random_on": False,
     "story_started": False,
     "story_running": False,
     "story_run_token": 0,
@@ -744,6 +745,21 @@ def reset_study_state(reset_selected=True):
     st.session_state.quit_requested = False
     st.session_state.final_exit = False
     st.session_state.delete_review_confirm_key = None
+    st.session_state.story_random_on = False
+    st.session_state.story_started = False
+    st.session_state.story_running = False
+    st.session_state.story_run_token = 0
+    st.session_state.story_resume_next = False
+
+
+def rebuild_story_order():
+    st.session_state.order = list(range(len(st.session_state.cards)))
+    if st.session_state.story_random_on:
+        random.shuffle(st.session_state.order)
+
+
+def reset_story_playback():
+    st.session_state.index = 0
     st.session_state.story_started = False
     st.session_state.story_running = False
     st.session_state.story_run_token = 0
@@ -1587,16 +1603,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     padding: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"]:first-child {{
-    flex: 0 0 5.2rem !important;
+    flex: 0 0 8.8rem !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"]:last-child {{
     flex: 1 1 auto !important;
+}}
+.st-key-storyplayback_row_wrap .story-option-row {{
+    white-space: nowrap !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] > div,
 .st-key-storytransaudio_row_wrap [data-testid="stRadio"] > div {{
     flex-direction: row !important;
     justify-content: flex-start !important;
-    gap: 0.72rem !important;
+    gap: 0.62rem !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] label,
 .st-key-storytransaudio_row_wrap [data-testid="stRadio"] label {{
@@ -1744,7 +1763,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         color: {t['muted']} !important;
     }}
 
-    /* ---- Phone: Translate + Audio checkboxes ---- */
+    /* ---- Phone: Translate + Audio + Random checkboxes ---- */
     .st-key-storytransaudio_row_wrap {{
         height: 2.2rem !important;
         overflow: hidden !important;
@@ -1781,9 +1800,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(4) {{
         flex: 0 0 2.0rem !important;
+        padding-right: 1.0rem !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(5) {{
-        flex: 1 1 auto !important;
+        flex: 0 0 auto !important;
+        padding-right: 0.15rem !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(6) {{
+        flex: 0 0 2.0rem !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
         position: relative !important;
@@ -2054,7 +2078,7 @@ def story_pause_seconds():
 
 
 def current_story_card():
-    return st.session_state.cards[st.session_state.index]
+    return st.session_state.cards[current_card_index()]
 
 
 def advance_story_line():
@@ -2291,6 +2315,16 @@ def render_story_start_unlock_handler(
                 }}
             }}
 
+            function renderLocalStoryViewStable(index) {{
+                if (index < 0 || index >= controller.lines.length) return;
+                renderLocalStoryView(index);
+                [0, 90, 220].forEach(function(delay) {{
+                    parentWindow.setTimeout(function() {{
+                        renderLocalStoryView(index);
+                    }}, delay);
+                }});
+            }}
+
             function pickVoice(voices) {{
                 return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
                     || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
@@ -2407,7 +2441,8 @@ def render_story_start_unlock_handler(
 
                     // Update the DOM synchronously at the moment this line begins.
                     controller.localIndex = idx;
-                    renderLocalStoryView(idx);
+                    controller.pausedDisplayIndex = null;
+                    renderLocalStoryViewStable(idx);
 
                     var speechKey = controller.storyKey + '|queue|' + idx + '|' + rawSpeechText + '|' + speechRate;
                     var utterance = new SpeechSynthesisUtterance(rawSpeechText);
@@ -2629,8 +2664,9 @@ def render_story_start_unlock_handler(
                     }}
                 }}
                 controller.resumeTargetIndex = null;
+                controller.pausedDisplayIndex = null;
                 controller.localIndex = targetIndex;
-                renderLocalStoryView(targetIndex);
+                renderLocalStoryViewStable(targetIndex);
                 setDebug('start gesture: ' + (targetIndex + 1));
                 if (controller.autoAdvance) {{
                     queueAutoFrom(targetIndex);
@@ -2647,8 +2683,9 @@ def render_story_start_unlock_handler(
                 controller.active = true;
                 controller.running = true;
                 controller.localIndex = nextIndex;
+                controller.pausedDisplayIndex = null;
                 controller.pendingManualSpeakIndex = nextIndex;
-                renderLocalStoryView(nextIndex);
+                renderLocalStoryViewStable(nextIndex);
                 setDebug('step gesture: ' + (nextIndex + 1));
                 speakLine(nextIndex);
             }}
@@ -2666,6 +2703,9 @@ def render_story_start_unlock_handler(
                 }}
                 controller.running = false;
                 controller.active = true;
+                controller.pausedDisplayIndex = controller.resumeTargetIndex;
+                controller.localIndex = controller.resumeTargetIndex;
+                renderLocalStoryViewStable(controller.localIndex);
                 setDebug('paused at: ' + (controller.resumeTargetIndex + 1));
                 cancelSpeech();
             }}
@@ -2673,6 +2713,7 @@ def render_story_start_unlock_handler(
             function stopFromGesture() {{
                 controller.running = false;
                 controller.active = false;
+                controller.pausedDisplayIndex = null;
                 controller.localIndex = controller.serverIndex;
                 setDebug('stopped');
                 cancelSpeech();
@@ -2700,6 +2741,7 @@ def render_story_start_unlock_handler(
                 controller.lastCompletedIndex = null;
                 controller.queuedNextIndex = null;
                 controller.resumeTargetIndex = null;
+                controller.pausedDisplayIndex = null;
             }}
 
             controller.storyKey = config.storyKey;
@@ -2720,8 +2762,10 @@ def render_story_start_unlock_handler(
                 !controller.isSpeaking
                 && typeof config.serverIndex === 'number'
                 && config.serverIndex !== controller.localIndex
+                && (config.running || !controller.active)
             ) {{
                 controller.localIndex = config.serverIndex;
+                controller.pausedDisplayIndex = null;
                 controller.queuedNextIndex = null;
                 setDebug('synced to server: ' + (controller.localIndex + 1));
             }}
@@ -2734,11 +2778,13 @@ def render_story_start_unlock_handler(
             if (!config.running) {{
                 if (!controller.active) {{
                     controller.localIndex = config.serverIndex;
+                }} else if (typeof controller.pausedDisplayIndex === 'number') {{
+                    controller.localIndex = controller.pausedDisplayIndex;
                 }}
                 cancelSpeech();
             }}
 
-            renderLocalStoryView(controller.localIndex);
+            renderLocalStoryViewStable(controller.localIndex);
             setDebug('ready: ' + (controller.localIndex + 1) + ' running=' + config.running + ' auto=' + controller.autoAdvance);
 
             if (
@@ -3217,25 +3263,19 @@ def render_story_view():
     spanish_text = story_card["answer"]
     translation_text = story_card["word"] if st.session_state.story_translation_on else ""
     story_position = st.session_state.index + 1
-    story_total = len(st.session_state.cards)
+    story_total = len(st.session_state.order)
     story_progress_pct = (story_position / story_total * 100) if story_total else 0
     playback_options = {
         "auto": "continuous",
         "step": "stop on every line",
     }
-
-    st.markdown(
-        "<div class='story-title-block'>"
-        "<div class='title-big'>Story Mode</div>"
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    ordered_story_cards = [st.session_state.cards[idx] for idx in st.session_state.order]
 
     with st.container(key="storyoptions_stack_wrap"):
         with st.container(key="storyplayback_row_wrap"):
-            playback_label_col, playback_radio_col = st.columns([0.34, 0.66], gap="small")
+            playback_label_col, playback_radio_col = st.columns([0.44, 0.56], gap="small")
             with playback_label_col:
-                st.markdown('<div class="story-option-row">Playback:</div>', unsafe_allow_html=True)
+                st.markdown('<div class="story-option-row">Story Playback:</div>', unsafe_allow_html=True)
             with playback_radio_col:
                 playback_choice = st.radio(
                     "Playback",
@@ -3246,7 +3286,7 @@ def render_story_view():
                     key="story_playback_radio",
                 )
         with st.container(key="storytransaudio_row_wrap"):
-            ta_cols = st.columns([0.28, 0.14, 0.22, 0.14, 0.22], gap="small")
+            ta_cols = st.columns([0.20, 0.12, 0.14, 0.12, 0.16, 0.12], gap="small")
             with ta_cols[0]:
                 st.markdown('<div class="story-option-row">Translate:</div>', unsafe_allow_html=True)
             with ta_cols[1]:
@@ -3270,7 +3310,16 @@ def render_story_view():
                     key="story_audio_radio",
                 )
             with ta_cols[4]:
-                st.empty()
+                st.markdown('<div class="story-option-row">Random:</div>', unsafe_allow_html=True)
+            with ta_cols[5]:
+                random_choice = st.radio(
+                    "Random",
+                    options=["ON", "OFF"],
+                    index=0 if st.session_state.story_random_on else 1,
+                    horizontal=True,
+                    label_visibility="collapsed",
+                    key="story_random_radio",
+                )
     new_playback_mode = playback_options[playback_choice]
     if new_playback_mode != st.session_state.story_playback_mode:
         st.session_state.story_playback_mode = new_playback_mode
@@ -3286,14 +3335,21 @@ def render_story_view():
         st.session_state.story_audio_on = audio_enabled
         st.rerun()
 
+    random_enabled = random_choice == "ON"
+    if random_enabled != st.session_state.story_random_on:
+        st.session_state.story_random_on = random_enabled
+        rebuild_story_order()
+        reset_story_playback()
+        st.rerun()
+
     story_spanish_html_lines = [
         format_word(card["answer"], 'fc-word', 'fc-note')
-        for card in st.session_state.cards
+        for card in ordered_story_cards
     ]
     story_translation_html_lines = [
         format_word(card["word"], 'fc-answer', 'fc-answer-note')
         if translation_enabled else '<div class="fc-word-placeholder">&nbsp;</div>'
-        for card in st.session_state.cards
+        for card in ordered_story_cards
     ]
 
     if st.session_state.story_running:
@@ -3333,7 +3389,7 @@ def render_story_view():
 
     if audio_enabled:
         render_story_start_unlock_handler(
-            [card["answer"] for card in st.session_state.cards],
+            [card["answer"] for card in ordered_story_cards],
             story_spanish_html_lines,
             story_translation_html_lines,
             st.session_state.index,
@@ -3346,10 +3402,10 @@ def render_story_view():
     if not st.session_state.story_started:
         return
 
-    st.markdown(
-        "<div id='story-mobile-debug' style='display:block;font-size:0.72rem;color:#e6b85c;margin:0.1rem 0 0.35rem 0;'>DEBUG: waiting...</div>",
-        unsafe_allow_html=True,
-    )
+    # st.markdown(
+    #     "<div id='story-mobile-debug' style='display:block;font-size:0.72rem;color:#e6b85c;margin:0.1rem 0 0.35rem 0;'>DEBUG: waiting...</div>",
+    #     unsafe_allow_html=True,
+    # )
 
     st.markdown(
         "<div class='story-progress'>"
@@ -4079,8 +4135,10 @@ if st.session_state.loaded_csv != st.session_state.selected_csv or not st.sessio
                 card for card in st.session_state.cards
                 if card.get("id") not in completed_ids
             ]
-    st.session_state.order = list(range(len(st.session_state.cards)))
-    if not is_story_deck(st.session_state.selected_csv):
+    if is_story_deck(st.session_state.selected_csv):
+        rebuild_story_order()
+    else:
+        st.session_state.order = list(range(len(st.session_state.cards)))
         random.shuffle(st.session_state.order)
     st.session_state.index = 0
     st.session_state.loaded_csv = st.session_state.selected_csv
