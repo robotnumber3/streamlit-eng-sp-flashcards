@@ -1866,23 +1866,31 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         justify-content: flex-start !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button {{
+        display: grid !important;
+        grid-template-columns: 0.68rem minmax(0, 1fr) !important;
+        column-gap: 0.52rem !important;
+        align-items: center !important;
         padding-left: 0 !important;
         padding-right: 0.45rem !important;
-        font-size: 0.88rem !important;
+        font-size: 0.91rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button::before {{
-        flex: 0 0 0.68rem !important;
+        display: block !important;
         width: 0.68rem !important;
         margin-left: -0.08rem !important;
         margin-right: 0 !important;
+        justify-self: start !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button > div {{
         width: auto !important;
-        flex: 1 1 auto !important;
-        margin-left: 0.56rem !important;
+        min-width: 0 !important;
+        margin-left: 0 !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button p {{
-        font-size: 0.88rem !important;
+        font-size: 0.91rem !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_story_"] [data-testid="stButton"] > button::before {{
+        font-size: 1.10rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] > * {{
         margin-bottom: 0 !important;
