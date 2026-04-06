@@ -7,6 +7,7 @@ import os
 import sys
 import json
 import html
+import math
 import re
 import pandas as pd
 import streamlit.components.v1 as components
@@ -164,7 +165,19 @@ DEFAULT_THEME = "dark"
 DEFAULT_DIRECTION_MODE = "random"
 DEFAULT_SPEECH_SPEED = 5
 DEFAULT_SHOW_HINTS = True
-DEFAULT_STORY_PAUSE_SECONDS = 5
+DEFAULT_STORY_READING_SPEED = 3
+DEFAULT_STORY_PAUSE_AMOUNT = 5
+STORY_READING_SPEED_LETTERS_PER_SECOND = {
+    1: 17,
+    2: 15,
+    3: 13,
+    4: 11,
+    5: 9,
+}
+STORY_WORD_WEIGHT = 0.22
+STORY_PROCESSING_BUFFER_SECONDS = 0.8
+STORY_MIN_PAUSE_SECONDS = 0.5
+STORY_LEVEL3_EXPONENT = 2
 
 
 def default_person_prefs():
@@ -173,7 +186,8 @@ def default_person_prefs():
         "direction_mode": DEFAULT_DIRECTION_MODE,
         "speech_speed": DEFAULT_SPEECH_SPEED,
         "show_hints": DEFAULT_SHOW_HINTS,
-        "story_pause_seconds": DEFAULT_STORY_PAUSE_SECONDS,
+        "story_reading_speed": DEFAULT_STORY_READING_SPEED,
+        "story_pause_amount": DEFAULT_STORY_PAUSE_AMOUNT,
     }
 
 
@@ -191,15 +205,20 @@ def sanitize_person_prefs(pref_data, fallback=None):
     show_hints = pref_data.get("show_hints", fallback["show_hints"])
     if not isinstance(show_hints, bool):
         show_hints = fallback["show_hints"]
-    story_pause_seconds = pref_data.get("story_pause_seconds", fallback["story_pause_seconds"])
-    if story_pause_seconds not in {1, 2, 3, 4, 5}:
-        story_pause_seconds = fallback["story_pause_seconds"]
+    story_reading_speed = pref_data.get("story_reading_speed", fallback["story_reading_speed"])
+    if story_reading_speed not in {1, 2, 3, 4, 5}:
+        story_reading_speed = fallback["story_reading_speed"]
+    legacy_story_pause = pref_data.get("story_pause_seconds", fallback["story_pause_amount"])
+    story_pause_amount = pref_data.get("story_pause_amount", legacy_story_pause)
+    if story_pause_amount not in {1, 2, 3, 4, 5}:
+        story_pause_amount = fallback["story_pause_amount"]
     return {
         "theme": theme,
         "direction_mode": direction_mode,
         "speech_speed": speech_speed,
         "show_hints": show_hints,
-        "story_pause_seconds": story_pause_seconds,
+        "story_reading_speed": story_reading_speed,
+        "story_pause_amount": story_pause_amount,
     }
 
 
@@ -440,6 +459,8 @@ def current_prefs():
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
         "show_hints": st.session_state.show_hints,
+        "story_reading_speed": st.session_state.story_reading_speed,
+        "story_pause_amount": st.session_state.story_pause_amount,
     }
     return {
         "active_person": st.session_state.active_person,
@@ -577,7 +598,8 @@ defaults = {
     "direction_mode": active_person_prefs["direction_mode"],
     "speech_speed":   active_person_prefs["speech_speed"],
     "show_hints":     active_person_prefs["show_hints"],
-    "story_pause_seconds": active_person_prefs["story_pause_seconds"],
+    "story_reading_speed": active_person_prefs["story_reading_speed"],
+    "story_pause_amount": active_person_prefs["story_pause_amount"],
     "active_person":  active_person,
     "person_radio":   active_person,
     "person_selector_visible": True,
@@ -621,7 +643,8 @@ def sync_menu_widget_state():
     st.session_state.dir_radio = direction_labels[st.session_state.direction_mode]
     st.session_state.speech_speed_radio = st.session_state.speech_speed
     st.session_state.hints_radio = "Hints ON" if st.session_state.show_hints else "Hints OFF"
-    st.session_state.story_pause_radio = st.session_state.story_pause_seconds
+    st.session_state.story_reading_speed_radio = st.session_state.story_reading_speed
+    st.session_state.story_pause_amount_radio = st.session_state.story_pause_amount
 
 
 def store_active_person_prefs():
@@ -630,7 +653,8 @@ def store_active_person_prefs():
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
         "show_hints": st.session_state.show_hints,
-        "story_pause_seconds": st.session_state.story_pause_seconds,
+        "story_reading_speed": st.session_state.story_reading_speed,
+        "story_pause_amount": st.session_state.story_pause_amount,
     }
 
 
@@ -681,7 +705,8 @@ def apply_person_prefs(person):
     st.session_state.direction_mode = person_prefs["direction_mode"]
     st.session_state.speech_speed = person_prefs["speech_speed"]
     st.session_state.show_hints = person_prefs["show_hints"]
-    st.session_state.story_pause_seconds = person_prefs["story_pause_seconds"]
+    st.session_state.story_reading_speed = person_prefs["story_reading_speed"]
+    st.session_state.story_pause_amount = person_prefs["story_pause_amount"]
     st.session_state.direction = direction_for_mode(person_prefs["direction_mode"])
     sync_menu_widget_state()
 
@@ -1986,7 +2011,38 @@ def advance_card(schedule_current=True):
 
 
 def story_pause_seconds():
-    return st.session_state.story_pause_seconds
+    story_card = current_story_card()
+    spanish_text = strip_spoken_text(story_card["answer"])
+    words = re.findall(r"[A-Za-zÁÉÍÓÚáéíóúÑñÜü]+", spanish_text)
+    word_count = len(words)
+    letter_count = sum(len(word) for word in words)
+    reading_speed = STORY_READING_SPEED_LETTERS_PER_SECOND.get(
+        st.session_state.story_reading_speed,
+        STORY_READING_SPEED_LETTERS_PER_SECOND[DEFAULT_STORY_READING_SPEED],
+    )
+    base_process_seconds = 0.0
+    if letter_count > 0:
+        base_process_seconds = letter_count / reading_speed
+    t_process = (
+        base_process_seconds
+        + STORY_WORD_WEIGHT * word_count
+        + STORY_PROCESSING_BUFFER_SECONDS
+    )
+    t5 = max(STORY_MIN_PAUSE_SECONDS, 2 * t_process)
+    t4 = max(
+        STORY_MIN_PAUSE_SECONDS,
+        STORY_MIN_PAUSE_SECONDS + math.sqrt(0.5) * (t5 - STORY_MIN_PAUSE_SECONDS),
+    )
+    gap = max(t4 - STORY_MIN_PAUSE_SECONDS, 0.0)
+    t3 = STORY_MIN_PAUSE_SECONDS + gap * ((2 / 3) ** STORY_LEVEL3_EXPONENT)
+    t2 = (STORY_MIN_PAUSE_SECONDS + t3) / 2
+    return {
+        1: STORY_MIN_PAUSE_SECONDS,
+        2: t2,
+        3: t3,
+        4: t4,
+        5: t5,
+    }.get(st.session_state.story_pause_amount, t3)
 
 
 def current_story_card():
@@ -3705,19 +3761,32 @@ def render_menu():
             store_active_person_prefs()
             st.session_state.erase_review_confirm = False
             st.rerun()
-        st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Story Mode</div>',
+        st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">STORY MODE &ndash; PAUSES BETWEEN SENTENCES</div>',
                     unsafe_allow_html=True)
-        story_pause_options = [5, 4, 3, 2, 1]
-        new_story_pause = st.radio(
-            "Pause between sentences",
-            options=story_pause_options,
-            index=story_pause_options.index(st.session_state.story_pause_seconds),
+        story_timing_options = [5, 4, 3, 2, 1]
+        new_story_reading_speed = st.radio(
+            "Reading speed (1 = fastest)",
+            options=story_timing_options,
+            index=story_timing_options.index(st.session_state.story_reading_speed),
             horizontal=True,
             label_visibility="visible",
-            key="story_pause_radio",
+            key="story_reading_speed_radio",
         )
-        if new_story_pause != st.session_state.story_pause_seconds:
-            st.session_state.story_pause_seconds = new_story_pause
+        if new_story_reading_speed != st.session_state.story_reading_speed:
+            st.session_state.story_reading_speed = new_story_reading_speed
+            store_active_person_prefs()
+            st.session_state.erase_review_confirm = False
+            st.rerun()
+        new_story_pause_amount = st.radio(
+            "Pause amount (1 = shortest)",
+            options=story_timing_options,
+            index=story_timing_options.index(st.session_state.story_pause_amount),
+            horizontal=True,
+            label_visibility="visible",
+            key="story_pause_amount_radio",
+        )
+        if new_story_pause_amount != st.session_state.story_pause_amount:
+            st.session_state.story_pause_amount = new_story_pause_amount
             store_active_person_prefs()
             st.session_state.erase_review_confirm = False
             st.rerun()
