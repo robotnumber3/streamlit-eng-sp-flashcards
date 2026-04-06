@@ -1805,18 +1805,21 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         display: flex !important;
         align-items: center !important;
         gap: 0 !important;
+        padding-left: 0.18rem !important;
+        font-size: 0.78rem !important;
     }}
     [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button::before {{
         display: inline-block !important;
-        flex: 0 0 1.7rem !important;
-        width: 1.7rem !important;
+        flex: 0 0 1.3rem !important;
+        width: 1.3rem !important;
         text-align: center !important;
-        font-size: 1.05rem !important;
+        font-size: 0.98rem !important;
         line-height: 1 !important;
     }}
     [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button > div,
     [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button p {{
         flex: 1 1 auto !important;
+        font-size: 0.78rem !important;
     }}
     [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button::before {{
         content: '⭐';
