@@ -2318,9 +2318,8 @@ def advance_card(schedule_current=True):
     st.session_state.direction = effective_direction()
 
 
-def story_pause_seconds():
-    story_card = current_story_card()
-    spanish_text = strip_spoken_text(story_card["answer"])
+def story_pause_seconds_for_text(text):
+    spanish_text = strip_spoken_text(text)
     words = re.findall(r"[A-Za-zÁÉÍÓÚáéíóúÑñÜü]+", spanish_text)
     word_count = len(words)
     letter_count = sum(len(word) for word in words)
@@ -2366,6 +2365,11 @@ def story_pause_seconds():
         4: t4,
         5: t5,
     }.get(st.session_state.story_pause_amount, t3)
+
+
+def story_pause_seconds():
+    story_card = current_story_card()
+    return story_pause_seconds_for_text(story_card["answer"])
 
 
 def current_story_card():
@@ -2502,6 +2506,7 @@ def render_story_start_unlock_handler(
     story_lines,
     spanish_html_lines,
     translation_html_lines,
+    pause_seconds_by_line,
     story_line_numbers,
     current_index,
     auto_advance=False,
@@ -2529,6 +2534,7 @@ def render_story_start_unlock_handler(
                 lines: {json.dumps(spoken_lines)},
                 spanishHtmlLines: {json.dumps(spanish_html_lines)},
                 translationHtmlLines: {json.dumps(translation_html_lines)},
+                pauseSeconds: {json.dumps(pause_seconds_by_line)},
                 lineNumbers: {json.dumps(story_line_numbers)},
                 showLineNumbers: {str(st.session_state.story_random_on).lower()},
                 serverIndex: {current_index},
@@ -2592,12 +2598,16 @@ def render_story_start_unlock_handler(
                 var translationContent = doc.getElementById('story-translation-content');
                 var progressValue = doc.getElementById('story-progress-value');
                 var progressFill = doc.getElementById('story-progress-fill');
+                var pauseReadoutValue = doc.getElementById('story-pause-readout-value');
                 var total = controller.lines.length || 1;
                 var pct = ((index + 1) / total) * 100;
                 var countText = (index + 1) + ' of ' + total;
                 var lineNumber = controller.lineNumbers && typeof controller.lineNumbers[index] === 'number'
                     ? controller.lineNumbers[index]
                     : (index + 1);
+                var pauseSeconds = controller.pauseSeconds && typeof controller.pauseSeconds[index] === 'number'
+                    ? controller.pauseSeconds[index]
+                    : 0;
 
                 if (progressValue) {{
                     progressValue.textContent = controller.showLineNumbers
@@ -2606,6 +2616,9 @@ def render_story_start_unlock_handler(
                 }}
                 if (progressFill) {{
                     progressFill.style.width = pct.toFixed(2) + '%';
+                }}
+                if (pauseReadoutValue) {{
+                    pauseReadoutValue.textContent = pauseSeconds.toFixed(2) + 's';
                 }}
                 if (spanishContent) {{
                     spanishContent.innerHTML = controller.spanishHtmlLines[index] || '';
@@ -3049,6 +3062,7 @@ def render_story_start_unlock_handler(
             controller.lines = config.lines;
             controller.spanishHtmlLines = config.spanishHtmlLines;
             controller.translationHtmlLines = config.translationHtmlLines;
+            controller.pauseSeconds = config.pauseSeconds;
             controller.lineNumbers = config.lineNumbers;
             controller.showLineNumbers = config.showLineNumbers;
             controller.serverIndex = config.serverIndex;
@@ -3574,13 +3588,17 @@ def render_story_view():
         if st.session_state.story_random_on
         else story_count_text
     )
-    story_pause_delay = story_pause_seconds()
     playback_options = {
         "auto": "continuous",
         "step": "stop on every line",
     }
     ordered_story_cards = [st.session_state.cards[idx] for idx in st.session_state.order]
     ordered_story_line_numbers = [idx + 1 for idx in st.session_state.order]
+    story_pause_delays = [
+        story_pause_seconds_for_text(card["answer"])
+        for card in ordered_story_cards
+    ]
+    story_pause_delay = story_pause_delays[st.session_state.index] if story_pause_delays else 0.0
 
     with st.container(key="storyoptions_stack_wrap"):
         with st.container(key="storyplayback_row_wrap"):
@@ -3706,6 +3724,7 @@ def render_story_view():
             [card["answer"] for card in ordered_story_cards],
             story_spanish_html_lines,
             story_translation_html_lines,
+            story_pause_delays,
             ordered_story_line_numbers,
             st.session_state.index,
             auto_advance=st.session_state.story_playback_mode == "continuous",
@@ -3732,7 +3751,7 @@ def render_story_view():
     st.markdown(
         "<div class='story-pause-readout'>"
         "<div class='story-pause-readout-label'>Pause target</div>"
-        f"<div class='story-pause-readout-value'>{story_pause_delay:.2f}s</div>"
+        f"<div class='story-pause-readout-value' id='story-pause-readout-value'>{story_pause_delay:.2f}s</div>"
         "</div>",
         unsafe_allow_html=True,
     )
