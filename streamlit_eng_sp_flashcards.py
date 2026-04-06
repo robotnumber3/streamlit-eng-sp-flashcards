@@ -154,6 +154,51 @@ def is_story_deck(filename):
     return bool(filename) and not is_review_deck(filename) and "story" in os.path.basename(filename).lower()
 
 
+@st.cache_data(show_spinner=False)
+def deck_completion_metadata(filename):
+    deck_data = load_regular_deck(filename)
+    valid_ids = [card["id"] for card in deck_data["cards"] if card.get("id")]
+    return {
+        "supported": deck_data["supports_completion"],
+        "total": len(deck_data["cards"]),
+        "valid_ids": valid_ids,
+    }
+
+
+def deck_picker_status(filename, person):
+    if is_review_deck(filename):
+        return "review"
+    if is_story_deck(filename):
+        return "story"
+
+    metadata = deck_completion_metadata(filename)
+    if not metadata["supported"]:
+        return "untouched"
+
+    completed_ids = completed_ids_for(person, filename)
+    valid_ids = set(metadata["valid_ids"])
+    completed_count = len(completed_ids & valid_ids)
+    total_count = metadata["total"]
+
+    if completed_count <= 0:
+        return "untouched"
+    if total_count > 0 and completed_count >= total_count:
+        return "complete"
+    return "in_progress"
+
+
+def deck_picker_label(filename, person):
+    symbol_map = {
+        "review": "⭐",
+        "story": "📖",
+        "untouched": "•",
+        "in_progress": "🟡",
+        "complete": "✓",
+    }
+    status = deck_picker_status(filename, person)
+    return f"{symbol_map[status]} {display_deck_name(filename)}"
+
+
 def is_forced_en_es_deck(filename):
     return bool(filename) and not is_review_deck(filename) and "EN_ES" in os.path.basename(filename)
 
@@ -4218,7 +4263,7 @@ if st.session_state.selected_csv is None:
                 review_wrap = f"review_{person}_{'active' if review_enabled else 'inactive'}_wrap"
                 with st.container(key=review_wrap):
                     if st.button(
-                        review_deck_label(person),
+                        deck_picker_label(review_value, st.session_state.active_person),
                         key=f"deck_btn_review_{person}",
                         use_container_width=True,
                         disabled=not review_enabled,
@@ -4227,7 +4272,7 @@ if st.session_state.selected_csv is None:
                         st.rerun()
             divider_prefix_groups = ("ESsbs", "MAC", "PoS", "sentence")
             for current_index, csv_file in enumerate(csv_files):
-                deck_display = display_deck_name(csv_file)
+                deck_display = deck_picker_label(csv_file, st.session_state.active_person)
                 if st.button(deck_display, key=f"deck_btn_{csv_file}", use_container_width=True):
                     activate_deck(csv_file)
                     st.rerun()
@@ -4251,7 +4296,7 @@ if st.session_state.selected_csv is None:
             "Available decks:",
             deck_options,
             index=0,
-            format_func=lambda value: value if value == "-- Choose a deck --" else display_deck_name(value),
+            format_func=lambda value: value if value == "-- Choose a deck --" else deck_picker_label(value, st.session_state.active_person),
         )
         if selected != deck_options[0]:
             if review_deck_selectable(selected):
