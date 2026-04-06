@@ -1823,21 +1823,21 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         font-size: 0.86rem !important;
     }}
     [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button::before {{
-        content: '⭐\00a0';
+        content: '⭐ ';
     }}
     [class*="st-key-mobile_deck_entry_story_"] [data-testid="stButton"] > button::before {{
-        content: '📖\00a0';
+        content: '📖 ';
     }}
     [class*="st-key-mobile_deck_entry_untouched_"] [data-testid="stButton"] > button::before {{
-        content: '•\00a0';
+        content: '• ';
         color: #8d98a3 !important;
     }}
     [class*="st-key-mobile_deck_entry_in_progress_"] [data-testid="stButton"] > button::before {{
-        content: '●\00a0';
+        content: '● ';
         color: #f2c94c !important;
     }}
     [class*="st-key-mobile_deck_entry_complete_"] [data-testid="stButton"] > button::before {{
-        content: '✓\00a0';
+        content: '✓ ';
         color: {t['accent']} !important;
         font-weight: 700 !important;
     }}
