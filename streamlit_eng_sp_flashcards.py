@@ -3016,6 +3016,60 @@ def render_story_start_unlock_handler(
                 speakLine(nextIndex);
             }}
 
+            function nextFromGesture(event) {{
+                if (event) {{
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (typeof event.stopImmediatePropagation === 'function') {{
+                        event.stopImmediatePropagation();
+                    }}
+                }}
+
+                var nextIndex = Math.min(controller.localIndex + 1, controller.lines.length - 1);
+                if (nextIndex === controller.localIndex) return;
+
+                cancelTimers();
+                controller.queueToken = (controller.queueToken || 0) + 1;
+                controller.isSpeaking = false;
+                controller.speakingKey = null;
+                controller.queuedNextIndex = null;
+                controller.resumeTargetIndex = null;
+                controller.pausedDisplayIndex = null;
+                try {{
+                    synth.cancel();
+                }} catch (error) {{
+                }}
+
+                controller.active = true;
+                controller.running = true;
+                controller.localIndex = nextIndex;
+                renderLocalStoryViewStable(nextIndex);
+                setDebug('next gesture: ' + (nextIndex + 1));
+
+                if (clickAdvanceButton()) {{
+                    // Sync the server index immediately; retry if the hidden button is still mounting.
+                    var attempts = 0;
+                    if (controller.advanceRetryTimer) {{
+                        parentWindow.clearInterval(controller.advanceRetryTimer);
+                    }}
+                    controller.advanceRetryTimer = parentWindow.setInterval(function() {{
+                        attempts += 1;
+                        if (clickAdvanceButton() || attempts >= 10) {{
+                            parentWindow.clearInterval(controller.advanceRetryTimer);
+                            controller.advanceRetryTimer = null;
+                        }}
+                    }}, 150);
+                }}
+
+                if (controller.autoAdvance) {{
+                    queueAutoFrom(nextIndex);
+                    return;
+                }}
+
+                controller.pendingManualSpeakIndex = nextIndex;
+                speakLine(nextIndex);
+            }}
+
             function pauseFromGesture() {{
                 if (controller.ignorePauseUntil && Date.now() < controller.ignorePauseUntil) {{
                     return;
@@ -3102,6 +3156,7 @@ def render_story_start_unlock_handler(
             attachHandler('.st-key-storystart_wrap button', '_storyMobileStartHandler', startFromGesture);
             attachHandler('.st-key-storypause_wrap button', '_storyMobilePauseHandler', pauseFromGesture);
             attachHandler('.st-key-storystop_wrap button', '_storyMobileStopHandler', stopFromGesture);
+            attachHandler('.st-key-storynext_wrap button', '_storyMobileNextHandler', nextFromGesture);
             attachHandler('.st-key-showanswer_wrap button', '_storyMobileStepHandler', stepAdvanceFromGesture);
 
             if (!config.running) {{
@@ -3147,6 +3202,7 @@ def render_story_mobile_controller_cleanup():
                 ['.st-key-storystart_wrap button', '_storyMobileStartHandler'],
                 ['.st-key-storypause_wrap button', '_storyMobilePauseHandler'],
                 ['.st-key-storystop_wrap button', '_storyMobileStopHandler'],
+                ['.st-key-storynext_wrap button', '_storyMobileNextHandler'],
                 ['.st-key-showanswer_wrap button', '_storyMobileStepHandler'],
             ];
             var eventNames = ['click', 'touchend'];
@@ -3444,7 +3500,6 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
             var speechKey = storyRunToken + '|' + storyIndex + '|' + speechText + '|' + speechRate;
 
             if (!synth || !speechText) return;
-            if (doc._storyLastSpeechKey === speechKey) return;
 
             function clickAdvanceButton() {{
                 var button = doc.querySelector('.st-key-storyadvance_hidden_wrap button');
@@ -3479,6 +3534,56 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                     }}, 150);
                 }}, delayMs);
             }}
+
+            function attachNextHandler() {{
+                var button = doc.querySelector('.st-key-storynext_wrap button');
+                if (!button) return;
+
+                if (doc._storyDesktopNextHandler) {{
+                    ['click', 'touchend'].forEach(function(eventName) {{
+                        button.removeEventListener(eventName, doc._storyDesktopNextHandler, true);
+                    }});
+                }}
+
+                doc._storyDesktopNextHandler = function(event) {{
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (typeof event.stopImmediatePropagation === 'function') {{
+                        event.stopImmediatePropagation();
+                    }}
+
+                    doc._storyPauseRequested = {{
+                        runToken: storyRunToken,
+                        storyIndex: storyIndex,
+                    }};
+
+                    if (doc._storyAutoAdvanceTimer) {{
+                        clearTimeout(doc._storyAutoAdvanceTimer);
+                        doc._storyAutoAdvanceTimer = null;
+                    }}
+
+                    try {{
+                        synth.cancel();
+                    }} catch (error) {{
+                    }}
+
+                    if (clickAdvanceButton()) return;
+                    var attempts = 0;
+                    var timer = setInterval(function() {{
+                        attempts += 1;
+                        if (clickAdvanceButton() || attempts >= 10) {{
+                            clearInterval(timer);
+                        }}
+                    }}, 150);
+                }};
+
+                ['click', 'touchend'].forEach(function(eventName) {{
+                    button.addEventListener(eventName, doc._storyDesktopNextHandler, true);
+                }});
+            }}
+
+            attachNextHandler();
+            if (doc._storyLastSpeechKey === speechKey) return;
 
             function pickVoice(voices) {{
                 return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
