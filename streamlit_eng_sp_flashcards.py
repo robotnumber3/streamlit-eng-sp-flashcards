@@ -1801,6 +1801,42 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         margin-top: -0.04rem !important;
         margin-bottom: 0.18rem !important;
     }}
+    [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button {{
+        display: flex !important;
+        align-items: center !important;
+        gap: 0 !important;
+    }}
+    [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button::before {{
+        display: inline-block !important;
+        flex: 0 0 1.7rem !important;
+        width: 1.7rem !important;
+        text-align: center !important;
+        font-size: 1.05rem !important;
+        line-height: 1 !important;
+    }}
+    [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button > div,
+    [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button p {{
+        flex: 1 1 auto !important;
+    }}
+    [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button::before {{
+        content: '⭐';
+    }}
+    [class*="st-key-mobile_deck_entry_story_"] [data-testid="stButton"] > button::before {{
+        content: '📖';
+    }}
+    [class*="st-key-mobile_deck_entry_untouched_"] [data-testid="stButton"] > button::before {{
+        content: '•';
+        color: #8d98a3 !important;
+    }}
+    [class*="st-key-mobile_deck_entry_in_progress_"] [data-testid="stButton"] > button::before {{
+        content: '●';
+        color: #f2c94c !important;
+    }}
+    [class*="st-key-mobile_deck_entry_complete_"] [data-testid="stButton"] > button::before {{
+        content: '✓';
+        color: {t['accent']} !important;
+        font-weight: 700 !important;
+    }}
     .st-key-mobile_deck_picker_wrap [data-testid="stButton"] {{
         margin-bottom: 0.05rem !important;
     }}
@@ -4262,20 +4298,22 @@ if st.session_state.selected_csv is None:
                 review_enabled = review_deck_selectable(review_value)
                 review_wrap = f"review_{person}_{'active' if review_enabled else 'inactive'}_wrap"
                 with st.container(key=review_wrap):
-                    if st.button(
-                        deck_picker_label(review_value, st.session_state.active_person),
-                        key=f"deck_btn_review_{person}",
-                        use_container_width=True,
-                        disabled=not review_enabled,
-                    ):
-                        activate_deck(review_value)
-                        st.rerun()
+                    with st.container(key=f"mobile_deck_entry_review_{person}_wrap"):
+                        if st.button(
+                            review_deck_label(person),
+                            key=f"deck_btn_review_{person}",
+                            use_container_width=True,
+                            disabled=not review_enabled,
+                        ):
+                            activate_deck(review_value)
+                            st.rerun()
             divider_prefix_groups = ("ESsbs", "MAC", "PoS", "sentence")
             for current_index, csv_file in enumerate(csv_files):
-                deck_display = deck_picker_label(csv_file, st.session_state.active_person)
-                if st.button(deck_display, key=f"deck_btn_{csv_file}", use_container_width=True):
-                    activate_deck(csv_file)
-                    st.rerun()
+                deck_status = deck_picker_status(csv_file, st.session_state.active_person)
+                with st.container(key=f"mobile_deck_entry_{deck_status}_{current_index}_wrap"):
+                    if st.button(display_deck_name(csv_file), key=f"deck_btn_{csv_file}", use_container_width=True):
+                        activate_deck(csv_file)
+                        st.rerun()
                 current_group = next(
                     (prefix for prefix in divider_prefix_groups if csv_file.lower().startswith(prefix.lower())),
                     None,
