@@ -1767,6 +1767,24 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background: {t['accent']};
     border-radius: 999px;
 }}
+.story-pause-readout {{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 0.06rem 0 0.42rem 0;
+}}
+.story-pause-readout-label {{
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: {t['muted']};
+}}
+.story-pause-readout-value {{
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: {t['fg']};
+}}
 .soft-divider {{
     border: none; border-top: 1px solid {t['border']}; margin: 0.6rem 0;
 }}
@@ -3556,6 +3574,7 @@ def render_story_view():
         if st.session_state.story_random_on
         else story_count_text
     )
+    story_pause_delay = story_pause_seconds()
     playback_options = {
         "auto": "continuous",
         "step": "stop on every line",
@@ -3690,18 +3709,13 @@ def render_story_view():
             ordered_story_line_numbers,
             st.session_state.index,
             auto_advance=st.session_state.story_playback_mode == "continuous",
-            delay_seconds=story_pause_seconds(),
+            delay_seconds=story_pause_delay,
             running=st.session_state.story_running,
             resume_next=st.session_state.story_resume_next,
         )
 
     if not st.session_state.story_started:
         return
-
-    # st.markdown(
-    #     "<div id='story-mobile-debug' style='display:block;font-size:0.72rem;color:#e6b85c;margin:0.1rem 0 0.35rem 0;'>DEBUG: waiting...</div>",
-    #     unsafe_allow_html=True,
-    # )
 
     st.markdown(
         "<div class='story-progress'>"
@@ -3712,6 +3726,13 @@ def render_story_view():
         "<div class='story-progress-track'>"
         f"<div class='story-progress-fill' id='story-progress-fill' style='width:{story_progress_pct:.2f}%'></div>"
         "</div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "<div class='story-pause-readout'>"
+        "<div class='story-pause-readout-label'>Pause target</div>"
+        f"<div class='story-pause-readout-value'>{story_pause_delay:.2f}s</div>"
         "</div>",
         unsafe_allow_html=True,
     )
@@ -3770,13 +3791,13 @@ def render_story_view():
         render_story_audio_autoplay(
             spanish_text,
             auto_advance=st.session_state.story_playback_mode == "continuous",
-            delay_seconds=story_pause_seconds(),
+            delay_seconds=story_pause_delay,
         )
 
     if st.session_state.story_playback_mode == "stop on every line" and st.session_state.story_running:
         pass
     elif st.session_state.story_running and not audio_enabled:
-        render_story_auto_advance(story_pause_seconds())
+        render_story_auto_advance(story_pause_delay)
 
 # ------------------------------------------------------------------------
 # UI HELPERS
