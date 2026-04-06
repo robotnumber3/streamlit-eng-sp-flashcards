@@ -1799,7 +1799,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .mobile-deck-picker-label {{
         display: block !important;
         margin-top: -0.04rem !important;
-        margin-bottom: 0.34rem !important;
+        margin-bottom: 0.40rem !important;
     }}
     [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button {{
         display: flex !important;
