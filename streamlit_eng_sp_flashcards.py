@@ -2591,6 +2591,17 @@ def render_story_start_unlock_handler(
                 }}
             }}
 
+            function pauseDelayMsForIndex(index) {{
+                if (
+                    controller.pauseSeconds
+                    && typeof controller.pauseSeconds[index] === 'number'
+                    && !Number.isNaN(controller.pauseSeconds[index])
+                ) {{
+                    return Math.max(Math.round(controller.pauseSeconds[index] * 1000), 0);
+                }}
+                return controller.delayMs > 0 ? controller.delayMs : 0;
+            }}
+
             function renderLocalStoryView(index) {{
                 if (index < 0 || index >= controller.lines.length) return;
 
@@ -2672,11 +2683,12 @@ def render_story_start_unlock_handler(
                 }}, 150);
             }}
 
-            function scheduleNextLine(nextIndex) {{
+            function scheduleNextLine(nextIndex, completedIndex) {{
                 if (!controller.running || !controller.autoAdvance) return;
                 cancelTimers();
                 controller.queuedNextIndex = nextIndex;
                 setDebug('queued next: ' + (nextIndex + 1));
+                var waitMs = pauseDelayMsForIndex(completedIndex);
                 controller.advanceTimer = parentWindow.setTimeout(function() {{
                     if (!controller.running) return;
                     if (nextIndex >= controller.lines.length) {{
@@ -2695,7 +2707,7 @@ def render_story_start_unlock_handler(
                         if (!controller.running) return;
                         syncAdvanceButton();
                     }}, 250);
-                }}, controller.delayMs);
+                }}, waitMs);
             }}
 
             function handleLineComplete(index) {{
@@ -2707,7 +2719,7 @@ def render_story_start_unlock_handler(
                     doc._storyPauseResumeState.speechFinished = true;
                 }}
                 if (controller.running && controller.autoAdvance) {{
-                    scheduleNextLine(index + 1);
+                    scheduleNextLine(index + 1, index);
                 }}
             }}
 
@@ -2788,7 +2800,7 @@ def render_story_start_unlock_handler(
                             setDebug('finished story');
                             return;
                         }}
-                        var waitMs = controller.delayMs > 0 ? controller.delayMs : 0;
+                        var waitMs = pauseDelayMsForIndex(idx);
                         var timerId = parentWindow.setTimeout(function() {{
                             if (controller.queueToken !== queueToken) return;
                             if (!controller.running) return;
