@@ -1720,6 +1720,31 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     display: none;
 }}
 @media (max-width: 767px) {{
+    .title-row {{
+        padding: 0.15rem 0 0.08rem 0 !important;
+    }}
+    .title-main {{
+        line-height: 0.96 !important;
+    }}
+    .title-sub {{
+        margin-top: 0.08rem !important;
+    }}
+    .st-key-person_radio_wrap {{
+        margin-top: -0.08rem !important;
+        margin-bottom: 0.12rem !important;
+    }}
+    .st-key-person_radio_wrap [data-testid="stRadio"] {{
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+    .st-key-person_radio_wrap [data-testid="stRadio"] > div {{
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+    .st-key-person_radio_wrap div[role="radiogroup"] {{
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
     .st-key-desktop_deck_picker_wrap {{
         display: none !important;
     }}
@@ -1728,7 +1753,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .mobile-deck-picker-label {{
         display: block !important;
-        margin-bottom: 0.3rem !important;
+        margin-top: -0.04rem !important;
+        margin-bottom: 0.18rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [data-testid="stButton"] {{
         margin-bottom: 0.05rem !important;
@@ -1975,7 +2001,7 @@ def render_mobile_deck_picker_height_fix():
                 target.style.maxHeight = '70svh';
                 target.style.minHeight = '70svh';
                 target.style.overflowY = 'auto';
-                target.style.marginTop = '0.24rem';
+                target.style.marginTop = '0.38rem';
                 return true;
             }
 
