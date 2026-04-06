@@ -1726,6 +1726,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-mobile_deck_picker_wrap {{
         display: block !important;
     }}
+    .mobile-deck-picker-label {{
+        display: block !important;
+        margin-bottom: 0.3rem !important;
+    }}
     .st-key-mobile_deck_picker_wrap [data-testid="stButton"] {{
         margin-bottom: 0.05rem !important;
     }}
@@ -1790,7 +1794,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storyplayback_row_wrap .story-option-row {{
         font-size: 0.9rem !important;
         position: relative !important;
-        top: -0.16rem !important;
+        top: -0.28rem !important;
         white-space: nowrap !important;
     }}
     .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
@@ -1825,7 +1829,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(2) {{
         flex: 0 0 2.0rem !important;
-        padding-right: 2ch !important;
+        padding-right: 0 !important;
+        margin-right: 2ch !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(3) {{
         flex: 0 0 auto !important;
@@ -1833,7 +1838,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(4) {{
         flex: 0 0 2.0rem !important;
-        padding-right: 2ch !important;
+        padding-right: 0 !important;
+        margin-right: 2ch !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(5) {{
         flex: 0 0 auto !important;
@@ -1949,6 +1955,7 @@ def render_mobile_deck_picker_height_fix():
                     var style = parentWindow.getComputedStyle(el);
                     var overflowY = style.overflowY;
                     return (overflowY === 'auto' || overflowY === 'scroll' || el.scrollHeight > el.clientHeight + 8)
+                        && !el.querySelector('.mobile-deck-picker-label')
                         && el.clientHeight >= 180;
                 });
 
@@ -1956,11 +1963,19 @@ def render_mobile_deck_picker_height_fix():
                     return false;
                 }
 
+                candidates.sort(function(a, b) {
+                    if (a.clientHeight !== b.clientHeight) {
+                        return a.clientHeight - b.clientHeight;
+                    }
+                    return a.querySelectorAll('div').length - b.querySelectorAll('div').length;
+                });
+
                 var target = candidates[0];
-                target.style.height = '80svh';
-                target.style.maxHeight = '80svh';
-                target.style.minHeight = '80svh';
+                target.style.height = '70svh';
+                target.style.maxHeight = '70svh';
+                target.style.minHeight = '70svh';
                 target.style.overflowY = 'auto';
+                target.style.marginTop = '0.1rem';
                 return true;
             }
 
@@ -4166,7 +4181,7 @@ if st.session_state.selected_csv is None:
     review_deck_values = visible_review_deck_values()
     deck_options = ["-- Choose a deck --", *review_deck_values, *csv_files]
     with st.container(key="mobile_deck_picker_wrap"):
-        st.markdown("<div style='font-size: 0.95rem; color: " + t['fg'] + ";'>Available decks:</div>", unsafe_allow_html=True)
+        st.markdown("<div class='mobile-deck-picker-label' style='font-size: 0.95rem; color: " + t['fg'] + ";'>Available decks:</div>", unsafe_allow_html=True)
         deck_container = st.container(height=250)
         with deck_container:
             for person in PERSON_LABELS:
