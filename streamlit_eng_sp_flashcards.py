@@ -1698,6 +1698,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 0.8rem;
     font-weight: 600;
     color: {t['fg']};
+    white-space: pre;
 }}
 .story-progress-track {{
     height: 0.22rem;
@@ -1788,6 +1789,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-storyplayback_row_wrap .story-option-row {{
         font-size: 0.9rem !important;
+        position: relative !important;
+        top: -0.16rem !important;
         white-space: nowrap !important;
     }}
     .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
@@ -1822,7 +1825,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(2) {{
         flex: 0 0 2.0rem !important;
-        padding-right: 1.0rem !important;
+        padding-right: 2ch !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(3) {{
         flex: 0 0 auto !important;
@@ -1830,7 +1833,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(4) {{
         flex: 0 0 2.0rem !important;
-        padding-right: 1.0rem !important;
+        padding-right: 2ch !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(5) {{
         flex: 0 0 auto !important;
@@ -1914,6 +1917,69 @@ components.html("""
 })();
 </script>
 """, height=0)
+
+
+def render_mobile_deck_picker_height_fix():
+    components.html(
+        """
+        <script>
+        (function() {
+            var parentWindow = window.parent;
+            var doc = parentWindow.document;
+
+            function isPhoneLayout() {
+                var nav = parentWindow.navigator || window.navigator;
+                var ua = nav && nav.userAgent ? nav.userAgent : '';
+                var hasTouch = !!(('ontouchstart' in parentWindow) || (nav && nav.maxTouchPoints > 0));
+                var narrow = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 767px)').matches);
+                return narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua));
+            }
+
+            if (!isPhoneLayout()) {
+                return;
+            }
+
+            function applyHeight() {
+                var wrap = doc.querySelector('.st-key-mobile_deck_picker_wrap');
+                if (!wrap) {
+                    return false;
+                }
+
+                var candidates = Array.from(wrap.querySelectorAll('div')).filter(function(el) {
+                    var style = parentWindow.getComputedStyle(el);
+                    var overflowY = style.overflowY;
+                    return (overflowY === 'auto' || overflowY === 'scroll' || el.scrollHeight > el.clientHeight + 8)
+                        && el.clientHeight >= 180;
+                });
+
+                if (!candidates.length) {
+                    return false;
+                }
+
+                var target = candidates[0];
+                target.style.height = '80svh';
+                target.style.maxHeight = '80svh';
+                target.style.minHeight = '80svh';
+                target.style.overflowY = 'auto';
+                return true;
+            }
+
+            if (applyHeight()) {
+                return;
+            }
+
+            var attempts = 0;
+            var timer = parentWindow.setInterval(function() {
+                attempts += 1;
+                if (applyHeight() || attempts >= 20) {
+                    parentWindow.clearInterval(timer);
+                }
+            }, 120);
+        })();
+        </script>
+        """,
+        height=0,
+    )
 
 # ------------------------------------------------------------------------
 # CARD LOGIC
@@ -2333,15 +2399,15 @@ def render_story_start_unlock_handler(
                 var progressFill = doc.getElementById('story-progress-fill');
                 var total = controller.lines.length || 1;
                 var pct = ((index + 1) / total) * 100;
-                var countText = (index + 1) + '/' + total;
+                var countText = (index + 1) + ' of ' + total;
                 var lineNumber = controller.lineNumbers && typeof controller.lineNumbers[index] === 'number'
                     ? controller.lineNumbers[index]
                     : (index + 1);
 
                 if (progressValue) {{
                     progressValue.textContent = controller.showLineNumbers
-                        ? ('Line: ' + lineNumber + '   ' + countText)
-                        : ((index + 1) + ' of ' + total);
+                        ? ('Line: ' + lineNumber + '    ' + countText)
+                        : countText;
                 }}
                 if (progressFill) {{
                     progressFill.style.width = pct.toFixed(2) + '%';
@@ -3307,13 +3373,9 @@ def render_story_view():
     story_total = len(st.session_state.order)
     story_progress_pct = (story_position / story_total * 100) if story_total else 0
     story_line_number = current_card_index() + 1
-    story_count_text = (
-        f"{story_position}/{story_total}"
-        if st.session_state.story_random_on
-        else f"{story_position} of {story_total}"
-    )
+    story_count_text = f"{story_position} of {story_total}"
     story_progress_text = (
-        f"Line: {story_line_number}   {story_count_text}"
+        f"Line: {story_line_number}    {story_count_text}"
         if st.session_state.story_random_on
         else story_count_text
     )
@@ -4141,6 +4203,7 @@ if st.session_state.selected_csv is None:
                     )
                 if current_group and current_group != next_group:
                     st.markdown('<div class="mobile-deck-divider"></div>', unsafe_allow_html=True)
+            render_mobile_deck_picker_height_fix()
 
     with st.container(key="desktop_deck_picker_wrap"):
         selected = st.selectbox(
