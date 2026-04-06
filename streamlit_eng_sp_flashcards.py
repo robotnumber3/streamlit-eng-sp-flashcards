@@ -1804,22 +1804,22 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button {{
         display: flex !important;
         align-items: center !important;
-        gap: 0 !important;
-        padding-left: 0.18rem !important;
-        font-size: 0.78rem !important;
+        gap: 0.28rem !important;
+        padding-left: 0.02rem !important;
+        font-size: 0.83rem !important;
     }}
     [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button::before {{
         display: inline-block !important;
-        flex: 0 0 1.3rem !important;
-        width: 1.3rem !important;
-        text-align: center !important;
+        flex: 0 0 1.05rem !important;
+        width: 1.05rem !important;
+        text-align: left !important;
         font-size: 0.98rem !important;
         line-height: 1 !important;
     }}
     [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button > div,
     [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button p {{
         flex: 1 1 auto !important;
-        font-size: 0.78rem !important;
+        font-size: 0.83rem !important;
     }}
     [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button::before {{
         content: '⭐';
