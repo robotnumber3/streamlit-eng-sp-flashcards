@@ -223,6 +223,9 @@ STORY_BASE_WORD_WEIGHT = 0.01
 STORY_EXTRA_WORD_BONUS_SCALE = 0.36
 STORY_EXTRA_WORD_THRESHOLD = 6
 STORY_EXTRA_WORD_BONUS_EXPONENT = 1.5
+STORY_HIGH_WORD_COUNT_BONUS_SCALE = 0.08
+STORY_HIGH_WORD_COUNT_THRESHOLD = 8
+STORY_HIGH_WORD_COUNT_BONUS_EXPONENT = 2.0
 STORY_PROCESSING_BUFFER_SECONDS = 0.06
 STORY_MIN_PAUSE_SECONDS = 0.5
 STORY_LEVEL3_EXPONENT = 2
@@ -2306,10 +2309,15 @@ def story_pause_seconds():
         max(word_count - STORY_EXTRA_WORD_THRESHOLD, 0)
         ** STORY_EXTRA_WORD_BONUS_EXPONENT
     )
+    high_word_count_bonus_seconds = STORY_HIGH_WORD_COUNT_BONUS_SCALE * (
+        max(word_count - STORY_HIGH_WORD_COUNT_THRESHOLD, 0)
+        ** STORY_HIGH_WORD_COUNT_BONUS_EXPONENT
+    )
     t_process = (
         base_process_seconds
         + STORY_BASE_WORD_WEIGHT * word_count
         + extra_word_bonus_seconds
+        + high_word_count_bonus_seconds
         + STORY_PROCESSING_BUFFER_SECONDS
     )
     t5 = max(STORY_MIN_PAUSE_SECONDS, 2 * t_process)
