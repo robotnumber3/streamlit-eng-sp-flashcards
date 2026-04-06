@@ -1591,6 +1591,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"],
 .st-key-storytransaudio_row_wrap [data-testid="stHorizontalBlock"] {{
     align-items: center !important;
+    flex-wrap: nowrap !important;
     gap: 0.25rem !important;
     margin: 0 !important;
 }}
@@ -1641,6 +1642,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     align-items: center !important;
     margin: 0 !important;
     padding: 0 !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
+    white-space: nowrap !important;
 }}
 .st-key-storycontrol_row_wrap [data-testid="stHorizontalBlock"] {{
     display: flex !important;
@@ -1768,6 +1772,32 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         height: 2.2rem !important;
         overflow: hidden !important;
     }}
+    .st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"] {{
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 0.12rem !important;
+    }}
+    .st-key-storyplayback_row_wrap [data-testid="stColumn"]:nth-child(1) {{
+        flex: 0 0 7.45rem !important;
+        min-width: 7.45rem !important;
+    }}
+    .st-key-storyplayback_row_wrap [data-testid="stColumn"]:nth-child(2) {{
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }}
+    .st-key-storyplayback_row_wrap .story-option-row {{
+        font-size: 0.9rem !important;
+        white-space: nowrap !important;
+    }}
+    .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+        gap: 0.42rem !important;
+        white-space: nowrap !important;
+    }}
+    .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
+        white-space: nowrap !important;
+    }}
+
     .st-key-storytransaudio_row_wrap [data-testid="stHorizontalBlock"] {{
         gap: 0 !important;
         align-items: center !important;
@@ -2211,6 +2241,7 @@ def render_story_start_unlock_handler(
     story_lines,
     spanish_html_lines,
     translation_html_lines,
+    story_line_numbers,
     current_index,
     auto_advance=False,
     delay_seconds=0,
@@ -2237,6 +2268,8 @@ def render_story_start_unlock_handler(
                 lines: {json.dumps(spoken_lines)},
                 spanishHtmlLines: {json.dumps(spanish_html_lines)},
                 translationHtmlLines: {json.dumps(translation_html_lines)},
+                lineNumbers: {json.dumps(story_line_numbers)},
+                showLineNumbers: {str(st.session_state.story_random_on).lower()},
                 serverIndex: {current_index},
                 autoAdvance: {str(auto_advance).lower()},
                 delayMs: {delay_ms},
@@ -2300,9 +2333,15 @@ def render_story_start_unlock_handler(
                 var progressFill = doc.getElementById('story-progress-fill');
                 var total = controller.lines.length || 1;
                 var pct = ((index + 1) / total) * 100;
+                var countText = (index + 1) + '/' + total;
+                var lineNumber = controller.lineNumbers && typeof controller.lineNumbers[index] === 'number'
+                    ? controller.lineNumbers[index]
+                    : (index + 1);
 
                 if (progressValue) {{
-                    progressValue.textContent = (index + 1) + ' of ' + total;
+                    progressValue.textContent = controller.showLineNumbers
+                        ? ('Line: ' + lineNumber + '   ' + countText)
+                        : ((index + 1) + ' of ' + total);
                 }}
                 if (progressFill) {{
                     progressFill.style.width = pct.toFixed(2) + '%';
@@ -2749,6 +2788,8 @@ def render_story_start_unlock_handler(
             controller.lines = config.lines;
             controller.spanishHtmlLines = config.spanishHtmlLines;
             controller.translationHtmlLines = config.translationHtmlLines;
+            controller.lineNumbers = config.lineNumbers;
+            controller.showLineNumbers = config.showLineNumbers;
             controller.serverIndex = config.serverIndex;
             controller.autoAdvance = config.autoAdvance;
             controller.delayMs = config.delayMs;
@@ -3265,11 +3306,23 @@ def render_story_view():
     story_position = st.session_state.index + 1
     story_total = len(st.session_state.order)
     story_progress_pct = (story_position / story_total * 100) if story_total else 0
+    story_line_number = current_card_index() + 1
+    story_count_text = (
+        f"{story_position}/{story_total}"
+        if st.session_state.story_random_on
+        else f"{story_position} of {story_total}"
+    )
+    story_progress_text = (
+        f"Line: {story_line_number}   {story_count_text}"
+        if st.session_state.story_random_on
+        else story_count_text
+    )
     playback_options = {
         "auto": "continuous",
         "step": "stop on every line",
     }
     ordered_story_cards = [st.session_state.cards[idx] for idx in st.session_state.order]
+    ordered_story_line_numbers = [idx + 1 for idx in st.session_state.order]
 
     with st.container(key="storyoptions_stack_wrap"):
         with st.container(key="storyplayback_row_wrap"):
@@ -3392,6 +3445,7 @@ def render_story_view():
             [card["answer"] for card in ordered_story_cards],
             story_spanish_html_lines,
             story_translation_html_lines,
+            ordered_story_line_numbers,
             st.session_state.index,
             auto_advance=st.session_state.story_playback_mode == "continuous",
             delay_seconds=story_pause_seconds(),
@@ -3411,7 +3465,7 @@ def render_story_view():
         "<div class='story-progress'>"
         "<div class='story-progress-head'>"
         "<div class='story-progress-label'>Sentence</div>"
-        f"<div class='story-progress-value' id='story-progress-value'>{story_position} of {story_total}</div>"
+        f"<div class='story-progress-value' id='story-progress-value'>{story_progress_text}</div>"
         "</div>"
         "<div class='story-progress-track'>"
         f"<div class='story-progress-fill' id='story-progress-fill' style='width:{story_progress_pct:.2f}%'></div>"
