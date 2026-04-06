@@ -1975,7 +1975,7 @@ def render_mobile_deck_picker_height_fix():
                 target.style.maxHeight = '70svh';
                 target.style.minHeight = '70svh';
                 target.style.overflowY = 'auto';
-                target.style.marginTop = '0.1rem';
+                target.style.marginTop = '0.24rem';
                 return true;
             }
 
