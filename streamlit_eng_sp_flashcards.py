@@ -1865,6 +1865,25 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         text-align: left !important;
         justify-content: flex-start !important;
     }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button {{
+        padding-left: 0 !important;
+        padding-right: 0.45rem !important;
+        font-size: 0.88rem !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button::before {{
+        flex: 0 0 0.68rem !important;
+        width: 0.68rem !important;
+        margin-left: -0.08rem !important;
+        margin-right: 0 !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button > div {{
+        width: auto !important;
+        flex: 1 1 auto !important;
+        margin-left: 0.56rem !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button p {{
+        font-size: 0.88rem !important;
+    }}
     .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] > * {{
         margin-bottom: 0 !important;
     }}
