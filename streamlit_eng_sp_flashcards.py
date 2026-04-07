@@ -3351,7 +3351,6 @@ def render_story_start_unlock_handler(
             attachHandler('.st-key-storypause_wrap button', '_storyMobilePauseHandler', pauseFromGesture);
             attachHandler('.st-key-storystop_wrap button', '_storyMobileStopHandler', stopFromGesture);
             attachHandler('.st-key-storynext_wrap button', '_storyMobileNextHandler', nextFromGesture);
-            attachHandler('.st-key-showanswer_wrap button', '_storyMobileStepHandler', stepAdvanceFromGesture);
 
             if (!config.running) {{
                 if (!controller.active) {{
@@ -3413,7 +3412,6 @@ def render_story_mobile_controller_cleanup():
                 ['.st-key-storypause_wrap button', '_storyMobilePauseHandler'],
                 ['.st-key-storystop_wrap button', '_storyMobileStopHandler'],
                 ['.st-key-storynext_wrap button', '_storyMobileNextHandler'],
-                ['.st-key-showanswer_wrap button', '_storyMobileStepHandler'],
             ];
             var eventNames = ['click', 'touchend'];
             var debugEl = doc.getElementById('story-mobile-debug');
@@ -4154,12 +4152,6 @@ def render_story_view():
         + '</div>'
     )
     st.markdown(spanish_html, unsafe_allow_html=True)
-
-    if st.session_state.story_playback_mode == "stop on every line" and not story_show_end_controls:
-        with st.container(key="showanswer_wrap"):
-            if st.button("➜", key="story_next_btn"):
-                advance_story_line()
-                st.rerun()
 
     if translation_enabled:
         translation_inner = format_word(translation_text, 'fc-answer', 'fc-answer-note')
