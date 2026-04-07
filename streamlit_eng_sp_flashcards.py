@@ -2730,6 +2730,16 @@ def render_story_start_unlock_handler(
                 return true;
             }}
 
+            function clickFinishButton() {{
+                var hiddenButton = doc.querySelector('.st-key-storyfinish_hidden_wrap button');
+                if (!hiddenButton) {{
+                    return false;
+                }}
+                hiddenButton.click();
+                hiddenButton.dispatchEvent(new MouseEvent('click', {{ bubbles: true }}));
+                return true;
+            }}
+
             function syncAdvanceButton() {{
                 clickAdvanceButton();
                 var attempts = 0;
@@ -2758,6 +2768,23 @@ def render_story_start_unlock_handler(
                     attempts += 1;
                     clickAdvanceButton();
                     if (attempts >= 12) {{
+                        parentWindow.clearInterval(controller.advanceRetryTimer);
+                        controller.advanceRetryTimer = null;
+                    }}
+                }}, 150);
+            }}
+
+            function syncFinishButton() {{
+                if (controller.advanceRetryTimer) {{
+                    parentWindow.clearInterval(controller.advanceRetryTimer);
+                    controller.advanceRetryTimer = null;
+                }}
+
+                var attempts = 0;
+                clickFinishButton();
+                controller.advanceRetryTimer = parentWindow.setInterval(function() {{
+                    attempts += 1;
+                    if (clickFinishButton() || attempts >= 12) {{
                         parentWindow.clearInterval(controller.advanceRetryTimer);
                         controller.advanceRetryTimer = null;
                     }}
@@ -2798,6 +2825,15 @@ def render_story_start_unlock_handler(
                 setDebug('completed: ' + (index + 1));
                 if (doc._storyPauseResumeState) {{
                     doc._storyPauseResumeState.speechFinished = true;
+                }}
+                if (index >= controller.lines.length - 1) {{
+                    controller.running = false;
+                    controller.active = false;
+                    controller.queuedNextIndex = null;
+                    cancelTimers();
+                    setDebug('finished story');
+                    syncFinishButton();
+                    return;
                 }}
                 if (controller.running && controller.autoAdvance) {{
                     scheduleNextLine(index + 1, index);
@@ -2878,7 +2914,9 @@ def render_story_start_unlock_handler(
                         if (idx >= controller.lines.length - 1) {{
                             controller.running = false;
                             controller.active = false;
+                            controller.queuedNextIndex = null;
                             setDebug('finished story');
+                            syncFinishButton();
                             return;
                         }}
                         var waitMs = pauseDelayMsForIndex(idx);
@@ -4039,6 +4077,8 @@ def render_story_view():
 
     with st.container(key="storyadvance_hidden_wrap"):
         st.button("__story_next_hidden__", key="story_advance_hidden_btn", on_click=advance_story_line)
+    with st.container(key="storyfinish_hidden_wrap"):
+        st.button("__story_finish_hidden__", key="story_finish_hidden_btn", on_click=finish_story)
     with st.container(key="storyresumenext_hidden_wrap"):
         st.button("__story_resume_next_hidden__", key="story_resume_next_hidden_btn", on_click=mark_story_resume_next)
 
