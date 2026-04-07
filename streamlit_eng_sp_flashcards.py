@@ -4179,12 +4179,41 @@ def render_flashcard(prompt, solution, show_answer):
     st.markdown(a_html, unsafe_allow_html=True)
 
 
-def inject_tap_reveal(show_answer):
+def inject_tap_reveal(show_answer, auto_speak_enabled=False, auto_speak_text=""):
     show_str = "true" if show_answer else "false"
+    auto_speak_str = "true" if auto_speak_enabled else "false"
+    speech_rate = speech_rate_value()
     components.html("""
     <script>
     (function() {
         var showAnswer = """ + show_str + """;
+        var autoSpeakEnabled = """ + auto_speak_str + """;
+        var speechText = """ + json.dumps(strip_spoken_text(auto_speak_text)) + """;
+        var speechRate = """ + json.dumps(speech_rate) + """;
+        var synth = window.parent.speechSynthesis || window.speechSynthesis;
+
+        function pickVoice(voices) {
+            return voices.find(function(voice) { return voice.lang === 'es-MX'; })
+                || voices.find(function(voice) { return voice.lang === 'es-US'; })
+                || voices.find(function(voice) { return voice.lang === 'es-ES'; })
+                || voices.find(function(voice) { return voice.lang && voice.lang.toLowerCase().startsWith('es'); })
+                || null;
+        }
+
+        function speakSpanishNow() {
+            if (!autoSpeakEnabled || !speechText || !synth) return;
+            var utterance = new SpeechSynthesisUtterance(speechText);
+            var voices = synth.getVoices ? synth.getVoices() : [];
+            var voice = pickVoice(voices);
+
+            utterance.lang = voice ? voice.lang : 'es-ES';
+            utterance.rate = speechRate;
+            if (voice) utterance.voice = voice;
+
+            synth.cancel();
+            synth.speak(utterance);
+        }
+
         function clickShowAnswerButton() {
             var doc = window.parent.document;
             var showBtn = doc.querySelector('.st-key-showanswer_wrap button');
@@ -4209,11 +4238,32 @@ def inject_tap_reveal(show_answer):
             var cards = doc.querySelectorAll('.fc-block');
             if (!cards.length) return false;
             if (doc._fcHandler) doc.body.removeEventListener('click', doc._fcHandler);
+            if (doc._showAnswerAutoSpeakHandler) {
+                var existingShowBtn = doc.querySelector('.st-key-showanswer_wrap button');
+                if (existingShowBtn) {
+                    existingShowBtn.removeEventListener('click', doc._showAnswerAutoSpeakHandler, true);
+                    existingShowBtn.removeEventListener('touchend', doc._showAnswerAutoSpeakHandler, true);
+                }
+            }
             doc._fcHandler = function(e) {
                 if (!e.target.closest('.fc-block')) return;
-                if (!showAnswer) clickShowAnswerButton();
+                if (!showAnswer) {
+                    speakSpanishNow();
+                    clickShowAnswerButton();
+                }
             };
             doc.body.addEventListener('click', doc._fcHandler);
+
+            var showBtn = doc.querySelector('.st-key-showanswer_wrap button');
+            if (showBtn) {
+                doc._showAnswerAutoSpeakHandler = function() {
+                    if (!showAnswer) {
+                        speakSpanishNow();
+                    }
+                };
+                showBtn.addEventListener('click', doc._showAnswerAutoSpeakHandler, true);
+                showBtn.addEventListener('touchend', doc._showAnswerAutoSpeakHandler, true);
+            }
             return true;
         }
         var n = 0;
@@ -4989,7 +5039,7 @@ if current_direction == "EN_TO_ES":
 else:
     prompt, solution = card["answer"], card["word"]
 
-spanish_text = solution if current_direction == "EN_TO_ES" else prompt
+spanish_text = card["answer"]
 spanish_visible_phase = None
 if current_direction == "EN_TO_ES":
     if st.session_state.show_answer:
@@ -5006,7 +5056,11 @@ render_menu()
 render_deck_strip()
 stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
 render_flashcard(prompt, solution, st.session_state.show_answer)
-inject_tap_reveal(st.session_state.show_answer)
+inject_tap_reveal(
+    st.session_state.show_answer,
+    auto_speak_enabled=st.session_state.auto_speak_spanish and current_direction == "EN_TO_ES",
+    auto_speak_text=card["answer"],
+)
 if st.session_state.auto_speak_spanish and spanish_visible_phase:
     auto_speak_event_key = "|".join(
         [
