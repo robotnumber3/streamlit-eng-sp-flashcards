@@ -219,6 +219,13 @@ STORY_READING_SPEED_LETTERS_PER_SECOND = {
     4: 18,
     5: 15,
 }
+STORY_READING_SPEED_PROCESSING_MULTIPLIER = {
+    1: 0.35,
+    2: 0.50,
+    3: 0.65,
+    4: 0.80,
+    5: 1.00,
+}
 STORY_BASE_WORD_WEIGHT = 0.01
 STORY_EXTRA_WORD_BONUS_SCALE = 0.34
 STORY_EXTRA_WORD_THRESHOLD = 6
@@ -2323,9 +2330,14 @@ def story_pause_seconds_for_text(text):
     words = re.findall(r"[A-Za-zÁÉÍÓÚáéíóúÑñÜü]+", spanish_text)
     word_count = len(words)
     letter_count = sum(len(word) for word in words)
+    reading_speed_setting = st.session_state.story_reading_speed
     reading_speed = STORY_READING_SPEED_LETTERS_PER_SECOND.get(
-        st.session_state.story_reading_speed,
+        reading_speed_setting,
         STORY_READING_SPEED_LETTERS_PER_SECOND[DEFAULT_STORY_READING_SPEED],
+    )
+    processing_multiplier = STORY_READING_SPEED_PROCESSING_MULTIPLIER.get(
+        reading_speed_setting,
+        STORY_READING_SPEED_PROCESSING_MULTIPLIER[DEFAULT_STORY_READING_SPEED],
     )
     base_process_seconds = 0.0
     if letter_count > 0:
@@ -2342,7 +2354,7 @@ def story_pause_seconds_for_text(text):
         max(word_count - STORY_VERY_HIGH_WORD_COUNT_THRESHOLD, 0)
         ** STORY_VERY_HIGH_WORD_COUNT_BONUS_EXPONENT
     )
-    t_process = (
+    t_process = processing_multiplier * (
         base_process_seconds
         + STORY_BASE_WORD_WEIGHT * word_count
         + extra_word_bonus_seconds
