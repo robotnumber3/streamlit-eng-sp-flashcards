@@ -4189,36 +4189,24 @@ def inject_tap_reveal(show_answer, auto_speak_enabled=False, auto_speak_text="")
     components.html("""
     <script>
     (function() {
+        var parentWindow = window.parent;
+        var doc = parentWindow.document;
         var showAnswer = """ + show_str + """;
         var autoSpeakEnabled = """ + auto_speak_str + """;
         var speechText = """ + json.dumps(strip_spoken_text(auto_speak_text)) + """;
         var speechRate = """ + json.dumps(speech_rate) + """;
-        var synth = window.parent.speechSynthesis || window.speechSynthesis;
-
-        function pickVoice(voices) {
-            return voices.find(function(voice) { return voice.lang === 'es-MX'; })
-                || voices.find(function(voice) { return voice.lang === 'es-US'; })
-                || voices.find(function(voice) { return voice.lang === 'es-ES'; })
-                || voices.find(function(voice) { return voice.lang && voice.lang.toLowerCase().startsWith('es'); })
-                || null;
-        }
 
         function speakSpanishNow() {
-            if (!autoSpeakEnabled || !speechText || !synth) return;
-            var utterance = new SpeechSynthesisUtterance(speechText);
-            var voices = synth.getVoices ? synth.getVoices() : [];
-            var voice = pickVoice(voices);
-
-            utterance.lang = voice ? voice.lang : 'es-ES';
-            utterance.rate = speechRate;
-            if (voice) utterance.voice = voice;
-
-            synth.cancel();
-            synth.speak(utterance);
+            if (!autoSpeakEnabled || !speechText || !doc || typeof doc._fcSpeakSpanish !== 'function') return;
+            doc._fcSpeakSpanish({
+                text: speechText,
+                rate: speechRate,
+                key: 'reveal|' + speechText + '|' + speechRate,
+                cancelFirst: true,
+            });
         }
 
         function clickShowAnswerButton() {
-            var doc = window.parent.document;
             var showBtn = doc.querySelector('.st-key-showanswer_wrap button');
             if (showBtn) {
                 showBtn.dispatchEvent(new MouseEvent('click', {bubbles:true}));
@@ -4289,6 +4277,136 @@ def speech_rate_value():
         5: 1.00,
     }
     return speech_rate_map.get(st.session_state.speech_speed, 1.00)
+
+
+def inject_flashcard_speech_runtime():
+    components.html(
+        """
+        <script>
+        (function() {
+            var parentWindow = window.parent;
+            var doc = parentWindow.document;
+            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
+            var UtteranceCtor = parentWindow.SpeechSynthesisUtterance || window.SpeechSynthesisUtterance;
+
+            if (!doc || !synth || !UtteranceCtor) return;
+            if (doc._fcSpeechRuntimeInstalled) return;
+
+            function pickVoice(voices) {
+                return voices.find(function(voice) { return voice.lang === 'es-MX'; })
+                    || voices.find(function(voice) { return voice.lang === 'es-US'; })
+                    || voices.find(function(voice) { return voice.lang === 'es-ES'; })
+                    || voices.find(function(voice) { return voice.lang && voice.lang.toLowerCase().startsWith('es'); })
+                    || null;
+            }
+
+            function clearVoiceHandler() {
+                if (!doc._fcSpeechVoicesChangedHandler) return;
+
+                if (typeof synth.removeEventListener === 'function') {
+                    synth.removeEventListener('voiceschanged', doc._fcSpeechVoicesChangedHandler);
+                } else if (synth.onvoiceschanged === doc._fcSpeechVoicesChangedHandler) {
+                    synth.onvoiceschanged = null;
+                }
+
+                doc._fcSpeechVoicesChangedHandler = null;
+            }
+
+            function clearPendingTimer() {
+                if (doc._fcSpeechPendingTimer) {
+                    parentWindow.clearTimeout(doc._fcSpeechPendingTimer);
+                    doc._fcSpeechPendingTimer = null;
+                }
+            }
+
+            function clearPendingSpeech() {
+                clearPendingTimer();
+                clearVoiceHandler();
+            }
+
+            doc._fcSpeakSpanish = function(config) {
+                config = config || {};
+
+                var speechText = (config.text || '').trim();
+                var speechRate = config.rate || 1;
+                var speechKey = config.key || null;
+                var cancelFirst = config.cancelFirst !== false;
+
+                if (!speechText) return;
+                if (speechKey && doc._fcSpeechLastKey === speechKey) return;
+
+                doc._fcSpeechLastKey = speechKey;
+                clearPendingSpeech();
+
+                function speakNow() {
+                    var utterance = new UtteranceCtor(speechText);
+                    var voices = synth.getVoices ? synth.getVoices() : [];
+                    var voice = pickVoice(voices);
+
+                    utterance.lang = voice ? voice.lang : 'es-ES';
+                    utterance.rate = speechRate;
+                    if (voice) utterance.voice = voice;
+
+                    doc._fcSpeechActiveUtterance = utterance;
+                    utterance.onend = utterance.onerror = function() {
+                        if (doc._fcSpeechActiveUtterance === utterance) {
+                            doc._fcSpeechActiveUtterance = null;
+                        }
+                    };
+
+                    if (cancelFirst) {
+                        try {
+                            synth.cancel();
+                        } catch (error) {
+                        }
+                    }
+
+                    doc._fcSpeechPendingTimer = parentWindow.setTimeout(function() {
+                        doc._fcSpeechPendingTimer = null;
+                        try {
+                            synth.speak(utterance);
+                        } catch (error) {
+                            if (speechKey) {
+                                doc._fcSpeechLastKey = null;
+                            }
+                        }
+                    }, cancelFirst ? 60 : 0);
+                }
+
+                if (synth.getVoices && synth.getVoices().length) {
+                    speakNow();
+                    return;
+                }
+
+                var handled = false;
+                doc._fcSpeechVoicesChangedHandler = function() {
+                    if (handled) return;
+                    handled = true;
+                    clearVoiceHandler();
+                    speakNow();
+                };
+
+                if (typeof synth.addEventListener === 'function') {
+                    synth.addEventListener('voiceschanged', doc._fcSpeechVoicesChangedHandler);
+                } else {
+                    synth.onvoiceschanged = doc._fcSpeechVoicesChangedHandler;
+                }
+
+                doc._fcSpeechPendingTimer = parentWindow.setTimeout(function() {
+                    doc._fcSpeechPendingTimer = null;
+                    if (handled) return;
+                    handled = true;
+                    clearVoiceHandler();
+                    speakNow();
+                }, 250);
+            };
+
+            doc._fcSpeechRuntimeInstalled = true;
+        })();
+        </script>
+        """,
+        height=0,
+    )
 
 
 def inject_speech_priming():
@@ -4390,55 +4508,20 @@ def render_speaker_button(text):
         (function() {{
             var speechText = {json.dumps(speech_text)};
             var speechRate = {speech_rate};
-            var synth = window.speechSynthesis;
+            var parentWindow = window.parent;
+            var doc = parentWindow.document;
             var button = document.getElementById('speak-btn');
 
-            if (!button || !synth || !speechText) return;
-
-            function pickVoice(voices) {{
-                return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
-                    || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
-                    || voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
-                    || voices.find(function(voice) {{ return voice.lang && voice.lang.toLowerCase().startsWith('es'); }})
-                    || null;
-            }}
-
-            function speakNow() {{
-                var utterance = new SpeechSynthesisUtterance(speechText);
-                var voices = synth.getVoices ? synth.getVoices() : [];
-                var voice = pickVoice(voices);
-
-                utterance.lang = voice ? voice.lang : 'es-ES';
-                utterance.rate = speechRate;
-                if (voice) utterance.voice = voice;
-
-                synth.cancel();
-                setTimeout(function() {{
-                    synth.speak(utterance);
-                }}, 45);
-            }}
+            if (!button || !doc || !speechText) return;
 
             function speakFromTap(event) {{
                 if (event) event.preventDefault();
-                if (synth.getVoices && synth.getVoices().length) {{
-                    speakNow();
-                    return;
-                }}
-
-                var handled = false;
-                function handleVoicesChanged() {{
-                    if (handled) return;
-                    handled = true;
-                    speakNow();
-                }}
-
-                if (typeof synth.addEventListener === 'function') {{
-                    synth.addEventListener('voiceschanged', handleVoicesChanged, {{ once: true }});
-                }} else {{
-                    synth.onvoiceschanged = handleVoicesChanged;
-                }}
-
-                setTimeout(handleVoicesChanged, 250);
+                if (typeof doc._fcSpeakSpanish !== 'function') return;
+                doc._fcSpeakSpanish({{
+                    text: speechText,
+                    rate: speechRate,
+                    cancelFirst: true,
+                }});
             }}
 
             button.addEventListener('click', speakFromTap);
@@ -4463,57 +4546,17 @@ def render_auto_speak_spanish(text, speech_key):
             var speechText = {json.dumps(speech_text)};
             var speechRate = {speech_rate};
             var speechKey = {json.dumps(speech_key)};
-
             if (!doc || !synth || !speechText || !speechKey) return;
             if (doc._autoSpeakSpanishKey === speechKey) return;
             doc._autoSpeakSpanishKey = speechKey;
 
-            function pickVoice(voices) {{
-                return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
-                    || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
-                    || voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
-                    || voices.find(function(voice) {{ return voice.lang && voice.lang.toLowerCase().startsWith('es'); }})
-                    || null;
-            }}
-
-            function speakNow() {{
-                var utterance = new SpeechSynthesisUtterance(speechText);
-                var voices = synth.getVoices ? synth.getVoices() : [];
-                var voice = pickVoice(voices);
-
-                utterance.lang = voice ? voice.lang : 'es-ES';
-                utterance.rate = speechRate;
-                if (voice) utterance.voice = voice;
-
-                synth.cancel();
-                setTimeout(function() {{
-                    synth.speak(utterance);
-                }}, 45);
-            }}
-
-            function startSpeech() {{
-                if (synth.getVoices && synth.getVoices().length) {{
-                    speakNow();
-                    return;
-                }}
-
-                var handled = false;
-                function handleVoicesChanged() {{
-                    if (handled) return;
-                    handled = true;
-                    speakNow();
-                }}
-
-                if (typeof synth.addEventListener === 'function') {{
-                    synth.addEventListener('voiceschanged', handleVoicesChanged, {{ once: true }});
-                }} else {{
-                    synth.onvoiceschanged = handleVoicesChanged;
-                }}
-
-                setTimeout(handleVoicesChanged, 250);
-            }}
-
-            setTimeout(startSpeech, 0);
+            if (typeof doc._fcSpeakSpanish !== 'function') return;
+            doc._fcSpeakSpanish({{
+                text: speechText,
+                rate: speechRate,
+                key: speechKey,
+                cancelFirst: true,
+            }});
         }})();
         </script>
         """,
@@ -5120,6 +5163,7 @@ render_header()
 render_menu()
 render_deck_strip()
 stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
+inject_flashcard_speech_runtime()
 inject_speech_priming()
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_tap_reveal(
