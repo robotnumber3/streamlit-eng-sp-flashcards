@@ -210,6 +210,7 @@ DEFAULT_THEME = "dark"
 DEFAULT_DIRECTION_MODE = "random"
 DEFAULT_SPEECH_SPEED = 5
 DEFAULT_SHOW_HINTS = True
+DEFAULT_AUTO_SPEAK_SPANISH = False
 DEFAULT_STORY_READING_SPEED = 3
 DEFAULT_STORY_PAUSE_AMOUNT = 5
 STORY_READING_SPEED_LETTERS_PER_SECOND = {
@@ -247,6 +248,7 @@ def default_person_prefs():
         "direction_mode": DEFAULT_DIRECTION_MODE,
         "speech_speed": DEFAULT_SPEECH_SPEED,
         "show_hints": DEFAULT_SHOW_HINTS,
+        "auto_speak_spanish": DEFAULT_AUTO_SPEAK_SPANISH,
         "story_reading_speed": DEFAULT_STORY_READING_SPEED,
         "story_pause_amount": DEFAULT_STORY_PAUSE_AMOUNT,
     }
@@ -266,6 +268,9 @@ def sanitize_person_prefs(pref_data, fallback=None):
     show_hints = pref_data.get("show_hints", fallback["show_hints"])
     if not isinstance(show_hints, bool):
         show_hints = fallback["show_hints"]
+    auto_speak_spanish = pref_data.get("auto_speak_spanish", fallback["auto_speak_spanish"])
+    if not isinstance(auto_speak_spanish, bool):
+        auto_speak_spanish = fallback["auto_speak_spanish"]
     story_reading_speed = pref_data.get("story_reading_speed", fallback["story_reading_speed"])
     if story_reading_speed not in {1, 2, 3, 4, 5}:
         story_reading_speed = fallback["story_reading_speed"]
@@ -278,6 +283,7 @@ def sanitize_person_prefs(pref_data, fallback=None):
         "direction_mode": direction_mode,
         "speech_speed": speech_speed,
         "show_hints": show_hints,
+        "auto_speak_spanish": auto_speak_spanish,
         "story_reading_speed": story_reading_speed,
         "story_pause_amount": story_pause_amount,
     }
@@ -520,6 +526,7 @@ def current_prefs():
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
         "show_hints": st.session_state.show_hints,
+        "auto_speak_spanish": st.session_state.auto_speak_spanish,
         "story_reading_speed": st.session_state.story_reading_speed,
         "story_pause_amount": st.session_state.story_pause_amount,
     }
@@ -659,6 +666,8 @@ defaults = {
     "direction_mode": active_person_prefs["direction_mode"],
     "speech_speed":   active_person_prefs["speech_speed"],
     "show_hints":     active_person_prefs["show_hints"],
+    "auto_speak_spanish": active_person_prefs["auto_speak_spanish"],
+    "auto_speak_spanish_generation": 0,
     "story_reading_speed": active_person_prefs["story_reading_speed"],
     "story_pause_amount": active_person_prefs["story_pause_amount"],
     "active_person":  active_person,
@@ -716,6 +725,7 @@ def store_active_person_prefs():
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
         "show_hints": st.session_state.show_hints,
+        "auto_speak_spanish": st.session_state.auto_speak_spanish,
         "story_reading_speed": st.session_state.story_reading_speed,
         "story_pause_amount": st.session_state.story_pause_amount,
     }
@@ -768,6 +778,7 @@ def apply_person_prefs(person):
     st.session_state.direction_mode = person_prefs["direction_mode"]
     st.session_state.speech_speed = person_prefs["speech_speed"]
     st.session_state.show_hints = person_prefs["show_hints"]
+    st.session_state.auto_speak_spanish = person_prefs["auto_speak_spanish"]
     st.session_state.story_reading_speed = person_prefs["story_reading_speed"]
     st.session_state.story_pause_amount = person_prefs["story_pause_amount"]
     st.session_state.direction = direction_for_mode(person_prefs["direction_mode"])
@@ -1145,6 +1156,21 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {BUTTON_COLORS['blue']['bg']} !important;
     border-color: {BUTTON_COLORS['blue']['border']} !important;
     color: {BUTTON_COLORS['blue']['fg']} !important;
+}}
+.st-key-autospeak_on_wrap div[data-testid="stButton"] > button {{
+    background-color: {BUTTON_COLORS['green']['bg']} !important;
+    border-color: {BUTTON_COLORS['green']['border']} !important;
+    color: {BUTTON_COLORS['green']['fg']} !important;
+}}
+.st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
+    background-color: color-mix(in srgb, {t['bg']} 76%, {t['border']} 24%) !important;
+    border-color: {t['border']} !important;
+    color: {t['muted']} !important;
+}}
+.st-key-autospeak_on_wrap div[data-testid="stButton"] > button,
+.st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
+    font-size: 1.02rem !important;
+    letter-spacing: 0.02em !important;
 }}
 .st-key-del_active_wrap div[data-testid="stButton"] > button {{
     background-color: {t['review_light']} !important;
@@ -4212,6 +4238,14 @@ def speech_rate_value():
     return speech_rate_map.get(st.session_state.speech_speed, 1.00)
 
 
+def toggle_auto_speak_spanish():
+    st.session_state.auto_speak_spanish = not st.session_state.auto_speak_spanish
+    if st.session_state.auto_speak_spanish:
+        st.session_state.auto_speak_spanish_generation += 1
+    store_active_person_prefs()
+    save_prefs(current_prefs())
+
+
 def render_speaker_button(text):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
@@ -4300,6 +4334,75 @@ def render_speaker_button(text):
         </script>
         """,
         height=60,
+    )
+
+
+def render_auto_speak_spanish(text, speech_key):
+    speech_text = strip_spoken_text(text)
+    speech_rate = speech_rate_value()
+    components.html(
+        f"""
+        <script>
+        (function() {{
+            var parentWindow = window.parent;
+            var doc = parentWindow.document;
+            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
+            var speechText = {json.dumps(speech_text)};
+            var speechRate = {speech_rate};
+            var speechKey = {json.dumps(speech_key)};
+
+            if (!doc || !synth || !speechText || !speechKey) return;
+            if (doc._autoSpeakSpanishKey === speechKey) return;
+            doc._autoSpeakSpanishKey = speechKey;
+
+            function pickVoice(voices) {{
+                return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
+                    || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
+                    || voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
+                    || voices.find(function(voice) {{ return voice.lang && voice.lang.toLowerCase().startsWith('es'); }})
+                    || null;
+            }}
+
+            function speakNow() {{
+                var utterance = new SpeechSynthesisUtterance(speechText);
+                var voices = synth.getVoices ? synth.getVoices() : [];
+                var voice = pickVoice(voices);
+
+                utterance.lang = voice ? voice.lang : 'es-ES';
+                utterance.rate = speechRate;
+                if (voice) utterance.voice = voice;
+
+                synth.cancel();
+                synth.speak(utterance);
+            }}
+
+            function startSpeech() {{
+                if (synth.getVoices && synth.getVoices().length) {{
+                    speakNow();
+                    return;
+                }}
+
+                var handled = false;
+                function handleVoicesChanged() {{
+                    if (handled) return;
+                    handled = true;
+                    speakNow();
+                }}
+
+                if (typeof synth.addEventListener === 'function') {{
+                    synth.addEventListener('voiceschanged', handleVoicesChanged, {{ once: true }});
+                }} else {{
+                    synth.onvoiceschanged = handleVoicesChanged;
+                }}
+
+                setTimeout(handleVoicesChanged, 250);
+            }}
+
+            setTimeout(startSpeech, 0);
+        }})();
+        </script>
+        """,
+        height=0,
     )
 
 
@@ -4590,8 +4693,8 @@ def render_buttons(show_answer, spanish_audio_text):
 
     review_mode = is_review_deck(st.session_state.selected_csv)
     with st.container(key="answer_action_row_wrap"):
-        action_columns = st.columns(4 if review_mode else 3, gap="small")
-        col1, col2, col3 = action_columns[:3]
+        action_columns = st.columns(5 if review_mode else 4, gap="small")
+        col1, col2, col3, col4 = action_columns[:4]
         with col1:
             with st.container(key="correct_wrap"):
                 st.button("✓", key="correct_btn", on_click=mark_correct)
@@ -4601,10 +4704,15 @@ def render_buttons(show_answer, spanish_audio_text):
         with col3:
             with st.container(key="speaker_wrap"):
                 render_speaker_button(spanish_audio_text)
+        with col4:
+            auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
+            auto_speak_label = "☒ ∞" if st.session_state.auto_speak_spanish else "☐ ∞"
+            with st.container(key=auto_speak_key):
+                st.button(auto_speak_label, key="autospeak_btn", on_click=toggle_auto_speak_spanish)
         if review_mode:
             current_card = st.session_state.cards[current_card_index()]
             delete_armed = st.session_state.delete_review_confirm_key == current_review_card_key(current_card)
-            with action_columns[3]:
+            with action_columns[4]:
                 with st.container(key="del_confirm_wrap" if delete_armed else "del_active_wrap"):
                     st.button("X", key="del_btn", on_click=delete_current_review_card)
             if delete_armed:
@@ -4882,6 +4990,12 @@ else:
     prompt, solution = card["answer"], card["word"]
 
 spanish_text = solution if current_direction == "EN_TO_ES" else prompt
+spanish_visible_phase = None
+if current_direction == "EN_TO_ES":
+    if st.session_state.show_answer:
+        spanish_visible_phase = "answer-visible"
+else:
+    spanish_visible_phase = "prompt-visible"
 
 # ========================================================================
 # MAIN LAYOUT
@@ -4893,4 +5007,17 @@ render_deck_strip()
 stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
 render_flashcard(prompt, solution, st.session_state.show_answer)
 inject_tap_reveal(st.session_state.show_answer)
+if st.session_state.auto_speak_spanish and spanish_visible_phase:
+    auto_speak_event_key = "|".join(
+        [
+            st.session_state.selected_csv or "",
+            str(current_card_index()),
+            str(st.session_state.index),
+            current_direction,
+            spanish_visible_phase,
+            str(st.session_state.auto_speak_spanish_generation),
+            strip_spoken_text(spanish_text),
+        ]
+    )
+    render_auto_speak_spanish(spanish_text, auto_speak_event_key)
 render_buttons(st.session_state.show_answer, spanish_text)
