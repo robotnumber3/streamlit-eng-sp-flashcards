@@ -3235,18 +3235,41 @@ def render_story_start_unlock_handler(
             }}
 
             function pauseFromGesture() {{
+                function clampIndex(index) {{
+                    if (typeof index !== 'number' || Number.isNaN(index)) {{
+                        return null;
+                    }}
+                    return Math.max(0, Math.min(index, controller.lines.length - 1));
+                }}
+
+                function maxDefinedIndex() {{
+                    var values = Array.prototype.slice.call(arguments)
+                        .map(clampIndex)
+                        .filter(function(value) {{ return value !== null; }});
+                    if (!values.length) {{
+                        return clampIndex(controller.serverIndex) || 0;
+                    }}
+                    return Math.max.apply(null, values);
+                }}
+
                 if (controller.ignorePauseUntil && Date.now() < controller.ignorePauseUntil) {{
                     return;
                 }}
                 if (controller.isSpeaking) {{
-                    controller.resumeTargetIndex = controller.localIndex;
-                }} else if (typeof controller.queuedNextIndex === 'number') {{
-                    controller.resumeTargetIndex = controller.queuedNextIndex;
+                    controller.resumeTargetIndex = maxDefinedIndex(
+                        controller.localIndex,
+                        controller.lastSpokenIndex,
+                        controller.serverIndex
+                    );
                 }} else {{
-                    controller.resumeTargetIndex = controller.localIndex;
+                    controller.resumeTargetIndex = maxDefinedIndex(
+                        controller.localIndex,
+                        controller.serverIndex
+                    );
                 }}
                 controller.running = false;
                 controller.active = true;
+                controller.queuedNextIndex = null;
                 controller.pausedDisplayIndex = controller.resumeTargetIndex;
                 controller.localIndex = controller.resumeTargetIndex;
                 renderLocalStoryViewStable(controller.localIndex);
