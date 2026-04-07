@@ -3109,20 +3109,8 @@ def render_story_start_unlock_handler(
                 renderLocalStoryViewStable(nextIndex);
                 setDebug('next gesture: ' + (nextIndex + 1));
 
-                if (clickAdvanceButton()) {{
-                    // Sync the server index immediately; retry if the hidden button is still mounting.
-                    var attempts = 0;
-                    if (controller.advanceRetryTimer) {{
-                        parentWindow.clearInterval(controller.advanceRetryTimer);
-                    }}
-                    controller.advanceRetryTimer = parentWindow.setInterval(function() {{
-                        attempts += 1;
-                        if (clickAdvanceButton() || attempts >= 10) {{
-                            parentWindow.clearInterval(controller.advanceRetryTimer);
-                            controller.advanceRetryTimer = null;
-                        }}
-                    }}, 150);
-                }}
+                // Sync the server index immediately; retry if the hidden button is still mounting.
+                syncAdvanceButton();
 
                 if (controller.autoAdvance) {{
                     queueAutoFrom(nextIndex);
@@ -3176,7 +3164,7 @@ def render_story_start_unlock_handler(
                 }});
             }}
 
-            if (controller.storyKey !== config.storyKey) {{
+            if (controller.storyKey !== config.storyKey || controller.storyRunToken !== config.storyRunToken) {{
                 cancelSpeech();
                 controller.active = false;
                 controller.localIndex = config.serverIndex;
@@ -3233,6 +3221,22 @@ def render_story_start_unlock_handler(
 
             renderLocalStoryViewStable(controller.localIndex);
             setDebug('ready: ' + (controller.localIndex + 1) + ' running=' + config.running + ' auto=' + controller.autoAdvance);
+
+            if (config.running && !controller.active && !controller.isSpeaking) {{
+                controller.active = true;
+                controller.running = true;
+                controller.pausedDisplayIndex = null;
+                controller.queuedNextIndex = null;
+                controller.pendingManualSpeakIndex = null;
+                setDebug('restart run: ' + (controller.localIndex + 1));
+                if (controller.autoAdvance) {{
+                    queueAutoFrom(controller.localIndex);
+                }} else {{
+                    controller.pendingManualSpeakIndex = controller.localIndex;
+                    speakLine(controller.localIndex);
+                }}
+                return;
+            }}
 
             if (
                 config.running
