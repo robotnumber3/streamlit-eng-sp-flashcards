@@ -685,7 +685,6 @@ defaults = {
     "story_random_on": False,
     "story_started": False,
     "story_running": False,
-    "story_finished": False,
     "story_run_token": 0,
     "story_resume_next": False,
 }
@@ -807,7 +806,6 @@ def reset_study_state(reset_selected=True):
     st.session_state.story_random_on = False
     st.session_state.story_started = False
     st.session_state.story_running = False
-    st.session_state.story_finished = False
     st.session_state.story_run_token = 0
     st.session_state.story_resume_next = False
 
@@ -822,31 +820,8 @@ def reset_story_playback():
     st.session_state.index = 0
     st.session_state.story_started = False
     st.session_state.story_running = False
-    st.session_state.story_finished = False
     st.session_state.story_run_token = 0
     st.session_state.story_resume_next = False
-
-
-def finish_story():
-    if not st.session_state.cards:
-        reset_story_playback()
-        return
-    st.session_state.index = max(len(st.session_state.cards) - 1, 0)
-    st.session_state.story_started = True
-    st.session_state.story_running = False
-    st.session_state.story_finished = True
-    st.session_state.story_resume_next = False
-
-
-def repeat_story():
-    rebuild_story_order()
-    reset_story_playback()
-    start_story()
-
-
-def end_story_to_final_screen():
-    go_back_to_deck_picker()
-    st.session_state.final_exit = True
 
 
 def activate_deck(deck_value):
@@ -1097,25 +1072,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-color: {BUTTON_COLORS['green']['border']} !important;
     color: {BUTTON_COLORS['green']['fg']} !important;
 }}
-.st-key-storyrepeat_wrap div[data-testid="stButton"] > button {{
-    background-color: {BUTTON_COLORS['yellow']['bg']} !important;
-    border-color: {BUTTON_COLORS['yellow']['border']} !important;
-    color: {BUTTON_COLORS['yellow']['fg']} !important;
-}}
 .st-key-storynext_wrap div[data-testid="stButton"] > button {{
     background-color: {BUTTON_COLORS['green']['bg']} !important;
     border-color: {BUTTON_COLORS['green']['border']} !important;
     color: {BUTTON_COLORS['green']['fg']} !important;
-}}
-.st-key-storynew_wrap div[data-testid="stButton"] > button {{
-    background-color: {BUTTON_COLORS['blue']['bg']} !important;
-    border-color: {BUTTON_COLORS['blue']['border']} !important;
-    color: {BUTTON_COLORS['blue']['fg']} !important;
-}}
-.st-key-storyend_wrap div[data-testid="stButton"] > button {{
-    background-color: {BUTTON_COLORS['red']['bg']} !important;
-    border-color: {BUTTON_COLORS['red']['border']} !important;
-    color: {BUTTON_COLORS['red']['fg']} !important;
 }}
 /* ---- Quit before 🛑 ---- */
 .st-key-quitbefore_wrap div[data-testid="stButton"] > button {{
@@ -1618,19 +1578,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 0.72em;
     font-weight: 400;
     color: {t['muted']};
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    line-height: 1.05;
+    white-space: nowrap;
 }}
 .fc-inline-hint {{
     font-size: 0.72em;
     font-weight: 400;
     color: color-mix(in srgb, {t['muted']} 65%, {t['accent']} 35%);
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    line-height: 1.05;
+    white-space: nowrap;
 }}
 .fc-word-placeholder {{
     font-size: 1.1rem; line-height: 1.2; min-height: 1.4rem;
@@ -2435,18 +2389,14 @@ def current_story_card():
 
 
 def advance_story_line():
-    next_index = st.session_state.index + 1
-    if next_index >= len(st.session_state.cards):
-        finish_story()
-        return
-    st.session_state.index = next_index
-    st.session_state.story_finished = False
+    st.session_state.index += 1
+    if st.session_state.index >= len(st.session_state.cards):
+        go_back_to_deck_picker()
 
 
 def pause_story():
     st.session_state.story_started = True
     st.session_state.story_running = False
-    st.session_state.story_finished = False
     st.session_state.story_resume_next = not st.session_state.story_audio_on
 
 
@@ -2458,7 +2408,6 @@ def start_story():
             return
     st.session_state.story_started = True
     st.session_state.story_running = True
-    st.session_state.story_finished = False
     st.session_state.story_run_token += 1
 
 
@@ -3493,14 +3442,12 @@ def render_story_ignore_tap_handler():
 def render_story_auto_advance(delay_seconds):
     delay_ms = max(int(delay_seconds * 1000), 0)
     story_index = st.session_state.index
-    last_story_index = max(len(st.session_state.cards) - 1, 0)
     components.html(
         f"""
         <script>
         (function() {{
             var doc = window.parent.document;
             var storyIndex = {story_index};
-            var lastStoryIndex = {last_story_index};
 
             function clickAdvanceButton() {{
                 var button = doc.querySelector('.st-key-storyadvance_hidden_wrap button');
@@ -3519,9 +3466,6 @@ def render_story_auto_advance(delay_seconds):
             doc._storyAutoAdvanceIndex = storyIndex;
             doc._storyAutoAdvanceTimer = setTimeout(function() {{
                 if (doc._storyAutoAdvanceIndex !== storyIndex) {{
-                    return;
-                }}
-                if (storyIndex >= lastStoryIndex) {{
                     return;
                 }}
                 if (clickAdvanceButton()) return;
@@ -3546,7 +3490,6 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
     story_index = st.session_state.index
     story_run_token = st.session_state.story_run_token
     delay_ms = max(int(delay_seconds * 1000), 0)
-    last_story_index = max(len(st.session_state.cards) - 1, 0)
     components.html(
         f"""
         <script>
@@ -3564,7 +3507,6 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
             var storyRunToken = {story_run_token};
             var autoAdvance = {str(auto_advance).lower()};
             var delayMs = {delay_ms};
-            var lastStoryIndex = {last_story_index};
             var synth = window.parent.speechSynthesis || window.speechSynthesis;
             var doc = window.parent.document;
             var speechKey = storyRunToken + '|' + storyIndex + '|' + speechText + '|' + speechRate;
@@ -3584,7 +3526,6 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
             function scheduleAdvanceAfterSpeech() {{
                 if (!autoAdvance) return;
                 if (doc._storyPauseRequested && doc._storyPauseRequested.runToken === storyRunToken && doc._storyPauseRequested.storyIndex === storyIndex) return;
-                if (storyIndex >= lastStoryIndex) return;
 
                 if (doc._storyAutoAdvanceTimer) {{
                     clearTimeout(doc._storyAutoAdvanceTimer);
@@ -3869,32 +3810,8 @@ def render_story_view():
         if translation_enabled else '<div class="fc-word-placeholder">&nbsp;</div>'
         for card in ordered_story_cards
     ]
-    last_story_index = max(len(ordered_story_cards) - 1, 0)
-    story_show_end_controls = (
-        bool(ordered_story_cards)
-        and st.session_state.story_started
-        and st.session_state.index >= last_story_index
-    )
 
-    if story_show_end_controls:
-        with st.container(key="storycontrol_row_wrap"):
-            control_cols = st.columns(3, gap="small")
-            with control_cols[0]:
-                with st.container(key="storyrepeat_wrap"):
-                    if st.button("REPEAT", key="story_repeat_btn", use_container_width=True):
-                        repeat_story()
-                        st.rerun()
-            with control_cols[1]:
-                with st.container(key="storynew_wrap"):
-                    if st.button("NEW", key="story_new_btn", use_container_width=True):
-                        go_back_to_deck_picker()
-                        st.rerun()
-            with control_cols[2]:
-                with st.container(key="storyend_wrap"):
-                    if st.button("END", key="story_end_btn", use_container_width=True):
-                        end_story_to_final_screen()
-                        st.rerun()
-    elif st.session_state.story_running:
+    if st.session_state.story_running:
         with st.container(key="storycontrol_row_wrap"):
             control_cols = st.columns(3, gap="small")
             with control_cols[0]:
@@ -3982,7 +3899,7 @@ def render_story_view():
     )
     st.markdown(spanish_html, unsafe_allow_html=True)
 
-    if st.session_state.story_playback_mode == "stop on every line" and not story_show_end_controls:
+    if st.session_state.story_playback_mode == "stop on every line":
         with st.container(key="showanswer_wrap"):
             if st.button("➜", key="story_next_btn"):
                 advance_story_line()
