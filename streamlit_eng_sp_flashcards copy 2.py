@@ -1409,17 +1409,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     opacity: 0 !important;
     pointer-events: none !important;
 }}
-.st-key-storyfinish_hidden_wrap {{
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    clip-path: inset(50%) !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}}
 .st-key-storyresumenext_hidden_wrap {{
     position: absolute !important;
     width: 1px !important;
