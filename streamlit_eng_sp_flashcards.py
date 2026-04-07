@@ -2746,6 +2746,24 @@ def render_story_start_unlock_handler(
                 }}, 150);
             }}
 
+            function syncFinalAdvanceButton() {{
+                if (controller.advanceRetryTimer) {{
+                    parentWindow.clearInterval(controller.advanceRetryTimer);
+                    controller.advanceRetryTimer = null;
+                }}
+
+                var attempts = 0;
+                clickAdvanceButton();
+                controller.advanceRetryTimer = parentWindow.setInterval(function() {{
+                    attempts += 1;
+                    clickAdvanceButton();
+                    if (attempts >= 12) {{
+                        parentWindow.clearInterval(controller.advanceRetryTimer);
+                        controller.advanceRetryTimer = null;
+                    }}
+                }}, 150);
+            }}
+
             function scheduleNextLine(nextIndex, completedIndex) {{
                 if (!controller.running || !controller.autoAdvance) return;
                 cancelTimers();
@@ -3109,8 +3127,13 @@ def render_story_start_unlock_handler(
                 renderLocalStoryViewStable(nextIndex);
                 setDebug('next gesture: ' + (nextIndex + 1));
 
-                // Sync the server index immediately; retry if the hidden button is still mounting.
-                syncAdvanceButton();
+                // The jump onto the last card is safe to over-retry because extra advance calls
+                // collapse into the same final state instead of skipping past content.
+                if (nextIndex >= controller.lines.length - 1) {{
+                    syncFinalAdvanceButton();
+                }} else {{
+                    syncAdvanceButton();
+                }}
 
                 if (controller.autoAdvance) {{
                     queueAutoFrom(nextIndex);
