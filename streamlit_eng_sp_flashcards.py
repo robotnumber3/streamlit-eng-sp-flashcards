@@ -1516,10 +1516,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin-bottom: 0.4rem;
 }}
 .menu-field-label {{
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 400;
     color: {t['fg']};
     margin: 0.35rem 0 0.2rem 0;
+    line-height: 1.2;
 }}
 .st-key-erase_review_wrap,
 .st-key-erase_review_confirm_wrap {{
