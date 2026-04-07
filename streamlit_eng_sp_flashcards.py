@@ -1515,6 +1515,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {t['panel_label']};
     margin-bottom: 0.4rem;
 }}
+.menu-field-label {{
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: {t['fg']};
+    margin: 0.35rem 0 0.2rem 0;
+}}
 .st-key-erase_review_wrap,
 .st-key-erase_review_confirm_wrap {{
     margin-top: 0.95rem !important;
@@ -4777,12 +4783,13 @@ def render_menu():
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">STORY MODE &ndash; PAUSES BETWEEN SENTENCES</div>',
                     unsafe_allow_html=True)
         story_timing_options = [5, 4, 3, 2, 1]
+        st.markdown('<div class="menu-field-label">Reading speed (1 = fastest)</div>', unsafe_allow_html=True)
         new_story_reading_speed = st.radio(
             "Reading speed (1 = fastest)",
             options=story_timing_options,
             index=story_timing_options.index(st.session_state.story_reading_speed),
             horizontal=True,
-            label_visibility="visible",
+            label_visibility="collapsed",
             key="story_reading_speed_radio",
         )
         if new_story_reading_speed != st.session_state.story_reading_speed:
@@ -4790,12 +4797,13 @@ def render_menu():
             store_active_person_prefs()
             st.session_state.erase_review_confirm = False
             st.rerun()
+        st.markdown('<div class="menu-field-label">Pause amount (1 = shortest)</div>', unsafe_allow_html=True)
         new_story_pause_amount = st.radio(
             "Pause amount (1 = shortest)",
             options=story_timing_options,
             index=story_timing_options.index(st.session_state.story_pause_amount),
             horizontal=True,
-            label_visibility="visible",
+            label_visibility="collapsed",
             key="story_pause_amount_radio",
         )
         if new_story_pause_amount != st.session_state.story_pause_amount:

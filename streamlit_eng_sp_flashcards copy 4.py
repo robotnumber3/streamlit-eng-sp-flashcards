@@ -210,6 +210,7 @@ DEFAULT_THEME = "dark"
 DEFAULT_DIRECTION_MODE = "random"
 DEFAULT_SPEECH_SPEED = 5
 DEFAULT_SHOW_HINTS = True
+DEFAULT_AUTO_SPEAK_SPANISH = False
 DEFAULT_STORY_READING_SPEED = 3
 DEFAULT_STORY_PAUSE_AMOUNT = 5
 STORY_READING_SPEED_LETTERS_PER_SECOND = {
@@ -247,6 +248,7 @@ def default_person_prefs():
         "direction_mode": DEFAULT_DIRECTION_MODE,
         "speech_speed": DEFAULT_SPEECH_SPEED,
         "show_hints": DEFAULT_SHOW_HINTS,
+        "auto_speak_spanish": DEFAULT_AUTO_SPEAK_SPANISH,
         "story_reading_speed": DEFAULT_STORY_READING_SPEED,
         "story_pause_amount": DEFAULT_STORY_PAUSE_AMOUNT,
     }
@@ -266,6 +268,9 @@ def sanitize_person_prefs(pref_data, fallback=None):
     show_hints = pref_data.get("show_hints", fallback["show_hints"])
     if not isinstance(show_hints, bool):
         show_hints = fallback["show_hints"]
+    auto_speak_spanish = pref_data.get("auto_speak_spanish", fallback["auto_speak_spanish"])
+    if not isinstance(auto_speak_spanish, bool):
+        auto_speak_spanish = fallback["auto_speak_spanish"]
     story_reading_speed = pref_data.get("story_reading_speed", fallback["story_reading_speed"])
     if story_reading_speed not in {1, 2, 3, 4, 5}:
         story_reading_speed = fallback["story_reading_speed"]
@@ -278,6 +283,7 @@ def sanitize_person_prefs(pref_data, fallback=None):
         "direction_mode": direction_mode,
         "speech_speed": speech_speed,
         "show_hints": show_hints,
+        "auto_speak_spanish": auto_speak_spanish,
         "story_reading_speed": story_reading_speed,
         "story_pause_amount": story_pause_amount,
     }
@@ -520,6 +526,7 @@ def current_prefs():
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
         "show_hints": st.session_state.show_hints,
+        "auto_speak_spanish": st.session_state.auto_speak_spanish,
         "story_reading_speed": st.session_state.story_reading_speed,
         "story_pause_amount": st.session_state.story_pause_amount,
     }
@@ -659,6 +666,8 @@ defaults = {
     "direction_mode": active_person_prefs["direction_mode"],
     "speech_speed":   active_person_prefs["speech_speed"],
     "show_hints":     active_person_prefs["show_hints"],
+    "auto_speak_spanish": active_person_prefs["auto_speak_spanish"],
+    "auto_speak_spanish_generation": 0,
     "story_reading_speed": active_person_prefs["story_reading_speed"],
     "story_pause_amount": active_person_prefs["story_pause_amount"],
     "active_person":  active_person,
@@ -716,6 +725,7 @@ def store_active_person_prefs():
         "direction_mode": st.session_state.direction_mode,
         "speech_speed": st.session_state.speech_speed,
         "show_hints": st.session_state.show_hints,
+        "auto_speak_spanish": st.session_state.auto_speak_spanish,
         "story_reading_speed": st.session_state.story_reading_speed,
         "story_pause_amount": st.session_state.story_pause_amount,
     }
@@ -768,6 +778,7 @@ def apply_person_prefs(person):
     st.session_state.direction_mode = person_prefs["direction_mode"]
     st.session_state.speech_speed = person_prefs["speech_speed"]
     st.session_state.show_hints = person_prefs["show_hints"]
+    st.session_state.auto_speak_spanish = person_prefs["auto_speak_spanish"]
     st.session_state.story_reading_speed = person_prefs["story_reading_speed"]
     st.session_state.story_pause_amount = person_prefs["story_pause_amount"]
     st.session_state.direction = direction_for_mode(person_prefs["direction_mode"])
@@ -1146,6 +1157,24 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-color: {BUTTON_COLORS['blue']['border']} !important;
     color: {BUTTON_COLORS['blue']['fg']} !important;
 }}
+.st-key-autospeak_on_wrap div[data-testid="stButton"] > button {{
+    background-color: {BUTTON_COLORS['blue']['bg']} !important;
+    border-color: {BUTTON_COLORS['blue']['border']} !important;
+    color: {BUTTON_COLORS['blue']['fg']} !important;
+}}
+.st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
+    background-color: color-mix(in srgb, {BUTTON_COLORS['blue']['bg']} 58%, {t['bg']} 42%) !important;
+    border-color: {BUTTON_COLORS['blue']['border']} !important;
+    color: color-mix(in srgb, {BUTTON_COLORS['blue']['fg']} 78%, white 22%) !important;
+}}
+.st-key-autospeak_on_wrap div[data-testid="stButton"] > button,
+.st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
+    width: 3.6rem !important;
+    min-height: 3.2rem !important;
+    padding: 0.42rem 0.2rem !important;
+    font-size: 0.94rem !important;
+    letter-spacing: 0 !important;
+}}
 .st-key-del_active_wrap div[data-testid="stButton"] > button {{
     background-color: {t['review_light']} !important;
     border-color: {t['review']} !important;
@@ -1370,6 +1399,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: 5.8rem !important;
 }}
 .st-key-storyadvance_hidden_wrap {{
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}}
+.st-key-storyfinish_hidden_wrap {{
     position: absolute !important;
     width: 1px !important;
     height: 1px !important;
@@ -2504,8 +2544,20 @@ def render_story_pause_request_guard():
                 storyIndex: {story_index}
             }};
 
+            function clearAdvanceRetryTimer() {{
+                if (doc._storyAdvanceRetryTimer) {{
+                    clearInterval(doc._storyAdvanceRetryTimer);
+                    doc._storyAdvanceRetryTimer = null;
+                }}
+            }}
+
             function markPauseRequested() {{
                 doc._storyPauseRequested = pauseState;
+                if (doc._storyAutoAdvanceTimer) {{
+                    clearTimeout(doc._storyAutoAdvanceTimer);
+                    doc._storyAutoAdvanceTimer = null;
+                }}
+                clearAdvanceRetryTimer();
             }}
 
             function attach(selector, key) {{
@@ -3183,18 +3235,41 @@ def render_story_start_unlock_handler(
             }}
 
             function pauseFromGesture() {{
+                function clampIndex(index) {{
+                    if (typeof index !== 'number' || Number.isNaN(index)) {{
+                        return null;
+                    }}
+                    return Math.max(0, Math.min(index, controller.lines.length - 1));
+                }}
+
+                function maxDefinedIndex() {{
+                    var values = Array.prototype.slice.call(arguments)
+                        .map(clampIndex)
+                        .filter(function(value) {{ return value !== null; }});
+                    if (!values.length) {{
+                        return clampIndex(controller.serverIndex) || 0;
+                    }}
+                    return Math.max.apply(null, values);
+                }}
+
                 if (controller.ignorePauseUntil && Date.now() < controller.ignorePauseUntil) {{
                     return;
                 }}
                 if (controller.isSpeaking) {{
-                    controller.resumeTargetIndex = controller.localIndex;
-                }} else if (typeof controller.queuedNextIndex === 'number') {{
-                    controller.resumeTargetIndex = controller.queuedNextIndex;
+                    controller.resumeTargetIndex = maxDefinedIndex(
+                        controller.localIndex,
+                        controller.lastSpokenIndex,
+                        controller.serverIndex
+                    );
                 }} else {{
-                    controller.resumeTargetIndex = controller.localIndex;
+                    controller.resumeTargetIndex = maxDefinedIndex(
+                        controller.localIndex,
+                        controller.serverIndex
+                    );
                 }}
                 controller.running = false;
                 controller.active = true;
+                controller.queuedNextIndex = null;
                 controller.pausedDisplayIndex = controller.resumeTargetIndex;
                 controller.localIndex = controller.resumeTargetIndex;
                 renderLocalStoryViewStable(controller.localIndex);
@@ -3418,6 +3493,11 @@ def render_story_paused_cleanup():
                 doc._storyAutoAdvanceTimer = null;
             }}
 
+            if (doc._storyAdvanceRetryTimer) {{
+                clearInterval(doc._storyAdvanceRetryTimer);
+                doc._storyAdvanceRetryTimer = null;
+            }}
+
             doc._storyAutoAdvanceIndex = null;
             doc._storyLastSpeechKey = null;
             doc._storyPauseResumeState = null;
@@ -3567,6 +3647,24 @@ def render_story_auto_advance(delay_seconds):
             var storyIndex = {story_index};
             var lastStoryIndex = {last_story_index};
 
+            function clearAdvanceRetryTimer() {{
+                if (doc._storyAdvanceRetryTimer) {{
+                    clearInterval(doc._storyAdvanceRetryTimer);
+                    doc._storyAdvanceRetryTimer = null;
+                }}
+            }}
+
+            function startAdvanceRetry() {{
+                var attempts = 0;
+                clearAdvanceRetryTimer();
+                doc._storyAdvanceRetryTimer = setInterval(function() {{
+                    attempts += 1;
+                    if (clickAdvanceButton() || attempts >= 10) {{
+                        clearAdvanceRetryTimer();
+                    }}
+                }}, 150);
+            }}
+
             function clickAdvanceButton() {{
                 var button = doc.querySelector('.st-key-storyadvance_hidden_wrap button');
                 if (!button) {{
@@ -3580,6 +3678,7 @@ def render_story_auto_advance(delay_seconds):
             if (doc._storyAutoAdvanceTimer) {{
                 clearTimeout(doc._storyAutoAdvanceTimer);
             }}
+            clearAdvanceRetryTimer();
 
             doc._storyAutoAdvanceIndex = storyIndex;
             doc._storyAutoAdvanceTimer = setTimeout(function() {{
@@ -3590,13 +3689,7 @@ def render_story_auto_advance(delay_seconds):
                     return;
                 }}
                 if (clickAdvanceButton()) return;
-                var attempts = 0;
-                var timer = setInterval(function() {{
-                    attempts += 1;
-                    if (clickAdvanceButton() || attempts >= 10) {{
-                        clearInterval(timer);
-                    }}
-                }}, 150);
+                startAdvanceRetry();
             }}, {delay_ms});
         }})();
         </script>
@@ -3636,6 +3729,24 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
 
             if (!synth || !speechText) return;
 
+            function clearAdvanceRetryTimer() {{
+                if (doc._storyAdvanceRetryTimer) {{
+                    clearInterval(doc._storyAdvanceRetryTimer);
+                    doc._storyAdvanceRetryTimer = null;
+                }}
+            }}
+
+            function startAdvanceRetry() {{
+                var attempts = 0;
+                clearAdvanceRetryTimer();
+                doc._storyAdvanceRetryTimer = setInterval(function() {{
+                    attempts += 1;
+                    if (clickAdvanceButton() || attempts >= 10) {{
+                        clearAdvanceRetryTimer();
+                    }}
+                }}, 150);
+            }}
+
             function clickAdvanceButton() {{
                 var button = doc.querySelector('.st-key-storyadvance_hidden_wrap button');
                 if (!button) {{
@@ -3654,6 +3765,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                 if (doc._storyAutoAdvanceTimer) {{
                     clearTimeout(doc._storyAutoAdvanceTimer);
                 }}
+                clearAdvanceRetryTimer();
 
                 doc._storyAutoAdvanceIndex = storyIndex;
                 doc._storyAutoAdvanceTimer = setTimeout(function() {{
@@ -3661,13 +3773,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                         return;
                     }}
                     if (clickAdvanceButton()) return;
-                    var attempts = 0;
-                    var timer = setInterval(function() {{
-                        attempts += 1;
-                        if (clickAdvanceButton() || attempts >= 10) {{
-                            clearInterval(timer);
-                        }}
-                    }}, 150);
+                    startAdvanceRetry();
                 }}, delayMs);
             }}
 
@@ -3697,6 +3803,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                         clearTimeout(doc._storyAutoAdvanceTimer);
                         doc._storyAutoAdvanceTimer = null;
                     }}
+                    clearAdvanceRetryTimer();
 
                     try {{
                         synth.cancel();
@@ -3704,13 +3811,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                     }}
 
                     if (clickAdvanceButton()) return;
-                    var attempts = 0;
-                    var timer = setInterval(function() {{
-                        attempts += 1;
-                        if (clickAdvanceButton() || attempts >= 10) {{
-                            clearInterval(timer);
-                        }}
-                    }}, 150);
+                    startAdvanceRetry();
                 }};
 
                 ['click', 'touchend'].forEach(function(eventName) {{
@@ -4153,14 +4254,31 @@ def render_flashcard(prompt, solution, show_answer):
     st.markdown(a_html, unsafe_allow_html=True)
 
 
-def inject_tap_reveal(show_answer):
+def inject_tap_reveal(show_answer, auto_speak_enabled=False, auto_speak_text=""):
     show_str = "true" if show_answer else "false"
+    auto_speak_str = "true" if auto_speak_enabled else "false"
+    speech_rate = speech_rate_value()
     components.html("""
     <script>
     (function() {
+        var parentWindow = window.parent;
+        var doc = parentWindow.document;
         var showAnswer = """ + show_str + """;
+        var autoSpeakEnabled = """ + auto_speak_str + """;
+        var speechText = """ + json.dumps(strip_spoken_text(auto_speak_text)) + """;
+        var speechRate = """ + json.dumps(speech_rate) + """;
+
+        function speakSpanishNow() {
+            if (!autoSpeakEnabled || !speechText || !doc || typeof doc._fcSpeakSpanish !== 'function') return;
+            doc._fcSpeakSpanish({
+                text: speechText,
+                rate: speechRate,
+                key: 'reveal|' + speechText + '|' + speechRate,
+                cancelFirst: true,
+            });
+        }
+
         function clickShowAnswerButton() {
-            var doc = window.parent.document;
             var showBtn = doc.querySelector('.st-key-showanswer_wrap button');
             if (showBtn) {
                 showBtn.dispatchEvent(new MouseEvent('click', {bubbles:true}));
@@ -4183,11 +4301,32 @@ def inject_tap_reveal(show_answer):
             var cards = doc.querySelectorAll('.fc-block');
             if (!cards.length) return false;
             if (doc._fcHandler) doc.body.removeEventListener('click', doc._fcHandler);
+            if (doc._showAnswerAutoSpeakHandler) {
+                var existingShowBtn = doc.querySelector('.st-key-showanswer_wrap button');
+                if (existingShowBtn) {
+                    existingShowBtn.removeEventListener('click', doc._showAnswerAutoSpeakHandler, true);
+                    existingShowBtn.removeEventListener('touchend', doc._showAnswerAutoSpeakHandler, true);
+                }
+            }
             doc._fcHandler = function(e) {
                 if (!e.target.closest('.fc-block')) return;
-                if (!showAnswer) clickShowAnswerButton();
+                if (!showAnswer) {
+                    speakSpanishNow();
+                    clickShowAnswerButton();
+                }
             };
             doc.body.addEventListener('click', doc._fcHandler);
+
+            var showBtn = doc.querySelector('.st-key-showanswer_wrap button');
+            if (showBtn) {
+                doc._showAnswerAutoSpeakHandler = function() {
+                    if (!showAnswer) {
+                        speakSpanishNow();
+                    }
+                };
+                showBtn.addEventListener('click', doc._showAnswerAutoSpeakHandler, true);
+                showBtn.addEventListener('touchend', doc._showAnswerAutoSpeakHandler, true);
+            }
             return true;
         }
         var n = 0;
@@ -4210,6 +4349,202 @@ def speech_rate_value():
         5: 1.00,
     }
     return speech_rate_map.get(st.session_state.speech_speed, 1.00)
+
+
+def inject_flashcard_speech_runtime():
+    components.html(
+        """
+        <script>
+        (function() {
+            var parentWindow = window.parent;
+            var doc = parentWindow.document;
+            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
+            var UtteranceCtor = parentWindow.SpeechSynthesisUtterance || window.SpeechSynthesisUtterance;
+
+            if (!doc || !synth || !UtteranceCtor) return;
+            if (doc._fcSpeechRuntimeInstalled) return;
+
+            function pickVoice(voices) {
+                return voices.find(function(voice) { return voice.lang === 'es-MX'; })
+                    || voices.find(function(voice) { return voice.lang === 'es-US'; })
+                    || voices.find(function(voice) { return voice.lang === 'es-ES'; })
+                    || voices.find(function(voice) { return voice.lang && voice.lang.toLowerCase().startsWith('es'); })
+                    || null;
+            }
+
+            function clearVoiceHandler() {
+                if (!doc._fcSpeechVoicesChangedHandler) return;
+
+                if (typeof synth.removeEventListener === 'function') {
+                    synth.removeEventListener('voiceschanged', doc._fcSpeechVoicesChangedHandler);
+                } else if (synth.onvoiceschanged === doc._fcSpeechVoicesChangedHandler) {
+                    synth.onvoiceschanged = null;
+                }
+
+                doc._fcSpeechVoicesChangedHandler = null;
+            }
+
+            function clearPendingTimer() {
+                if (doc._fcSpeechPendingTimer) {
+                    parentWindow.clearTimeout(doc._fcSpeechPendingTimer);
+                    doc._fcSpeechPendingTimer = null;
+                }
+            }
+
+            function clearPendingSpeech() {
+                clearPendingTimer();
+                clearVoiceHandler();
+            }
+
+            doc._fcSpeakSpanish = function(config) {
+                config = config || {};
+
+                var speechText = (config.text || '').trim();
+                var speechRate = config.rate || 1;
+                var speechKey = config.key || null;
+                var cancelFirst = config.cancelFirst !== false;
+
+                if (!speechText) return;
+                if (speechKey && doc._fcSpeechLastKey === speechKey) return;
+
+                doc._fcSpeechLastKey = speechKey;
+                clearPendingSpeech();
+
+                function speakNow() {
+                    var utterance = new UtteranceCtor(speechText);
+                    var voices = synth.getVoices ? synth.getVoices() : [];
+                    var voice = pickVoice(voices);
+
+                    utterance.lang = voice ? voice.lang : 'es-ES';
+                    utterance.rate = speechRate;
+                    if (voice) utterance.voice = voice;
+
+                    doc._fcSpeechActiveUtterance = utterance;
+                    utterance.onend = utterance.onerror = function() {
+                        if (doc._fcSpeechActiveUtterance === utterance) {
+                            doc._fcSpeechActiveUtterance = null;
+                        }
+                    };
+
+                    if (cancelFirst) {
+                        try {
+                            synth.cancel();
+                        } catch (error) {
+                        }
+                    }
+
+                    doc._fcSpeechPendingTimer = parentWindow.setTimeout(function() {
+                        doc._fcSpeechPendingTimer = null;
+                        try {
+                            synth.speak(utterance);
+                        } catch (error) {
+                            if (speechKey) {
+                                doc._fcSpeechLastKey = null;
+                            }
+                        }
+                    }, cancelFirst ? 60 : 0);
+                }
+
+                if (synth.getVoices && synth.getVoices().length) {
+                    speakNow();
+                    return;
+                }
+
+                var handled = false;
+                doc._fcSpeechVoicesChangedHandler = function() {
+                    if (handled) return;
+                    handled = true;
+                    clearVoiceHandler();
+                    speakNow();
+                };
+
+                if (typeof synth.addEventListener === 'function') {
+                    synth.addEventListener('voiceschanged', doc._fcSpeechVoicesChangedHandler);
+                } else {
+                    synth.onvoiceschanged = doc._fcSpeechVoicesChangedHandler;
+                }
+
+                doc._fcSpeechPendingTimer = parentWindow.setTimeout(function() {
+                    doc._fcSpeechPendingTimer = null;
+                    if (handled) return;
+                    handled = true;
+                    clearVoiceHandler();
+                    speakNow();
+                }, 250);
+            };
+
+            doc._fcSpeechRuntimeInstalled = true;
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def inject_speech_priming():
+    components.html(
+        """
+        <script>
+        (function() {
+            var doc = window.parent.document;
+            var synth = window.parent.speechSynthesis || window.speechSynthesis;
+
+            if (!doc || !synth) return;
+            if (doc._fcSpeechPrimingAttached) return;
+
+            function primeSpeech() {
+                if (doc._fcSpeechPrimed) return;
+                doc._fcSpeechPrimed = true;
+
+                try {
+                    if (synth.getVoices) {
+                        synth.getVoices();
+                    }
+
+                    var utterance = new SpeechSynthesisUtterance('.');
+                    utterance.volume = 0;
+                    utterance.rate = 1;
+                    synth.speak(utterance);
+                    setTimeout(function() {
+                        synth.cancel();
+                    }, 0);
+                } catch (error) {
+                    doc._fcSpeechPrimed = false;
+                }
+            }
+
+            doc._fcSpeechPrimeHandler = function(event) {
+                var target = event.target;
+                if (!target || !target.closest) return;
+                if (
+                    target.closest('.fc-block') ||
+                    target.closest('.st-key-showanswer_wrap button') ||
+                    target.closest('.st-key-correct_wrap button') ||
+                    target.closest('.st-key-repeat_wrap button') ||
+                    target.closest('.st-key-autospeak_on_wrap button') ||
+                    target.closest('.st-key-autospeak_off_wrap button') ||
+                    target.closest('.st-key-speaker_wrap button')
+                ) {
+                    primeSpeech();
+                }
+            };
+
+            doc.body.addEventListener('click', doc._fcSpeechPrimeHandler, true);
+            doc.body.addEventListener('touchend', doc._fcSpeechPrimeHandler, true);
+            doc._fcSpeechPrimingAttached = true;
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def toggle_auto_speak_spanish():
+    st.session_state.auto_speak_spanish = not st.session_state.auto_speak_spanish
+    if st.session_state.auto_speak_spanish:
+        st.session_state.auto_speak_spanish_generation += 1
+    store_active_person_prefs()
+    save_prefs(current_prefs())
 
 
 def render_speaker_button(text):
@@ -4245,53 +4580,20 @@ def render_speaker_button(text):
         (function() {{
             var speechText = {json.dumps(speech_text)};
             var speechRate = {speech_rate};
-            var synth = window.speechSynthesis;
+            var parentWindow = window.parent;
+            var doc = parentWindow.document;
             var button = document.getElementById('speak-btn');
 
-            if (!button || !synth || !speechText) return;
-
-            function pickVoice(voices) {{
-                return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
-                    || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
-                    || voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
-                    || voices.find(function(voice) {{ return voice.lang && voice.lang.toLowerCase().startsWith('es'); }})
-                    || null;
-            }}
-
-            function speakNow() {{
-                var utterance = new SpeechSynthesisUtterance(speechText);
-                var voices = synth.getVoices ? synth.getVoices() : [];
-                var voice = pickVoice(voices);
-
-                utterance.lang = voice ? voice.lang : 'es-ES';
-                utterance.rate = speechRate;
-                if (voice) utterance.voice = voice;
-
-                synth.cancel();
-                synth.speak(utterance);
-            }}
+            if (!button || !doc || !speechText) return;
 
             function speakFromTap(event) {{
                 if (event) event.preventDefault();
-                if (synth.getVoices && synth.getVoices().length) {{
-                    speakNow();
-                    return;
-                }}
-
-                var handled = false;
-                function handleVoicesChanged() {{
-                    if (handled) return;
-                    handled = true;
-                    speakNow();
-                }}
-
-                if (typeof synth.addEventListener === 'function') {{
-                    synth.addEventListener('voiceschanged', handleVoicesChanged, {{ once: true }});
-                }} else {{
-                    synth.onvoiceschanged = handleVoicesChanged;
-                }}
-
-                setTimeout(handleVoicesChanged, 250);
+                if (typeof doc._fcSpeakSpanish !== 'function') return;
+                doc._fcSpeakSpanish({{
+                    text: speechText,
+                    rate: speechRate,
+                    cancelFirst: true,
+                }});
             }}
 
             button.addEventListener('click', speakFromTap);
@@ -4300,6 +4602,37 @@ def render_speaker_button(text):
         </script>
         """,
         height=60,
+    )
+
+
+def render_auto_speak_spanish(text, speech_key):
+    speech_text = strip_spoken_text(text)
+    speech_rate = speech_rate_value()
+    components.html(
+        f"""
+        <script>
+        (function() {{
+            var parentWindow = window.parent;
+            var doc = parentWindow.document;
+            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
+            var speechText = {json.dumps(speech_text)};
+            var speechRate = {speech_rate};
+            var speechKey = {json.dumps(speech_key)};
+            if (!doc || !synth || !speechText || !speechKey) return;
+            if (doc._autoSpeakSpanishKey === speechKey) return;
+            doc._autoSpeakSpanishKey = speechKey;
+
+            if (typeof doc._fcSpeakSpanish !== 'function') return;
+            doc._fcSpeakSpanish({{
+                text: speechText,
+                rate: speechRate,
+                key: speechKey,
+                cancelFirst: true,
+            }});
+        }})();
+        </script>
+        """,
+        height=0,
     )
 
 
@@ -4590,8 +4923,8 @@ def render_buttons(show_answer, spanish_audio_text):
 
     review_mode = is_review_deck(st.session_state.selected_csv)
     with st.container(key="answer_action_row_wrap"):
-        action_columns = st.columns(4 if review_mode else 3, gap="small")
-        col1, col2, col3 = action_columns[:3]
+        action_columns = st.columns(5 if review_mode else 4, gap="small")
+        col1, col2, col3, col4 = action_columns[:4]
         with col1:
             with st.container(key="correct_wrap"):
                 st.button("✓", key="correct_btn", on_click=mark_correct)
@@ -4601,10 +4934,15 @@ def render_buttons(show_answer, spanish_audio_text):
         with col3:
             with st.container(key="speaker_wrap"):
                 render_speaker_button(spanish_audio_text)
+        with col4:
+            auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
+            auto_speak_label = "☒∞" if st.session_state.auto_speak_spanish else "☐∞"
+            with st.container(key=auto_speak_key):
+                st.button(auto_speak_label, key="autospeak_btn", on_click=toggle_auto_speak_spanish)
         if review_mode:
             current_card = st.session_state.cards[current_card_index()]
             delete_armed = st.session_state.delete_review_confirm_key == current_review_card_key(current_card)
-            with action_columns[3]:
+            with action_columns[4]:
                 with st.container(key="del_confirm_wrap" if delete_armed else "del_active_wrap"):
                     st.button("X", key="del_btn", on_click=delete_current_review_card)
             if delete_armed:
@@ -4881,7 +5219,13 @@ if current_direction == "EN_TO_ES":
 else:
     prompt, solution = card["answer"], card["word"]
 
-spanish_text = solution if current_direction == "EN_TO_ES" else prompt
+spanish_text = card["answer"]
+spanish_visible_phase = None
+if current_direction == "EN_TO_ES":
+    if st.session_state.show_answer:
+        spanish_visible_phase = "answer-visible"
+else:
+    spanish_visible_phase = "prompt-visible"
 
 # ========================================================================
 # MAIN LAYOUT
@@ -4891,6 +5235,25 @@ render_header()
 render_menu()
 render_deck_strip()
 stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
+inject_flashcard_speech_runtime()
+inject_speech_priming()
 render_flashcard(prompt, solution, st.session_state.show_answer)
-inject_tap_reveal(st.session_state.show_answer)
+inject_tap_reveal(
+    st.session_state.show_answer,
+    auto_speak_enabled=st.session_state.auto_speak_spanish and current_direction == "EN_TO_ES",
+    auto_speak_text=card["answer"],
+)
+if st.session_state.auto_speak_spanish and current_direction == "ES_TO_EN" and spanish_visible_phase:
+    auto_speak_event_key = "|".join(
+        [
+            st.session_state.selected_csv or "",
+            str(current_card_index()),
+            str(st.session_state.index),
+            current_direction,
+            spanish_visible_phase,
+            str(st.session_state.auto_speak_spanish_generation),
+            strip_spoken_text(spanish_text),
+        ]
+    )
+    render_auto_speak_spanish(spanish_text, auto_speak_event_key)
 render_buttons(st.session_state.show_answer, spanish_text)
