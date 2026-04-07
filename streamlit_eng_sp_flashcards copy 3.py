@@ -2544,20 +2544,8 @@ def render_story_pause_request_guard():
                 storyIndex: {story_index}
             }};
 
-            function clearAdvanceRetryTimer() {{
-                if (doc._storyAdvanceRetryTimer) {{
-                    clearInterval(doc._storyAdvanceRetryTimer);
-                    doc._storyAdvanceRetryTimer = null;
-                }}
-            }}
-
             function markPauseRequested() {{
                 doc._storyPauseRequested = pauseState;
-                if (doc._storyAutoAdvanceTimer) {{
-                    clearTimeout(doc._storyAutoAdvanceTimer);
-                    doc._storyAutoAdvanceTimer = null;
-                }}
-                clearAdvanceRetryTimer();
             }}
 
             function attach(selector, key) {{
@@ -3470,11 +3458,6 @@ def render_story_paused_cleanup():
                 doc._storyAutoAdvanceTimer = null;
             }}
 
-            if (doc._storyAdvanceRetryTimer) {{
-                clearInterval(doc._storyAdvanceRetryTimer);
-                doc._storyAdvanceRetryTimer = null;
-            }}
-
             doc._storyAutoAdvanceIndex = null;
             doc._storyLastSpeechKey = null;
             doc._storyPauseResumeState = null;
@@ -3624,24 +3607,6 @@ def render_story_auto_advance(delay_seconds):
             var storyIndex = {story_index};
             var lastStoryIndex = {last_story_index};
 
-            function clearAdvanceRetryTimer() {{
-                if (doc._storyAdvanceRetryTimer) {{
-                    clearInterval(doc._storyAdvanceRetryTimer);
-                    doc._storyAdvanceRetryTimer = null;
-                }}
-            }}
-
-            function startAdvanceRetry() {{
-                var attempts = 0;
-                clearAdvanceRetryTimer();
-                doc._storyAdvanceRetryTimer = setInterval(function() {{
-                    attempts += 1;
-                    if (clickAdvanceButton() || attempts >= 10) {{
-                        clearAdvanceRetryTimer();
-                    }}
-                }}, 150);
-            }}
-
             function clickAdvanceButton() {{
                 var button = doc.querySelector('.st-key-storyadvance_hidden_wrap button');
                 if (!button) {{
@@ -3655,7 +3620,6 @@ def render_story_auto_advance(delay_seconds):
             if (doc._storyAutoAdvanceTimer) {{
                 clearTimeout(doc._storyAutoAdvanceTimer);
             }}
-            clearAdvanceRetryTimer();
 
             doc._storyAutoAdvanceIndex = storyIndex;
             doc._storyAutoAdvanceTimer = setTimeout(function() {{
@@ -3666,7 +3630,13 @@ def render_story_auto_advance(delay_seconds):
                     return;
                 }}
                 if (clickAdvanceButton()) return;
-                startAdvanceRetry();
+                var attempts = 0;
+                var timer = setInterval(function() {{
+                    attempts += 1;
+                    if (clickAdvanceButton() || attempts >= 10) {{
+                        clearInterval(timer);
+                    }}
+                }}, 150);
             }}, {delay_ms});
         }})();
         </script>
@@ -3706,24 +3676,6 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
 
             if (!synth || !speechText) return;
 
-            function clearAdvanceRetryTimer() {{
-                if (doc._storyAdvanceRetryTimer) {{
-                    clearInterval(doc._storyAdvanceRetryTimer);
-                    doc._storyAdvanceRetryTimer = null;
-                }}
-            }}
-
-            function startAdvanceRetry() {{
-                var attempts = 0;
-                clearAdvanceRetryTimer();
-                doc._storyAdvanceRetryTimer = setInterval(function() {{
-                    attempts += 1;
-                    if (clickAdvanceButton() || attempts >= 10) {{
-                        clearAdvanceRetryTimer();
-                    }}
-                }}, 150);
-            }}
-
             function clickAdvanceButton() {{
                 var button = doc.querySelector('.st-key-storyadvance_hidden_wrap button');
                 if (!button) {{
@@ -3742,7 +3694,6 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                 if (doc._storyAutoAdvanceTimer) {{
                     clearTimeout(doc._storyAutoAdvanceTimer);
                 }}
-                clearAdvanceRetryTimer();
 
                 doc._storyAutoAdvanceIndex = storyIndex;
                 doc._storyAutoAdvanceTimer = setTimeout(function() {{
@@ -3750,7 +3701,13 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                         return;
                     }}
                     if (clickAdvanceButton()) return;
-                    startAdvanceRetry();
+                    var attempts = 0;
+                    var timer = setInterval(function() {{
+                        attempts += 1;
+                        if (clickAdvanceButton() || attempts >= 10) {{
+                            clearInterval(timer);
+                        }}
+                    }}, 150);
                 }}, delayMs);
             }}
 
@@ -3780,7 +3737,6 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                         clearTimeout(doc._storyAutoAdvanceTimer);
                         doc._storyAutoAdvanceTimer = null;
                     }}
-                    clearAdvanceRetryTimer();
 
                     try {{
                         synth.cancel();
@@ -3788,7 +3744,13 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                     }}
 
                     if (clickAdvanceButton()) return;
-                    startAdvanceRetry();
+                    var attempts = 0;
+                    var timer = setInterval(function() {{
+                        attempts += 1;
+                        if (clickAdvanceButton() || attempts >= 10) {{
+                            clearInterval(timer);
+                        }}
+                    }}, 150);
                 }};
 
                 ['click', 'touchend'].forEach(function(eventName) {{
