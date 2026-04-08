@@ -2174,12 +2174,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         min-width: 7.45rem !important;
     }}
     .st-key-storyplayback_row_wrap [data-testid="stColumn"]:nth-child(2) {{
-        flex: 1 1 auto !important;
-        min-width: 0 !important;
+        flex: 0 0 auto !important;
+        min-width: fit-content !important;
     }}
     .st-key-storyplayback_row_wrap [data-testid="stColumn"]:nth-child(3) {{
         flex: 0 0 auto !important;
-        min-width: 0 !important;
+        min-width: fit-content !important;
     }}
     .st-key-storyplayback_row_wrap .story-option-row {{
         font-size: 0.9rem !important;
@@ -2191,16 +2191,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storytransaudio_row_wrap [data-testid="stCheckbox"] label p {{
         font-size: 0.92rem !important;
     }}
-    .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
-        gap: 0.42rem !important;
-        white-space: nowrap !important;
-    }}
-    .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
-        white-space: nowrap !important;
+    .st-key-storyplayback_row_wrap [data-testid="stCheckbox"] label {{
+        width: fit-content !important;
     }}
 
     .st-key-storytransaudio_row_wrap [data-testid="stHorizontalBlock"] {{
-        gap: 0.2rem !important;
+        gap: 0.28rem !important;
         align-items: center !important;
         height: auto !important;
     }}
@@ -2208,6 +2204,16 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         min-width: 0 !important;
         flex: 1 1 0 !important;
         width: auto !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(1) {{
+        flex: 0 0 33% !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(2) {{
+        flex: 0 0 24% !important;
+    }}
+    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(3) {{
+        flex: 0 0 31% !important;
+        margin-left: 0.2rem !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"] > div {{
         display: flex !important;
@@ -4107,7 +4113,7 @@ def render_story_view():
 
     with st.container(key="storyoptions_stack_wrap"):
         with st.container(key="storyplayback_row_wrap"):
-            playback_cols = st.columns([0.44, 0.28, 0.28], gap="small")
+            playback_cols = st.columns([0.50, 0.17, 0.17], gap="small")
             with playback_cols[0]:
                 st.markdown('<div class="story-option-row">Story Playback:</div>', unsafe_allow_html=True)
             with playback_cols[1]:
@@ -4123,7 +4129,7 @@ def render_story_view():
                     on_change=toggle_story_playback_step,
                 )
         with st.container(key="storytransaudio_row_wrap"):
-            ta_cols = st.columns(3, gap="small")
+            ta_cols = st.columns([0.36, 0.24, 0.32], gap="small")
             with ta_cols[0]:
                 st.checkbox(
                     "Translate",
