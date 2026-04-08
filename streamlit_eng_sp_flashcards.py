@@ -1470,6 +1470,28 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     opacity: 0 !important;
     pointer-events: none !important;
 }}
+.st-key-regular_auto_controls_wrap {
+    margin-bottom: 0.35rem !important;
+}
+.st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 0.55rem !important;
+}
+.st-key-regular_auto_controls_wrap [data-testid="stColumn"] {
+    min-width: 0 !important;
+    padding: 0 !important;
+}
+.st-key-regular_auto_controls_wrap [data-testid="stCheckbox"] {
+    margin: 0 !important;
+}
+.st-key-regular_auto_controls_wrap [data-testid="stCheckbox"] label {
+    white-space: nowrap !important;
+}
+.regular-auto-controls-spacer {
+    min-height: 1.9rem;
+}
 
 /* ---- Header row ---- */
 .st-key-header_row_wrap [data-testid="stHorizontalBlock"] {{
@@ -2207,6 +2229,18 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         color: {t['accent']};
         pointer-events: none;
     }}
+    .st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {
+        gap: 0.2rem !important;
+    }
+    .st-key-regular_auto_controls_wrap [data-testid="stCheckbox"] label p {
+        font-size: 0.92rem !important;
+    }
+    .st-key-regular_auto_controls_wrap [data-testid="stColumn"]:first-child {
+        flex: 0 0 47% !important;
+    }
+    .st-key-regular_auto_controls_wrap [data-testid="stColumn"]:last-child {
+        flex: 0 0 53% !important;
+    }
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -4694,11 +4728,14 @@ def render_regular_auto_mode_controls():
                 key="regular_auto_mode_checkbox",
             )
         with col2:
-            repeat_value = st.checkbox(
-                "REPEAT 2x",
-                key="regular_auto_repeat_checkbox",
-                disabled=not auto_mode_value,
-            )
+            if auto_mode_value:
+                repeat_value = st.checkbox(
+                    "REPEAT 2x",
+                    key="regular_auto_repeat_checkbox",
+                )
+            else:
+                repeat_value = st.session_state["regular_auto_repeat_spanish"]
+                st.markdown('<div class="regular-auto-controls-spacer"></div>', unsafe_allow_html=True)
 
     if auto_mode_value != st.session_state["regular_auto_mode"]:
         st.session_state["regular_auto_mode"] = auto_mode_value
@@ -4833,6 +4870,42 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
                 var voices = synth.getVoices ? synth.getVoices() : [];
                 var candidates = langCandidates(voices, language);
                 if (!candidates.length) return null;
+
+                var preferredNamesByLanguageGender = {{
+                    en: {{
+                        female: ['samantha', 'karen', 'moira', 'ava', 'allison', 'susan', 'siri female', 'zira'],
+                        male: ['alex', 'aaron', 'daniel', 'nathan', 'oliver', 'siri male', 'george', 'fred']
+                    }},
+                    es: {{
+                        female: ['paulina', 'monica', 'paloma', 'marisol', 'soledad', 'helena'],
+                        male: ['jorge', 'juan', 'diego', 'carlos', 'raul']
+                    }}
+                }};
+
+                function findByPreferredNames(nameList) {{
+                    if (!nameList || !nameList.length) return null;
+                    for (var i = 0; i < nameList.length; i += 1) {{
+                        var token = nameList[i];
+                        var exact = candidates.find(function(voice) {{
+                            return ((voice.name || '').toLowerCase() === token || (voice.voiceURI || '').toLowerCase() === token);
+                        }});
+                        if (exact) return exact;
+
+                        var contains = candidates.find(function(voice) {{
+                            var voiceName = (voice.name || '').toLowerCase();
+                            var voiceUri = (voice.voiceURI || '').toLowerCase();
+                            return voiceName.indexOf(token) !== -1 || voiceUri.indexOf(token) !== -1;
+                        }});
+                        if (contains) return contains;
+                    }}
+                    return null;
+                }}
+
+                var languageKey = language === 'es' ? 'es' : 'en';
+                if (preferredGender) {{
+                    var preferredByName = findByPreferredNames(preferredNamesByLanguageGender[languageKey][preferredGender]);
+                    if (preferredByName) return preferredByName;
+                }}
 
                 if (preferredGender) {{
                     var genderMatch = candidates.find(function(voice) {{
