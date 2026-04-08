@@ -876,6 +876,50 @@ def repeat_story():
     start_story()
 
 
+def sync_story_option_widget_state():
+    st.session_state["story_playback_auto_checkbox"] = st.session_state.story_playback_mode == "continuous"
+    st.session_state["story_playback_step_checkbox"] = st.session_state.story_playback_mode == "stop on every line"
+    st.session_state["story_translation_checkbox"] = st.session_state.story_translation_on
+    st.session_state["story_audio_checkbox"] = st.session_state.story_audio_on
+    st.session_state["story_random_checkbox"] = st.session_state.story_random_on
+
+
+def select_story_playback_mode(mode):
+    st.session_state.story_playback_mode = mode
+    st.session_state["story_playback_auto_checkbox"] = mode == "continuous"
+    st.session_state["story_playback_step_checkbox"] = mode == "stop on every line"
+
+
+def toggle_story_playback_auto():
+    if st.session_state.get("story_playback_auto_checkbox"):
+        select_story_playback_mode("continuous")
+    else:
+        st.session_state["story_playback_auto_checkbox"] = True
+
+
+def toggle_story_playback_step():
+    if st.session_state.get("story_playback_step_checkbox"):
+        select_story_playback_mode("stop on every line")
+    else:
+        st.session_state["story_playback_step_checkbox"] = True
+
+
+def toggle_story_translation():
+    st.session_state.story_translation_on = st.session_state.get("story_translation_checkbox", True)
+
+
+def toggle_story_audio():
+    st.session_state.story_audio_on = st.session_state.get("story_audio_checkbox", True)
+
+
+def toggle_story_random():
+    random_enabled = st.session_state.get("story_random_checkbox", False)
+    if random_enabled != st.session_state.story_random_on:
+        st.session_state.story_random_on = random_enabled
+        rebuild_story_order()
+        reset_story_playback()
+
+
 def end_story_to_final_screen():
     go_back_to_deck_picker()
     st.session_state.final_exit = True
@@ -1830,6 +1874,16 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storyplayback_row_wrap .story-option-row {{
     white-space: nowrap !important;
 }}
+.st-key-storyplayback_row_wrap [data-testid="stCheckbox"],
+.st-key-storytransaudio_row_wrap [data-testid="stCheckbox"] {{
+    margin: 0 !important;
+    padding: 0 !important;
+}}
+.st-key-storyplayback_row_wrap [data-testid="stCheckbox"] label,
+.st-key-storytransaudio_row_wrap [data-testid="stCheckbox"] label {{
+    white-space: nowrap !important;
+    margin: 0 !important;
+}}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] > div,
 .st-key-storytransaudio_row_wrap [data-testid="stRadio"] > div {{
     flex-direction: row !important;
@@ -2106,8 +2160,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 
     /* ---- Phone: Translate + Audio + Random checkboxes ---- */
     .st-key-storytransaudio_row_wrap {{
-        height: 2.2rem !important;
-        overflow: hidden !important;
+        height: auto !important;
+        overflow: visible !important;
     }}
     .st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"] {{
         display: flex !important;
@@ -2123,11 +2177,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         flex: 1 1 auto !important;
         min-width: 0 !important;
     }}
+    .st-key-storyplayback_row_wrap [data-testid="stColumn"]:nth-child(3) {{
+        flex: 0 0 auto !important;
+        min-width: 0 !important;
+    }}
     .st-key-storyplayback_row_wrap .story-option-row {{
         font-size: 0.9rem !important;
         position: relative !important;
         top: -0.28rem !important;
         white-space: nowrap !important;
+    }}
+    .st-key-storyplayback_row_wrap [data-testid="stCheckbox"] label p,
+    .st-key-storytransaudio_row_wrap [data-testid="stCheckbox"] label p {{
+        font-size: 0.92rem !important;
     }}
     .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
         gap: 0.42rem !important;
@@ -2138,13 +2200,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
 
     .st-key-storytransaudio_row_wrap [data-testid="stHorizontalBlock"] {{
-        gap: 0 !important;
+        gap: 0.2rem !important;
         align-items: center !important;
-        height: 2.2rem !important;
+        height: auto !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"] {{
         min-width: 0 !important;
-        flex: 0 0 auto !important;
+        flex: 1 1 0 !important;
         width: auto !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"] > div {{
@@ -4022,6 +4084,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
 
 def render_story_view():
     story_card = current_story_card()
+    sync_story_option_widget_state()
     spanish_text = story_card["answer"]
     translation_text = story_card["word"] if st.session_state.story_translation_on else ""
     story_position = st.session_state.index + 1
@@ -4034,10 +4097,6 @@ def render_story_view():
         if st.session_state.story_random_on
         else story_count_text
     )
-    playback_options = {
-        "auto": "continuous",
-        "step": "stop on every line",
-    }
     ordered_story_cards = [st.session_state.cards[idx] for idx in st.session_state.order]
     ordered_story_line_numbers = [idx + 1 for idx in st.session_state.order]
     story_pause_delays = [
@@ -4048,74 +4107,44 @@ def render_story_view():
 
     with st.container(key="storyoptions_stack_wrap"):
         with st.container(key="storyplayback_row_wrap"):
-            playback_label_col, playback_radio_col = st.columns([0.44, 0.56], gap="small")
-            with playback_label_col:
+            playback_cols = st.columns([0.44, 0.28, 0.28], gap="small")
+            with playback_cols[0]:
                 st.markdown('<div class="story-option-row">Story Playback:</div>', unsafe_allow_html=True)
-            with playback_radio_col:
-                playback_choice = st.radio(
-                    "Playback",
-                    options=list(playback_options.keys()),
-                    index=0 if st.session_state.story_playback_mode == "continuous" else 1,
-                    horizontal=True,
-                    label_visibility="collapsed",
-                    key="story_playback_radio",
+            with playback_cols[1]:
+                st.checkbox(
+                    "Auto",
+                    key="story_playback_auto_checkbox",
+                    on_change=toggle_story_playback_auto,
+                )
+            with playback_cols[2]:
+                st.checkbox(
+                    "Step",
+                    key="story_playback_step_checkbox",
+                    on_change=toggle_story_playback_step,
                 )
         with st.container(key="storytransaudio_row_wrap"):
-            ta_cols = st.columns([0.20, 0.12, 0.14, 0.12, 0.16, 0.12], gap="small")
+            ta_cols = st.columns(3, gap="small")
             with ta_cols[0]:
-                st.markdown('<div class="story-option-row">Translate:</div>', unsafe_allow_html=True)
-            with ta_cols[1]:
-                translation_choice = st.radio(
+                st.checkbox(
                     "Translate",
-                    options=["ON", "OFF"],
-                    index=0 if st.session_state.story_translation_on else 1,
-                    horizontal=True,
-                    label_visibility="collapsed",
-                    key="story_translation_radio",
+                    key="story_translation_checkbox",
+                    on_change=toggle_story_translation,
+                )
+            with ta_cols[1]:
+                st.checkbox(
+                    "Audio",
+                    key="story_audio_checkbox",
+                    on_change=toggle_story_audio,
                 )
             with ta_cols[2]:
-                st.markdown('<div class="story-option-row">Audio:</div>', unsafe_allow_html=True)
-            with ta_cols[3]:
-                audio_choice = st.radio(
-                    "Audio",
-                    options=["ON", "OFF"],
-                    index=0 if st.session_state.story_audio_on else 1,
-                    horizontal=True,
-                    label_visibility="collapsed",
-                    key="story_audio_radio",
-                )
-            with ta_cols[4]:
-                st.markdown('<div class="story-option-row">Random:</div>', unsafe_allow_html=True)
-            with ta_cols[5]:
-                random_choice = st.radio(
+                st.checkbox(
                     "Random",
-                    options=["ON", "OFF"],
-                    index=0 if st.session_state.story_random_on else 1,
-                    horizontal=True,
-                    label_visibility="collapsed",
-                    key="story_random_radio",
+                    key="story_random_checkbox",
+                    on_change=toggle_story_random,
                 )
-    new_playback_mode = playback_options[playback_choice]
-    if new_playback_mode != st.session_state.story_playback_mode:
-        st.session_state.story_playback_mode = new_playback_mode
-        st.rerun()
 
-    translation_enabled = translation_choice == "ON"
-    if translation_enabled != st.session_state.story_translation_on:
-        st.session_state.story_translation_on = translation_enabled
-        st.rerun()
-
-    audio_enabled = audio_choice == "ON"
-    if audio_enabled != st.session_state.story_audio_on:
-        st.session_state.story_audio_on = audio_enabled
-        st.rerun()
-
-    random_enabled = random_choice == "ON"
-    if random_enabled != st.session_state.story_random_on:
-        st.session_state.story_random_on = random_enabled
-        rebuild_story_order()
-        reset_story_playback()
-        st.rerun()
+    translation_enabled = st.session_state.story_translation_on
+    audio_enabled = st.session_state.story_audio_on
 
     story_spanish_html_lines = [
         format_word(card["answer"], 'fc-word', 'fc-note')
@@ -4791,6 +4820,7 @@ def inject_speech_priming():
         (function() {
             var doc = window.parent.document;
             var synth = window.parent.speechSynthesis || window.speechSynthesis;
+            var AudioCtx = window.parent.AudioContext || window.parent.webkitAudioContext || window.AudioContext || window.webkitAudioContext;
 
             if (!doc || !synth) return;
             if (doc._fcSpeechPrimingAttached) return;
@@ -4816,6 +4846,40 @@ def inject_speech_priming():
                 }
             }
 
+            function primeCueAudio() {
+                if (!AudioCtx) return;
+
+                try {
+                    if (!doc._fcCueAudioContext) {
+                        doc._fcCueAudioContext = new AudioCtx();
+                    }
+
+                    var audioContext = doc._fcCueAudioContext;
+
+                    function unlockContext() {
+                        var buffer = audioContext.createBuffer(1, 1, Math.max(22050, audioContext.sampleRate || 44100));
+                        var source = audioContext.createBufferSource();
+                        var gainNode = audioContext.createGain();
+                        gainNode.gain.value = 0.00001;
+                        source.buffer = buffer;
+                        source.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        source.start(0);
+                        source.stop(0.01);
+                        doc._fcCueAudioPrimed = true;
+                    }
+
+                    if (audioContext.state === 'suspended' && typeof audioContext.resume === 'function') {
+                        audioContext.resume().then(unlockContext).catch(function() {
+                        });
+                        return;
+                    }
+
+                    unlockContext();
+                } catch (error) {
+                }
+            }
+
             doc._fcSpeechPrimeHandler = function(event) {
                 var target = event.target;
                 if (!target || !target.closest) return;
@@ -4830,6 +4894,7 @@ def inject_speech_priming():
                     target.closest('.st-key-speaker_wrap button')
                 ) {
                     primeSpeech();
+                    primeCueAudio();
                 }
             };
 
@@ -4942,22 +5007,30 @@ def render_auto_speak_spanish(text, speech_key):
 
 def render_regular_auto_mode_controls():
     with st.container(key="regular_auto_controls_wrap"):
-        col1, col2, col3 = st.columns(3, gap="small")
-        with col1:
+        if st.session_state["regular_auto_mode"]:
+            col1, col2, col3 = st.columns(3, gap="small")
+            with col1:
+                auto_mode_value = st.checkbox(
+                    "AUTO mode",
+                    key="regular_auto_mode_checkbox",
+                )
+            with col2:
+                repeat_value = st.checkbox(
+                    "REPEAT 2x",
+                    key="regular_auto_repeat_checkbox",
+                )
+            with col3:
+                cue_value = st.checkbox(
+                    "CUE",
+                    key="regular_auto_cue_checkbox",
+                )
+        else:
             auto_mode_value = st.checkbox(
                 "AUTO mode",
                 key="regular_auto_mode_checkbox",
             )
-        with col2:
-            repeat_value = st.checkbox(
-                "REPEAT 2x",
-                key="regular_auto_repeat_checkbox",
-            )
-        with col3:
-            cue_value = st.checkbox(
-                "CUE",
-                key="regular_auto_cue_checkbox",
-            )
+            repeat_value = st.session_state["regular_auto_repeat_spanish"]
+            cue_value = st.session_state["regular_auto_cue_prompt"]
 
     if auto_mode_value != st.session_state["regular_auto_mode"]:
         st.session_state["regular_auto_mode"] = auto_mode_value
@@ -5109,37 +5182,49 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
                 }}
 
                 try {{
-                    if (!controller.audioContext) {{
-                        controller.audioContext = new AudioCtx();
+                    if (!doc._fcCueAudioContext) {{
+                        doc._fcCueAudioContext = new AudioCtx();
                     }}
 
-                    var audioContext = controller.audioContext;
-                    if (audioContext.state === 'suspended' && typeof audioContext.resume === 'function') {{
-                        audioContext.resume().catch(function() {{
+                    var audioContext = doc._fcCueAudioContext;
+
+                    function startCue() {{
+                        var startAt = audioContext.currentTime + 0.02;
+                        var frequencies = [1046.5, 1318.5];
+
+                        frequencies.forEach(function(frequency, index) {{
+                            var offset = index * 0.03;
+                            var oscillator = audioContext.createOscillator();
+                            var gainNode = audioContext.createGain();
+
+                            oscillator.type = 'triangle';
+                            oscillator.frequency.setValueAtTime(frequency, startAt + offset);
+
+                            gainNode.gain.setValueAtTime(0.0001, startAt + offset);
+                            gainNode.gain.exponentialRampToValueAtTime(0.20, startAt + offset + 0.02);
+                            gainNode.gain.exponentialRampToValueAtTime(0.0001, startAt + offset + 0.20);
+
+                            oscillator.connect(gainNode);
+                            gainNode.connect(audioContext.destination);
+
+                            oscillator.start(startAt + offset);
+                            oscillator.stop(startAt + offset + 0.22);
                         }});
+
+                        queueTimeout(function() {{
+                            if (controller.phaseKey !== config.phaseKey) return;
+                            onDone();
+                        }}, 280);
                     }}
 
-                    var startAt = audioContext.currentTime + 0.02;
-                    var oscillator = audioContext.createOscillator();
-                    var gainNode = audioContext.createGain();
+                    if (audioContext.state === 'suspended' && typeof audioContext.resume === 'function') {{
+                        audioContext.resume().then(startCue).catch(function() {{
+                            onDone();
+                        }});
+                        return;
+                    }}
 
-                    oscillator.type = 'sine';
-                    oscillator.frequency.setValueAtTime(880, startAt);
-
-                    gainNode.gain.setValueAtTime(0.0001, startAt);
-                    gainNode.gain.exponentialRampToValueAtTime(0.10, startAt + 0.02);
-                    gainNode.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.16);
-
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-
-                    oscillator.start(startAt);
-                    oscillator.stop(startAt + 0.18);
-
-                    queueTimeout(function() {{
-                        if (controller.phaseKey !== config.phaseKey) return;
-                        onDone();
-                    }}, 210);
+                    startCue();
                 }} catch (error) {{
                     onDone();
                 }}
