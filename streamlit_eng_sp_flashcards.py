@@ -4473,8 +4473,8 @@ def inject_flashcard_speech_runtime():
 
             function inferGender(voice) {
                 var normalized = normalizeVoiceName((voice && voice.name) || '');
-                var femaleTokens = ['ava premium', 'samantha enhanced', 'zoe premium', 'angelica enhanced', 'paulina enhanced', 'marisol premium', 'female', 'woman', 'samantha', 'victoria', 'zira', 'karen', 'monica'];
-                var maleTokens = ['evan enhanced', 'nathan enhanced', 'nicky enhanced', 'juan enhanced', 'jorge enhanced', 'male', 'man', 'alex', 'daniel', 'aaron', 'nathan', 'jorge', 'juan'];
+                var femaleTokens = ['ava', 'samantha', 'zoe', 'angelica', 'paulina', 'marisol', 'female', 'woman', 'victoria', 'zira', 'karen', 'monica'];
+                var maleTokens = ['evan', 'nathan', 'nicky', 'juan', 'jorge', 'male', 'man', 'alex', 'daniel', 'aaron'];
                 if (femaleTokens.some(function(token) { return normalized.indexOf(token) !== -1; })) return 'female';
                 if (maleTokens.some(function(token) { return normalized.indexOf(token) !== -1; })) return 'male';
                 return null;
@@ -4508,31 +4508,53 @@ def inject_flashcard_speech_runtime():
             }
 
             function matchedVoicesForTokens(candidates, tokens) {
-                var matches = [];
-                var seen = {};
-                if (!tokens || !tokens.length) return matches;
+                var highQualityMatches = [];
+                var baseMatches = [];
+                var seenHigh = {};
+                var seenBase = {};
+                if (!tokens || !tokens.length) return [];
 
                 tokens.forEach(function(token) {
                     var normalizedToken = normalizeVoiceName(token);
+                    var baseMatch = normalizedToken.match(/^(.+?)(?:\\s+(premium|enhanced))?$/);
+                    var normalizedBase = baseMatch ? (baseMatch[1] || '').trim() : normalizedToken;
+                    var normalizedQuality = baseMatch ? (baseMatch[2] || '').trim() : '';
 
                     candidates.forEach(function(voice) {
                         var normalizedName = normalizeVoiceName(voice.name || '');
                         var normalizedUri = normalizeVoiceName(voice.voiceURI || '');
-                        if (normalizedName === normalizedToken || normalizedUri === normalizedToken) {
-                            pushUnique(matches, voice, seen);
+                        var haystack = (normalizedName + ' ' + normalizedUri).trim();
+                        if (!normalizedBase || haystack.indexOf(normalizedBase) === -1) {
+                            return;
                         }
+
+                        if (normalizedQuality && haystack.indexOf(normalizedQuality) !== -1) {
+                            pushUnique(highQualityMatches, voice, seenHigh);
+                        }
+                        pushUnique(baseMatches, voice, seenBase);
                     });
 
                     candidates.forEach(function(voice) {
                         var normalizedName = normalizeVoiceName(voice.name || '');
                         var normalizedUri = normalizeVoiceName(voice.voiceURI || '');
-                        if (normalizedName.indexOf(normalizedToken) !== -1 || normalizedUri.indexOf(normalizedToken) !== -1) {
-                            pushUnique(matches, voice, seen);
+                        var haystack = (normalizedName + ' ' + normalizedUri).trim();
+                        if (haystack === normalizedToken) {
+                            pushUnique(highQualityMatches, voice, seenHigh);
+                            pushUnique(baseMatches, voice, seenBase);
                         }
                     });
                 });
 
-                return matches;
+                highQualityMatches.forEach(function(voice) {
+                    pushUnique(baseMatches, voice, seenBase);
+                });
+
+                return highQualityMatches.concat(
+                    baseMatches.filter(function(voice) {
+                        var key = (voice.voiceURI || voice.name || '') + '|' + (voice.lang || '');
+                        return !seenHigh[key];
+                    })
+                );
             }
 
             doc._fcPickPreferredVoice = function(language, options) {
@@ -4879,6 +4901,157 @@ def render_regular_auto_mode_controls():
         st.session_state["regular_auto_repeat_spanish"] = repeat_value
         st.session_state["regular_auto_generation"] += 1
         st.rerun()
+
+
+def render_voice_inspector():
+    with st.expander("Temporary Voice Inspector"):
+        st.caption(
+            "Open this on the iPhone, then tap Refresh Voice List. It shows the exact Safari-exposed voice name, quality hints, and identifier."
+        )
+        components.html(
+            """
+            <style>
+            body {
+                margin: 0;
+                padding: 0.35rem 0 0;
+                background: transparent;
+                color: inherit;
+                font-family: 'DM Sans', sans-serif;
+            }
+            .voice-inspector {
+                display: flex;
+                flex-direction: column;
+                gap: 0.65rem;
+            }
+            .voice-inspector-controls {
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            .voice-inspector button {
+                border: 1px solid #5a6b7a;
+                background: #edf3f7;
+                color: #123;
+                border-radius: 0.6rem;
+                padding: 0.45rem 0.8rem;
+                font-size: 0.92rem;
+                font-weight: 600;
+                cursor: pointer;
+            }
+            .voice-inspector-status {
+                font-size: 0.86rem;
+                opacity: 0.8;
+            }
+            .voice-inspector pre {
+                margin: 0;
+                padding: 0.75rem;
+                white-space: pre-wrap;
+                word-break: break-word;
+                border-radius: 0.7rem;
+                background: rgba(127, 127, 127, 0.1);
+                border: 1px solid rgba(127, 127, 127, 0.25);
+                font-size: 0.8rem;
+                line-height: 1.35;
+                max-height: 19rem;
+                overflow: auto;
+            }
+            </style>
+            <div class="voice-inspector">
+                <div class="voice-inspector-controls">
+                    <button id="voice-inspector-refresh" type="button">Refresh Voice List</button>
+                    <div id="voice-inspector-status" class="voice-inspector-status">Loading voices...</div>
+                </div>
+                <pre id="voice-inspector-output">Loading voices...</pre>
+            </div>
+            <script>
+            (function() {
+                var parentWindow = window.parent;
+                var synth = parentWindow.speechSynthesis || window.speechSynthesis;
+                var refreshButton = document.getElementById('voice-inspector-refresh');
+                var statusEl = document.getElementById('voice-inspector-status');
+                var outputEl = document.getElementById('voice-inspector-output');
+
+                function normalizeVoiceName(value) {
+                    return (value || '')
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[^a-z0-9]+/g, ' ')
+                        .trim();
+                }
+
+                function detectQuality(voice) {
+                    var haystack = normalizeVoiceName((voice && voice.name) || '') + ' ' + normalizeVoiceName((voice && voice.voiceURI) || '');
+                    if (haystack.indexOf('premium') !== -1) return 'premium';
+                    if (haystack.indexOf('enhanced') !== -1) return 'enhanced';
+                    return 'standard/unknown';
+                }
+
+                function summarizeVoice(voice, index) {
+                    return [
+                        '#' + (index + 1),
+                        'lang: ' + (voice.lang || ''),
+                        'name: ' + (voice.name || ''),
+                        'qualityHint: ' + detectQuality(voice),
+                        'default: ' + (voice.default ? 'yes' : 'no'),
+                        'localService: ' + (voice.localService ? 'yes' : 'no'),
+                        'voiceURI: ' + (voice.voiceURI || '')
+                    ].join('\n');
+                }
+
+                function renderVoices() {
+                    if (!synth || !synth.getVoices) {
+                        statusEl.textContent = 'Speech synthesis not available';
+                        outputEl.textContent = 'This browser does not expose speechSynthesis.getVoices().';
+                        return;
+                    }
+
+                    var voices = synth.getVoices() || [];
+                    var sortedVoices = voices.slice().sort(function(a, b) {
+                        var langA = (a.lang || '').toLowerCase();
+                        var langB = (b.lang || '').toLowerCase();
+                        if (langA !== langB) return langA < langB ? -1 : 1;
+                        var nameA = (a.name || '').toLowerCase();
+                        var nameB = (b.name || '').toLowerCase();
+                        if (nameA !== nameB) return nameA < nameB ? -1 : 1;
+                        return ((a.voiceURI || '').toLowerCase() < (b.voiceURI || '').toLowerCase()) ? -1 : 1;
+                    });
+
+                    statusEl.textContent = sortedVoices.length + ' voices found';
+                    if (!sortedVoices.length) {
+                        outputEl.textContent = 'No voices returned yet. Tap Refresh again after interacting with the page once.';
+                        return;
+                    }
+
+                    outputEl.textContent = sortedVoices.map(summarizeVoice).join('\n\n---\n\n');
+                }
+
+                refreshButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    renderVoices();
+                });
+
+                renderVoices();
+
+                if (synth) {
+                    if (typeof synth.addEventListener === 'function') {
+                        synth.addEventListener('voiceschanged', renderVoices);
+                    } else {
+                        var oldHandler = synth.onvoiceschanged;
+                        synth.onvoiceschanged = function() {
+                            if (typeof oldHandler === 'function') {
+                                oldHandler();
+                            }
+                            renderVoices();
+                        };
+                    }
+                }
+            })();
+            </script>
+            """,
+            height=420,
+        )
 
 
 def render_regular_auto_hidden_buttons():
@@ -5690,6 +5863,7 @@ stats_card_html(shown_cards, total_cards, correct_count, repeat_count, scored_to
 inject_flashcard_speech_runtime()
 inject_speech_priming()
 render_regular_auto_mode_controls()
+render_voice_inspector()
 render_flashcard(prompt, solution, st.session_state.show_answer)
 render_regular_auto_hidden_buttons()
 if st.session_state["regular_auto_mode"]:
