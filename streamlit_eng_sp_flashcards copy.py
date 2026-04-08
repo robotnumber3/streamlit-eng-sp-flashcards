@@ -130,7 +130,6 @@ def load_regular_deck(filename):
                 "word": row[word_column],
                 "answer": row[answer_column],
                 "shown": False,
-                "scored": False,
                 "repeat_score": 1,
                 "error_flag": 0,
             }
@@ -683,18 +682,10 @@ defaults = {
     "order":          [],
     "index":          0,
     "show_answer":    False,
-    "regular_auto_mode": False,
-    "regular_auto_repeat_spanish": False,
-    "regular_auto_generation": 0,
-    "regular_auto_mode_checkbox": False,
-    "regular_auto_repeat_checkbox": False,
     "direction":      direction_for_mode(active_person_prefs["direction_mode"]),
     "quit_requested": False,
     "final_exit":     False,
     "loaded_csv":     None,
-    "score_actions":  0,
-    "score_correct":  0,
-    "score_repeat":   0,
     "erase_review_confirm": False,
     "delete_review_confirm_key": None,
     "story_playback_mode": "continuous",
@@ -821,16 +812,8 @@ def reset_study_state(reset_selected=True):
     st.session_state.order = []
     st.session_state.index = 0
     st.session_state.show_answer = False
-    st.session_state["regular_auto_mode"] = False
-    st.session_state["regular_auto_repeat_spanish"] = False
-    st.session_state["regular_auto_generation"] += 1
-    st.session_state["regular_auto_mode_checkbox"] = False
-    st.session_state["regular_auto_repeat_checkbox"] = False
     st.session_state.quit_requested = False
     st.session_state.final_exit = False
-    st.session_state["score_actions"] = 0
-    st.session_state["score_correct"] = 0
-    st.session_state["score_repeat"] = 0
     st.session_state.delete_review_confirm_key = None
     st.session_state.story_random_on = False
     st.session_state.story_started = False
@@ -1438,28 +1421,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     pointer-events: none !important;
 }}
 .st-key-storyresumenext_hidden_wrap {{
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    clip-path: inset(50%) !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}}
-.st-key-regularautoreveal_hidden_wrap {{
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    clip-path: inset(50%) !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}}
-.st-key-regularautoadvance_hidden_wrap {{
     position: absolute !important;
     width: 1px !important;
     height: 1px !important;
@@ -2316,17 +2277,10 @@ def reveal_answer():
     st.session_state.show_answer = True
 
 
-def advance_auto_card():
-    advance_card(schedule_current=False)
-
-
 def mark_correct():
     idx = current_card_index()
     card = st.session_state.cards[idx]
     st.session_state.delete_review_confirm_key = None
-    card["scored"] = True
-    st.session_state["score_actions"] += 1
-    st.session_state["score_correct"] += 1
     if is_review_deck(st.session_state.selected_csv):
         review_person = review_deck_person(st.session_state.selected_csv)
         decrement_review_item(review_person, card["word"], card["answer"])
@@ -2342,9 +2296,6 @@ def mark_correct():
 def mark_repeat():
     card = st.session_state.cards[current_card_index()]
     st.session_state.delete_review_confirm_key = None
-    card["scored"] = True
-    st.session_state["score_actions"] += 1
-    st.session_state["score_repeat"] += 1
     upsert_review_item(current_review_person(), card["word"], card["answer"], count=5)
     card["repeat_score"] = 5 if is_review_deck(st.session_state.selected_csv) else 2
     card["error_flag"] = 1
@@ -4565,7 +4516,6 @@ def inject_speech_priming():
                 var target = event.target;
                 if (!target || !target.closest) return;
                 if (
-                    target.closest('input[type="checkbox"]') ||
                     target.closest('.fc-block') ||
                     target.closest('.st-key-showanswer_wrap button') ||
                     target.closest('.st-key-correct_wrap button') ||
@@ -4685,255 +4635,10 @@ def render_auto_speak_spanish(text, speech_key):
     )
 
 
-def render_regular_auto_mode_controls():
-    with st.container(key="regular_auto_controls_wrap"):
-        col1, col2 = st.columns(2, gap="medium")
-        with col1:
-            auto_mode_value = st.checkbox(
-                "AUTO mode",
-                key="regular_auto_mode_checkbox",
-            )
-        with col2:
-            repeat_value = st.checkbox(
-                "REPEAT 2x",
-                key="regular_auto_repeat_checkbox",
-                disabled=not auto_mode_value,
-            )
-
-    if auto_mode_value != st.session_state["regular_auto_mode"]:
-        st.session_state["regular_auto_mode"] = auto_mode_value
-        st.session_state["regular_auto_generation"] += 1
-        if auto_mode_value:
-            st.session_state.show_answer = False
-        st.rerun()
-
-    if repeat_value != st.session_state["regular_auto_repeat_spanish"]:
-        st.session_state["regular_auto_repeat_spanish"] = repeat_value
-        st.session_state["regular_auto_generation"] += 1
-        st.rerun()
-
-
-def render_regular_auto_hidden_buttons():
-    with st.container(key="regularautoreveal_hidden_wrap"):
-        st.button("__regular_auto_reveal__", key="regular_auto_reveal_btn", on_click=reveal_answer)
-    with st.container(key="regularautoadvance_hidden_wrap"):
-        st.button("__regular_auto_advance__", key="regular_auto_advance_btn", on_click=advance_auto_card)
-
-
-def render_regular_auto_mode_cleanup():
-    components.html(
-        """
-        <script>
-        (function() {
-            var parentWindow = window.parent;
-            var doc = parentWindow.document;
-            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
-            var controller = doc && doc._regularAutoController;
-
-            if (controller && controller.timerIds) {
-                controller.timerIds.forEach(function(timerId) {
-                    parentWindow.clearTimeout(timerId);
-                });
-                controller.timerIds = [];
-                controller.phaseKey = null;
-            }
-
-            if (synth) {
-                try {
-                    synth.cancel();
-                } catch (error) {
-                }
-            }
-        })();
-        </script>
-        """,
-        height=0,
-    )
-
-
-def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_after_seconds, preferred_gender, repeat_spanish):
-    speech_text = strip_spoken_text(text)
-    speech_rate = speech_rate_value()
-    action_delay_ms = max(int(pause_after_seconds * 1000), 0)
-    components.html(
-        f"""
-        <script>
-        (function() {{
-            var parentWindow = window.parent;
-            var doc = parentWindow.document;
-            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
-            var UtteranceCtor = parentWindow.SpeechSynthesisUtterance || window.SpeechSynthesisUtterance;
-            var config = {{
-                phase: {json.dumps(phase)},
-                phaseKey: {json.dumps(phase_key)},
-                text: {json.dumps(speech_text)},
-                language: {json.dumps(language)},
-                rate: {speech_rate},
-                delayMs: {action_delay_ms},
-                preferredGender: {json.dumps(preferred_gender)},
-                repeatSpanish: {str(repeat_spanish).lower()},
-            }};
-
-            if (!doc || !synth || !UtteranceCtor || !config.text || !config.phaseKey) return;
-
-            var controller = doc._regularAutoController || {{ timerIds: [], phaseKey: null }};
-            doc._regularAutoController = controller;
-
-            function clearTimers() {{
-                if (!controller.timerIds) return;
-                controller.timerIds.forEach(function(timerId) {{
-                    parentWindow.clearTimeout(timerId);
-                }});
-                controller.timerIds = [];
-            }}
-
-            function clearController(cancelSpeech) {{
-                clearTimers();
-                if (cancelSpeech) {{
-                    try {{
-                        synth.cancel();
-                    }} catch (error) {{
-                    }}
-                }}
-            }}
-
-            if (controller.phaseKey === config.phaseKey) return;
-            clearController(true);
-            controller.phaseKey = config.phaseKey;
-
-            function queueTimeout(callback, delayMs) {{
-                var timerId = parentWindow.setTimeout(callback, delayMs);
-                controller.timerIds.push(timerId);
-            }}
-
-            function inferGender(voice) {{
-                var name = ((voice && voice.name) || '').toLowerCase();
-                var femaleTokens = ['female', 'woman', 'samantha', 'victoria', 'zira', 'karen', 'monica', 'paulina', 'marisol', 'soledad', 'helena'];
-                var maleTokens = ['male', 'man', 'jorge', 'diego', 'daniel', 'alex', 'fred', 'tom', 'carlos', 'raul'];
-                if (femaleTokens.some(function(token) {{ return name.indexOf(token) !== -1; }})) return 'female';
-                if (maleTokens.some(function(token) {{ return name.indexOf(token) !== -1; }})) return 'male';
-                return null;
-            }}
-
-            function langCandidates(voices, language) {{
-                var lowerLanguage = (language || '').toLowerCase();
-                if (lowerLanguage === 'es') {{
-                    return voices.filter(function(voice) {{
-                        var lang = (voice.lang || '').toLowerCase();
-                        return lang === 'es-mx' || lang === 'es-us' || lang === 'es-es' || lang.indexOf('es') === 0;
-                    }});
-                }}
-                return voices.filter(function(voice) {{
-                    var lang = (voice.lang || '').toLowerCase();
-                    return lang === 'en-us' || lang === 'en-gb' || lang === 'en-au' || lang.indexOf('en') === 0;
-                }});
-            }}
-
-            function pickVoice(language, preferredGender) {{
-                var voices = synth.getVoices ? synth.getVoices() : [];
-                var candidates = langCandidates(voices, language);
-                if (!candidates.length) return null;
-
-                if (preferredGender) {{
-                    var genderMatch = candidates.find(function(voice) {{
-                        return inferGender(voice) === preferredGender;
-                    }});
-                    if (genderMatch) return genderMatch;
-                }}
-
-                if (language === 'es') {{
-                    return candidates.find(function(voice) {{ return (voice.lang || '').toLowerCase() === 'es-mx'; }})
-                        || candidates.find(function(voice) {{ return (voice.lang || '').toLowerCase() === 'es-us'; }})
-                        || candidates.find(function(voice) {{ return (voice.lang || '').toLowerCase() === 'es-es'; }})
-                        || candidates[0];
-                }}
-
-                return candidates.find(function(voice) {{ return (voice.lang || '').toLowerCase() === 'en-us'; }})
-                    || candidates.find(function(voice) {{ return (voice.lang || '').toLowerCase() === 'en-gb'; }})
-                    || candidates[0];
-            }}
-
-            function estimatedDurationMs(text, rate) {{
-                var rawText = text || '';
-                var chars = rawText.length || 1;
-                var words = rawText.trim() ? rawText.trim().split(/\\s+/).length : 1;
-                var punctuationPauses = (rawText.match(/[,:;.!?]/g) || []).length;
-                var safeRate = rate > 0 ? rate : 1;
-                var estimate = (words * 470) + (chars * 34) + (punctuationPauses * 220) + 500;
-                return Math.max(1200, Math.round(estimate / safeRate));
-            }}
-
-            function clickHiddenButton(selector) {{
-                var button = doc.querySelector(selector);
-                if (!button) return false;
-                button.click();
-                button.dispatchEvent(new MouseEvent('click', {{ bubbles: true }}));
-                return true;
-            }}
-
-            function speakOnce(text, language, preferredGender, onDone) {{
-                var voice = pickVoice(language, preferredGender);
-                var utterance = new UtteranceCtor(text);
-                var done = false;
-                var watchdogMs = estimatedDurationMs(text, config.rate) + 1200;
-
-                utterance.lang = voice ? voice.lang : (language === 'es' ? 'es-ES' : 'en-US');
-                utterance.rate = config.rate;
-                if (voice) utterance.voice = voice;
-
-                function finish() {{
-                    if (done || controller.phaseKey !== config.phaseKey) return;
-                    done = true;
-                    onDone();
-                }}
-
-                utterance.onend = finish;
-                utterance.onerror = finish;
-
-                queueTimeout(finish, watchdogMs);
-
-                try {{
-                    synth.speak(utterance);
-                }} catch (error) {{
-                    finish();
-                }}
-            }}
-
-            function speakSequence(onDone) {{
-                speakOnce(config.text, config.language, config.preferredGender, function() {{
-                    if (!(config.repeatSpanish && config.language === 'es')) {{
-                        onDone();
-                        return;
-                    }}
-
-                    queueTimeout(function() {{
-                        if (controller.phaseKey !== config.phaseKey) return;
-                        speakOnce(config.text, config.language, config.preferredGender, onDone);
-                    }}, 1000);
-                }});
-            }}
-
-            speakSequence(function() {{
-                queueTimeout(function() {{
-                    if (controller.phaseKey !== config.phaseKey) return;
-                    if (config.phase === 'prompt') {{
-                        clickHiddenButton('.st-key-regularautoreveal_hidden_wrap button');
-                        return;
-                    }}
-                    clickHiddenButton('.st-key-regularautoadvance_hidden_wrap button');
-                }}, config.delayMs);
-            }});
-        }})();
-        </script>
-        """,
-        height=0,
-    )
-
-
-def stats_card_html(shown, total, correct, repeat, scored_total):
+def stats_card_html(shown, total, correct, repeat):
     pct        = int(shown / total * 100) if total > 0 else 0
-    accuracy   = int(correct / scored_total * 100) if scored_total > 0 else 0
-    missed_pct = int(repeat  / scored_total * 100) if scored_total > 0 else 0
+    accuracy   = int(correct / shown * 100) if shown > 0 else 0
+    missed_pct = int(repeat  / shown * 100) if shown > 0 else 0
     remaining  = total - shown
     st.markdown(f"""
     <div class="stats-card">
@@ -5204,16 +4909,6 @@ def render_study_mode_picker():
 
 
 def render_buttons(show_answer, spanish_audio_text):
-    if st.session_state["regular_auto_mode"]:
-        with st.container(key="icon_btn_row_wrap"):
-            _, center_col, _ = st.columns([0.7, 1, 0.7])
-            with center_col:
-                with st.container(key="quitbefore_wrap"):
-                    if st.button("🛑", key="quitbefore_btn"):
-                        st.session_state.quit_requested = True
-                        st.rerun()
-        return
-
     if not show_answer:
         with st.container(key="icon_btn_row_wrap"):
             col1, col2 = st.columns(2)
@@ -5264,7 +4959,6 @@ def restart_mistakes_only():
             "word": card["word"],
             "answer": card["answer"],
             "shown": False,
-            "scored": False,
             "repeat_score": 1,
             "error_flag": 0,
         }
@@ -5278,17 +4972,9 @@ def restart_mistakes_only():
     random.shuffle(st.session_state.order)
     st.session_state.index = 0
     st.session_state.show_answer = False
-    st.session_state["regular_auto_mode"] = False
-    st.session_state["regular_auto_repeat_spanish"] = False
-    st.session_state["regular_auto_generation"] += 1
-    st.session_state["regular_auto_mode_checkbox"] = False
-    st.session_state["regular_auto_repeat_checkbox"] = False
     st.session_state.quit_requested = False
     st.session_state.final_exit = False
     st.session_state.menu_open = False
-    st.session_state["score_actions"] = 0
-    st.session_state["score_correct"] = 0
-    st.session_state["score_repeat"] = 0
     st.rerun()
 
 # ========================================================================
@@ -5395,7 +5081,7 @@ if st.session_state.loaded_csv != st.session_state.selected_csv or not st.sessio
         review_items = list(st.session_state.review_data.get(review_person, {}).values())
         st.session_state.cards = [
             {"id": None, "word": item["word"], "answer": item["answer"],
-             "shown": False, "scored": False, "repeat_score": item["count"], "error_flag": 0}
+             "shown": False, "repeat_score": item["count"], "error_flag": 0}
             for item in review_items
         ]
     else:
@@ -5433,9 +5119,8 @@ if (
 
 total_cards   = len(st.session_state.cards)
 shown_cards   = sum(1 for c in st.session_state.cards if c["shown"])
-correct_count = st.session_state["score_correct"]
-repeat_count  = st.session_state["score_repeat"]
-scored_total  = st.session_state["score_actions"]
+correct_count = sum(1 for c in st.session_state.cards if c["repeat_score"] == 0 and c["shown"])
+repeat_count  = sum(1 for c in st.session_state.cards if c["error_flag"] == 1)
 
 # ========================================================================
 # STORY MODE
@@ -5464,19 +5149,17 @@ if st.session_state.quit_requested:
     st.markdown("<div class='summary-title'>Session Summary</div>", unsafe_allow_html=True)
 
     perfect_first_try = sum(1 for c in st.session_state.cards
-                            if c["scored"] and c["repeat_score"] == 0 and c["error_flag"] == 0)
-    scored_cards = sum(1 for c in st.session_state.cards if c["scored"])
-    avg_rs = (sum(c["repeat_score"] for c in st.session_state.cards if c["scored"]) / scored_cards
-              ) if scored_cards > 0 else 0
-    accuracy   = int(correct_count / scored_total * 100) if scored_total > 0 else 0
-    missed_pct = int(repeat_count  / scored_total * 100) if scored_total > 0 else 0
+                            if c["shown"] and c["repeat_score"] == 0 and c["error_flag"] == 0)
+    avg_rs = (sum(c["repeat_score"] for c in st.session_state.cards if c["shown"]) / shown_cards
+              ) if shown_cards > 0 else 0
+    accuracy   = int(correct_count / shown_cards * 100) if shown_cards > 0 else 0
+    missed_pct = int(repeat_count  / shown_cards * 100) if shown_cards > 0 else 0
     current_user_label = PERSON_LABELS[st.session_state.active_person]
     current_review_cards = review_count_for(st.session_state.active_person)
 
     st.markdown(f"""
     <div class="summary-grid">
       <div class="sg-label">Cards Shown</div>      <div class="sg-value">{shown_cards}</div>
-            <div class="sg-label">Manual Scores</div>    <div class="sg-value">{scored_total}</div>
       <div class="sg-label">Correct</div>           <div class="sg-value">{correct_count}</div>
       <div class="sg-label">Repeat Needed</div>     <div class="sg-value">{repeat_count}</div>
       <div class="sg-label">Perfect First Try</div> <div class="sg-value">{perfect_first_try}</div>
@@ -5552,47 +5235,16 @@ else:
 render_header()
 render_menu()
 render_deck_strip()
-stats_card_html(shown_cards, total_cards, correct_count, repeat_count, scored_total)
+stats_card_html(shown_cards, total_cards, correct_count, repeat_count)
 inject_flashcard_speech_runtime()
 inject_speech_priming()
-render_regular_auto_mode_controls()
 render_flashcard(prompt, solution, st.session_state.show_answer)
-render_regular_auto_hidden_buttons()
-if st.session_state["regular_auto_mode"]:
-    prompt_language = "en" if current_direction == "EN_TO_ES" else "es"
-    answer_language = "es" if current_direction == "EN_TO_ES" else "en"
-    preferred_gender = "female" if (st.session_state.index % 2 == 0) else "male"
-    phase = "answer" if st.session_state.show_answer else "prompt"
-    phase_text = solution if st.session_state.show_answer else prompt
-    phase_language = answer_language if st.session_state.show_answer else prompt_language
-    phase_delay_seconds = 2.0 if st.session_state.show_answer else story_pause_seconds_for_text(prompt)
-    phase_key = "|".join(
-        [
-            st.session_state.selected_csv or "",
-            str(current_card_index()),
-            str(st.session_state.index),
-            phase,
-            str(st.session_state["regular_auto_generation"]),
-            strip_spoken_text(phase_text),
-        ]
-    )
-    render_regular_auto_mode_driver(
-        phase=phase,
-        phase_key=phase_key,
-        text=phase_text,
-        language=phase_language,
-        pause_after_seconds=phase_delay_seconds,
-        preferred_gender=preferred_gender,
-        repeat_spanish=st.session_state["regular_auto_repeat_spanish"],
-    )
-else:
-    render_regular_auto_mode_cleanup()
-    inject_tap_reveal(
-        st.session_state.show_answer,
-        auto_speak_enabled=st.session_state.auto_speak_spanish and current_direction == "EN_TO_ES",
-        auto_speak_text=card["answer"],
-    )
-if not st.session_state["regular_auto_mode"] and st.session_state.auto_speak_spanish and current_direction == "ES_TO_EN" and spanish_visible_phase:
+inject_tap_reveal(
+    st.session_state.show_answer,
+    auto_speak_enabled=st.session_state.auto_speak_spanish and current_direction == "EN_TO_ES",
+    auto_speak_text=card["answer"],
+)
+if st.session_state.auto_speak_spanish and current_direction == "ES_TO_EN" and spanish_visible_phase:
     auto_speak_event_key = "|".join(
         [
             st.session_state.selected_csv or "",
