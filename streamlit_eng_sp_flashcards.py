@@ -4462,6 +4462,17 @@ def inject_flashcard_speech_runtime():
                 }
             };
 
+            doc._fallbackVoicePools = {
+                en: {
+                    female: ['Samantha', 'Karen', 'Moira', 'Tessa'],
+                    male: ['Daniel', 'Rishi']
+                },
+                es: {
+                    female: ['Paulina', 'Mónica', 'Monica'],
+                    male: []
+                }
+            };
+
             function normalizeVoiceName(value) {
                 return (value || '')
                     .toLowerCase()
@@ -4473,25 +4484,72 @@ def inject_flashcard_speech_runtime():
 
             function inferGender(voice) {
                 var normalized = normalizeVoiceName((voice && voice.name) || '');
+                var normalizedUri = normalizeVoiceName((voice && voice.voiceURI) || '');
+                var combined = (normalized + ' ' + normalizedUri).trim();
                 var femaleTokens = ['ava', 'samantha', 'zoe', 'angelica', 'paulina', 'marisol', 'female', 'woman', 'victoria', 'zira', 'karen', 'monica'];
-                var maleTokens = ['evan', 'nathan', 'nicky', 'juan', 'jorge', 'male', 'man', 'alex', 'daniel', 'aaron'];
-                if (femaleTokens.some(function(token) { return normalized.indexOf(token) !== -1; })) return 'female';
-                if (maleTokens.some(function(token) { return normalized.indexOf(token) !== -1; })) return 'male';
+                var maleTokens = ['evan', 'nathan', 'nicky', 'juan', 'jorge', 'male', 'man', 'alex', 'daniel', 'aaron', 'rishi'];
+                if (femaleTokens.some(function(token) { return combined.indexOf(token) !== -1; })) return 'female';
+                if (maleTokens.some(function(token) { return combined.indexOf(token) !== -1; })) return 'male';
                 return null;
+            }
+
+            function voiceQualityRank(voice) {
+                var haystack = normalizeVoiceName((voice && voice.name) || '') + ' ' + normalizeVoiceName((voice && voice.voiceURI) || '');
+                if (haystack.indexOf('premium') !== -1) return 4;
+                if (haystack.indexOf('enhanced') !== -1) return 3;
+                if (haystack.indexOf('super compact') !== -1) return 2;
+                if (haystack.indexOf('compact') !== -1) return 1;
+                return 0;
+            }
+
+            function isNoveltyVoice(voice) {
+                var normalizedName = normalizeVoiceName((voice && voice.name) || '');
+                var normalizedUri = normalizeVoiceName((voice && voice.voiceURI) || '');
+                var noveltyNames = [
+                    'bad news', 'bahh', 'bells', 'boing', 'bubbles', 'cellos', 'good news',
+                    'hysterical', 'jester', 'organ', 'princess', 'superstar', 'trinoids',
+                    'whisper', 'deranged', 'wobble', 'zarvox'
+                ];
+                if (noveltyNames.some(function(token) { return normalizedName.indexOf(token) !== -1 || normalizedUri.indexOf(token) !== -1; })) {
+                    return true;
+                }
+                return normalizedUri.indexOf('com apple speech synthesis voice') !== -1;
+            }
+
+            function sortVoicesByPreference(voices) {
+                return voices.slice().sort(function(a, b) {
+                    var qualityDiff = voiceQualityRank(b) - voiceQualityRank(a);
+                    if (qualityDiff !== 0) return qualityDiff;
+
+                    var defaultDiff = (b && b.default ? 1 : 0) - (a && a.default ? 1 : 0);
+                    if (defaultDiff !== 0) return defaultDiff;
+
+                    var localDiff = (b && b.localService ? 1 : 0) - (a && a.localService ? 1 : 0);
+                    if (localDiff !== 0) return localDiff;
+
+                    var nameA = normalizeVoiceName((a && a.name) || '');
+                    var nameB = normalizeVoiceName((b && b.name) || '');
+                    if (nameA !== nameB) return nameA < nameB ? -1 : 1;
+
+                    var uriA = normalizeVoiceName((a && a.voiceURI) || '');
+                    var uriB = normalizeVoiceName((b && b.voiceURI) || '');
+                    if (uriA !== uriB) return uriA < uriB ? -1 : 1;
+                    return 0;
+                });
             }
 
             function languageCandidates(voices, language) {
                 var lowerLanguage = (language || '').toLowerCase();
                 if (lowerLanguage === 'es') {
-                    return voices.filter(function(voice) {
+                    return sortVoicesByPreference(voices.filter(function(voice) {
                         var lang = (voice.lang || '').toLowerCase();
-                        return lang === 'es-mx' || lang === 'es-us' || lang === 'es-es' || lang.indexOf('es') === 0;
-                    });
+                        return (lang === 'es-mx' || lang === 'es-us' || lang === 'es-es' || lang.indexOf('es') === 0) && !isNoveltyVoice(voice);
+                    }));
                 }
-                return voices.filter(function(voice) {
+                return sortVoicesByPreference(voices.filter(function(voice) {
                     var lang = (voice.lang || '').toLowerCase();
-                    return lang === 'en-us' || lang === 'en-gb' || lang === 'en-au' || lang.indexOf('en') === 0;
-                });
+                    return (lang === 'en-us' || lang === 'en-gb' || lang === 'en-au' || lang.indexOf('en') === 0) && !isNoveltyVoice(voice);
+                }));
             }
 
             function randomChoice(items) {
@@ -4565,6 +4623,7 @@ def inject_flashcard_speech_runtime():
                 var preferredGender = options.preferredGender || null;
                 var randomize = options.randomize !== false;
                 var pool = doc._preferredVoicePools[languageKey] || { female: [], male: [] };
+                var fallbackPool = doc._fallbackVoicePools[languageKey] || { female: [], male: [] };
                 var genders = preferredGender ? [preferredGender] : ['female', 'male'];
                 var preferredMatches = [];
                 var seen = {};
@@ -4579,10 +4638,21 @@ def inject_flashcard_speech_runtime():
                     return randomize ? randomChoice(preferredMatches) : preferredMatches[0];
                 }
 
-                if (preferredGender) {
-                    var genderMatches = candidates.filter(function(voice) {
-                        return inferGender(voice) === preferredGender;
+                var fallbackMatches = [];
+                genders.forEach(function(gender) {
+                    matchedVoicesForTokens(candidates, fallbackPool[gender] || []).forEach(function(voice) {
+                        pushUnique(fallbackMatches, voice, seen);
                     });
+                });
+
+                if (fallbackMatches.length) {
+                    return randomize ? randomChoice(fallbackMatches) : fallbackMatches[0];
+                }
+
+                if (preferredGender) {
+                    var genderMatches = sortVoicesByPreference(candidates.filter(function(voice) {
+                        return inferGender(voice) === preferredGender;
+                    }));
                     if (genderMatches.length) {
                         return randomize ? randomChoice(genderMatches) : genderMatches[0];
                     }
