@@ -5187,39 +5187,41 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
                     }}
 
                     var audioContext = doc._fcCueAudioContext;
+                    var finished = false;
+
+                    function finishCue() {{
+                        if (finished || controller.phaseKey !== config.phaseKey) return;
+                        finished = true;
+                        onDone();
+                    }}
 
                     function startCue() {{
                         var startAt = audioContext.currentTime + 0.02;
-                        var frequencies = [1046.5, 1318.5];
+                        var oscillator = audioContext.createOscillator();
+                        var gainNode = audioContext.createGain();
 
-                        frequencies.forEach(function(frequency, index) {{
-                            var offset = index * 0.03;
-                            var oscillator = audioContext.createOscillator();
-                            var gainNode = audioContext.createGain();
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.setValueAtTime(1046.5, startAt);
 
-                            oscillator.type = 'triangle';
-                            oscillator.frequency.setValueAtTime(frequency, startAt + offset);
+                        gainNode.gain.setValueAtTime(0.0001, startAt);
+                        gainNode.gain.exponentialRampToValueAtTime(0.16, startAt + 0.02);
+                        gainNode.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.16);
 
-                            gainNode.gain.setValueAtTime(0.0001, startAt + offset);
-                            gainNode.gain.exponentialRampToValueAtTime(0.20, startAt + offset + 0.02);
-                            gainNode.gain.exponentialRampToValueAtTime(0.0001, startAt + offset + 0.20);
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
 
-                            oscillator.connect(gainNode);
-                            gainNode.connect(audioContext.destination);
+                        oscillator.start(startAt);
+                        oscillator.stop(startAt + 0.18);
 
-                            oscillator.start(startAt + offset);
-                            oscillator.stop(startAt + offset + 0.22);
-                        }});
-
-                        queueTimeout(function() {{
-                            if (controller.phaseKey !== config.phaseKey) return;
-                            onDone();
-                        }}, 280);
+                        queueTimeout(finishCue, 140);
                     }}
 
                     if (audioContext.state === 'suspended' && typeof audioContext.resume === 'function') {{
-                        audioContext.resume().then(startCue).catch(function() {{
-                            onDone();
+                        queueTimeout(finishCue, 140);
+                        audioContext.resume().then(function() {{
+                            if (controller.phaseKey !== config.phaseKey) return;
+                            startCue();
+                        }}).catch(function() {{
                         }});
                         return;
                     }}
