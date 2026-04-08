@@ -2211,10 +2211,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(2) {{
         flex: 0 0 24% !important;
+        margin-left: 0.3rem !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(3) {{
         flex: 0 0 31% !important;
-        margin-left: 0.75rem !important;
+        margin-left: 1.15rem !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"] > div {{
         display: flex !important;
