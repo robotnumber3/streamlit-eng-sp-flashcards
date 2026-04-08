@@ -2854,7 +2854,11 @@ def render_story_start_unlock_handler(
                 }});
             }}
 
-            function pickVoice(voices) {{
+            function pickVoice() {{
+                if (doc && typeof doc._fcPickPreferredVoice === 'function') {{
+                    return doc._fcPickPreferredVoice('es', {{ randomize: true }});
+                }}
+                var voices = synth.getVoices ? synth.getVoices() : [];
                 return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
                     || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
                     || voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
@@ -2989,8 +2993,6 @@ def render_story_start_unlock_handler(
 
                 controller.queueToken = (controller.queueToken || 0) + 1;
                 var queueToken = controller.queueToken;
-                var voices = synth.getVoices ? synth.getVoices() : [];
-                var voice = pickVoice(voices);
                 controller.visualTimers = [];
 
                 if (typeof synth.resume === 'function') {{
@@ -3030,6 +3032,7 @@ def render_story_start_unlock_handler(
 
                     var speechKey = controller.storyKey + '|queue|' + idx + '|' + rawSpeechText + '|' + speechRate;
                     var utterance = new SpeechSynthesisUtterance(rawSpeechText);
+                    var voice = pickVoice();
                     utterance.lang = voice ? voice.lang : 'es-ES';
                     utterance.rate = speechRate;
                     if (voice) utterance.voice = voice;
@@ -3144,8 +3147,7 @@ def render_story_start_unlock_handler(
 
                 try {{
                     var utterance = new SpeechSynthesisUtterance(speechText);
-                    var voices = synth.getVoices ? synth.getVoices() : [];
-                    var voice = pickVoice(voices);
+                    var voice = pickVoice();
                     var completionHandled = false;
                     var completionTimer = null;
                     var speakingPollTimer = null;
@@ -3910,7 +3912,11 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
             attachNextHandler();
             if (doc._storyLastSpeechKey === speechKey) return;
 
-            function pickVoice(voices) {{
+            function pickVoice() {{
+                if (doc && typeof doc._fcPickPreferredVoice === 'function') {{
+                    return doc._fcPickPreferredVoice('es', {{ randomize: true }});
+                }}
+                var voices = synth.getVoices ? synth.getVoices() : [];
                 return voices.find(function(voice) {{ return voice.lang === 'es-MX'; }})
                     || voices.find(function(voice) {{ return voice.lang === 'es-US'; }})
                     || voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
@@ -3920,8 +3926,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
 
             function speakNow() {{
                 var utterance = new SpeechSynthesisUtterance(speechText);
-                var voices = synth.getVoices ? synth.getVoices() : [];
-                var voice = pickVoice(voices);
+                var voice = pickVoice();
                 var completionHandled = false;
                 var speechStarted = false;
                 var startWatchdog = null;
@@ -4446,12 +4451,134 @@ def inject_flashcard_speech_runtime():
             if (!doc || !synth || !UtteranceCtor) return;
             if (doc._fcSpeechRuntimeInstalled) return;
 
-            function pickVoice(voices) {
-                return voices.find(function(voice) { return voice.lang === 'es-MX'; })
-                    || voices.find(function(voice) { return voice.lang === 'es-US'; })
-                    || voices.find(function(voice) { return voice.lang === 'es-ES'; })
-                    || voices.find(function(voice) { return voice.lang && voice.lang.toLowerCase().startsWith('es'); })
-                    || null;
+            doc._preferredVoicePools = {
+                en: {
+                    female: ['Ava (Premium)', 'Samantha (Enhanced)', 'Zoe (Premium)'],
+                    male: ['Evan (Enhanced)', 'Nathan (Enhanced)', 'Nicky (Enhanced)']
+                },
+                es: {
+                    female: ['Angélica (Enhanced)', 'Paulina (Enhanced)', 'Marisol (Premium)'],
+                    male: ['Juan (Enhanced)', 'Jorge (Enhanced)']
+                }
+            };
+
+            function normalizeVoiceName(value) {
+                return (value || '')
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^a-z0-9]+/g, ' ')
+                    .trim();
+            }
+
+            function inferGender(voice) {
+                var normalized = normalizeVoiceName((voice && voice.name) || '');
+                var femaleTokens = ['ava premium', 'samantha enhanced', 'zoe premium', 'angelica enhanced', 'paulina enhanced', 'marisol premium', 'female', 'woman', 'samantha', 'victoria', 'zira', 'karen', 'monica'];
+                var maleTokens = ['evan enhanced', 'nathan enhanced', 'nicky enhanced', 'juan enhanced', 'jorge enhanced', 'male', 'man', 'alex', 'daniel', 'aaron', 'nathan', 'jorge', 'juan'];
+                if (femaleTokens.some(function(token) { return normalized.indexOf(token) !== -1; })) return 'female';
+                if (maleTokens.some(function(token) { return normalized.indexOf(token) !== -1; })) return 'male';
+                return null;
+            }
+
+            function languageCandidates(voices, language) {
+                var lowerLanguage = (language || '').toLowerCase();
+                if (lowerLanguage === 'es') {
+                    return voices.filter(function(voice) {
+                        var lang = (voice.lang || '').toLowerCase();
+                        return lang === 'es-mx' || lang === 'es-us' || lang === 'es-es' || lang.indexOf('es') === 0;
+                    });
+                }
+                return voices.filter(function(voice) {
+                    var lang = (voice.lang || '').toLowerCase();
+                    return lang === 'en-us' || lang === 'en-gb' || lang === 'en-au' || lang.indexOf('en') === 0;
+                });
+            }
+
+            function randomChoice(items) {
+                if (!items || !items.length) return null;
+                return items[Math.floor(Math.random() * items.length)];
+            }
+
+            function pushUnique(target, voice, seen) {
+                if (!voice) return;
+                var key = (voice.voiceURI || voice.name || '') + '|' + (voice.lang || '');
+                if (seen[key]) return;
+                seen[key] = true;
+                target.push(voice);
+            }
+
+            function matchedVoicesForTokens(candidates, tokens) {
+                var matches = [];
+                var seen = {};
+                if (!tokens || !tokens.length) return matches;
+
+                tokens.forEach(function(token) {
+                    var normalizedToken = normalizeVoiceName(token);
+
+                    candidates.forEach(function(voice) {
+                        var normalizedName = normalizeVoiceName(voice.name || '');
+                        var normalizedUri = normalizeVoiceName(voice.voiceURI || '');
+                        if (normalizedName === normalizedToken || normalizedUri === normalizedToken) {
+                            pushUnique(matches, voice, seen);
+                        }
+                    });
+
+                    candidates.forEach(function(voice) {
+                        var normalizedName = normalizeVoiceName(voice.name || '');
+                        var normalizedUri = normalizeVoiceName(voice.voiceURI || '');
+                        if (normalizedName.indexOf(normalizedToken) !== -1 || normalizedUri.indexOf(normalizedToken) !== -1) {
+                            pushUnique(matches, voice, seen);
+                        }
+                    });
+                });
+
+                return matches;
+            }
+
+            doc._fcPickPreferredVoice = function(language, options) {
+                options = options || {};
+                var voices = synth.getVoices ? synth.getVoices() : [];
+                var candidates = languageCandidates(voices, language);
+                var languageKey = language === 'es' ? 'es' : 'en';
+                var preferredGender = options.preferredGender || null;
+                var randomize = options.randomize !== false;
+                var pool = doc._preferredVoicePools[languageKey] || { female: [], male: [] };
+                var genders = preferredGender ? [preferredGender] : ['female', 'male'];
+                var preferredMatches = [];
+                var seen = {};
+
+                genders.forEach(function(gender) {
+                    matchedVoicesForTokens(candidates, pool[gender] || []).forEach(function(voice) {
+                        pushUnique(preferredMatches, voice, seen);
+                    });
+                });
+
+                if (preferredMatches.length) {
+                    return randomize ? randomChoice(preferredMatches) : preferredMatches[0];
+                }
+
+                if (preferredGender) {
+                    var genderMatches = candidates.filter(function(voice) {
+                        return inferGender(voice) === preferredGender;
+                    });
+                    if (genderMatches.length) {
+                        return randomize ? randomChoice(genderMatches) : genderMatches[0];
+                    }
+                }
+
+                if (candidates.length) {
+                    return randomize ? randomChoice(candidates) : candidates[0];
+                }
+
+                return null;
+            };
+
+            function pickVoice(language, options) {
+                if (typeof doc._fcPickPreferredVoice === 'function') {
+                    return doc._fcPickPreferredVoice(language, options);
+                }
+                var voices = synth.getVoices ? synth.getVoices() : [];
+                return languageCandidates(voices, language)[0] || null;
             }
 
             function clearVoiceHandler() {
@@ -4485,6 +4612,8 @@ def inject_flashcard_speech_runtime():
                 var speechRate = config.rate || 1;
                 var speechKey = config.key || null;
                 var cancelFirst = config.cancelFirst !== false;
+                var preferredGender = config.preferredGender || null;
+                var randomize = config.randomize !== false;
 
                 if (!speechText) return;
                 if (speechKey && doc._fcSpeechLastKey === speechKey) return;
@@ -4494,8 +4623,10 @@ def inject_flashcard_speech_runtime():
 
                 function speakNow() {
                     var utterance = new UtteranceCtor(speechText);
-                    var voices = synth.getVoices ? synth.getVoices() : [];
-                    var voice = pickVoice(voices);
+                    var voice = pickVoice('es', {
+                        preferredGender: preferredGender,
+                        randomize: randomize,
+                    });
 
                     utterance.lang = voice ? voice.lang : 'es-ES';
                     utterance.rate = speechRate;
@@ -4843,87 +4974,16 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
                 controller.timerIds.push(timerId);
             }}
 
-            function inferGender(voice) {{
-                var name = ((voice && voice.name) || '').toLowerCase();
-                var femaleTokens = ['female', 'woman', 'samantha', 'victoria', 'zira', 'karen', 'monica', 'paulina', 'marisol', 'soledad', 'helena'];
-                var maleTokens = ['male', 'man', 'jorge', 'diego', 'daniel', 'alex', 'fred', 'tom', 'carlos', 'raul'];
-                if (femaleTokens.some(function(token) {{ return name.indexOf(token) !== -1; }})) return 'female';
-                if (maleTokens.some(function(token) {{ return name.indexOf(token) !== -1; }})) return 'male';
-                return null;
-            }}
-
-            function langCandidates(voices, language) {{
-                var lowerLanguage = (language || '').toLowerCase();
-                if (lowerLanguage === 'es') {{
-                    return voices.filter(function(voice) {{
-                        var lang = (voice.lang || '').toLowerCase();
-                        return lang === 'es-mx' || lang === 'es-us' || lang === 'es-es' || lang.indexOf('es') === 0;
-                    }});
-                }}
-                return voices.filter(function(voice) {{
-                    var lang = (voice.lang || '').toLowerCase();
-                    return lang === 'en-us' || lang === 'en-gb' || lang === 'en-au' || lang.indexOf('en') === 0;
-                }});
-            }}
-
             function pickVoice(language, preferredGender) {{
-                var voices = synth.getVoices ? synth.getVoices() : [];
-                var candidates = langCandidates(voices, language);
-                if (!candidates.length) return null;
-
-                var preferredNamesByLanguageGender = {{
-                    en: {{
-                        female: ['samantha', 'karen', 'moira', 'ava', 'allison', 'susan', 'siri female', 'zira'],
-                        male: ['alex', 'aaron', 'daniel', 'nathan', 'oliver', 'siri male', 'george', 'fred']
-                    }},
-                    es: {{
-                        female: ['paulina', 'monica', 'paloma', 'marisol', 'soledad', 'helena'],
-                        male: ['jorge', 'juan', 'diego', 'carlos', 'raul']
-                    }}
-                }};
-
-                function findByPreferredNames(nameList) {{
-                    if (!nameList || !nameList.length) return null;
-                    for (var i = 0; i < nameList.length; i += 1) {{
-                        var token = nameList[i];
-                        var exact = candidates.find(function(voice) {{
-                            return ((voice.name || '').toLowerCase() === token || (voice.voiceURI || '').toLowerCase() === token);
-                        }});
-                        if (exact) return exact;
-
-                        var contains = candidates.find(function(voice) {{
-                            var voiceName = (voice.name || '').toLowerCase();
-                            var voiceUri = (voice.voiceURI || '').toLowerCase();
-                            return voiceName.indexOf(token) !== -1 || voiceUri.indexOf(token) !== -1;
-                        }});
-                        if (contains) return contains;
-                    }}
-                    return null;
-                }}
-
-                var languageKey = language === 'es' ? 'es' : 'en';
-                if (preferredGender) {{
-                    var preferredByName = findByPreferredNames(preferredNamesByLanguageGender[languageKey][preferredGender]);
-                    if (preferredByName) return preferredByName;
-                }}
-
-                if (preferredGender) {{
-                    var genderMatch = candidates.find(function(voice) {{
-                        return inferGender(voice) === preferredGender;
+                if (doc && typeof doc._fcPickPreferredVoice === 'function') {{
+                    return doc._fcPickPreferredVoice(language, {{
+                        preferredGender: preferredGender,
+                        randomize: true,
                     }});
-                    if (genderMatch) return genderMatch;
                 }}
 
-                if (language === 'es') {{
-                    return candidates.find(function(voice) {{ return (voice.lang || '').toLowerCase() === 'es-mx'; }})
-                        || candidates.find(function(voice) {{ return (voice.lang || '').toLowerCase() === 'es-us'; }})
-                        || candidates.find(function(voice) {{ return (voice.lang || '').toLowerCase() === 'es-es'; }})
-                        || candidates[0];
-                }}
-
-                return candidates.find(function(voice) {{ return (voice.lang || '').toLowerCase() === 'en-us'; }})
-                    || candidates.find(function(voice) {{ return (voice.lang || '').toLowerCase() === 'en-gb'; }})
-                    || candidates[0];
+                var voices = synth.getVoices ? synth.getVoices() : [];
+                return voices[0] || null;
             }}
 
             function estimatedDurationMs(text, rate) {{
@@ -5521,6 +5581,7 @@ if is_story_deck(st.session_state.selected_csv):
 
     render_header()
     render_menu()
+    inject_flashcard_speech_runtime()
     if st.session_state.menu_open:
         st.stop()
     render_deck_strip()
