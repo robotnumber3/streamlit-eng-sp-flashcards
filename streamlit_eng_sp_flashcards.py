@@ -685,9 +685,11 @@ defaults = {
     "show_answer":    False,
     "regular_auto_mode": False,
     "regular_auto_repeat_spanish": False,
+    "regular_auto_cue_prompt": False,
     "regular_auto_generation": 0,
     "regular_auto_mode_checkbox": False,
     "regular_auto_repeat_checkbox": False,
+    "regular_auto_cue_checkbox": False,
     "direction":      direction_for_mode(active_person_prefs["direction_mode"]),
     "quit_requested": False,
     "final_exit":     False,
@@ -823,9 +825,11 @@ def reset_study_state(reset_selected=True):
     st.session_state.show_answer = False
     st.session_state["regular_auto_mode"] = False
     st.session_state["regular_auto_repeat_spanish"] = False
+    st.session_state["regular_auto_cue_prompt"] = False
     st.session_state["regular_auto_generation"] += 1
     st.session_state["regular_auto_mode_checkbox"] = False
     st.session_state["regular_auto_repeat_checkbox"] = False
+    st.session_state["regular_auto_cue_checkbox"] = False
     st.session_state.quit_requested = False
     st.session_state.final_exit = False
     st.session_state["score_actions"] = 0
@@ -1488,9 +1492,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-regular_auto_controls_wrap [data-testid="stCheckbox"] label {{
     white-space: nowrap !important;
-}}
-.regular-auto-controls-spacer {{
-    min-height: 1.9rem;
 }}
 
 /* ---- Header row ---- */
@@ -2235,11 +2236,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-regular_auto_controls_wrap [data-testid="stCheckbox"] label p {{
         font-size: 0.92rem !important;
     }}
-    .st-key-regular_auto_controls_wrap [data-testid="stColumn"]:first-child {{
-        flex: 0 0 47% !important;
-    }}
-    .st-key-regular_auto_controls_wrap [data-testid="stColumn"]:last-child {{
-        flex: 0 0 53% !important;
+    .st-key-regular_auto_controls_wrap [data-testid="stColumn"] {{
+        flex: 1 1 0 !important;
     }}
 }}
 </style>
@@ -4944,21 +4942,22 @@ def render_auto_speak_spanish(text, speech_key):
 
 def render_regular_auto_mode_controls():
     with st.container(key="regular_auto_controls_wrap"):
-        col1, col2 = st.columns(2, gap="medium")
+        col1, col2, col3 = st.columns(3, gap="small")
         with col1:
             auto_mode_value = st.checkbox(
                 "AUTO mode",
                 key="regular_auto_mode_checkbox",
             )
         with col2:
-            if auto_mode_value:
-                repeat_value = st.checkbox(
-                    "REPEAT 2x",
-                    key="regular_auto_repeat_checkbox",
-                )
-            else:
-                repeat_value = st.session_state["regular_auto_repeat_spanish"]
-                st.markdown('<div class="regular-auto-controls-spacer"></div>', unsafe_allow_html=True)
+            repeat_value = st.checkbox(
+                "REPEAT 2x",
+                key="regular_auto_repeat_checkbox",
+            )
+        with col3:
+            cue_value = st.checkbox(
+                "CUE",
+                key="regular_auto_cue_checkbox",
+            )
 
     if auto_mode_value != st.session_state["regular_auto_mode"]:
         st.session_state["regular_auto_mode"] = auto_mode_value
@@ -4969,6 +4968,11 @@ def render_regular_auto_mode_controls():
 
     if repeat_value != st.session_state["regular_auto_repeat_spanish"]:
         st.session_state["regular_auto_repeat_spanish"] = repeat_value
+        st.session_state["regular_auto_generation"] += 1
+        st.rerun()
+
+    if cue_value != st.session_state["regular_auto_cue_prompt"]:
+        st.session_state["regular_auto_cue_prompt"] = cue_value
         st.session_state["regular_auto_generation"] += 1
         st.rerun()
 
@@ -5011,7 +5015,7 @@ def render_regular_auto_mode_cleanup():
     )
 
 
-def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_after_seconds, preferred_gender, repeat_spanish):
+def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_after_seconds, preferred_gender, repeat_spanish, cue_prompt):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
     action_delay_ms = max(int(pause_after_seconds * 1000), 0)
@@ -5032,6 +5036,7 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
                 delayMs: {action_delay_ms},
                 preferredGender: {json.dumps(preferred_gender)},
                 repeatSpanish: {str(repeat_spanish).lower()},
+                cuePrompt: {str(cue_prompt).lower()},
             }};
 
             if (!doc || !synth || !UtteranceCtor || !config.text || !config.phaseKey) return;
@@ -5096,6 +5101,50 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
                 return true;
             }}
 
+            function playPromptCue(onDone) {{
+                var AudioCtx = parentWindow.AudioContext || parentWindow.webkitAudioContext || window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) {{
+                    onDone();
+                    return;
+                }}
+
+                try {{
+                    if (!controller.audioContext) {{
+                        controller.audioContext = new AudioCtx();
+                    }}
+
+                    var audioContext = controller.audioContext;
+                    if (audioContext.state === 'suspended' && typeof audioContext.resume === 'function') {{
+                        audioContext.resume().catch(function() {{
+                        }});
+                    }}
+
+                    var startAt = audioContext.currentTime + 0.02;
+                    var oscillator = audioContext.createOscillator();
+                    var gainNode = audioContext.createGain();
+
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(880, startAt);
+
+                    gainNode.gain.setValueAtTime(0.0001, startAt);
+                    gainNode.gain.exponentialRampToValueAtTime(0.10, startAt + 0.02);
+                    gainNode.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.16);
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.start(startAt);
+                    oscillator.stop(startAt + 0.18);
+
+                    queueTimeout(function() {{
+                        if (controller.phaseKey !== config.phaseKey) return;
+                        onDone();
+                    }}, 210);
+                }} catch (error) {{
+                    onDone();
+                }}
+            }}
+
             function speakOnce(text, language, preferredGender, onDone) {{
                 var voice = pickVoice(language, preferredGender);
                 var utterance = new UtteranceCtor(text);
@@ -5138,7 +5187,7 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
                 }});
             }}
 
-            speakSequence(function() {{
+            function finalizePhase() {{
                 queueTimeout(function() {{
                     if (controller.phaseKey !== config.phaseKey) return;
                     if (config.phase === 'prompt') {{
@@ -5147,7 +5196,17 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
                     }}
                     clickHiddenButton('.st-key-regularautoadvance_hidden_wrap button');
                 }}, config.delayMs);
-            }});
+            }}
+
+            function startSpeechSequence() {{
+                speakSequence(finalizePhase);
+            }}
+
+            if (config.cuePrompt && config.phase === 'prompt') {{
+                playPromptCue(startSpeechSequence);
+            }} else {{
+                startSpeechSequence();
+            }}
         }})();
         </script>
         """,
@@ -5505,9 +5564,11 @@ def restart_mistakes_only():
     st.session_state.show_answer = False
     st.session_state["regular_auto_mode"] = False
     st.session_state["regular_auto_repeat_spanish"] = False
+    st.session_state["regular_auto_cue_prompt"] = False
     st.session_state["regular_auto_generation"] += 1
     st.session_state["regular_auto_mode_checkbox"] = False
     st.session_state["regular_auto_repeat_checkbox"] = False
+    st.session_state["regular_auto_cue_checkbox"] = False
     st.session_state.quit_requested = False
     st.session_state.final_exit = False
     st.session_state.menu_open = False
@@ -5810,6 +5871,7 @@ if st.session_state["regular_auto_mode"]:
         pause_after_seconds=phase_delay_seconds,
         preferred_gender=preferred_gender,
         repeat_spanish=st.session_state["regular_auto_repeat_spanish"],
+        cue_prompt=st.session_state["regular_auto_cue_prompt"],
     )
 else:
     render_regular_auto_mode_cleanup()
