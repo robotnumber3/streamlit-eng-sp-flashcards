@@ -4972,6 +4972,14 @@ def render_voice_inspector():
                 var statusEl = document.getElementById('voice-inspector-status');
                 var outputEl = document.getElementById('voice-inspector-output');
 
+                function setStatus(message) {
+                    if (statusEl) statusEl.textContent = message;
+                }
+
+                function setOutput(message) {
+                    if (outputEl) outputEl.textContent = message;
+                }
+
                 function normalizeVoiceName(value) {
                     return (value || '')
                         .toLowerCase()
@@ -4997,13 +5005,13 @@ def render_voice_inspector():
                         'default: ' + (voice.default ? 'yes' : 'no'),
                         'localService: ' + (voice.localService ? 'yes' : 'no'),
                         'voiceURI: ' + (voice.voiceURI || '')
-                    ].join('\n');
+                    ].join('\\n');
                 }
 
                 function renderVoices() {
                     if (!synth || !synth.getVoices) {
-                        statusEl.textContent = 'Speech synthesis not available';
-                        outputEl.textContent = 'This browser does not expose speechSynthesis.getVoices().';
+                        setStatus('Speech synthesis not available');
+                        setOutput('This browser does not expose speechSynthesis.getVoices().');
                         return;
                     }
 
@@ -5018,13 +5026,13 @@ def render_voice_inspector():
                         return ((a.voiceURI || '').toLowerCase() < (b.voiceURI || '').toLowerCase()) ? -1 : 1;
                     });
 
-                    statusEl.textContent = sortedVoices.length + ' voices found';
+                    setStatus(sortedVoices.length + ' voices found');
                     if (!sortedVoices.length) {
-                        outputEl.textContent = 'No voices returned yet. Tap Refresh again after interacting with the page once.';
+                        setOutput('No voices returned yet. Tap Refresh again after interacting with the page once.');
                         return;
                     }
 
-                    outputEl.textContent = sortedVoices.map(summarizeVoice).join('\n\n---\n\n');
+                    setOutput(sortedVoices.map(summarizeVoice).join('\\n\\n---\\n\\n'));
                 }
 
                 refreshButton.addEventListener('click', function(event) {
@@ -5032,20 +5040,27 @@ def render_voice_inspector():
                     renderVoices();
                 });
 
-                renderVoices();
+                try {
+                    setStatus('Checking voices...');
+                    setOutput('Checking voices...');
+                    renderVoices();
 
-                if (synth) {
-                    if (typeof synth.addEventListener === 'function') {
-                        synth.addEventListener('voiceschanged', renderVoices);
-                    } else {
-                        var oldHandler = synth.onvoiceschanged;
-                        synth.onvoiceschanged = function() {
-                            if (typeof oldHandler === 'function') {
-                                oldHandler();
-                            }
-                            renderVoices();
-                        };
+                    if (synth) {
+                        if (typeof synth.addEventListener === 'function') {
+                            synth.addEventListener('voiceschanged', renderVoices);
+                        } else {
+                            var oldHandler = synth.onvoiceschanged;
+                            synth.onvoiceschanged = function() {
+                                if (typeof oldHandler === 'function') {
+                                    oldHandler();
+                                }
+                                renderVoices();
+                            };
+                        }
                     }
+                } catch (error) {
+                    setStatus('Inspector error');
+                    setOutput((error && error.message) ? error.message : String(error));
                 }
             })();
             </script>
