@@ -1470,28 +1470,28 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     opacity: 0 !important;
     pointer-events: none !important;
 }}
-.st-key-regular_auto_controls_wrap {
+.st-key-regular_auto_controls_wrap {{
     margin-bottom: 0.35rem !important;
-}
-.st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {
+}}
+.st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {{
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: center !important;
     gap: 0.55rem !important;
-}
-.st-key-regular_auto_controls_wrap [data-testid="stColumn"] {
+}}
+.st-key-regular_auto_controls_wrap [data-testid="stColumn"] {{
     min-width: 0 !important;
     padding: 0 !important;
-}
-.st-key-regular_auto_controls_wrap [data-testid="stCheckbox"] {
+}}
+.st-key-regular_auto_controls_wrap [data-testid="stCheckbox"] {{
     margin: 0 !important;
-}
-.st-key-regular_auto_controls_wrap [data-testid="stCheckbox"] label {
+}}
+.st-key-regular_auto_controls_wrap [data-testid="stCheckbox"] label {{
     white-space: nowrap !important;
-}
-.regular-auto-controls-spacer {
+}}
+.regular-auto-controls-spacer {{
     min-height: 1.9rem;
-}
+}}
 
 /* ---- Header row ---- */
 .st-key-header_row_wrap [data-testid="stHorizontalBlock"] {{
@@ -2229,18 +2229,18 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         color: {t['accent']};
         pointer-events: none;
     }}
-    .st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {
+    .st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {{
         gap: 0.2rem !important;
-    }
-    .st-key-regular_auto_controls_wrap [data-testid="stCheckbox"] label p {
+    }}
+    .st-key-regular_auto_controls_wrap [data-testid="stCheckbox"] label p {{
         font-size: 0.92rem !important;
-    }
-    .st-key-regular_auto_controls_wrap [data-testid="stColumn"]:first-child {
+    }}
+    .st-key-regular_auto_controls_wrap [data-testid="stColumn"]:first-child {{
         flex: 0 0 47% !important;
-    }
-    .st-key-regular_auto_controls_wrap [data-testid="stColumn"]:last-child {
+    }}
+    .st-key-regular_auto_controls_wrap [data-testid="stColumn"]:last-child {{
         flex: 0 0 53% !important;
-    }
+    }}
 }}
 </style>
 """, unsafe_allow_html=True)
