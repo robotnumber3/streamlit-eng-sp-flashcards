@@ -38,6 +38,39 @@ REVIEW_DECK_VALUES = {
 }
 REVIEW_DECK_ORDER = [REVIEW_DECK_VALUES["miguel"], REVIEW_DECK_VALUES["david"]]
 
+# ------------------------------------------------------------------------
+# DECK PICKER GROUPING
+# ------------------------------------------------------------------------
+# These category rules control where CSV files appear in the file chooser.
+#
+# Important: grouping is separate from playback mode detection.
+# Example: a file named "DSC_dialog_greetings.csv" belongs in the David
+# category for the picker, but it still opens in Dialog mode because the
+# filename also contains "dialog".
+#
+# Files are assigned to exactly one category. The first matching category wins,
+# so changing the order of this list changes both the picker order and the
+# category precedence.
+#
+# To change the picker later:
+# - reorder items in DECK_PICKER_CATEGORIES
+# - edit the token lists for each category
+# - add or remove category dictionaries as needed
+DECK_PICKER_CATEGORIES = [
+    {"id": "miguel", "title": "Miguel", "tokens": ["mac"]},
+    {"id": "david", "title": "David", "tokens": ["dsc"]},
+    {"id": "essbs", "title": "ESsbs", "tokens": ["essbs"]},
+    {"id": "parts_of_speech", "title": "Parts of Speech", "tokens": ["pos"]},
+    {"id": "vocab", "title": "Vocab", "tokens": ["vocab"]},
+    {"id": "sentences", "title": "Sentences", "tokens": ["sentence"]},
+    {"id": "dialogs", "title": "Dialogs", "tokens": ["dialog"]},
+    {"id": "stories", "title": "Stories", "tokens": ["story"]},
+]
+DECK_PICKER_CATEGORY_TITLES = {
+    category["id"]: category["title"]
+    for category in DECK_PICKER_CATEGORIES
+}
+
 BUTTON_COLORS = {
     "green": {"bg": "#c8f0d8", "border": "#2e8b57", "fg": "#0f4f29"},
     "yellow": {"bg": "#fdf0c0", "border": "#b8860b", "fg": "#6a4b00"},
@@ -65,7 +98,16 @@ def review_deck_person(deck_value):
 
 
 def review_deck_label(person):
-    return f"REVIEW - {PERSON_LABELS[person]}"
+    return f"Review - {PERSON_LABELS[person]}"
+
+
+def normalized_filename(value):
+    return os.path.basename(value or "").lower()
+
+
+def filename_contains_any(value, tokens):
+    filename = normalized_filename(value)
+    return any(token.lower() in filename for token in tokens)
 
 
 def csv_data_row_count(filename):
@@ -78,6 +120,26 @@ def csv_data_row_count(filename):
 
 
 csv_row_counts = {filename: csv_data_row_count(filename) for filename in csv_files}
+
+
+def picker_category_for_file(filename):
+    # First matching category wins. This keeps each file in exactly one bucket.
+    for category in DECK_PICKER_CATEGORIES:
+        if filename_contains_any(filename, category["tokens"]):
+            return category["id"]
+    return None
+
+
+def picker_files_by_category():
+    grouped = {
+        category["id"]: []
+        for category in DECK_PICKER_CATEGORIES
+    }
+    for filename in csv_files:
+        category_id = picker_category_for_file(filename)
+        if category_id is not None:
+            grouped[category_id].append(filename)
+    return grouped
 
 
 def normalize_card_id(raw_value):
@@ -151,8 +213,21 @@ def display_deck_name(filename):
     return base_name
 
 
+def is_dialog_deck(filename):
+    return bool(filename) and not is_review_deck(filename) and filename_contains_any(filename, ["dialog"])
+
+
 def is_story_deck(filename):
-    return bool(filename) and not is_review_deck(filename) and "story" in os.path.basename(filename).lower()
+    return (
+        bool(filename)
+        and not is_review_deck(filename)
+        and not is_dialog_deck(filename)
+        and filename_contains_any(filename, ["story"])
+    )
+
+
+def is_playback_deck(filename):
+    return is_dialog_deck(filename) or is_story_deck(filename)
 
 
 @st.cache_data(show_spinner=False)
@@ -169,6 +244,8 @@ def deck_completion_metadata(filename):
 def deck_picker_status(filename, person):
     if is_review_deck(filename):
         return "review"
+    if is_dialog_deck(filename):
+        return "dialog"
     if is_story_deck(filename):
         return "story"
 
@@ -191,6 +268,7 @@ def deck_picker_status(filename, person):
 def deck_picker_label(filename, person):
     symbol_map = {
         "review": "⭐",
+        "dialog": "💬",
         "story": "📖",
         "untouched": "•",
         "in_progress": "🟡",
@@ -202,6 +280,33 @@ def deck_picker_label(filename, person):
 
 def is_forced_en_es_deck(filename):
     return bool(filename) and not is_review_deck(filename) and "EN_ES" in os.path.basename(filename)
+
+
+def current_playback_kind():
+    return "dialog" if is_dialog_deck(st.session_state.selected_csv) else "story"
+
+
+def current_playback_heading():
+    return "Dialog Playback:" if current_playback_kind() == "dialog" else "Story Playback:"
+
+
+def current_playback_progress_label():
+    return "Line" if current_playback_kind() == "dialog" else "Sentence"
+
+
+def is_deck_category_open(category_id):
+    return category_id in st.session_state.get("open_deck_categories", [])
+
+
+def toggle_deck_category(category_id):
+    open_categories = list(st.session_state.get("open_deck_categories", []))
+    if category_id in open_categories:
+        open_categories = []
+    else:
+        # Keep the picker simpler on mobile by allowing only one open category
+        # at a time. Tapping a different header replaces the current section.
+        open_categories = [category_id]
+    st.session_state.open_deck_categories = open_categories
 
 # ------------------------------------------------------------------------
 # PREFS
@@ -699,9 +804,11 @@ defaults = {
     "score_repeat":   0,
     "erase_review_confirm": False,
     "delete_review_confirm_key": None,
+    "open_deck_categories": [],
     "story_playback_mode": "continuous",
     "story_translation_on": True,
     "story_audio_on": True,
+    "story_repeat_spanish_on": False,
     "story_random_on": False,
     "story_started": False,
     "story_running": False,
@@ -836,6 +943,7 @@ def reset_study_state(reset_selected=True):
     st.session_state["score_correct"] = 0
     st.session_state["score_repeat"] = 0
     st.session_state.delete_review_confirm_key = None
+    st.session_state.story_repeat_spanish_on = False
     st.session_state.story_random_on = False
     st.session_state.story_started = False
     st.session_state.story_running = False
@@ -881,6 +989,7 @@ def sync_story_option_widget_state():
     st.session_state["story_playback_step_checkbox"] = st.session_state.story_playback_mode == "stop on every line"
     st.session_state["story_translation_checkbox"] = st.session_state.story_translation_on
     st.session_state["story_audio_checkbox"] = st.session_state.story_audio_on
+    st.session_state["story_repeat_checkbox"] = st.session_state.story_repeat_spanish_on
     st.session_state["story_random_checkbox"] = st.session_state.story_random_on
 
 
@@ -912,6 +1021,10 @@ def toggle_story_audio():
     st.session_state.story_audio_on = st.session_state.get("story_audio_checkbox", True)
 
 
+def toggle_story_repeat_spanish():
+    st.session_state.story_repeat_spanish_on = st.session_state.get("story_repeat_checkbox", False)
+
+
 def toggle_story_random():
     random_enabled = st.session_state.get("story_random_checkbox", False)
     if random_enabled != st.session_state.story_random_on:
@@ -928,7 +1041,12 @@ def end_story_to_final_screen():
 def activate_deck(deck_value):
     reset_study_state(reset_selected=False)
     st.session_state.selected_csv = deck_value
-    st.session_state.study_mode = "story" if is_story_deck(deck_value) else ("all" if is_review_deck(deck_value) else None)
+    if is_dialog_deck(deck_value):
+        st.session_state.study_mode = "dialog"
+    elif is_story_deck(deck_value):
+        st.session_state.study_mode = "story"
+    else:
+        st.session_state.study_mode = "all" if is_review_deck(deck_value) else None
     st.session_state.person_selector_visible = False
     st.session_state.direction = effective_direction(deck_value)
 
@@ -937,6 +1055,77 @@ def go_back_to_deck_picker():
     st.session_state.menu_open = False
     st.session_state.erase_review_confirm = False
     reset_study_state(reset_selected=True)
+
+
+def render_grouped_deck_picker():
+    # Category titles come from DECK_PICKER_CATEGORIES near the top of the file.
+    # That block is the single place to change the category order or matching.
+    review_deck_values = visible_review_deck_values()
+    grouped_files = picker_files_by_category()
+
+    with st.container(key="mobile_deck_picker_wrap"):
+        st.markdown(
+            "<div class='mobile-deck-picker-label' style='font-size: 0.95rem; color: "
+            + t["fg"]
+            + ";'>Available decks:</div>",
+            unsafe_allow_html=True,
+        )
+        deck_container = st.container(height=250)
+        with deck_container:
+            for person in PERSON_LABELS:
+                review_value = REVIEW_DECK_VALUES[person]
+                if review_value not in review_deck_values:
+                    continue
+                review_enabled = review_deck_selectable(review_value)
+                review_wrap = f"review_{person}_{'active' if review_enabled else 'inactive'}_wrap"
+                with st.container(key=review_wrap):
+                    with st.container(key=f"mobile_deck_entry_review_{person}_wrap"):
+                        if st.button(
+                            review_deck_label(person),
+                            key=f"deck_btn_review_{person}",
+                            use_container_width=True,
+                            disabled=not review_enabled,
+                        ):
+                            activate_deck(review_value)
+                            st.rerun()
+
+            for category in DECK_PICKER_CATEGORIES:
+                category_id = category["id"]
+                files = grouped_files.get(category_id, [])
+                is_open = is_deck_category_open(category_id)
+                caret = "▼" if is_open else "▶"
+                header_label = f"{caret} {category['title']} ({len(files)})"
+
+                with st.container(key=f"deck_category_toggle_{category_id}_wrap"):
+                    if st.button(
+                        header_label,
+                        key=f"deck_category_toggle_{category_id}",
+                        use_container_width=True,
+                    ):
+                        toggle_deck_category(category_id)
+                        st.rerun()
+
+                if not is_open:
+                    continue
+
+                if not files:
+                    st.markdown(
+                        "<div class='deck-category-empty'>No files in this category.</div>",
+                        unsafe_allow_html=True,
+                    )
+                    continue
+
+                for file_index, csv_file in enumerate(files):
+                    with st.container(key=f"deck_category_file_{category_id}_{file_index}_wrap"):
+                        if st.button(
+                            deck_picker_label(csv_file, st.session_state.active_person),
+                            key=f"deck_btn_{category_id}_{csv_file}",
+                            use_container_width=True,
+                        ):
+                            activate_deck(csv_file)
+                            st.rerun()
+
+        render_mobile_deck_picker_height_fix()
 
 
 def current_review_person():
@@ -2007,7 +2196,39 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 
 /* ---- Responsive deck picker ---- */
 .st-key-mobile_deck_picker_wrap {{
-    display: none;
+    display: block;
+}}
+[class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
+    justify-content: flex-start !important;
+    text-align: left !important;
+    font-weight: 800 !important;
+    font-size: 1.12rem !important;
+    line-height: 1.1 !important;
+    padding-top: 0.3rem !important;
+    padding-bottom: 0.3rem !important;
+}}
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
+    justify-content: flex-start !important;
+    text-align: left !important;
+    padding-left: 1.45rem !important;
+    font-size: 0.88rem !important;
+    line-height: 1.0 !important;
+    min-height: 1.55rem !important;
+    padding-top: 0.02rem !important;
+    padding-bottom: 0.02rem !important;
+}}
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] {{
+    margin-bottom: 0 !important;
+}}
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button > div,
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button p {{
+    font-size: 0.88rem !important;
+    line-height: 1.0 !important;
+}}
+.deck-category-empty {{
+    color: {t['muted']};
+    font-size: 0.88rem;
+    padding: 0.1rem 0 0.2rem 1.45rem;
 }}
 @media (max-width: 767px) {{
     .title-row {{
@@ -2037,9 +2258,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-desktop_deck_picker_wrap {{
         display: none !important;
-    }}
-    .st-key-mobile_deck_picker_wrap {{
-        display: block !important;
     }}
     .mobile-deck-picker-label {{
         display: block !important;
@@ -2140,13 +2358,22 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_story_"] [data-testid="stButton"] > button::before {{
         font-size: 1.10rem !important;
     }}
+    [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
+        font-size: 1.18rem !important;
+        font-weight: 900 !important;
+        min-height: 2.05rem !important;
+    }}
+    [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
+        padding-left: 1.55rem !important;
+        padding-right: 0.35rem !important;
+        font-size: 0.84rem !important;
+        min-height: 1.45rem !important;
+    }}
+    [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button p {{
+        font-size: 0.84rem !important;
+    }}
     .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] > * {{
         margin-bottom: 0 !important;
-    }}
-    .mobile-deck-divider {{
-        border-top: 1px solid {t['border']};
-        margin: 0.32rem 0 0.28rem 0;
-        opacity: 0.85;
     }}
     .st-key-review_miguel_active_wrap [data-testid="stButton"] > button,
     .st-key-review_david_active_wrap [data-testid="stButton"] > button {{
@@ -2197,25 +2424,16 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
 
     .st-key-storytransaudio_row_wrap [data-testid="stHorizontalBlock"] {{
-        gap: 0.28rem !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.35rem !important;
         align-items: center !important;
         height: auto !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"] {{
-        min-width: 0 !important;
-        flex: 1 1 0 !important;
+        flex: 0 0 auto !important;
+        min-width: fit-content !important;
         width: auto !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(1) {{
-        flex: 0 0 33% !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(2) {{
-        flex: 0 0 24% !important;
-        margin-left: 0.3rem !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(3) {{
-        flex: 0 0 31% !important;
-        margin-left: 1.15rem !important;
     }}
     .st-key-storytransaudio_row_wrap [data-testid="stColumn"] > div {{
         display: flex !important;
@@ -2224,81 +2442,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storytransaudio_row_wrap .story-option-row {{
         position: relative !important;
         top: -0.45rem !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(1) {{
-        flex: 0 0 auto !important;
-        padding-right: 0.15rem !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(2) {{
-        flex: 0 0 2.0rem !important;
-        padding-right: 0 !important;
-        margin-right: 2ch !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(3) {{
-        flex: 0 0 auto !important;
-        padding-right: 0.15rem !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(4) {{
-        flex: 0 0 2.0rem !important;
-        padding-right: 0 !important;
-        margin-right: 2ch !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(5) {{
-        flex: 0 0 auto !important;
-        padding-right: 0.15rem !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stColumn"]:nth-child(6) {{
-        flex: 0 0 2.0rem !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
-        position: relative !important;
-        min-height: 1.9rem !important;
-        min-width: 2.0rem !important;
-        width: 2.0rem !important;
-        display: block !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 2.0rem !important;
-        height: 1.9rem !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        opacity: 0 !important;
-        cursor: pointer !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {{
-        z-index: 1 !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:not(:checked)) {{
-        z-index: 2 !important;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"]::before {{
-        content: '';
-        position: absolute;
-        top: 0.15rem;
-        left: 0.2rem;
-        width: 1.5rem;
-        height: 1.5rem;
-        border: 2px solid {t['border']};
-        border-radius: 4px;
-        pointer-events: none;
-        box-sizing: border-box;
-    }}
-    .st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"]:has(> label:first-child input:checked)::after {{
-        content: '\\2715';
-        position: absolute;
-        top: 0.15rem;
-        left: 0.2rem;
-        width: 1.5rem;
-        height: 1.5rem;
-        font-size: 1.25rem;
-        font-weight: 700;
-        line-height: 1.45rem;
-        text-align: center;
-        color: {t['accent']};
-        pointer-events: none;
     }}
     .st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {{
         gap: 0.2rem !important;
@@ -2786,6 +2929,8 @@ def render_story_start_unlock_handler(
     delay_seconds=0,
     running=False,
     resume_next=False,
+    dialog_mode=False,
+    repeat_spanish=False,
 ):
     spoken_lines = [strip_spoken_text(text) for text in story_lines]
     speech_rate = speech_rate_value()
@@ -2815,6 +2960,8 @@ def render_story_start_unlock_handler(
                 delayMs: {delay_ms},
                 running: {str(running).lower()},
                 resumeNext: {str(resume_next).lower()},
+                dialogMode: {str(dialog_mode).lower()},
+                repeatSpanish: {str(repeat_spanish).lower()},
             }};
 
             function isPhoneStoryMode() {{
@@ -2922,7 +3069,7 @@ def render_story_start_unlock_handler(
                 }});
             }}
 
-            function pickVoice() {{
+            function pickStandardVoice() {{
                 if (doc && typeof doc._fcPickPreferredVoice === 'function') {{
                     return doc._fcPickPreferredVoice('es', {{ randomize: true }});
                 }}
@@ -2932,6 +3079,56 @@ def render_story_start_unlock_handler(
                     || voices.find(function(voice) {{ return voice.lang === 'es-ES'; }})
                     || voices.find(function(voice) {{ return voice.lang && voice.lang.toLowerCase().startsWith('es'); }})
                     || null;
+            }}
+
+            function chooseDialogVoice(preferredGender) {{
+                if (doc && typeof doc._fcPickPreferredVoice === 'function') {{
+                    return doc._fcPickPreferredVoice('es', {{
+                        preferredGender: preferredGender,
+                        randomize: true,
+                    }});
+                }}
+                return pickStandardVoice();
+            }}
+
+            function ensureDialogVoiceState() {{
+                if (!controller.dialogMode) return;
+                if (!controller.dialogFirstSpeaker) {{
+                    controller.dialogFirstSpeaker = Math.random() < 0.5 ? 'male' : 'female';
+                }}
+                if (!controller.dialogMaleVoice) {{
+                    controller.dialogMaleVoice = chooseDialogVoice('male');
+                }}
+                if (!controller.dialogFemaleVoice) {{
+                    controller.dialogFemaleVoice = chooseDialogVoice('female');
+                }}
+                if (!controller.dialogMaleVoice && controller.dialogFemaleVoice) {{
+                    controller.dialogMaleVoice = controller.dialogFemaleVoice;
+                }}
+                if (!controller.dialogFemaleVoice && controller.dialogMaleVoice) {{
+                    controller.dialogFemaleVoice = controller.dialogMaleVoice;
+                }}
+            }}
+
+            function dialogGenderForIndex(index) {{
+                if (!controller.dialogMode) return null;
+                ensureDialogVoiceState();
+                if (controller.dialogFirstSpeaker === 'female') {{
+                    return index % 2 === 0 ? 'female' : 'male';
+                }}
+                return index % 2 === 0 ? 'male' : 'female';
+            }}
+
+            function pickVoice(index) {{
+                if (!controller.dialogMode) {{
+                    return pickStandardVoice();
+                }}
+                ensureDialogVoiceState();
+                var preferredGender = dialogGenderForIndex(index);
+                if (preferredGender === 'female') {{
+                    return controller.dialogFemaleVoice || controller.dialogMaleVoice || pickStandardVoice();
+                }}
+                return controller.dialogMaleVoice || controller.dialogFemaleVoice || pickStandardVoice();
             }}
 
             function clickAdvanceButton() {{
@@ -3098,29 +3295,6 @@ def render_story_start_unlock_handler(
                     controller.pausedDisplayIndex = null;
                     renderLocalStoryViewStable(idx);
 
-                    var speechKey = controller.storyKey + '|queue|' + idx + '|' + rawSpeechText + '|' + speechRate;
-                    var utterance = new SpeechSynthesisUtterance(rawSpeechText);
-                    var voice = pickVoice();
-                    utterance.lang = voice ? voice.lang : 'es-ES';
-                    utterance.rate = speechRate;
-                    if (voice) utterance.voice = voice;
-
-                    var doneFired = false;
-                    var watchdogTimerId = null;
-                    var pollTimerId = null;
-                    var sawSpeaking = false;
-
-                    function clearLocalTimers() {{
-                        if (watchdogTimerId !== null) {{
-                            parentWindow.clearTimeout(watchdogTimerId);
-                            watchdogTimerId = null;
-                        }}
-                        if (pollTimerId !== null) {{
-                            parentWindow.clearTimeout(pollTimerId);
-                            pollTimerId = null;
-                        }}
-                    }}
-
                     function scheduleNext() {{
                         if (controller.queueToken !== queueToken) return;
                         if (!controller.running) return;
@@ -3141,58 +3315,109 @@ def render_story_start_unlock_handler(
                         controller.visualTimers.push(timerId);
                     }}
 
-                    function finishAndAdvance(reason) {{
-                        if (doneFired) return;
-                        doneFired = true;
-                        clearLocalTimers();
-                        controller.isSpeaking = false;
-                        controller.speakingKey = null;
-                        controller.lastCompletedIndex = idx;
-                        setDebug('done(' + reason + '): ' + (idx + 1));
-                        scheduleNext();
-                    }}
+                    var totalPasses = controller.dialogMode && controller.repeatSpanish ? 2 : 1;
+                    var currentPass = 0;
+                    var lineCompleted = false;
+                    var voice = pickVoice(idx);
 
-                    utterance.onstart = function() {{
-                        if (controller.queueToken !== queueToken || !controller.running) return;
-                        controller.lastSpokenIndex = idx;
-                        controller.pendingManualSpeakIndex = null;
-                        controller.isSpeaking = true;
-                        controller.speakingKey = speechKey;
-                        sawSpeaking = true;
-                        setDebug('speak: ' + (idx + 1));
-                    }};
+                    function startPass() {{
+                        if (lineCompleted || controller.queueToken !== queueToken || !controller.running) return;
 
-                    utterance.onend = function() {{ finishAndAdvance('onend'); }};
-                    utterance.onerror = function() {{ finishAndAdvance('onerror'); }};
+                        var passHandled = false;
+                        var watchdogTimerId = null;
+                        var pollTimerId = null;
+                        var sawSpeaking = false;
+                        var speechKey = controller.storyKey + '|queue|' + idx + '|pass|' + currentPass + '|' + rawSpeechText + '|' + speechRate;
+                        var utterance = new SpeechSynthesisUtterance(rawSpeechText);
 
-                    // iOS Safari frequently drops onend; poll synth.speaking as a backup.
-                    function pollSpeaking() {{
-                        if (doneFired) return;
-                        if (controller.queueToken !== queueToken) return;
-                        try {{
-                            if (synth.speaking || synth.pending) {{
-                                sawSpeaking = true;
-                            }} else if (sawSpeaking) {{
-                                finishAndAdvance('poll');
+                        function clearLocalTimers() {{
+                            if (watchdogTimerId !== null) {{
+                                parentWindow.clearTimeout(watchdogTimerId);
+                                watchdogTimerId = null;
+                            }}
+                            if (pollTimerId !== null) {{
+                                parentWindow.clearTimeout(pollTimerId);
+                                pollTimerId = null;
+                            }}
+                        }}
+
+                        function finalizeLine(reason) {{
+                            if (lineCompleted) return;
+                            lineCompleted = true;
+                            clearLocalTimers();
+                            controller.isSpeaking = false;
+                            controller.speakingKey = null;
+                            controller.lastCompletedIndex = idx;
+                            setDebug('done(' + reason + '): ' + (idx + 1));
+                            scheduleNext();
+                        }}
+
+                        function finishPass(reason) {{
+                            if (passHandled || lineCompleted) return;
+                            passHandled = true;
+                            clearLocalTimers();
+                            controller.isSpeaking = false;
+                            controller.speakingKey = null;
+
+                            if (currentPass + 1 < totalPasses) {{
+                                currentPass += 1;
+                                setDebug('repeat: ' + (idx + 1));
+                                var repeatTimerId = parentWindow.setTimeout(function() {{
+                                    startPass();
+                                }}, 450);
+                                controller.visualTimers.push(repeatTimerId);
                                 return;
                             }}
-                        }} catch (e) {{}}
-                        pollTimerId = parentWindow.setTimeout(pollSpeaking, 250);
+
+                            finalizeLine(reason);
+                        }}
+
+                        utterance.lang = voice ? voice.lang : 'es-ES';
+                        utterance.rate = speechRate;
+                        if (voice) utterance.voice = voice;
+
+                        utterance.onstart = function() {{
+                            if (controller.queueToken !== queueToken || !controller.running) return;
+                            controller.lastSpokenIndex = idx;
+                            controller.pendingManualSpeakIndex = null;
+                            controller.isSpeaking = true;
+                            controller.speakingKey = speechKey;
+                            sawSpeaking = true;
+                            setDebug((currentPass > 0 ? 'repeat ' : 'speak ') + (idx + 1));
+                        }};
+
+                        utterance.onend = function() {{ finishPass('onend'); }};
+                        utterance.onerror = function() {{ finishPass('onerror'); }};
+
+                        function pollSpeaking() {{
+                            if (passHandled || lineCompleted) return;
+                            if (controller.queueToken !== queueToken) return;
+                            try {{
+                                if (synth.speaking || synth.pending) {{
+                                    sawSpeaking = true;
+                                }} else if (sawSpeaking) {{
+                                    finishPass('poll');
+                                    return;
+                                }}
+                            }} catch (e) {{}}
+                            pollTimerId = parentWindow.setTimeout(pollSpeaking, 250);
+                            controller.visualTimers.push(pollTimerId);
+                        }}
+
+                        pollTimerId = parentWindow.setTimeout(pollSpeaking, 400);
                         controller.visualTimers.push(pollTimerId);
+
+                        var durMs = estimatedDurationMs(rawSpeechText);
+                        var watchdogMs = Math.max(durMs + 1600, 3200);
+                        watchdogTimerId = parentWindow.setTimeout(function() {{
+                            finishPass('watchdog');
+                        }}, watchdogMs);
+                        controller.visualTimers.push(watchdogTimerId);
+
+                        synth.speak(utterance);
                     }}
-                    pollTimerId = parentWindow.setTimeout(pollSpeaking, 400);
-                    controller.visualTimers.push(pollTimerId);
 
-                    // Hard watchdog: keep this close to the estimated speech duration so short lines
-                    // do not get stretched into multi-second extra waits when Safari drops events.
-                    var durMs = estimatedDurationMs(rawSpeechText);
-                    var watchdogMs = Math.max(durMs + 1600, 3200);
-                    watchdogTimerId = parentWindow.setTimeout(function() {{
-                        finishAndAdvance('watchdog');
-                    }}, watchdogMs);
-                    controller.visualTimers.push(watchdogTimerId);
-
-                    synth.speak(utterance);
+                    startPass();
                 }}
 
                 speakOne(startIndex);
@@ -3214,85 +3439,112 @@ def render_story_start_unlock_handler(
                 }}
 
                 try {{
-                    var utterance = new SpeechSynthesisUtterance(speechText);
-                    var voice = pickVoice();
-                    var completionHandled = false;
-                    var completionTimer = null;
-                    var speakingPollTimer = null;
-
-                    function clearCompletionTimer() {{
-                        if (completionTimer) {{
-                            parentWindow.clearTimeout(completionTimer);
-                            completionTimer = null;
-                        }}
-                        if (speakingPollTimer) {{
-                            parentWindow.clearInterval(speakingPollTimer);
-                            speakingPollTimer = null;
-                        }}
-                    }}
-
-                    function finishLine() {{
-                        if (completionHandled) return;
-                        completionHandled = true;
-                        clearCompletionTimer();
-                        handleLineComplete(index);
-                    }}
-
                     function estimatedDurationMs() {{
                         var chars = speechText.length || 1;
                         var rate = speechRate > 0 ? speechRate : 1;
                         return Math.max(1600, Math.round((chars * 85) / rate) + 700);
                     }}
+                    var totalPasses = controller.dialogMode && controller.repeatSpanish ? 2 : 1;
+                    var currentPass = 0;
+                    var lineCompleted = false;
+                    var voice = pickVoice(index);
 
-                    utterance.lang = voice ? voice.lang : 'es-ES';
-                    utterance.rate = speechRate;
-                    if (voice) utterance.voice = voice;
+                    function startPass() {{
+                        if (lineCompleted || !controller.running) return;
 
-                    utterance.onstart = function() {{
-                        controller.localIndex = index;
-                        controller.lastSpokenIndex = index;
-                        controller.isSpeaking = true;
-                        controller.speakingKey = speechKey;
-                        setDebug('onstart: ' + (index + 1));
-                        doc._storyPauseResumeState = {{
-                            runToken: controller.storyRunToken,
-                            storyIndex: index,
-                            speechFinished: false
-                        }};
-                        doc._storyPauseRequested = null;
-                        speakingPollTimer = parentWindow.setInterval(function() {{
-                            if (!controller.running || completionHandled) {{
-                                clearCompletionTimer();
+                        var passHandled = false;
+                        var completionTimer = null;
+                        var speakingPollTimer = null;
+                        var utterance = new SpeechSynthesisUtterance(speechText);
+                        var passKey = speechKey + '|pass|' + currentPass;
+
+                        function clearCompletionTimer() {{
+                            if (completionTimer) {{
+                                parentWindow.clearTimeout(completionTimer);
+                                completionTimer = null;
+                            }}
+                            if (speakingPollTimer) {{
+                                parentWindow.clearInterval(speakingPollTimer);
+                                speakingPollTimer = null;
+                            }}
+                        }}
+
+                        function finalizeLine(reason) {{
+                            if (lineCompleted) return;
+                            lineCompleted = true;
+                            clearCompletionTimer();
+                            setDebug(reason + ': ' + (index + 1));
+                            handleLineComplete(index);
+                        }}
+
+                        function finishPass(reason) {{
+                            if (passHandled || lineCompleted) return;
+                            passHandled = true;
+                            clearCompletionTimer();
+                            controller.isSpeaking = false;
+                            controller.speakingKey = null;
+
+                            if (currentPass + 1 < totalPasses) {{
+                                currentPass += 1;
+                                setDebug('repeat: ' + (index + 1));
+                                parentWindow.setTimeout(function() {{
+                                    startPass();
+                                }}, 450);
                                 return;
                             }}
-                            if (!synth.speaking && !synth.pending) {{
-                                setDebug('poll idle: ' + (index + 1));
-                                finishLine();
-                            }}
-                        }}, 150);
-                    }};
-                    utterance.onend = function() {{
-                        setDebug('onend: ' + (index + 1));
-                        finishLine();
-                    }};
-                    utterance.onerror = function() {{
-                        controller.isSpeaking = false;
-                        controller.speakingKey = null;
-                        setDebug('onerror: ' + (index + 1));
-                        finishLine();
-                    }};
 
-                    synth.cancel();
-                    if (typeof synth.resume === 'function') {{
-                        synth.resume();
+                            finalizeLine(reason);
+                        }}
+
+                        utterance.lang = voice ? voice.lang : 'es-ES';
+                        utterance.rate = speechRate;
+                        if (voice) utterance.voice = voice;
+
+                        utterance.onstart = function() {{
+                            controller.localIndex = index;
+                            controller.lastSpokenIndex = index;
+                            controller.isSpeaking = true;
+                            controller.speakingKey = passKey;
+                            setDebug((currentPass > 0 ? 'repeat start: ' : 'onstart: ') + (index + 1));
+                            doc._storyPauseResumeState = {{
+                                runToken: controller.storyRunToken,
+                                storyIndex: index,
+                                speechFinished: false
+                            }};
+                            doc._storyPauseRequested = null;
+                            speakingPollTimer = parentWindow.setInterval(function() {{
+                                if (!controller.running || passHandled || lineCompleted) {{
+                                    clearCompletionTimer();
+                                    return;
+                                }}
+                                if (!synth.speaking && !synth.pending) {{
+                                    setDebug('poll idle: ' + (index + 1));
+                                    finishPass('poll');
+                                }}
+                            }}, 150);
+                        }};
+                        utterance.onend = function() {{
+                            finishPass('onend');
+                        }};
+                        utterance.onerror = function() {{
+                            controller.isSpeaking = false;
+                            controller.speakingKey = null;
+                            finishPass('onerror');
+                        }};
+
+                        synth.cancel();
+                        if (typeof synth.resume === 'function') {{
+                            synth.resume();
+                        }}
+                        synth.speak(utterance);
+                        completionTimer = parentWindow.setTimeout(function() {{
+                            if (!controller.running || passHandled || lineCompleted) return;
+                            if (!controller.isSpeaking && controller.lastCompletedIndex === index) return;
+                            finishPass('watchdog');
+                        }}, estimatedDurationMs());
                     }}
-                    synth.speak(utterance);
-                    completionTimer = parentWindow.setTimeout(function() {{
-                        if (!controller.running) return;
-                        if (!controller.isSpeaking && controller.lastCompletedIndex === index) return;
-                        setDebug('timeout finish: ' + (index + 1));
-                        finishLine();
-                    }}, estimatedDurationMs());
+
+                    startPass();
                 }} catch (error) {{
                     controller.isSpeaking = false;
                     controller.speakingKey = null;
@@ -3469,6 +3721,9 @@ def render_story_start_unlock_handler(
                 controller.queuedNextIndex = null;
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
+                controller.dialogMaleVoice = null;
+                controller.dialogFemaleVoice = null;
+                controller.dialogFirstSpeaker = null;
             }}
 
             controller.storyKey = config.storyKey;
@@ -3483,6 +3738,8 @@ def render_story_start_unlock_handler(
             controller.autoAdvance = config.autoAdvance;
             controller.delayMs = config.delayMs;
             controller.resumeNext = config.resumeNext;
+            controller.dialogMode = config.dialogMode;
+            controller.repeatSpanish = config.repeatSpanish;
 
             if (typeof controller.localIndex !== 'number') {{
                 controller.localIndex = config.serverIndex;
@@ -3658,6 +3915,7 @@ def render_story_paused_cleanup():
 
             doc._storyAutoAdvanceIndex = null;
             doc._storyLastSpeechKey = null;
+            doc._storyLastSpeechBaseKey = null;
             doc._storyPauseResumeState = null;
 
             if (synth) {{
@@ -3856,7 +4114,7 @@ def render_story_auto_advance(delay_seconds):
     )
 
 
-def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
+def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialog_mode=False, repeat_spanish=False):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
     story_index = st.session_state.index
@@ -3881,6 +4139,8 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
             var autoAdvance = {str(auto_advance).lower()};
             var delayMs = {delay_ms};
             var lastStoryIndex = {last_story_index};
+            var dialogMode = {str(dialog_mode).lower()};
+            var repeatSpanish = {str(repeat_spanish).lower()};
             var synth = window.parent.speechSynthesis || window.speechSynthesis;
             var doc = window.parent.document;
             var speechKey = storyRunToken + '|' + storyIndex + '|' + speechText + '|' + speechRate;
@@ -3978,9 +4238,9 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
             }}
 
             attachNextHandler();
-            if (doc._storyLastSpeechKey === speechKey) return;
+            if (doc._storyLastSpeechBaseKey === speechKey) return;
 
-            function pickVoice() {{
+            function pickStandardVoice() {{
                 if (doc && typeof doc._fcPickPreferredVoice === 'function') {{
                     return doc._fcPickPreferredVoice('es', {{ randomize: true }});
                 }}
@@ -3992,21 +4252,61 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                     || null;
             }}
 
+            function ensureDialogVoiceState() {{
+                if (!dialogMode) return null;
+                var cacheKey = storyRunToken + '|' + (doc._storyPlaybackKey || 'dialog');
+                if (!doc._storyDialogVoiceState || doc._storyDialogVoiceState.cacheKey !== cacheKey) {{
+                    doc._storyDialogVoiceState = {{
+                        cacheKey: cacheKey,
+                        firstSpeaker: Math.random() < 0.5 ? 'male' : 'female',
+                        maleVoice: doc && typeof doc._fcPickPreferredVoice === 'function'
+                            ? doc._fcPickPreferredVoice('es', {{ preferredGender: 'male', randomize: true }})
+                            : pickStandardVoice(),
+                        femaleVoice: doc && typeof doc._fcPickPreferredVoice === 'function'
+                            ? doc._fcPickPreferredVoice('es', {{ preferredGender: 'female', randomize: true }})
+                            : pickStandardVoice(),
+                    }};
+                }}
+                if (!doc._storyDialogVoiceState.maleVoice && doc._storyDialogVoiceState.femaleVoice) {{
+                    doc._storyDialogVoiceState.maleVoice = doc._storyDialogVoiceState.femaleVoice;
+                }}
+                if (!doc._storyDialogVoiceState.femaleVoice && doc._storyDialogVoiceState.maleVoice) {{
+                    doc._storyDialogVoiceState.femaleVoice = doc._storyDialogVoiceState.maleVoice;
+                }}
+                return doc._storyDialogVoiceState;
+            }}
+
+            function pickVoiceForLine() {{
+                if (!dialogMode) {{
+                    return pickStandardVoice();
+                }}
+                var dialogState = ensureDialogVoiceState();
+                if (!dialogState) return pickStandardVoice();
+                var preferredGender = dialogState.firstSpeaker === 'female'
+                    ? (storyIndex % 2 === 0 ? 'female' : 'male')
+                    : (storyIndex % 2 === 0 ? 'male' : 'female');
+                if (preferredGender === 'female') {{
+                    return dialogState.femaleVoice || dialogState.maleVoice || pickStandardVoice();
+                }}
+                return dialogState.maleVoice || dialogState.femaleVoice || pickStandardVoice();
+            }}
+
             function speakNow() {{
-                var utterance = new SpeechSynthesisUtterance(speechText);
-                var voice = pickVoice();
-                var completionHandled = false;
-                var speechStarted = false;
-                var startWatchdog = null;
+                doc._storyPauseResumeState = {{
+                    runToken: storyRunToken,
+                    storyIndex: storyIndex,
+                    speechFinished: false
+                }};
+                doc._storyPauseRequested = null;
 
-                function handleSpeechCompletion() {{
-                    if (completionHandled) return;
-                    completionHandled = true;
+                var totalPasses = dialogMode && repeatSpanish ? 2 : 1;
+                var currentPass = 0;
+                var speechFinished = false;
+                var lineVoice = pickVoiceForLine();
 
-                    if (startWatchdog) {{
-                        clearTimeout(startWatchdog);
-                        startWatchdog = null;
-                    }}
+                function finalizeSpeech() {{
+                    if (speechFinished) return;
+                    speechFinished = true;
 
                     var pauseRequested = doc._storyPauseRequested
                         && doc._storyPauseRequested.runToken === storyRunToken
@@ -4021,47 +4321,72 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
                     scheduleAdvanceAfterSpeech();
                 }}
 
-                doc._storyPauseResumeState = {{
-                    runToken: storyRunToken,
-                    storyIndex: storyIndex,
-                    speechFinished: false
-                }};
-                doc._storyPauseRequested = null;
+                function speakPass() {{
+                    if (speechFinished) return;
+                    var utterance = new SpeechSynthesisUtterance(speechText);
+                    var completionHandled = false;
+                    var speechStarted = false;
+                    var startWatchdog = null;
 
-                utterance.lang = voice ? voice.lang : 'es-ES';
-                utterance.rate = speechRate;
-                if (voice) utterance.voice = voice;
-                utterance.onstart = function() {{
-                    speechStarted = true;
-                    doc._storySpeechUnlocked = true;
-                    doc._storySpeechUnlockedAt = Date.now();
-                    if (startWatchdog) {{
-                        clearTimeout(startWatchdog);
-                        startWatchdog = null;
+                    function finishPass() {{
+                        if (completionHandled || speechFinished) return;
+                        completionHandled = true;
+
+                        if (startWatchdog) {{
+                            clearTimeout(startWatchdog);
+                            startWatchdog = null;
+                        }}
+
+                        if (currentPass + 1 < totalPasses) {{
+                            currentPass += 1;
+                            window.setTimeout(function() {{
+                                speakPass();
+                            }}, 450);
+                            return;
+                        }}
+
+                        finalizeSpeech();
                     }}
-                }};
-                utterance.onend = handleSpeechCompletion;
-                utterance.onerror = function() {{
-                    var pauseRequested = doc._storyPauseRequested
-                        && doc._storyPauseRequested.runToken === storyRunToken
-                        && doc._storyPauseRequested.storyIndex === storyIndex;
-                    if (pauseRequested) return;
-                    handleSpeechCompletion();
-                }};
 
-                doc._storyLastSpeechKey = speechKey;
-                synth.cancel();
-                if (typeof synth.resume === 'function') {{
-                    synth.resume();
+                    utterance.lang = lineVoice ? lineVoice.lang : 'es-ES';
+                    utterance.rate = speechRate;
+                    if (lineVoice) utterance.voice = lineVoice;
+                    utterance.onstart = function() {{
+                        speechStarted = true;
+                        doc._storySpeechUnlocked = true;
+                        doc._storySpeechUnlockedAt = Date.now();
+                        if (startWatchdog) {{
+                            clearTimeout(startWatchdog);
+                            startWatchdog = null;
+                        }}
+                    }};
+                    utterance.onend = finishPass;
+                    utterance.onerror = function() {{
+                        var pauseRequested = doc._storyPauseRequested
+                            && doc._storyPauseRequested.runToken === storyRunToken
+                            && doc._storyPauseRequested.storyIndex === storyIndex;
+                        if (pauseRequested) return;
+                        finishPass();
+                    }};
+
+                    doc._storyLastSpeechBaseKey = speechKey;
+                    doc._storyLastSpeechKey = speechKey + '|pass|' + currentPass;
+                    synth.cancel();
+                    if (typeof synth.resume === 'function') {{
+                        synth.resume();
+                    }}
+                    synth.speak(utterance);
+
+                    startWatchdog = window.setTimeout(function() {{
+                        if (completionHandled || speechStarted) return;
+                        if (synth.speaking || synth.pending) return;
+                        doc._storyLastSpeechKey = null;
+                        doc._storyLastSpeechBaseKey = null;
+                        finishPass();
+                    }}, 1400);
                 }}
-                synth.speak(utterance);
 
-                startWatchdog = window.setTimeout(function() {{
-                    if (completionHandled || speechStarted) return;
-                    if (synth.speaking || synth.pending) return;
-                    doc._storyLastSpeechKey = null;
-                    handleSpeechCompletion();
-                }}, 1400);
+                speakPass();
             }}
 
             if (synth.getVoices && synth.getVoices().length) {{
@@ -4091,6 +4416,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0):
 
 
 def render_story_view():
+    dialog_mode = current_playback_kind() == "dialog"
     story_card = current_story_card()
     sync_story_option_widget_state()
     spanish_text = story_card["answer"]
@@ -4117,7 +4443,10 @@ def render_story_view():
         with st.container(key="storyplayback_row_wrap"):
             playback_cols = st.columns([0.50, 0.17, 0.17], gap="small")
             with playback_cols[0]:
-                st.markdown('<div class="story-option-row">Story Playback:</div>', unsafe_allow_html=True)
+                st.markdown(
+                    f'<div class="story-option-row">{current_playback_heading()}</div>',
+                    unsafe_allow_html=True,
+                )
             with playback_cols[1]:
                 st.checkbox(
                     "Auto",
@@ -4131,7 +4460,7 @@ def render_story_view():
                     on_change=toggle_story_playback_step,
                 )
         with st.container(key="storytransaudio_row_wrap"):
-            ta_cols = st.columns([0.36, 0.24, 0.32], gap="small")
+            ta_cols = st.columns([0.28, 0.18, 0.18, 0.18] if dialog_mode else [0.36, 0.24, 0.32], gap="small")
             with ta_cols[0]:
                 st.checkbox(
                     "Translate",
@@ -4150,6 +4479,13 @@ def render_story_view():
                     key="story_random_checkbox",
                     on_change=toggle_story_random,
                 )
+            if dialog_mode:
+                with ta_cols[3]:
+                    st.checkbox(
+                        "2x",
+                        key="story_repeat_checkbox",
+                        on_change=toggle_story_repeat_spanish,
+                    )
 
     translation_enabled = st.session_state.story_translation_on
     audio_enabled = st.session_state.story_audio_on
@@ -4238,6 +4574,8 @@ def render_story_view():
             delay_seconds=story_pause_delay,
             running=st.session_state.story_running,
             resume_next=st.session_state.story_resume_next,
+            dialog_mode=dialog_mode,
+            repeat_spanish=dialog_mode and st.session_state.story_repeat_spanish_on,
         )
 
     if not st.session_state.story_started:
@@ -4246,7 +4584,7 @@ def render_story_view():
     st.markdown(
         "<div class='story-progress'>"
         "<div class='story-progress-head'>"
-        "<div class='story-progress-label'>Sentence</div>"
+        f"<div class='story-progress-label'>{current_playback_progress_label()}</div>"
         f"<div class='story-progress-value' id='story-progress-value'>{story_progress_text}</div>"
         "</div>"
         "<div class='story-progress-track'>"
@@ -4314,6 +4652,8 @@ def render_story_view():
             spanish_text,
             auto_advance=st.session_state.story_playback_mode == "continuous",
             delay_seconds=story_pause_delay,
+            dialog_mode=dialog_mode,
+            repeat_spanish=dialog_mode and st.session_state.story_repeat_spanish_on,
         )
 
     if st.session_state.story_playback_mode == "stop on every line" and st.session_state.story_running:
@@ -5697,64 +6037,14 @@ if st.session_state.selected_csv is None:
     render_menu()
     if st.session_state.menu_open:
         st.stop()
-    review_deck_values = visible_review_deck_values()
-    deck_options = ["-- Choose a deck --", *review_deck_values, *csv_files]
-    with st.container(key="mobile_deck_picker_wrap"):
-        st.markdown("<div class='mobile-deck-picker-label' style='font-size: 0.95rem; color: " + t['fg'] + ";'>Available decks:</div>", unsafe_allow_html=True)
-        deck_container = st.container(height=250)
-        with deck_container:
-            for person in PERSON_LABELS:
-                review_value = REVIEW_DECK_VALUES[person]
-                if review_value not in review_deck_values:
-                    continue
-                review_enabled = review_deck_selectable(review_value)
-                review_wrap = f"review_{person}_{'active' if review_enabled else 'inactive'}_wrap"
-                with st.container(key=review_wrap):
-                    with st.container(key=f"mobile_deck_entry_review_{person}_wrap"):
-                        if st.button(
-                            review_deck_label(person),
-                            key=f"deck_btn_review_{person}",
-                            use_container_width=True,
-                            disabled=not review_enabled,
-                        ):
-                            activate_deck(review_value)
-                            st.rerun()
-            divider_prefix_groups = ("ESsbs", "MAC", "PoS", "sentence")
-            for current_index, csv_file in enumerate(csv_files):
-                deck_status = deck_picker_status(csv_file, st.session_state.active_person)
-                with st.container(key=f"mobile_deck_entry_{deck_status}_{current_index}_wrap"):
-                    if st.button(display_deck_name(csv_file), key=f"deck_btn_{csv_file}", use_container_width=True):
-                        activate_deck(csv_file)
-                        st.rerun()
-                current_group = next(
-                    (prefix for prefix in divider_prefix_groups if csv_file.lower().startswith(prefix.lower())),
-                    None,
-                )
-                next_group = None
-                if current_index + 1 < len(csv_files):
-                    next_file = csv_files[current_index + 1]
-                    next_group = next(
-                        (prefix for prefix in divider_prefix_groups if next_file.lower().startswith(prefix.lower())),
-                        None,
-                    )
-                if current_group and current_group != next_group:
-                    st.markdown('<div class="mobile-deck-divider"></div>', unsafe_allow_html=True)
-            render_mobile_deck_picker_height_fix()
-
-    with st.container(key="desktop_deck_picker_wrap"):
-        selected = st.selectbox(
-            "Available decks:",
-            deck_options,
-            index=0,
-            format_func=lambda value: value if value == "-- Choose a deck --" else deck_picker_label(value, st.session_state.active_person),
-        )
-        if selected != deck_options[0]:
-            if review_deck_selectable(selected):
-                activate_deck(selected)
-                st.rerun()
+    render_grouped_deck_picker()
     st.stop()
 
-if not is_review_deck(st.session_state.selected_csv) and not is_story_deck(st.session_state.selected_csv) and st.session_state.study_mode is None:
+if (
+    not is_review_deck(st.session_state.selected_csv)
+    and not is_playback_deck(st.session_state.selected_csv)
+    and st.session_state.study_mode is None
+):
     progress_stats = deck_progress_stats(st.session_state.selected_csv, st.session_state.active_person)
     if progress_stats["supported"]:
         render_header()
@@ -5788,7 +6078,7 @@ if st.session_state.loaded_csv != st.session_state.selected_csv or not st.sessio
                 card for card in st.session_state.cards
                 if card.get("id") not in completed_ids
             ]
-    if is_story_deck(st.session_state.selected_csv):
+    if is_playback_deck(st.session_state.selected_csv):
         rebuild_story_order()
     else:
         st.session_state.order = list(range(len(st.session_state.cards)))
@@ -5799,7 +6089,7 @@ if st.session_state.loaded_csv != st.session_state.selected_csv or not st.sessio
 
 if (
     not is_review_deck(st.session_state.selected_csv)
-    and not is_story_deck(st.session_state.selected_csv)
+    and not is_playback_deck(st.session_state.selected_csv)
     and st.session_state.study_mode == "remaining"
     and not st.session_state.cards
 ):
@@ -5822,7 +6112,7 @@ scored_total  = st.session_state["score_actions"]
 # STORY MODE
 # ========================================================================
 
-if is_story_deck(st.session_state.selected_csv):
+if is_playback_deck(st.session_state.selected_csv):
     if st.session_state.index >= len(st.session_state.cards):
         go_back_to_deck_picker()
         st.rerun()

@@ -2,6 +2,7 @@
 """
 Process Spanish vocabulary CSV files.
 - Add 'id' column to 2-column CSVs
+- If a file is missing a header row, create a standard header automatically
 - For files with existing ids, add sequential ids to new rows
 - Sort by column 2 (Spanish translation) or column 1 (id)
 - Auto-detects comma or semicolon delimiters
@@ -15,6 +16,16 @@ from shutil import move
 
 # Set this to your CSV folder
 CSV_FOLDER = "/Volumes/Squallywag/Python/Current Python Projects/streamlit_eng_sp_flashcards/csv/"
+
+
+def preserve_original_order(filename):
+    """Return True for sequential-content files whose row order matters.
+
+    Dialogs and stories are not study decks where alphabetical sorting helps;
+    their line order is part of the content itself and must be preserved.
+    """
+    lower_name = filename.lower()
+    return 'dialog' in lower_name or 'story' in lower_name
 
 def detect_delimiter(filepath):
     """Auto-detect delimiter (comma or semicolon) in CSV file."""
@@ -42,6 +53,23 @@ def count_columns(filepath):
         print(f"  ✗ Error reading {filepath}: {e}")
         return None, None
 
+
+def normalize_header_cell(value):
+    return value.strip().lower()
+
+
+def detect_header_type(row):
+    """Return the recognized header type for a row, if any."""
+    normalized = [normalize_header_cell(cell) for cell in row]
+
+    if len(normalized) >= 3 and normalized[0] == 'id' and normalized[1] == 'word' and normalized[2] == 'answer':
+        return 'id_word_answer'
+
+    if len(normalized) >= 2 and normalized[0] == 'word' and normalized[1] == 'answer':
+        return 'word_answer'
+
+    return None
+
 def process_csv(filepath):
     """Process a single CSV file."""
     filename = os.path.basename(filepath)
@@ -50,35 +78,74 @@ def process_csv(filepath):
     if filename.endswith('_ORIG.csv'):
         return True  # Silently skip backups
 
-    # Count columns and detect delimiter
-    num_cols, delimiter = count_columns(filepath)
-    if num_cols is None:
-        return False
-
-    # Read the CSV file
+    # Read the CSV file and inspect the first row before deciding whether a
+    # header already exists. Dialog files were processed without headers, so the
+    # first row must be treated as data unless it clearly matches a known header.
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
+            sample = f.read(2048)
+            f.seek(0)
+            delimiter = detect_delimiter(filepath)
             reader = csv.reader(f, delimiter=delimiter, quotechar='"')
-            header = next(reader)
-            data = list(reader)
+            rows = [row for row in reader if row and any(cell.strip() for cell in row)]
     except Exception as e:
         print(f"  ✗ {filename} — error reading file: {e}")
         return False
 
-    # Remove empty rows
-    data = [row for row in data if row and any(row)]
+    if not rows:
+        print(f"  ✗ {filename} — empty file, skipping")
+        return True
 
-    # Check if this is a 3-column file with 'id' as first column (already processed file)
-    if num_cols == 3 and len(header) >= 1 and header[0].lower() == 'id':
+    first_row = rows[0]
+    header_type = detect_header_type(first_row)
+    num_cols = len(first_row)
+
+    if header_type == 'id_word_answer':
+        header = first_row
+        data = rows[1:]
         return process_existing_id_file(filepath, filename, delimiter, header, data)
 
-    # Check if this is a 2-column file (needs initial processing)
-    if num_cols == 2:
+    if header_type == 'word_answer':
+        header = first_row
+        data = rows[1:]
         return process_new_file(filepath, filename, delimiter, header, data)
+
+    # Recover malformed files from the earlier bug where the first data row was
+    # written as: id;<word>;<answer> instead of adding a real header row.
+    if num_cols == 3 and normalize_header_cell(first_row[0]) == 'id':
+        return recover_malformed_id_header_file(filepath, filename, delimiter, rows)
+
+    # No recognized header exists. Create the standard header automatically.
+    if num_cols == 3:
+        return process_existing_id_file(filepath, filename, delimiter, ['id', 'word', 'answer'], rows)
+
+    if num_cols == 2:
+        return process_new_file(filepath, filename, delimiter, ['word', 'answer'], rows)
 
     # Unexpected format
     print(f"  ✗ {filename} ({num_cols} columns) — unexpected format, skipping")
     return True
+
+
+def recover_malformed_id_header_file(filepath, filename, delimiter, rows):
+    """Repair files where the first data row was accidentally used as a header.
+
+    In this broken format the first row looks like: id;<word>;<answer>.
+    The safest repair is to rebuild the file as a standard 2-column payload,
+    then write a proper id/word/answer header with fresh sequential ids.
+    """
+    try:
+        recovered_rows = []
+        for row in rows:
+            if len(row) >= 3:
+                recovered_rows.append([row[1], row[2]])
+            elif len(row) == 2:
+                recovered_rows.append(row)
+
+        return process_new_file(filepath, filename, delimiter, ['word', 'answer'], recovered_rows)
+    except Exception as e:
+        print(f"  ✗ {filename} — error recovering malformed header: {e}")
+        return False
 
 
 def process_existing_id_file(filepath, filename, delimiter, header, data):
@@ -113,8 +180,10 @@ def process_existing_id_file(filepath, filename, delimiter, header, data):
             # Sort rows with ids by their id
             rows_with_id.sort(key=lambda x: x[0])
 
-        # Sort rows without ids by column 2 (answer column) alphabetically
-        rows_without_id.sort(key=lambda x: x[1].lower() if len(x) > 1 else '')
+        # Preserve authored order for dialogs/stories. Regular vocab decks still
+        # benefit from sorting by the answer column.
+        if not preserve_original_order(filename):
+            rows_without_id.sort(key=lambda x: x[1].lower() if len(x) > 1 else '')
 
         # Assign new ids to rows without ids
         final_data = []
@@ -142,8 +211,12 @@ def process_existing_id_file(filepath, filename, delimiter, header, data):
 def process_new_file(filepath, filename, delimiter, header, data):
     """Process a new 2-column file (add id column)."""
     try:
-        # Sort by column 2 (index 1, the answer column) alphabetically
-        data_sorted = sorted(data, key=lambda x: x[1].lower() if len(x) > 1 else '')
+        # Preserve authored order for dialogs/stories. Regular vocab decks still
+        # benefit from sorting by the answer column.
+        if preserve_original_order(filename):
+            data_sorted = list(data)
+        else:
+            data_sorted = sorted(data, key=lambda x: x[1].lower() if len(x) > 1 else '')
 
         # Create _ORIG backup ONLY if it doesn't already exist
         name_without_ext = filepath.rsplit('.csv', 1)[0]
