@@ -98,7 +98,7 @@ def review_deck_person(deck_value):
 
 
 def review_deck_label(person):
-    return f"⭐ Review - {PERSON_LABELS[person]}"
+    return f"Review - {PERSON_LABELS[person]}"
 
 
 def normalized_filename(value):
@@ -916,9 +916,7 @@ def review_deck_selectable(deck_value):
 
 def visible_review_deck_values():
     active_review_value = REVIEW_DECK_VALUES[st.session_state.active_person]
-    if review_count_for(st.session_state.active_person) > 0:
-        return [active_review_value]
-    return []
+    return [active_review_value]
 
 
 def reset_study_state(reset_selected=True):
@@ -956,6 +954,34 @@ def rebuild_story_order():
     st.session_state.order = list(range(len(st.session_state.cards)))
     if st.session_state.story_random_on:
         random.shuffle(st.session_state.order)
+
+
+def rebuild_story_order_preserving_current():
+    if not st.session_state.cards:
+        st.session_state.order = []
+        st.session_state.index = 0
+        return
+
+    current_position = min(st.session_state.index, max(len(st.session_state.order) - 1, 0))
+    current_card = current_card_index() if st.session_state.order else 0
+    remaining = [idx for idx in range(len(st.session_state.cards)) if idx != current_card]
+
+    if st.session_state.story_random_on:
+        random.shuffle(remaining)
+
+    insert_at = min(current_position, len(remaining))
+    st.session_state.order = remaining[:insert_at] + [current_card] + remaining[insert_at:]
+    st.session_state.index = insert_at
+
+
+def keep_story_playback_alive():
+    if not st.session_state.story_running:
+        return
+    st.session_state.story_started = True
+    st.session_state.story_running = True
+    st.session_state.story_finished = False
+    st.session_state.story_resume_next = False
+    st.session_state.story_run_token += 1
 
 
 def reset_story_playback():
@@ -1023,14 +1049,18 @@ def toggle_story_audio():
 
 def toggle_story_repeat_spanish():
     st.session_state.story_repeat_spanish_on = st.session_state.get("story_repeat_checkbox", False)
+    keep_story_playback_alive()
 
 
 def toggle_story_random():
     random_enabled = st.session_state.get("story_random_checkbox", False)
     if random_enabled != st.session_state.story_random_on:
         st.session_state.story_random_on = random_enabled
-        rebuild_story_order()
-        reset_story_playback()
+        rebuild_story_order_preserving_current()
+        st.session_state.story_started = True
+        st.session_state.story_finished = False
+        st.session_state.story_resume_next = False
+        keep_story_playback_alive()
 
 
 def end_story_to_final_screen():
@@ -1067,7 +1097,7 @@ def render_grouped_deck_picker():
         st.markdown(
             "<div class='mobile-deck-picker-label' style='font-size: 0.95rem; color: "
             + t["fg"]
-            + ";'>Available decks:</div>",
+            + ";'>Available decks:</div><div class='mobile-deck-picker-gap'></div>",
             unsafe_allow_html=True,
         )
         deck_container = st.container(height=580)
@@ -2254,6 +2284,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background: transparent !important;
     padding: 0 !important;
 }}
+.mobile-deck-picker-gap {{
+    height: 0.58rem;
+}}
 [class*="st-key-deck_category_toggle_"],
 [class*="st-key-deck_category_file_"],
 [class*="st-key-mobile_deck_entry_"] {{
@@ -2287,7 +2320,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 [class*="st-key-deck_category_toggle_"][data-testid="stButton"],
 [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] {{
-    margin-bottom: 0.01rem !important;
+    margin-bottom: 0 !important;
 }}
 [class*="st-key-deck_category_toggle_"][data-testid="stButton"] > button,
 [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
@@ -2296,8 +2329,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-weight: 900 !important;
     font-size: 1.2rem !important;
     line-height: 1.1 !important;
-    padding-top: 0.16rem !important;
-    padding-bottom: 0.14rem !important;
+    min-height: 1.48rem !important;
+    padding-top: 0.06rem !important;
+    padding-bottom: 0.05rem !important;
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
@@ -2334,6 +2368,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 0.88rem;
     padding: 0.1rem 0 0.2rem 1.45rem;
 }}
+.st-key-mobile_deck_picker_wrap .st-key-review_miguel_active_wrap div[data-testid="stButton"] > button::before,
+.st-key-mobile_deck_picker_wrap .st-key-review_david_active_wrap div[data-testid="stButton"] > button::before,
+.st-key-mobile_deck_picker_wrap .st-key-review_miguel_inactive_wrap div[data-testid="stButton"] > button::before,
+.st-key-mobile_deck_picker_wrap .st-key-review_david_inactive_wrap div[data-testid="stButton"] > button::before,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"][data-testid="stButton"] > button::before,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button::before {{
+    content: '★';
+    color: #f2c94c !important;
+    display: inline-block !important;
+    margin-right: 0.42rem !important;
+    font-size: 0.98rem !important;
+    line-height: 1 !important;
+}}
 @media (max-width: 767px) {{
     .title-row {{
         padding: 0.15rem 0 0.08rem 0 !important;
@@ -2366,7 +2413,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .mobile-deck-picker-label {{
         display: block !important;
         margin-top: -0.04rem !important;
-        margin-bottom: 0.40rem !important;
+        margin-bottom: 0 !important;
+    }}
+    .mobile-deck-picker-gap {{
+        height: 0.62rem !important;
     }}
     .st-key-mobile_deck_picker_wrap {{
         padding: 0.22rem 0.22rem !important;
@@ -2517,9 +2567,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
         font-size: 1.24rem !important;
         font-weight: 900 !important;
-        min-height: 1.7rem !important;
-        padding-top: 0.12rem !important;
-        padding-bottom: 0.1rem !important;
+        min-height: 1.38rem !important;
+        padding-top: 0.04rem !important;
+        padding-bottom: 0.02rem !important;
         border: none !important;
         box-shadow: none !important;
         background: transparent !important;
@@ -3382,7 +3432,6 @@ def render_story_start_unlock_handler(
                     return false;
                 }}
                 hiddenButton.click();
-                hiddenButton.dispatchEvent(new MouseEvent('click', {{ bubbles: true }}));
                 return true;
             }}
 
@@ -3392,7 +3441,6 @@ def render_story_start_unlock_handler(
                     return false;
                 }}
                 hiddenButton.click();
-                hiddenButton.dispatchEvent(new MouseEvent('click', {{ bubbles: true }}));
                 return true;
             }}
 
@@ -4143,7 +4191,6 @@ def render_story_paused_cleanup():
                     var resumeNextButton = doc.querySelector('.st-key-storyresumenext_hidden_wrap button');
                     if (resumeNextButton) {{
                         resumeNextButton.click();
-                        resumeNextButton.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
                     }}
                 }}
             }}
@@ -4185,7 +4232,6 @@ def render_story_advance_tap_handler():
                     return false;
                 }
                 button.click();
-                button.dispatchEvent(new MouseEvent('click', {bubbles: true}));
                 return true;
             }
 
@@ -4332,7 +4378,6 @@ def render_story_auto_advance(delay_seconds):
                     return false;
                 }}
                 button.click();
-                button.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
                 return true;
             }}
 
@@ -4416,7 +4461,6 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                     return false;
                 }}
                 button.click();
-                button.dispatchEvent(new MouseEvent('click', {{bubbles: true}}));
                 return true;
             }}
 
@@ -4526,6 +4570,8 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                             : pickStandardVoice()),
                         maleVoiceId: (dialogPair && dialogPair.maleIdentity) || '',
                         femaleVoiceId: (dialogPair && dialogPair.femaleIdentity) || '',
+                        maleCandidateIdentities: (dialogPair && dialogPair.maleCandidateIdentities) || [],
+                        femaleCandidateIdentities: (dialogPair && dialogPair.femaleCandidateIdentities) || [],
                     }};
                     if (!doc._storyDialogVoiceState.maleVoiceId) {{
                         doc._storyDialogVoiceState.maleVoiceId = dialogVoiceIdentity(doc._storyDialogVoiceState.maleVoice);
@@ -4552,15 +4598,45 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                 return doc._storyDialogVoiceState;
             }}
 
+            function preferredGenderForLine(dialogState) {{
+                if (!dialogState) return null;
+                return dialogState.firstSpeaker === 'female'
+                    ? (storyIndex % 2 === 0 ? 'female' : 'male')
+                    : (storyIndex % 2 === 0 ? 'male' : 'female');
+            }}
+
+            function rotateDialogVoiceCandidate(dialogState, gender) {{
+                if (!dialogState) return false;
+                var candidateKey = gender === 'female' ? 'femaleCandidateIdentities' : 'maleCandidateIdentities';
+                var activeKey = gender === 'female' ? 'femaleVoiceId' : 'maleVoiceId';
+                var voiceKey = gender === 'female' ? 'femaleVoice' : 'maleVoice';
+                var identities = dialogState[candidateKey] || [];
+                if (identities.length <= 1) return false;
+
+                var currentId = dialogState[activeKey] || '';
+                var currentIndex = identities.indexOf(currentId);
+                var startIndex = currentIndex >= 0 ? currentIndex : 0;
+
+                for (var step = 1; step < identities.length; step += 1) {{
+                    var nextId = identities[(startIndex + step) % identities.length];
+                    if (!nextId || nextId === currentId) continue;
+                    var nextVoice = resolveDialogVoice(nextId, null);
+                    if (!nextVoice) continue;
+                    dialogState[activeKey] = nextId;
+                    dialogState[voiceKey] = nextVoice;
+                    return true;
+                }}
+
+                return false;
+            }}
+
             function pickVoiceForLine() {{
                 if (!dialogMode) {{
                     return pickStandardVoice();
                 }}
                 var dialogState = ensureDialogVoiceState();
                 if (!dialogState) return pickStandardVoice();
-                var preferredGender = dialogState.firstSpeaker === 'female'
-                    ? (storyIndex % 2 === 0 ? 'female' : 'male')
-                    : (storyIndex % 2 === 0 ? 'male' : 'female');
+                var preferredGender = preferredGenderForLine(dialogState);
                 if (preferredGender === 'female') {{
                     return resolveDialogVoice(dialogState.femaleVoiceId, dialogState.femaleVoice)
                         || resolveDialogVoice(dialogState.maleVoiceId, dialogState.maleVoice)
@@ -4603,7 +4679,6 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
 
                 function speakPass() {{
                     if (speechFinished) return;
-                    var utterance = new SpeechSynthesisUtterance(speechText);
                     var completionHandled = false;
                     var speechStarted = false;
                     var startWatchdog = null;
@@ -4641,26 +4716,28 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                         finalizeSpeech();
                     }}
 
-                    utterance.lang = lineVoice ? lineVoice.lang : 'es-ES';
-                    utterance.rate = speechRate;
-                    if (lineVoice) utterance.voice = lineVoice;
-                    utterance.onstart = function() {{
-                        speechStarted = true;
-                        doc._storySpeechUnlocked = true;
-                        doc._storySpeechUnlockedAt = Date.now();
+                    function retryCurrentLine(statusLabel, delayMs) {{
+                        if (completionHandled || speechFinished) return true;
+                        if (startAttempts >= 3) return false;
+                        var dialogState = ensureDialogVoiceState();
+                        var preferredGender = preferredGenderForLine(dialogState);
+                        if (preferredGender) {{
+                            rotateDialogVoiceCandidate(dialogState, preferredGender);
+                            lineVoice = pickVoiceForLine() || lineVoice;
+                            lineVoiceId = dialogVoiceIdentity(lineVoice);
+                        }}
                         if (startWatchdog) {{
                             clearTimeout(startWatchdog);
                             startWatchdog = null;
                         }}
-                    }};
-                    utterance.onend = finishPass;
-                    utterance.onerror = function() {{
-                        var pauseRequested = doc._storyPauseRequested
-                            && doc._storyPauseRequested.runToken === storyRunToken
-                            && doc._storyPauseRequested.storyIndex === storyIndex;
-                        if (pauseRequested) return;
-                        finishPass();
-                    }};
+                        try {{
+                            synth.cancel();
+                        }} catch (error) {{
+                        }}
+                        updateCurrentVoiceReadout(statusLabel);
+                        window.setTimeout(startSpeaking, delayMs || 260);
+                        return true;
+                    }}
 
                     doc._storyLastSpeechBaseKey = speechKey;
                     doc._storyLastSpeechKey = speechKey + '|pass|' + currentPass;
@@ -4670,11 +4747,33 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                         startAttempts += 1;
                         lineVoice = pickVoiceForLine() || lineVoice;
                         lineVoiceId = dialogVoiceIdentity(lineVoice);
+                        speechStarted = false;
                         updateCurrentVoiceReadout(startAttempts > 1 ? ('retry ' + startAttempts) : 'speaking');
+                        var utterance = new SpeechSynthesisUtterance(speechText);
+                        utterance.lang = lineVoice ? lineVoice.lang : 'es-ES';
+                        utterance.rate = speechRate;
                         if (lineVoice) {{
                             utterance.voice = lineVoice;
                             utterance.lang = lineVoice.lang || utterance.lang;
                         }}
+                        utterance.onstart = function() {{
+                            speechStarted = true;
+                            doc._storySpeechUnlocked = true;
+                            doc._storySpeechUnlockedAt = Date.now();
+                            if (startWatchdog) {{
+                                clearTimeout(startWatchdog);
+                                startWatchdog = null;
+                            }}
+                        }};
+                        utterance.onend = finishPass;
+                        utterance.onerror = function() {{
+                            var pauseRequested = doc._storyPauseRequested
+                                && doc._storyPauseRequested.runToken === storyRunToken
+                                && doc._storyPauseRequested.storyIndex === storyIndex;
+                            if (pauseRequested) return;
+                            if (!speechStarted && retryCurrentLine('retrying after error', 320)) return;
+                            finishPass();
+                        }};
                         if (typeof synth.resume === 'function') {{
                             synth.resume();
                         }}
@@ -4705,13 +4804,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                     startWatchdog = window.setTimeout(function() {{
                         if (completionHandled || speechStarted) return;
                         if (synth.speaking || synth.pending) return;
-                        if (startAttempts < 3) {{
-                            try {{
-                                synth.cancel();
-                            }} catch (error) {{
-                            }}
-                            updateCurrentVoiceReadout('retrying');
-                            window.setTimeout(startSpeaking, 260);
+                        if (retryCurrentLine('retrying', 260)) {{
                             return;
                         }}
                         doc._storyLastSpeechKey = null;
@@ -5194,6 +5287,16 @@ def inject_flashcard_speech_runtime():
                 }
             };
 
+            doc._preferredDialogVoicePairs = {
+                es: [
+                    { female: ['Paulina (Enhanced)', 'Paulina'], male: ['Juan (Enhanced)', 'Juan'] },
+                    { female: ['Paulina (Enhanced)', 'Paulina'], male: ['Jorge (Enhanced)', 'Jorge'] },
+                    { female: ['Marisol (Premium)', 'Marisol'], male: ['Jorge (Enhanced)', 'Jorge'] },
+                    { female: ['Mónica', 'Monica'], male: ['Carlos (Enhanced)', 'Carlos'] }
+                ],
+                en: []
+            };
+
             function normalizeVoiceName(value) {
                 return (value || '')
                     .toLowerCase()
@@ -5440,12 +5543,13 @@ def inject_flashcard_speech_runtime():
             doc._fcPickDialogVoicePair = function(language) {
                 var voices = synth.getVoices ? synth.getVoices() : [];
                 var candidates = languageCandidates(voices, language);
+                var languageKey = language === 'es' ? 'es' : 'en';
 
                 function orderedCandidatesForGender(gender) {
                     var ordered = [];
                     var seen = {};
-                    var pool = doc._preferredVoicePools[(language === 'es' ? 'es' : 'en')] || { female: [], male: [] };
-                    var fallbackPool = doc._fallbackVoicePools[(language === 'es' ? 'es' : 'en')] || { female: [], male: [] };
+                    var pool = doc._preferredVoicePools[languageKey] || { female: [], male: [] };
+                    var fallbackPool = doc._fallbackVoicePools[languageKey] || { female: [], male: [] };
 
                     matchedVoicesForTokens(candidates, pool[gender] || []).forEach(function(voice) {
                         pushUnique(ordered, voice, seen);
@@ -5462,6 +5566,10 @@ def inject_flashcard_speech_runtime():
                     });
 
                     return sortVoicesByPreference(ordered);
+                }
+
+                function bestVoiceForTokens(tokens) {
+                    return chooseBestVoice(matchedVoicesForTokens(candidates, tokens || []), false);
                 }
 
                 function pairScore(femaleVoice, maleVoice) {
@@ -5491,6 +5599,23 @@ def inject_flashcard_speech_runtime():
                 var femaleCandidates = orderedCandidatesForGender('female');
                 var maleCandidates = orderedCandidatesForGender('male');
                 var orderedCandidates = sortVoicesByPreference(candidates);
+
+                var preferredPairs = doc._preferredDialogVoicePairs[languageKey] || [];
+                for (var pairIndex = 0; pairIndex < preferredPairs.length; pairIndex += 1) {
+                    var preferredPair = preferredPairs[pairIndex];
+                    var preferredFemale = bestVoiceForTokens(preferredPair.female || []);
+                    var preferredMale = bestVoiceForTokens(preferredPair.male || []);
+                    if (preferredFemale && preferredMale && voiceIdentity(preferredFemale) !== voiceIdentity(preferredMale)) {
+                        return {
+                            femaleVoice: preferredFemale,
+                            maleVoice: preferredMale,
+                            femaleIdentity: voiceIdentity(preferredFemale),
+                            maleIdentity: voiceIdentity(preferredMale),
+                            femaleCandidateIdentities: femaleCandidates.map(function(voice) { return voiceIdentity(voice); }),
+                            maleCandidateIdentities: maleCandidates.map(function(voice) { return voiceIdentity(voice); }),
+                        };
+                    }
+                }
 
                 var bestPair = null;
                 femaleCandidates.forEach(function(femaleVoiceCandidate) {
@@ -5532,6 +5657,8 @@ def inject_flashcard_speech_runtime():
                     maleVoice: maleVoice,
                     femaleIdentity: voiceIdentity(femaleVoice),
                     maleIdentity: voiceIdentity(maleVoice),
+                    femaleCandidateIdentities: femaleCandidates.map(function(voice) { return voiceIdentity(voice); }),
+                    maleCandidateIdentities: maleCandidates.map(function(voice) { return voiceIdentity(voice); }),
                 };
             };
 
@@ -6020,7 +6147,6 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
                 var button = doc.querySelector(selector);
                 if (!button) return false;
                 button.click();
-                button.dispatchEvent(new MouseEvent('click', {{ bubbles: true }}));
                 return true;
             }}
 
