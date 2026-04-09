@@ -2212,6 +2212,16 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     white-space: normal;
     overflow-wrap: anywhere;
 }}
+.dialog-voice-readout-detected {{
+    margin-top: 0.28rem;
+    padding-top: 0.28rem;
+    border-top: 1px solid color-mix(in srgb, {t['border']} 60%, transparent 40%);
+    font-size: 0.72rem;
+    line-height: 1.25;
+    color: {t['muted']};
+    white-space: normal;
+    overflow-wrap: anywhere;
+}}
 .soft-divider {{
     border: none; border-top: 1px solid {t['border']}; margin: 0.6rem 0;
 }}
@@ -2219,24 +2229,67 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 /* ---- Responsive deck picker ---- */
 .st-key-mobile_deck_picker_wrap {{
     display: block;
-}}
-.st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
     border: 1px solid color-mix(in srgb, {t['border']} 78%, transparent 22%) !important;
     border-radius: 0.85rem !important;
     padding: 0.35rem 0.45rem !important;
+    box-sizing: border-box !important;
 }}
+.st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+}}
+[class*="st-key-deck_category_toggle_"],
+[class*="st-key-deck_category_file_"],
+[class*="st-key-mobile_deck_entry_"] {{
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}}
+[class*="st-key-deck_category_toggle_"] [data-testid="stVerticalBlockBorderWrapper"],
+[class*="st-key-deck_category_file_"] [data-testid="stVerticalBlockBorderWrapper"],
+[class*="st-key-mobile_deck_entry_"] [data-testid="stVerticalBlockBorderWrapper"] {{
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+}}
+[class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button,
+[class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button:hover,
+[class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button:focus,
+[class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button:focus-visible,
+[class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button:active,
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button,
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button:hover,
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button:focus,
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button:focus-visible,
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button:active {{
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    outline: none !important;
+    border-radius: 0 !important;
+}}
+[class*="st-key-deck_category_toggle_"][data-testid="stButton"],
 [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] {{
-    margin-bottom: 0.08rem !important;
+    margin-bottom: 0.01rem !important;
 }}
+[class*="st-key-deck_category_toggle_"][data-testid="stButton"] > button,
 [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
     justify-content: flex-start !important;
     text-align: left !important;
     font-weight: 900 !important;
     font-size: 1.2rem !important;
     line-height: 1.1 !important;
-    padding-top: 0.3rem !important;
-    padding-bottom: 0.3rem !important;
+    padding-top: 0.16rem !important;
+    padding-bottom: 0.14rem !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
 }}
+[class*="st-key-deck_category_file_"][data-testid="stButton"] > button,
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
     justify-content: flex-start !important;
     text-align: left !important;
@@ -2246,10 +2299,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-height: 1.55rem !important;
     padding-top: 0.02rem !important;
     padding-bottom: 0.02rem !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
 }}
+[class*="st-key-deck_category_file_"][data-testid="stButton"],
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] {{
     margin-bottom: 0 !important;
 }}
+[class*="st-key-deck_category_file_"][data-testid="stButton"] > button > div,
+[class*="st-key-deck_category_file_"][data-testid="stButton"] > button p,
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button > div,
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button p {{
     font-size: 0.88rem !important;
@@ -2294,9 +2354,56 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         margin-top: -0.04rem !important;
         margin-bottom: 0.40rem !important;
     }}
-    .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
+    .st-key-mobile_deck_picker_wrap {{
         padding: 0.22rem 0.22rem !important;
         border-radius: 0.7rem !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+    }}
+    [class*="st-key-deck_category_toggle_"],
+    [class*="st-key-deck_category_file_"],
+    [class*="st-key-mobile_deck_entry_"] {{
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }}
+    [class*="st-key-deck_category_toggle_"] [data-testid="stVerticalBlockBorderWrapper"],
+    [class*="st-key-deck_category_file_"] [data-testid="stVerticalBlockBorderWrapper"],
+    [class*="st-key-mobile_deck_entry_"] [data-testid="stVerticalBlockBorderWrapper"] {{
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+    }}
+    [class*="st-key-deck_category_toggle_"][data-testid="stButton"] > button,
+    [class*="st-key-deck_category_toggle_"][data-testid="stButton"] > button:hover,
+    [class*="st-key-deck_category_toggle_"][data-testid="stButton"] > button:focus,
+    [class*="st-key-deck_category_toggle_"][data-testid="stButton"] > button:focus-visible,
+    [class*="st-key-deck_category_toggle_"][data-testid="stButton"] > button:active,
+    [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button,
+    [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button:hover,
+    [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button:focus,
+    [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button:focus-visible,
+    [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button:active,
+    [class*="st-key-deck_category_file_"][data-testid="stButton"] > button,
+    [class*="st-key-deck_category_file_"][data-testid="stButton"] > button:hover,
+    [class*="st-key-deck_category_file_"][data-testid="stButton"] > button:focus,
+    [class*="st-key-deck_category_file_"][data-testid="stButton"] > button:focus-visible,
+    [class*="st-key-deck_category_file_"][data-testid="stButton"] > button:active,
+    [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button,
+    [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button:hover,
+    [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button:focus,
+    [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button:focus-visible,
+    [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button:active {{
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        outline: none !important;
+        border-radius: 0 !important;
     }}
     [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button {{
         display: flex !important;
@@ -2339,7 +2446,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         font-weight: 700 !important;
     }}
     .st-key-mobile_deck_picker_wrap [data-testid="stButton"] {{
-        margin-bottom: 0.05rem !important;
+        margin-bottom: 0.01rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [data-testid="stButton"] > button {{
         display: flex !important;
@@ -2392,17 +2499,30 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_story_"] [data-testid="stButton"] > button::before {{
         font-size: 1.10rem !important;
     }}
+    [class*="st-key-deck_category_toggle_"][data-testid="stButton"] > button,
     [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
         font-size: 1.24rem !important;
         font-weight: 900 !important;
-        min-height: 2.05rem !important;
+        min-height: 1.7rem !important;
+        padding-top: 0.12rem !important;
+        padding-bottom: 0.1rem !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
     }}
+    [class*="st-key-deck_category_file_"][data-testid="stButton"] > button,
     [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
         padding-left: 1.55rem !important;
         padding-right: 0.35rem !important;
         font-size: 0.84rem !important;
-        min-height: 1.45rem !important;
+        min-height: 1.28rem !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
     }}
+    [class*="st-key-deck_category_file_"][data-testid="stButton"] > button p,
     [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button p {{
         font-size: 0.84rem !important;
     }}
@@ -3118,7 +3238,22 @@ def render_story_start_unlock_handler(
 
             function resolveDialogVoice(identity, fallbackVoice) {{
                 if (doc && typeof doc._fcResolveVoiceIdentity === 'function') {{
-                    return doc._fcResolveVoiceIdentity(identity, 'es') || fallbackVoice || null;
+                    var resolved = doc._fcResolveVoiceIdentity(identity, 'es');
+                    if (resolved) return resolved;
+                }}
+                if (fallbackVoice && synth.getVoices) {{
+                    var fallbackName = normalizeVoiceName(fallbackVoice.name || '');
+                    var fallbackLang = (fallbackVoice.lang || '').toLowerCase();
+                    var voices = synth.getVoices() || [];
+                    var exactMatch = voices.find(function(voice) {{
+                        return normalizeVoiceName(voice.name || '') === fallbackName
+                            && (voice.lang || '').toLowerCase() === fallbackLang;
+                    }});
+                    if (exactMatch) return exactMatch;
+                    var nameOnlyMatch = voices.find(function(voice) {{
+                        return normalizeVoiceName(voice.name || '') === fallbackName;
+                    }});
+                    if (nameOnlyMatch) return nameOnlyMatch;
                 }}
                 return fallbackVoice || null;
             }}
@@ -3136,15 +3271,20 @@ def render_story_start_unlock_handler(
 
             function updateDialogVoiceReadout() {{
                 if (!controller.dialogMode) return;
-                var femaleEl = doc.getElementById('dialog-voice-female');
-                var maleEl = doc.getElementById('dialog-voice-male');
+                var speakerAEl = doc.getElementById('dialog-voice-speaker-a');
+                var speakerBEl = doc.getElementById('dialog-voice-speaker-b');
                 var femaleVoice = controller.dialogFemaleVoice;
                 var maleVoice = controller.dialogMaleVoice;
-                if (femaleEl) {{
-                    femaleEl.textContent = 'Female: ' + (femaleVoice ? ((femaleVoice.name || femaleVoice.voiceURI || 'unknown') + ' [' + (femaleVoice.lang || 'n/a') + ']') : 'not found');
+                var speakerAVoice = controller.dialogFirstSpeaker === 'female' ? femaleVoice : maleVoice;
+                var speakerBVoice = controller.dialogFirstSpeaker === 'female' ? maleVoice : femaleVoice;
+                if (speakerAEl) {{
+                    speakerAEl.textContent = 'Speaker A: ' + (speakerAVoice ? ((speakerAVoice.name || speakerAVoice.voiceURI || 'unknown') + ' [' + (speakerAVoice.lang || 'n/a') + ']') : 'not found');
                 }}
-                if (maleEl) {{
-                    maleEl.textContent = 'Male: ' + (maleVoice ? ((maleVoice.name || maleVoice.voiceURI || 'unknown') + ' [' + (maleVoice.lang || 'n/a') + ']') : 'not found');
+                if (speakerBEl) {{
+                    speakerBEl.textContent = 'Speaker B: ' + (speakerBVoice ? ((speakerBVoice.name || speakerBVoice.voiceURI || 'unknown') + ' [' + (speakerBVoice.lang || 'n/a') + ']') : 'not found');
+                }}
+                if (doc && typeof doc._fcRenderDetectedVoices === 'function') {{
+                    doc._fcRenderDetectedVoices('es', 'dialog-voice-detected');
                 }}
             }}
 
@@ -3154,7 +3294,22 @@ def render_story_start_unlock_handler(
 
             function resolveDialogVoice(identity, fallbackVoice) {{
                 if (doc && typeof doc._fcResolveVoiceIdentity === 'function') {{
-                    return doc._fcResolveVoiceIdentity(identity, 'es') || fallbackVoice || null;
+                    var resolved = doc._fcResolveVoiceIdentity(identity, 'es');
+                    if (resolved) return resolved;
+                }}
+                if (fallbackVoice && synth.getVoices) {{
+                    var fallbackName = normalizeVoiceName(fallbackVoice.name || '');
+                    var fallbackLang = (fallbackVoice.lang || '').toLowerCase();
+                    var voices = synth.getVoices() || [];
+                    var exactMatch = voices.find(function(voice) {{
+                        return normalizeVoiceName(voice.name || '') === fallbackName
+                            && (voice.lang || '').toLowerCase() === fallbackLang;
+                    }});
+                    if (exactMatch) return exactMatch;
+                    var nameOnlyMatch = voices.find(function(voice) {{
+                        return normalizeVoiceName(voice.name || '') === fallbackName;
+                    }});
+                    if (nameOnlyMatch) return nameOnlyMatch;
                 }}
                 return fallbackVoice || null;
             }}
@@ -4328,6 +4483,17 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                     || null;
             }}
 
+            function dialogVoiceIdentity(voice) {{
+                return voice ? ((voice.voiceURI || voice.name || '') + '|' + (voice.lang || '')) : '';
+            }}
+
+            function resolveDialogVoice(identity, fallbackVoice) {{
+                if (doc && typeof doc._fcResolveVoiceIdentity === 'function') {{
+                    return doc._fcResolveVoiceIdentity(identity, 'es') || fallbackVoice || null;
+                }}
+                return fallbackVoice || null;
+            }}
+
             function ensureDialogVoiceState() {{
                 if (!dialogMode) return null;
                 var cacheKey = storyRunToken + '|' + (doc._storyPlaybackKey || 'dialog');
@@ -4354,15 +4520,20 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                         doc._storyDialogVoiceState.femaleVoiceId = dialogVoiceIdentity(doc._storyDialogVoiceState.femaleVoice);
                     }}
                 }}
-                var femaleEl = doc.getElementById('dialog-voice-female');
-                var maleEl = doc.getElementById('dialog-voice-male');
-                if (femaleEl) {{
-                    var femaleVoice = doc._storyDialogVoiceState.femaleVoice;
-                    femaleEl.textContent = 'Female: ' + (femaleVoice ? ((femaleVoice.name || femaleVoice.voiceURI || 'unknown') + ' [' + (femaleVoice.lang || 'n/a') + ']') : 'not found');
+                var speakerAEl = doc.getElementById('dialog-voice-speaker-a');
+                var speakerBEl = doc.getElementById('dialog-voice-speaker-b');
+                var femaleVoice = doc._storyDialogVoiceState.femaleVoice;
+                var maleVoice = doc._storyDialogVoiceState.maleVoice;
+                var speakerAVoice = doc._storyDialogVoiceState.firstSpeaker === 'female' ? femaleVoice : maleVoice;
+                var speakerBVoice = doc._storyDialogVoiceState.firstSpeaker === 'female' ? maleVoice : femaleVoice;
+                if (speakerAEl) {{
+                    speakerAEl.textContent = 'Speaker A: ' + (speakerAVoice ? ((speakerAVoice.name || speakerAVoice.voiceURI || 'unknown') + ' [' + (speakerAVoice.lang || 'n/a') + ']') : 'not found');
                 }}
-                if (maleEl) {{
-                    var maleVoice = doc._storyDialogVoiceState.maleVoice;
-                    maleEl.textContent = 'Male: ' + (maleVoice ? ((maleVoice.name || maleVoice.voiceURI || 'unknown') + ' [' + (maleVoice.lang || 'n/a') + ']') : 'not found');
+                if (speakerBEl) {{
+                    speakerBEl.textContent = 'Speaker B: ' + (speakerBVoice ? ((speakerBVoice.name || speakerBVoice.voiceURI || 'unknown') + ' [' + (speakerBVoice.lang || 'n/a') + ']') : 'not found');
+                }}
+                if (doc && typeof doc._fcRenderDetectedVoices === 'function') {{
+                    doc._fcRenderDetectedVoices('es', 'dialog-voice-detected');
                 }}
                 return doc._storyDialogVoiceState;
             }}
@@ -4422,6 +4593,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                     var completionHandled = false;
                     var speechStarted = false;
                     var startWatchdog = null;
+                    var lineVoiceId = dialogVoiceIdentity(lineVoice);
 
                     function finishPass() {{
                         if (completionHandled || speechFinished) return;
@@ -4466,11 +4638,35 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
 
                     doc._storyLastSpeechBaseKey = speechKey;
                     doc._storyLastSpeechKey = speechKey + '|pass|' + currentPass;
-                    synth.cancel();
-                    if (typeof synth.resume === 'function') {{
-                        synth.resume();
+
+                    function startSpeaking() {{
+                        if (speechFinished || completionHandled) return;
+                        if (lineVoice) {{
+                            utterance.voice = lineVoice;
+                            utterance.lang = lineVoice.lang || utterance.lang;
+                        }}
+                        if (typeof synth.resume === 'function') {{
+                            synth.resume();
+                        }}
+                        doc._storyLastRequestedVoiceId = lineVoiceId || '';
+                        synth.speak(utterance);
                     }}
-                    synth.speak(utterance);
+
+                    var voiceSwitchDelay = 0;
+                    if (lineVoiceId && doc._storyLastRequestedVoiceId && lineVoiceId !== doc._storyLastRequestedVoiceId) {{
+                        voiceSwitchDelay = 90;
+                    }}
+
+                    if (synth.speaking || synth.pending) {{
+                        synth.cancel();
+                        voiceSwitchDelay = Math.max(voiceSwitchDelay, 50);
+                    }}
+
+                    if (voiceSwitchDelay > 0) {{
+                        window.setTimeout(startSpeaking, voiceSwitchDelay);
+                    }} else {{
+                        startSpeaking();
+                    }}
 
                     startWatchdog = window.setTimeout(function() {{
                         if (completionHandled || speechStarted) return;
@@ -4699,8 +4895,9 @@ def render_story_view():
         st.markdown(
             "<div class='dialog-voice-readout'>"
             "<div class='dialog-voice-readout-label'>Dialog Voices</div>"
-            "<div class='dialog-voice-readout-line' id='dialog-voice-female'>Female: selecting...</div>"
-            "<div class='dialog-voice-readout-line' id='dialog-voice-male'>Male: selecting...</div>"
+            "<div class='dialog-voice-readout-line' id='dialog-voice-speaker-a'>Speaker A: selecting...</div>"
+            "<div class='dialog-voice-readout-line' id='dialog-voice-speaker-b'>Speaker B: selecting...</div>"
+            "<div class='dialog-voice-readout-detected' id='dialog-voice-detected'>Spanish voices: scanning...</div>"
             "</div>",
             unsafe_allow_html=True,
         )
@@ -4936,8 +5133,8 @@ def inject_flashcard_speech_runtime():
                     male: ['Evan (Enhanced)', 'Nathan (Enhanced)', 'Nicky (Enhanced)']
                 },
                 es: {
-                    female: ['Angélica (Enhanced)', 'Paulina (Enhanced)', 'Marisol (Premium)'],
-                    male: ['Juan (Enhanced)', 'Jorge (Enhanced)']
+                    female: ['Angélica (Enhanced)', 'Paulina (Enhanced)', 'Marisol (Premium)', 'Soledad', 'Mónica'],
+                    male: ['Juan (Enhanced)', 'Jorge (Enhanced)', 'Diego', 'Carlos']
                 }
             };
 
@@ -4947,8 +5144,8 @@ def inject_flashcard_speech_runtime():
                     male: ['Daniel']
                 },
                 es: {
-                    female: ['Paulina', 'Mónica', 'Monica'],
-                    male: []
+                    female: ['Isabela', 'Francisca', 'Jimena', 'Soledad', 'Angélica', 'Angelica', 'Paulina', 'Marisol', 'Mónica', 'Monica'],
+                    male: ['Diego', 'Carlos', 'Juan', 'Jorge']
                 }
             };
 
@@ -4965,7 +5162,7 @@ def inject_flashcard_speech_runtime():
                 var normalized = normalizeVoiceName((voice && voice.name) || '');
                 var normalizedUri = normalizeVoiceName((voice && voice.voiceURI) || '');
                 var combined = (normalized + ' ' + normalizedUri).trim();
-                var femaleTokens = ['ava', 'samantha', 'zoe', 'angelica', 'paulina', 'marisol', 'female', 'woman', 'victoria', 'zira', 'karen', 'monica', 'maria', 'sofia', 'soledad', 'paloma', 'lucia', 'luciana'];
+                var femaleTokens = ['ava', 'samantha', 'zoe', 'angelica', 'paulina', 'marisol', 'female', 'woman', 'victoria', 'zira', 'karen', 'monica', 'maria', 'sofia', 'soledad', 'paloma', 'lucia', 'luciana', 'isabela', 'francisca', 'jimena'];
                 var maleTokens = ['evan', 'nathan', 'nicky', 'juan', 'jorge', 'male', 'man', 'alex', 'daniel', 'aaron', 'rishi', 'diego', 'raul', 'carlos', 'miguel', 'antonio', 'felipe', 'pedro'];
                 if (femaleTokens.some(function(token) { return combined.indexOf(token) !== -1; })) return 'female';
                 if (maleTokens.some(function(token) { return combined.indexOf(token) !== -1; })) return 'male';
@@ -5043,9 +5240,44 @@ def inject_flashcard_speech_runtime():
                 }));
             }
 
+            doc._fcRenderDetectedVoices = function(language, elementId) {
+                var target = doc.getElementById(elementId || 'dialog-voice-detected');
+                if (!target) return;
+
+                var voices = synth.getVoices ? synth.getVoices() : [];
+                var candidates = languageCandidates(voices, language || 'es');
+                if (!candidates.length) {
+                    target.textContent = 'Spanish voices: none detected by browser';
+                    return;
+                }
+
+                var labels = candidates.map(function(voice) {
+                    var name = voice.name || voice.voiceURI || 'unknown';
+                    var lang = voice.lang || 'n/a';
+                    return name + ' [' + lang + ']';
+                });
+                target.textContent = 'Spanish voices: ' + labels.join(', ');
+            };
+
             function randomChoice(items) {
                 if (!items || !items.length) return null;
                 return items[Math.floor(Math.random() * items.length)];
+            }
+
+            function highestQualityVoices(voices) {
+                if (!voices || !voices.length) return [];
+                var ordered = sortVoicesByPreference(voices);
+                var topRank = voiceQualityRank(ordered[0]);
+                return ordered.filter(function(voice) {
+                    return voiceQualityRank(voice) === topRank;
+                });
+            }
+
+            function chooseBestVoice(voices, randomize) {
+                if (!voices || !voices.length) return null;
+                var bestVoices = highestQualityVoices(voices);
+                if (!bestVoices.length) return null;
+                return randomize ? randomChoice(bestVoices) : bestVoices[0];
             }
 
             function pushUnique(target, voice, seen) {
@@ -5127,7 +5359,7 @@ def inject_flashcard_speech_runtime():
                 });
 
                 if (preferredMatches.length) {
-                    return randomize ? randomChoice(preferredMatches) : preferredMatches[0];
+                    return chooseBestVoice(preferredMatches, randomize);
                 }
 
                 var fallbackMatches = [];
@@ -5138,7 +5370,7 @@ def inject_flashcard_speech_runtime():
                 });
 
                 if (fallbackMatches.length) {
-                    return randomize ? randomChoice(fallbackMatches) : fallbackMatches[0];
+                    return chooseBestVoice(fallbackMatches, randomize);
                 }
 
                 if (preferredGender) {
@@ -5146,7 +5378,7 @@ def inject_flashcard_speech_runtime():
                         return inferGender(voice) === preferredGender;
                     }));
                     if (genderMatches.length) {
-                        return randomize ? randomChoice(genderMatches) : genderMatches[0];
+                        return chooseBestVoice(genderMatches, randomize);
                     }
                     if (strictGender) {
                         return null;
@@ -5154,7 +5386,7 @@ def inject_flashcard_speech_runtime():
                 }
 
                 if (candidates.length) {
-                    return randomize ? randomChoice(candidates) : candidates[0];
+                    return chooseBestVoice(candidates, randomize);
                 }
 
                 return null;
@@ -5184,16 +5416,30 @@ def inject_flashcard_speech_runtime():
                         pushUnique(ordered, voice, seen);
                     });
 
-                    return ordered;
+                    return sortVoicesByPreference(ordered);
                 }
 
                 var femaleCandidates = orderedCandidatesForGender('female');
                 var maleCandidates = orderedCandidatesForGender('male');
+                var orderedCandidates = sortVoicesByPreference(candidates);
                 var femaleVoice = femaleCandidates[0] || null;
                 var femaleKey = voiceIdentity(femaleVoice);
                 var maleVoice = maleCandidates.find(function(voice) {
                     return voiceIdentity(voice) !== femaleKey;
                 }) || maleCandidates[0] || null;
+
+                if (!femaleVoice && maleVoice) {
+                    femaleVoice = orderedCandidates.find(function(voice) {
+                        return voiceIdentity(voice) !== voiceIdentity(maleVoice);
+                    }) || maleVoice;
+                    femaleKey = voiceIdentity(femaleVoice);
+                }
+
+                if (!maleVoice) {
+                    maleVoice = orderedCandidates.find(function(voice) {
+                        return voiceIdentity(voice) !== femaleKey;
+                    }) || femaleVoice || null;
+                }
 
                 return {
                     femaleVoice: femaleVoice,
@@ -5207,8 +5453,7 @@ def inject_flashcard_speech_runtime():
                 var voices = synth.getVoices ? synth.getVoices() : [];
                 var resolved = findVoiceByIdentity(voices, identity);
                 if (resolved) return resolved;
-                var candidates = languageCandidates(voices, language);
-                return candidates[0] || null;
+                return null;
             };
 
             function pickVoice(language, options) {
