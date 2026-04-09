@@ -301,9 +301,11 @@ def is_deck_category_open(category_id):
 def toggle_deck_category(category_id):
     open_categories = list(st.session_state.get("open_deck_categories", []))
     if category_id in open_categories:
-        open_categories.remove(category_id)
+        open_categories = []
     else:
-        open_categories.append(category_id)
+        # Keep the picker simpler on mobile by allowing only one open category
+        # at a time. Tapping a different header replaces the current section.
+        open_categories = [category_id]
     st.session_state.open_deck_categories = open_categories
 
 # ------------------------------------------------------------------------
@@ -2200,16 +2202,33 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     justify-content: flex-start !important;
     text-align: left !important;
     font-weight: 700 !important;
+    font-size: 1.02rem !important;
+    line-height: 1.1 !important;
+    padding-top: 0.3rem !important;
+    padding-bottom: 0.3rem !important;
 }}
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
     justify-content: flex-start !important;
     text-align: left !important;
-    padding-left: 1.15rem !important;
+    padding-left: 1.45rem !important;
+    font-size: 0.88rem !important;
+    line-height: 1.0 !important;
+    min-height: 1.55rem !important;
+    padding-top: 0.02rem !important;
+    padding-bottom: 0.02rem !important;
+}}
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] {{
+    margin-bottom: 0 !important;
+}}
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button > div,
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button p {{
+    font-size: 0.88rem !important;
+    line-height: 1.0 !important;
 }}
 .deck-category-empty {{
     color: {t['muted']};
     font-size: 0.88rem;
-    padding: 0.1rem 0 0.3rem 1.15rem;
+    padding: 0.1rem 0 0.2rem 1.45rem;
 }}
 @media (max-width: 767px) {{
     .title-row {{
@@ -2338,6 +2357,20 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_story_"] [data-testid="stButton"] > button::before {{
         font-size: 1.10rem !important;
+    }}
+    [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
+        font-size: 1.08rem !important;
+        font-weight: 800 !important;
+        min-height: 1.95rem !important;
+    }}
+    [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
+        padding-left: 1.55rem !important;
+        padding-right: 0.35rem !important;
+        font-size: 0.84rem !important;
+        min-height: 1.45rem !important;
+    }}
+    [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button p {{
+        font-size: 0.84rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] > * {{
         margin-bottom: 0 !important;
