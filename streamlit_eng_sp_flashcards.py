@@ -4022,14 +4022,20 @@ def render_story_start_unlock_handler(
                     ? controller.localIndex
                     : config.serverIndex;
                 cancelSpeech();
+                controller.active = false;
+                controller.running = false;
                 controller.lastSpokenIndex = null;
                 controller.lastCompletedIndex = null;
                 controller.queuedNextIndex = null;
+                controller.pendingManualSpeakIndex = null;
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
                 controller.localIndex = (config.running && controller.active)
                     ? preservedIndex
                     : config.serverIndex;
+                if (config.running) {{
+                    controller.localIndex = preservedIndex;
+                }}
             }}
 
             controller.storyKey = config.storyKey;
