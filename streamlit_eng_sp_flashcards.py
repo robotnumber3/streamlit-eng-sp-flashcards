@@ -3143,12 +3143,6 @@ def render_story_start_unlock_handler(
                 if (!controller.dialogFemaleVoice) {{
                     controller.dialogFemaleVoice = chooseDialogVoice('female');
                 }}
-                if (!controller.dialogMaleVoice && controller.dialogFemaleVoice) {{
-                    controller.dialogMaleVoice = controller.dialogFemaleVoice;
-                }}
-                if (!controller.dialogFemaleVoice && controller.dialogMaleVoice) {{
-                    controller.dialogFemaleVoice = controller.dialogMaleVoice;
-                }}
                 updateDialogVoiceReadout();
             }}
 
@@ -4313,10 +4307,6 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                     }};
                 }}
                 if (!doc._storyDialogVoiceState.maleVoice && doc._storyDialogVoiceState.femaleVoice) {{
-                    doc._storyDialogVoiceState.maleVoice = doc._storyDialogVoiceState.femaleVoice;
-                }}
-                if (!doc._storyDialogVoiceState.femaleVoice && doc._storyDialogVoiceState.maleVoice) {{
-                    doc._storyDialogVoiceState.femaleVoice = doc._storyDialogVoiceState.maleVoice;
                 }}
                 var femaleEl = doc.getElementById('dialog-voice-female');
                 var maleEl = doc.getElementById('dialog-voice-male');
@@ -5143,17 +5133,6 @@ def inject_flashcard_speech_runtime():
                 var maleVoice = maleCandidates.find(function(voice) {
                     return voiceIdentity(voice) !== femaleKey;
                 }) || maleCandidates[0] || null;
-
-                if (!femaleVoice && candidates.length) {
-                    femaleVoice = candidates[0];
-                    femaleKey = voiceIdentity(femaleVoice);
-                }
-
-                if (!maleVoice && candidates.length) {
-                    maleVoice = candidates.find(function(voice) {
-                        return voiceIdentity(voice) !== femaleKey;
-                    }) || null;
-                }
 
                 return {
                     femaleVoice: femaleVoice,
