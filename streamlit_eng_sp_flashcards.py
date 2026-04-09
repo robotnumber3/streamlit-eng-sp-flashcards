@@ -3096,6 +3096,11 @@ def render_story_start_unlock_handler(
                 if (!controller.dialogFirstSpeaker) {{
                     controller.dialogFirstSpeaker = Math.random() < 0.5 ? 'male' : 'female';
                 }}
+                if ((!controller.dialogMaleVoice || !controller.dialogFemaleVoice) && doc && typeof doc._fcPickDialogVoicePair === 'function') {{
+                    var dialogPair = doc._fcPickDialogVoicePair('es') || {{}};
+                    controller.dialogFemaleVoice = dialogPair.femaleVoice || controller.dialogFemaleVoice || null;
+                    controller.dialogMaleVoice = dialogPair.maleVoice || controller.dialogMaleVoice || null;
+                }}
                 if (!controller.dialogMaleVoice) {{
                     controller.dialogMaleVoice = chooseDialogVoice('male');
                 }}
@@ -4256,15 +4261,18 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                 if (!dialogMode) return null;
                 var cacheKey = storyRunToken + '|' + (doc._storyPlaybackKey || 'dialog');
                 if (!doc._storyDialogVoiceState || doc._storyDialogVoiceState.cacheKey !== cacheKey) {{
+                    var dialogPair = doc && typeof doc._fcPickDialogVoicePair === 'function'
+                        ? doc._fcPickDialogVoicePair('es')
+                        : null;
                     doc._storyDialogVoiceState = {{
                         cacheKey: cacheKey,
                         firstSpeaker: Math.random() < 0.5 ? 'male' : 'female',
-                        maleVoice: doc && typeof doc._fcPickPreferredVoice === 'function'
+                        maleVoice: (dialogPair && dialogPair.maleVoice) || (doc && typeof doc._fcPickPreferredVoice === 'function'
                             ? doc._fcPickPreferredVoice('es', {{ preferredGender: 'male', randomize: true }})
-                            : pickStandardVoice(),
-                        femaleVoice: doc && typeof doc._fcPickPreferredVoice === 'function'
+                            : pickStandardVoice()),
+                        femaleVoice: (dialogPair && dialogPair.femaleVoice) || (doc && typeof doc._fcPickPreferredVoice === 'function'
                             ? doc._fcPickPreferredVoice('es', {{ preferredGender: 'female', randomize: true }})
-                            : pickStandardVoice(),
+                            : pickStandardVoice()),
                     }};
                 }}
                 if (!doc._storyDialogVoiceState.maleVoice && doc._storyDialogVoiceState.femaleVoice) {{
@@ -4861,11 +4869,16 @@ def inject_flashcard_speech_runtime():
                 var normalized = normalizeVoiceName((voice && voice.name) || '');
                 var normalizedUri = normalizeVoiceName((voice && voice.voiceURI) || '');
                 var combined = (normalized + ' ' + normalizedUri).trim();
-                var femaleTokens = ['ava', 'samantha', 'zoe', 'angelica', 'paulina', 'marisol', 'female', 'woman', 'victoria', 'zira', 'karen', 'monica'];
-                var maleTokens = ['evan', 'nathan', 'nicky', 'juan', 'jorge', 'male', 'man', 'alex', 'daniel', 'aaron', 'rishi'];
+                var femaleTokens = ['ava', 'samantha', 'zoe', 'angelica', 'paulina', 'marisol', 'female', 'woman', 'victoria', 'zira', 'karen', 'monica', 'maria', 'sofia', 'soledad', 'paloma', 'lucia', 'luciana'];
+                var maleTokens = ['evan', 'nathan', 'nicky', 'juan', 'jorge', 'male', 'man', 'alex', 'daniel', 'aaron', 'rishi', 'diego', 'raul', 'carlos', 'miguel', 'antonio', 'felipe', 'pedro'];
                 if (femaleTokens.some(function(token) { return combined.indexOf(token) !== -1; })) return 'female';
                 if (maleTokens.some(function(token) { return combined.indexOf(token) !== -1; })) return 'male';
                 return null;
+            }
+
+            function voiceIdentity(voice) {
+                if (!voice) return '';
+                return (voice.voiceURI || voice.name || '') + '|' + (voice.lang || '');
             }
 
             function voiceQualityRank(voice) {
@@ -5038,6 +5051,58 @@ def inject_flashcard_speech_runtime():
                 }
 
                 return null;
+            };
+
+            doc._fcPickDialogVoicePair = function(language) {
+                var voices = synth.getVoices ? synth.getVoices() : [];
+                var candidates = languageCandidates(voices, language);
+
+                function orderedCandidatesForGender(gender) {
+                    var ordered = [];
+                    var seen = {};
+                    var pool = doc._preferredVoicePools[(language === 'es' ? 'es' : 'en')] || { female: [], male: [] };
+                    var fallbackPool = doc._fallbackVoicePools[(language === 'es' ? 'es' : 'en')] || { female: [], male: [] };
+
+                    matchedVoicesForTokens(candidates, pool[gender] || []).forEach(function(voice) {
+                        pushUnique(ordered, voice, seen);
+                    });
+
+                    matchedVoicesForTokens(candidates, fallbackPool[gender] || []).forEach(function(voice) {
+                        pushUnique(ordered, voice, seen);
+                    });
+
+                    sortVoicesByPreference(candidates.filter(function(voice) {
+                        return inferGender(voice) === gender;
+                    })).forEach(function(voice) {
+                        pushUnique(ordered, voice, seen);
+                    });
+
+                    return ordered;
+                }
+
+                var femaleCandidates = orderedCandidatesForGender('female');
+                var maleCandidates = orderedCandidatesForGender('male');
+                var femaleVoice = femaleCandidates[0] || null;
+                var femaleKey = voiceIdentity(femaleVoice);
+                var maleVoice = maleCandidates.find(function(voice) {
+                    return voiceIdentity(voice) !== femaleKey;
+                }) || maleCandidates[0] || null;
+
+                if (!femaleVoice && candidates.length) {
+                    femaleVoice = candidates[0];
+                    femaleKey = voiceIdentity(femaleVoice);
+                }
+
+                if (!maleVoice && candidates.length) {
+                    maleVoice = candidates.find(function(voice) {
+                        return voiceIdentity(voice) !== femaleKey;
+                    }) || null;
+                }
+
+                return {
+                    femaleVoice: femaleVoice,
+                    maleVoice: maleVoice,
+                };
             };
 
             function pickVoice(language, options) {
