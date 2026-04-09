@@ -4030,6 +4030,7 @@ def render_story_start_unlock_handler(
                 controller.pendingManualSpeakIndex = null;
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
+                controller.preserveLocalIndexOnRestart = !!config.running;
                 controller.localIndex = (config.running && controller.active)
                     ? preservedIndex
                     : config.serverIndex;
@@ -4061,6 +4062,7 @@ def render_story_start_unlock_handler(
                 !controller.isSpeaking
                 && typeof config.serverIndex === 'number'
                 && config.serverIndex !== controller.localIndex
+                && !controller.preserveLocalIndexOnRestart
                 && (config.running || !controller.active)
             ) {{
                 controller.localIndex = config.serverIndex;
@@ -4089,6 +4091,7 @@ def render_story_start_unlock_handler(
             if (config.running && !controller.active && !controller.isSpeaking) {{
                 controller.active = true;
                 controller.running = true;
+                controller.preserveLocalIndexOnRestart = false;
                 controller.pausedDisplayIndex = null;
                 controller.queuedNextIndex = null;
                 controller.pendingManualSpeakIndex = null;
