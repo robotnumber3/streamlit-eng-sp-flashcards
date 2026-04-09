@@ -1070,7 +1070,7 @@ def render_grouped_deck_picker():
             + ";'>Available decks:</div>",
             unsafe_allow_html=True,
         )
-        deck_container = st.container(height=250)
+        deck_container = st.container(height=580)
         with deck_container:
             for person in PERSON_LABELS:
                 review_value = REVIEW_DECK_VALUES[person]
@@ -2220,11 +2220,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mobile_deck_picker_wrap {{
     display: block;
 }}
+.st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
+    border: 1px solid color-mix(in srgb, {t['border']} 78%, transparent 22%) !important;
+    border-radius: 0.85rem !important;
+    padding: 0.35rem 0.45rem !important;
+}}
+[class*="st-key-deck_category_toggle_"] [data-testid="stButton"] {{
+    margin-bottom: 0.08rem !important;
+}}
 [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
     justify-content: flex-start !important;
     text-align: left !important;
-    font-weight: 800 !important;
-    font-size: 1.12rem !important;
+    font-weight: 900 !important;
+    font-size: 1.2rem !important;
     line-height: 1.1 !important;
     padding-top: 0.3rem !important;
     padding-bottom: 0.3rem !important;
@@ -2285,6 +2293,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         display: block !important;
         margin-top: -0.04rem !important;
         margin-bottom: 0.40rem !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
+        padding: 0.22rem 0.22rem !important;
+        border-radius: 0.7rem !important;
     }}
     [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button {{
         display: flex !important;
@@ -2381,7 +2393,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         font-size: 1.10rem !important;
     }}
     [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
-        font-size: 1.18rem !important;
+        font-size: 1.24rem !important;
         font-weight: 900 !important;
         min-height: 2.05rem !important;
     }}
@@ -2517,10 +2529,6 @@ def render_mobile_deck_picker_height_fix():
                 return narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua));
             }
 
-            if (!isPhoneLayout()) {
-                return;
-            }
-
             function applyHeight() {
                 var wrap = doc.querySelector('.st-key-mobile_deck_picker_wrap');
                 if (!wrap) {
@@ -2547,9 +2555,10 @@ def render_mobile_deck_picker_height_fix():
                 });
 
                 var target = candidates[0];
-                target.style.height = '70svh';
-                target.style.maxHeight = '70svh';
-                target.style.minHeight = '70svh';
+                var targetHeight = isPhoneLayout() ? '70svh' : '75svh';
+                target.style.height = targetHeight;
+                target.style.maxHeight = targetHeight;
+                target.style.minHeight = targetHeight;
                 target.style.overflowY = 'auto';
                 target.style.marginTop = '0.38rem';
                 return true;
@@ -3103,14 +3112,26 @@ def render_story_start_unlock_handler(
                     || null;
             }}
 
+            function dialogVoiceIdentity(voice) {{
+                return voice ? ((voice.voiceURI || voice.name || '') + '|' + (voice.lang || '')) : '';
+            }}
+
+            function resolveDialogVoice(identity, fallbackVoice) {{
+                if (doc && typeof doc._fcResolveVoiceIdentity === 'function') {{
+                    return doc._fcResolveVoiceIdentity(identity, 'es') || fallbackVoice || null;
+                }}
+                return fallbackVoice || null;
+            }}
+
             function chooseDialogVoice(preferredGender) {{
                 if (doc && typeof doc._fcPickPreferredVoice === 'function') {{
                     return doc._fcPickPreferredVoice('es', {{
                         preferredGender: preferredGender,
                         randomize: true,
+                        strictGender: true,
                     }});
                 }}
-                return pickStandardVoice();
+                return null;
             }}
 
             function updateDialogVoiceReadout() {{
@@ -3127,6 +3148,17 @@ def render_story_start_unlock_handler(
                 }}
             }}
 
+            function dialogVoiceIdentity(voice) {{
+                return voice ? ((voice.voiceURI || voice.name || '') + '|' + (voice.lang || '')) : '';
+            }}
+
+            function resolveDialogVoice(identity, fallbackVoice) {{
+                if (doc && typeof doc._fcResolveVoiceIdentity === 'function') {{
+                    return doc._fcResolveVoiceIdentity(identity, 'es') || fallbackVoice || null;
+                }}
+                return fallbackVoice || null;
+            }}
+
             function ensureDialogVoiceState() {{
                 if (!controller.dialogMode) return;
                 if (!controller.dialogFirstSpeaker) {{
@@ -3136,12 +3168,16 @@ def render_story_start_unlock_handler(
                     var dialogPair = doc._fcPickDialogVoicePair('es') || {{}};
                     controller.dialogFemaleVoice = dialogPair.femaleVoice || controller.dialogFemaleVoice || null;
                     controller.dialogMaleVoice = dialogPair.maleVoice || controller.dialogMaleVoice || null;
+                    controller.dialogFemaleVoiceId = dialogPair.femaleIdentity || controller.dialogFemaleVoiceId || '';
+                    controller.dialogMaleVoiceId = dialogPair.maleIdentity || controller.dialogMaleVoiceId || '';
                 }}
                 if (!controller.dialogMaleVoice) {{
                     controller.dialogMaleVoice = chooseDialogVoice('male');
+                    controller.dialogMaleVoiceId = dialogVoiceIdentity(controller.dialogMaleVoice);
                 }}
                 if (!controller.dialogFemaleVoice) {{
                     controller.dialogFemaleVoice = chooseDialogVoice('female');
+                    controller.dialogFemaleVoiceId = dialogVoiceIdentity(controller.dialogFemaleVoice);
                 }}
                 updateDialogVoiceReadout();
             }}
@@ -3162,9 +3198,13 @@ def render_story_start_unlock_handler(
                 ensureDialogVoiceState();
                 var preferredGender = dialogGenderForIndex(index);
                 if (preferredGender === 'female') {{
-                    return controller.dialogFemaleVoice || controller.dialogMaleVoice || pickStandardVoice();
+                    return resolveDialogVoice(controller.dialogFemaleVoiceId, controller.dialogFemaleVoice)
+                        || resolveDialogVoice(controller.dialogMaleVoiceId, controller.dialogMaleVoice)
+                        || pickStandardVoice();
                 }}
-                return controller.dialogMaleVoice || controller.dialogFemaleVoice || pickStandardVoice();
+                return resolveDialogVoice(controller.dialogMaleVoiceId, controller.dialogMaleVoice)
+                    || resolveDialogVoice(controller.dialogFemaleVoiceId, controller.dialogFemaleVoice)
+                    || pickStandardVoice();
             }}
 
             function clickAdvanceButton() {{
@@ -4299,14 +4339,20 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                         cacheKey: cacheKey,
                         firstSpeaker: Math.random() < 0.5 ? 'male' : 'female',
                         maleVoice: (dialogPair && dialogPair.maleVoice) || (doc && typeof doc._fcPickPreferredVoice === 'function'
-                            ? doc._fcPickPreferredVoice('es', {{ preferredGender: 'male', randomize: true }})
+                            ? doc._fcPickPreferredVoice('es', {{ preferredGender: 'male', randomize: true, strictGender: true }})
                             : pickStandardVoice()),
                         femaleVoice: (dialogPair && dialogPair.femaleVoice) || (doc && typeof doc._fcPickPreferredVoice === 'function'
-                            ? doc._fcPickPreferredVoice('es', {{ preferredGender: 'female', randomize: true }})
+                            ? doc._fcPickPreferredVoice('es', {{ preferredGender: 'female', randomize: true, strictGender: true }})
                             : pickStandardVoice()),
+                        maleVoiceId: (dialogPair && dialogPair.maleIdentity) || '',
+                        femaleVoiceId: (dialogPair && dialogPair.femaleIdentity) || '',
                     }};
-                }}
-                if (!doc._storyDialogVoiceState.maleVoice && doc._storyDialogVoiceState.femaleVoice) {{
+                    if (!doc._storyDialogVoiceState.maleVoiceId) {{
+                        doc._storyDialogVoiceState.maleVoiceId = dialogVoiceIdentity(doc._storyDialogVoiceState.maleVoice);
+                    }}
+                    if (!doc._storyDialogVoiceState.femaleVoiceId) {{
+                        doc._storyDialogVoiceState.femaleVoiceId = dialogVoiceIdentity(doc._storyDialogVoiceState.femaleVoice);
+                    }}
                 }}
                 var femaleEl = doc.getElementById('dialog-voice-female');
                 var maleEl = doc.getElementById('dialog-voice-male');
@@ -4331,9 +4377,13 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                     ? (storyIndex % 2 === 0 ? 'female' : 'male')
                     : (storyIndex % 2 === 0 ? 'male' : 'female');
                 if (preferredGender === 'female') {{
-                    return dialogState.femaleVoice || dialogState.maleVoice || pickStandardVoice();
+                    return resolveDialogVoice(dialogState.femaleVoiceId, dialogState.femaleVoice)
+                        || resolveDialogVoice(dialogState.maleVoiceId, dialogState.maleVoice)
+                        || pickStandardVoice();
                 }}
-                return dialogState.maleVoice || dialogState.femaleVoice || pickStandardVoice();
+                return resolveDialogVoice(dialogState.maleVoiceId, dialogState.maleVoice)
+                    || resolveDialogVoice(dialogState.femaleVoiceId, dialogState.femaleVoice)
+                    || pickStandardVoice();
             }}
 
             function speakNow() {{
@@ -4927,6 +4977,13 @@ def inject_flashcard_speech_runtime():
                 return (voice.voiceURI || voice.name || '') + '|' + (voice.lang || '');
             }
 
+            function findVoiceByIdentity(voices, identity) {
+                if (!identity) return null;
+                return voices.find(function(voice) {
+                    return voiceIdentity(voice) === identity;
+                }) || null;
+            }
+
             function voiceQualityRank(voice) {
                 var haystack = normalizeVoiceName((voice && voice.name) || '') + ' ' + normalizeVoiceName((voice && voice.voiceURI) || '');
                 if (haystack.indexOf('premium') !== -1) return 4;
@@ -5056,6 +5113,7 @@ def inject_flashcard_speech_runtime():
                 var languageKey = language === 'es' ? 'es' : 'en';
                 var preferredGender = options.preferredGender || null;
                 var randomize = options.randomize !== false;
+                var strictGender = options.strictGender === true;
                 var pool = doc._preferredVoicePools[languageKey] || { female: [], male: [] };
                 var fallbackPool = doc._fallbackVoicePools[languageKey] || { female: [], male: [] };
                 var genders = preferredGender ? [preferredGender] : ['female', 'male'];
@@ -5089,6 +5147,9 @@ def inject_flashcard_speech_runtime():
                     }));
                     if (genderMatches.length) {
                         return randomize ? randomChoice(genderMatches) : genderMatches[0];
+                    }
+                    if (strictGender) {
+                        return null;
                     }
                 }
 
@@ -5137,7 +5198,17 @@ def inject_flashcard_speech_runtime():
                 return {
                     femaleVoice: femaleVoice,
                     maleVoice: maleVoice,
+                    femaleIdentity: voiceIdentity(femaleVoice),
+                    maleIdentity: voiceIdentity(maleVoice),
                 };
+            };
+
+            doc._fcResolveVoiceIdentity = function(identity, language) {
+                var voices = synth.getVoices ? synth.getVoices() : [];
+                var resolved = findVoiceByIdentity(voices, identity);
+                if (resolved) return resolved;
+                var candidates = languageCandidates(voices, language);
+                return candidates[0] || null;
             };
 
             function pickVoice(language, options) {
