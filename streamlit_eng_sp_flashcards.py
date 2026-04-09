@@ -2201,8 +2201,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
     justify-content: flex-start !important;
     text-align: left !important;
-    font-weight: 700 !important;
-    font-size: 1.02rem !important;
+    font-weight: 800 !important;
+    font-size: 1.12rem !important;
     line-height: 1.1 !important;
     padding-top: 0.3rem !important;
     padding-bottom: 0.3rem !important;
@@ -2359,9 +2359,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         font-size: 1.10rem !important;
     }}
     [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
-        font-size: 1.08rem !important;
-        font-weight: 800 !important;
-        min-height: 1.95rem !important;
+        font-size: 1.18rem !important;
+        font-weight: 900 !important;
+        min-height: 2.05rem !important;
     }}
     [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
         padding-left: 1.55rem !important;
