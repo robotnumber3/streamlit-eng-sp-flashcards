@@ -2190,6 +2190,28 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-weight: 600;
     color: {t['fg']};
 }}
+.dialog-voice-readout {{
+    margin: 0.02rem 0 0.45rem 0;
+    padding: 0.42rem 0.55rem;
+    border-radius: 0.55rem;
+    background: color-mix(in srgb, {t['card_bg']} 82%, transparent 18%);
+    border: 1px solid color-mix(in srgb, {t['border']} 68%, transparent 32%);
+}}
+.dialog-voice-readout-label {{
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: {t['muted']};
+    margin-bottom: 0.18rem;
+}}
+.dialog-voice-readout-line {{
+    font-size: 0.78rem;
+    line-height: 1.2;
+    color: {t['fg']};
+    white-space: normal;
+    overflow-wrap: anywhere;
+}}
 .soft-divider {{
     border: none; border-top: 1px solid {t['border']}; margin: 0.6rem 0;
 }}
@@ -3091,6 +3113,20 @@ def render_story_start_unlock_handler(
                 return pickStandardVoice();
             }}
 
+            function updateDialogVoiceReadout() {{
+                if (!controller.dialogMode) return;
+                var femaleEl = doc.getElementById('dialog-voice-female');
+                var maleEl = doc.getElementById('dialog-voice-male');
+                var femaleVoice = controller.dialogFemaleVoice;
+                var maleVoice = controller.dialogMaleVoice;
+                if (femaleEl) {{
+                    femaleEl.textContent = 'Female: ' + (femaleVoice ? ((femaleVoice.name || femaleVoice.voiceURI || 'unknown') + ' [' + (femaleVoice.lang || 'n/a') + ']') : 'not found');
+                }}
+                if (maleEl) {{
+                    maleEl.textContent = 'Male: ' + (maleVoice ? ((maleVoice.name || maleVoice.voiceURI || 'unknown') + ' [' + (maleVoice.lang || 'n/a') + ']') : 'not found');
+                }}
+            }}
+
             function ensureDialogVoiceState() {{
                 if (!controller.dialogMode) return;
                 if (!controller.dialogFirstSpeaker) {{
@@ -3113,6 +3149,7 @@ def render_story_start_unlock_handler(
                 if (!controller.dialogFemaleVoice && controller.dialogMaleVoice) {{
                     controller.dialogFemaleVoice = controller.dialogMaleVoice;
                 }}
+                updateDialogVoiceReadout();
             }}
 
             function dialogGenderForIndex(index) {{
@@ -4281,6 +4318,16 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                 if (!doc._storyDialogVoiceState.femaleVoice && doc._storyDialogVoiceState.maleVoice) {{
                     doc._storyDialogVoiceState.femaleVoice = doc._storyDialogVoiceState.maleVoice;
                 }}
+                var femaleEl = doc.getElementById('dialog-voice-female');
+                var maleEl = doc.getElementById('dialog-voice-male');
+                if (femaleEl) {{
+                    var femaleVoice = doc._storyDialogVoiceState.femaleVoice;
+                    femaleEl.textContent = 'Female: ' + (femaleVoice ? ((femaleVoice.name || femaleVoice.voiceURI || 'unknown') + ' [' + (femaleVoice.lang || 'n/a') + ']') : 'not found');
+                }}
+                if (maleEl) {{
+                    var maleVoice = doc._storyDialogVoiceState.maleVoice;
+                    maleEl.textContent = 'Male: ' + (maleVoice ? ((maleVoice.name || maleVoice.voiceURI || 'unknown') + ' [' + (maleVoice.lang || 'n/a') + ']') : 'not found');
+                }}
                 return doc._storyDialogVoiceState;
             }}
 
@@ -4608,6 +4655,15 @@ def render_story_view():
         "</div>",
         unsafe_allow_html=True,
     )
+    if dialog_mode:
+        st.markdown(
+            "<div class='dialog-voice-readout'>"
+            "<div class='dialog-voice-readout-label'>Dialog Voices</div>"
+            "<div class='dialog-voice-readout-line' id='dialog-voice-female'>Female: selecting...</div>"
+            "<div class='dialog-voice-readout-line' id='dialog-voice-male'>Male: selecting...</div>"
+            "</div>",
+            unsafe_allow_html=True,
+        )
 
     story_box_shield = story_box_shield_html(False)
 
