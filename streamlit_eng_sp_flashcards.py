@@ -98,7 +98,7 @@ def review_deck_person(deck_value):
 
 
 def review_deck_label(person):
-    return f"Review - {PERSON_LABELS[person]}"
+    return f"⭐ Review - {PERSON_LABELS[person]}"
 
 
 def normalized_filename(value):
@@ -1465,6 +1465,20 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: rgba(128, 128, 128, 0.10) !important;
     color: {t['muted']} !important;
     opacity: 1 !important;
+}}
+.st-key-mobile_deck_picker_wrap .st-key-review_miguel_active_wrap div[data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap .st-key-review_david_active_wrap div[data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap .st-key-review_miguel_inactive_wrap div[data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap .st-key-review_david_inactive_wrap div[data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"][data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button {{
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    padding-left: 0.35rem !important;
 }}
 .st-key-mistakesonly_wrap div[data-testid="stButton"] > button:disabled {{
     background-color: rgba(128, 128, 128, 0.14) !important;
@@ -4593,7 +4607,19 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                     var completionHandled = false;
                     var speechStarted = false;
                     var startWatchdog = null;
+                    var startAttempts = 0;
                     var lineVoiceId = dialogVoiceIdentity(lineVoice);
+                    var currentVoiceEl = doc.getElementById('dialog-voice-current');
+
+                    function updateCurrentVoiceReadout(statusLabel) {{
+                        if (!currentVoiceEl) return;
+                        currentVoiceEl.textContent = 'Current line: ' + (lineVoice
+                            ? ((lineVoice.name || lineVoice.voiceURI || 'unknown') + ' [' + (lineVoice.lang || 'n/a') + ']')
+                            : 'not found')
+                            + (statusLabel ? (' (' + statusLabel + ')') : '');
+                    }}
+
+                    updateCurrentVoiceReadout('queued');
 
                     function finishPass() {{
                         if (completionHandled || speechFinished) return;
@@ -4641,6 +4667,10 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
 
                     function startSpeaking() {{
                         if (speechFinished || completionHandled) return;
+                        startAttempts += 1;
+                        lineVoice = pickVoiceForLine() || lineVoice;
+                        lineVoiceId = dialogVoiceIdentity(lineVoice);
+                        updateCurrentVoiceReadout(startAttempts > 1 ? ('retry ' + startAttempts) : 'speaking');
                         if (lineVoice) {{
                             utterance.voice = lineVoice;
                             utterance.lang = lineVoice.lang || utterance.lang;
@@ -4654,12 +4684,16 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
 
                     var voiceSwitchDelay = 0;
                     if (lineVoiceId && doc._storyLastRequestedVoiceId && lineVoiceId !== doc._storyLastRequestedVoiceId) {{
-                        voiceSwitchDelay = 90;
+                        voiceSwitchDelay = 220;
+                        try {{
+                            synth.cancel();
+                        }} catch (error) {{
+                        }}
                     }}
 
                     if (synth.speaking || synth.pending) {{
                         synth.cancel();
-                        voiceSwitchDelay = Math.max(voiceSwitchDelay, 50);
+                        voiceSwitchDelay = Math.max(voiceSwitchDelay, 120);
                     }}
 
                     if (voiceSwitchDelay > 0) {{
@@ -4671,8 +4705,18 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                     startWatchdog = window.setTimeout(function() {{
                         if (completionHandled || speechStarted) return;
                         if (synth.speaking || synth.pending) return;
+                        if (startAttempts < 3) {{
+                            try {{
+                                synth.cancel();
+                            }} catch (error) {{
+                            }}
+                            updateCurrentVoiceReadout('retrying');
+                            window.setTimeout(startSpeaking, 260);
+                            return;
+                        }}
                         doc._storyLastSpeechKey = null;
                         doc._storyLastSpeechBaseKey = null;
+                        updateCurrentVoiceReadout('skipped');
                         finishPass();
                     }}, 1400);
                 }}
@@ -4897,6 +4941,7 @@ def render_story_view():
             "<div class='dialog-voice-readout-label'>Dialog Voices</div>"
             "<div class='dialog-voice-readout-line' id='dialog-voice-speaker-a'>Speaker A: selecting...</div>"
             "<div class='dialog-voice-readout-line' id='dialog-voice-speaker-b'>Speaker B: selecting...</div>"
+            "<div class='dialog-voice-readout-line' id='dialog-voice-current'>Current line: waiting...</div>"
             "<div class='dialog-voice-readout-detected' id='dialog-voice-detected'>Spanish voices: scanning...</div>"
             "</div>",
             unsafe_allow_html=True,
@@ -5419,14 +5464,55 @@ def inject_flashcard_speech_runtime():
                     return sortVoicesByPreference(ordered);
                 }
 
+                function pairScore(femaleVoice, maleVoice) {
+                    if (!femaleVoice || !maleVoice) return -9999;
+                    if (voiceIdentity(femaleVoice) === voiceIdentity(maleVoice)) return -9999;
+
+                    var femaleLang = (femaleVoice.lang || '').toLowerCase();
+                    var maleLang = (maleVoice.lang || '').toLowerCase();
+                    var femaleBaseLang = femaleLang.split('-')[0] || '';
+                    var maleBaseLang = maleLang.split('-')[0] || '';
+                    var score = 0;
+
+                    if (femaleLang && maleLang && femaleLang === maleLang) {
+                        score += 20;
+                    } else if (femaleBaseLang && maleBaseLang && femaleBaseLang === maleBaseLang) {
+                        score += 6;
+                    }
+
+                    score += voiceQualityRank(femaleVoice) + voiceQualityRank(maleVoice);
+
+                    if (inferGender(femaleVoice) === 'female') score += 2;
+                    if (inferGender(maleVoice) === 'male') score += 2;
+
+                    return score;
+                }
+
                 var femaleCandidates = orderedCandidatesForGender('female');
                 var maleCandidates = orderedCandidatesForGender('male');
                 var orderedCandidates = sortVoicesByPreference(candidates);
-                var femaleVoice = femaleCandidates[0] || null;
+
+                var bestPair = null;
+                femaleCandidates.forEach(function(femaleVoiceCandidate) {
+                    maleCandidates.forEach(function(maleVoiceCandidate) {
+                        var score = pairScore(femaleVoiceCandidate, maleVoiceCandidate);
+                        if (!bestPair || score > bestPair.score) {
+                            bestPair = {
+                                femaleVoice: femaleVoiceCandidate,
+                                maleVoice: maleVoiceCandidate,
+                                score: score,
+                            };
+                        }
+                    });
+                });
+
+                var femaleVoice = bestPair ? bestPair.femaleVoice : (femaleCandidates[0] || null);
                 var femaleKey = voiceIdentity(femaleVoice);
-                var maleVoice = maleCandidates.find(function(voice) {
-                    return voiceIdentity(voice) !== femaleKey;
-                }) || maleCandidates[0] || null;
+                var maleVoice = bestPair
+                    ? bestPair.maleVoice
+                    : (maleCandidates.find(function(voice) {
+                        return voiceIdentity(voice) !== femaleKey;
+                    }) || maleCandidates[0] || null);
 
                 if (!femaleVoice && maleVoice) {
                     femaleVoice = orderedCandidates.find(function(voice) {
