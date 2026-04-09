@@ -4005,7 +4005,7 @@ def render_story_start_unlock_handler(
                 }});
             }}
 
-            if (controller.storyKey !== config.storyKey || controller.storyRunToken !== config.storyRunToken) {{
+            if (controller.storyKey !== config.storyKey) {{
                 cancelSpeech();
                 controller.active = false;
                 controller.localIndex = config.serverIndex;
@@ -4017,6 +4017,19 @@ def render_story_start_unlock_handler(
                 controller.dialogMaleVoice = null;
                 controller.dialogFemaleVoice = null;
                 controller.dialogFirstSpeaker = null;
+            }} else if (controller.storyRunToken !== config.storyRunToken) {{
+                var preservedIndex = typeof controller.localIndex === 'number'
+                    ? controller.localIndex
+                    : config.serverIndex;
+                cancelSpeech();
+                controller.lastSpokenIndex = null;
+                controller.lastCompletedIndex = null;
+                controller.queuedNextIndex = null;
+                controller.resumeTargetIndex = null;
+                controller.pausedDisplayIndex = null;
+                controller.localIndex = (config.running && controller.active)
+                    ? preservedIndex
+                    : config.serverIndex;
             }}
 
             controller.storyKey = config.storyKey;
