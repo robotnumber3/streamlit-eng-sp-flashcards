@@ -6760,6 +6760,7 @@ def render_menu():
         if hints_enabled != st.session_state.show_hints:
             st.session_state.show_hints = hints_enabled
             store_active_person_prefs()
+            save_prefs(current_prefs())
             st.session_state.erase_review_confirm = False
             st.rerun()
         st.markdown('<div class="menu-section-label">Theme</div>', unsafe_allow_html=True)
@@ -6769,6 +6770,7 @@ def render_menu():
         if new_theme != st.session_state.theme:
             st.session_state.theme     = new_theme
             store_active_person_prefs()
+            save_prefs(current_prefs())
             st.session_state.erase_review_confirm = False
             st.rerun()
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Direction</div>',
@@ -6782,6 +6784,7 @@ def render_menu():
             st.session_state.direction_mode = dir_keys[dir_options.index(new_dir)]
             st.session_state.direction = direction_for_mode(st.session_state.direction_mode)
             store_active_person_prefs()
+            save_prefs(current_prefs())
             st.session_state.erase_review_confirm = False
             st.rerun()
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Speech Speed</div>',
@@ -6806,6 +6809,7 @@ def render_menu():
         if new_speed != st.session_state.speech_speed:
             st.session_state.speech_speed = new_speed
             store_active_person_prefs()
+            save_prefs(current_prefs())
             st.session_state.erase_review_confirm = False
             st.rerun()
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">STORY MODE &ndash; PAUSES BETWEEN SENTENCES</div>',
@@ -6823,6 +6827,7 @@ def render_menu():
         if new_story_reading_speed != st.session_state.story_reading_speed:
             st.session_state.story_reading_speed = new_story_reading_speed
             store_active_person_prefs()
+            save_prefs(current_prefs())
             st.session_state.erase_review_confirm = False
             st.rerun()
         st.markdown('<div class="menu-field-label">Pause amount (1 = shortest)</div>', unsafe_allow_html=True)
@@ -6837,6 +6842,7 @@ def render_menu():
         if new_story_pause_amount != st.session_state.story_pause_amount:
             st.session_state.story_pause_amount = new_story_pause_amount
             store_active_person_prefs()
+            save_prefs(current_prefs())
             st.session_state.erase_review_confirm = False
             st.rerun()
         if active_review_count > 0:
