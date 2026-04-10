@@ -13,6 +13,11 @@ import pandas as pd
 import streamlit.components.v1 as components
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
+try:
+    from supabase import create_client
+except ImportError:
+    create_client = None
+
 if get_script_run_ctx() is None:
     print("Run this app with: streamlit run streamlit_eng_sp_flashcards.py")
     sys.exit(1)
@@ -28,6 +33,20 @@ PREFS_FILE = os.path.expanduser("~/.flashcards_prefs.json")
 REVIEWS_FILE = os.path.expanduser("~/.flashcards_reviews.json")
 PROGRESS_FILE = os.path.expanduser("~/.flashcards_progress.json")
 
+
+def configured_setting(name):
+    env_value = os.environ.get(name)
+    if env_value:
+        return env_value
+    try:
+        return st.secrets.get(name)
+    except Exception:
+        return None
+
+
+SUPABASE_URL = configured_setting("SUPABASE_URL")
+SUPABASE_ANON_KEY = configured_setting("SUPABASE_ANON_KEY")
+
 PERSON_LABELS = {
     "miguel": "Miguel",
     "david": "David",
@@ -37,6 +56,17 @@ REVIEW_DECK_VALUES = {
     for person in PERSON_LABELS
 }
 REVIEW_DECK_ORDER = [REVIEW_DECK_VALUES["miguel"], REVIEW_DECK_VALUES["david"]]
+
+
+@st.cache_resource(show_spinner=False)
+def get_supabase_client():
+    if create_client is None or not SUPABASE_URL or not SUPABASE_ANON_KEY:
+        return None
+    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+
+def cloud_sync_enabled():
+    return get_supabase_client() is not None
 
 # ------------------------------------------------------------------------
 # DECK PICKER GROUPING
@@ -66,6 +96,13 @@ DECK_PICKER_CATEGORIES = [
     {"id": "dialogs", "title": "Dialogs", "tokens": ["dialog"]},
     {"id": "stories", "title": "Stories", "tokens": ["story"]},
 ]
+DECK_PICKER_DESCRIPTOR_CATEGORY_IDS = {
+    "parts_of_speech",
+    "vocab",
+    "sentences",
+    "dialogs",
+    "stories",
+}
 DECK_PICKER_CATEGORY_TITLES = {
     category["id"]: category["title"]
     for category in DECK_PICKER_CATEGORIES
@@ -110,6 +147,13 @@ def filename_contains_any(value, tokens):
     return any(token.lower() in filename for token in tokens)
 
 
+def filename_matches_picker_category(filename, category):
+    normalized_name = normalized_filename(filename)
+    if category["id"] == "parts_of_speech":
+        return normalized_name.startswith("pos_")
+    return filename_contains_any(normalized_name, category["tokens"])
+
+
 def csv_data_row_count(filename):
     file_path = os.path.join(CSV_FOLDER, filename)
     try:
@@ -125,9 +169,22 @@ csv_row_counts = {filename: csv_data_row_count(filename) for filename in csv_fil
 def picker_category_for_file(filename):
     # First matching category wins. This keeps each file in exactly one bucket.
     for category in DECK_PICKER_CATEGORIES:
-        if filename_contains_any(filename, category["tokens"]):
+        if filename_matches_picker_category(filename, category):
             return category["id"]
     return None
+
+
+def picker_secondary_categories_for_file(filename, primary_category_id):
+    secondary_category_ids = []
+    for category in DECK_PICKER_CATEGORIES:
+        category_id = category["id"]
+        if category_id == primary_category_id:
+            continue
+        if category_id not in DECK_PICKER_DESCRIPTOR_CATEGORY_IDS:
+            continue
+        if filename_matches_picker_category(filename, category):
+            secondary_category_ids.append(category_id)
+    return secondary_category_ids
 
 
 def picker_files_by_category():
@@ -137,8 +194,15 @@ def picker_files_by_category():
     }
     for filename in csv_files:
         category_id = picker_category_for_file(filename)
-        if category_id is not None:
-            grouped[category_id].append(filename)
+        if category_id is None:
+            continue
+        grouped[category_id].append(
+            {"filename": filename, "italicized": False}
+        )
+        for secondary_category_id in picker_secondary_categories_for_file(filename, category_id):
+            grouped[secondary_category_id].append(
+                {"filename": filename, "italicized": True}
+            )
     return grouped
 
 
@@ -265,7 +329,7 @@ def deck_picker_status(filename, person):
     return "in_progress"
 
 
-def deck_picker_label(filename, person):
+def deck_picker_label(filename, person, italicized=False):
     symbol_map = {
         "review": "⭐",
         "dialog": "💬",
@@ -275,7 +339,10 @@ def deck_picker_label(filename, person):
         "complete": "✓",
     }
     status = deck_picker_status(filename, person)
-    return f"{symbol_map[status]} {display_deck_name(filename)}"
+    deck_name = display_deck_name(filename)
+    if italicized:
+        deck_name = f"*{deck_name}*"
+    return f"{symbol_map[status]} {deck_name}"
 
 
 def is_forced_en_es_deck(filename):
@@ -433,7 +500,7 @@ def effective_direction(deck_value=None):
         return "EN_TO_ES"
     return direction_for_mode(st.session_state.direction_mode)
 
-def load_prefs():
+def load_prefs_local():
     try:
         with open(PREFS_FILE, encoding="utf-8") as f:
             return normalize_prefs(json.load(f))
@@ -441,7 +508,7 @@ def load_prefs():
         return normalize_prefs({})
 
 
-def save_prefs(pref_data):
+def save_prefs_local(pref_data):
     try:
         with open(PREFS_FILE, "w", encoding="utf-8") as f:
             json.dump(normalize_prefs(pref_data), f, ensure_ascii=False)
@@ -449,7 +516,7 @@ def save_prefs(pref_data):
         pass
 
 
-def load_review_data():
+def load_review_data_local():
     empty = {person: {} for person in PERSON_LABELS}
     try:
         with open(REVIEWS_FILE, encoding="utf-8") as f:
@@ -482,7 +549,7 @@ def load_review_data():
     return review_data
 
 
-def save_review_data(review_data):
+def save_review_data_local(review_data):
     try:
         with open(REVIEWS_FILE, "w", encoding="utf-8") as f:
             serializable = {
@@ -494,7 +561,7 @@ def save_review_data(review_data):
         pass
 
 
-def load_progress_data():
+def load_progress_data_local():
     empty = {person: {} for person in PERSON_LABELS}
     try:
         with open(PROGRESS_FILE, encoding="utf-8") as f:
@@ -525,7 +592,7 @@ def load_progress_data():
     return progress_data
 
 
-def save_progress_data(progress_data):
+def save_progress_data_local(progress_data):
     try:
         with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
             serializable = {
@@ -539,6 +606,273 @@ def save_progress_data(progress_data):
             json.dump(serializable, f, ensure_ascii=False, indent=2)
     except Exception:
         pass
+
+
+def prefs_are_default(pref_data):
+    normalized = normalize_prefs(pref_data)
+    return normalized["person_settings"] == normalize_prefs({})["person_settings"]
+
+
+def review_data_has_entries(review_data):
+    return any(review_data.get(person) for person in PERSON_LABELS)
+
+
+def progress_data_has_entries(progress_data):
+    return any(progress_data.get(person) for person in PERSON_LABELS)
+
+
+def load_prefs_supabase():
+    client = get_supabase_client()
+    if client is None:
+        return None
+    try:
+        response = client.table("user_preferences").select("*").execute()
+    except Exception:
+        return None
+
+    person_settings = {
+        person: default_person_prefs()
+        for person in PERSON_LABELS
+    }
+    for row in response.data or []:
+        user_id = str(row.get("user_id", "")).strip().lower()
+        if user_id not in PERSON_LABELS:
+            continue
+        person_settings[user_id] = sanitize_person_prefs(
+            {
+                "theme": row.get("theme"),
+                "direction_mode": row.get("direction_mode"),
+                "speech_speed": row.get("speech_speed"),
+                "show_hints": row.get("show_hints"),
+                "auto_speak_spanish": row.get("auto_speak_spanish"),
+                "story_reading_speed": row.get("story_reading_speed"),
+                "story_pause_amount": row.get("story_pause_amount"),
+            },
+            default_person_prefs(),
+        )
+
+    return normalize_prefs({
+        "active_person": "miguel",
+        "person_settings": person_settings,
+    })
+
+
+def save_prefs_supabase(pref_data):
+    client = get_supabase_client()
+    if client is None:
+        return False
+
+    normalized = normalize_prefs(pref_data)
+    rows = []
+    for person, person_pref_data in normalized["person_settings"].items():
+        rows.append(
+            {
+                "user_id": person,
+                "theme": person_pref_data["theme"],
+                "direction_mode": person_pref_data["direction_mode"],
+                "speech_speed": person_pref_data["speech_speed"],
+                "show_hints": person_pref_data["show_hints"],
+                "auto_speak_spanish": person_pref_data["auto_speak_spanish"],
+                "story_reading_speed": person_pref_data["story_reading_speed"],
+                "story_pause_amount": person_pref_data["story_pause_amount"],
+            }
+        )
+    try:
+        client.table("user_preferences").upsert(rows).execute()
+        return True
+    except Exception:
+        return False
+
+
+def load_review_data_supabase():
+    client = get_supabase_client()
+    if client is None:
+        return None
+    try:
+        response = client.table("review_items").select(
+            "user_id,item_key,word,answer,review_count"
+        ).execute()
+    except Exception:
+        return None
+
+    review_data = {person: {} for person in PERSON_LABELS}
+    for row in response.data or []:
+        user_id = str(row.get("user_id", "")).strip().lower()
+        if user_id not in PERSON_LABELS:
+            continue
+        word = str(row.get("word", "")).strip()
+        answer = str(row.get("answer", "")).strip()
+        try:
+            count = int(row.get("review_count", 0))
+        except (TypeError, ValueError):
+            count = 0
+        if not word or not answer or count <= 0:
+            continue
+        item_key = str(row.get("item_key") or review_item_key(word, answer))
+        review_data[user_id][item_key] = {
+            "word": word,
+            "answer": answer,
+            "count": count,
+        }
+    return review_data
+
+
+def save_review_data_supabase(review_data):
+    client = get_supabase_client()
+    if client is None:
+        return False
+
+    rows = []
+    for person in PERSON_LABELS:
+        for item_key, entry in review_data.get(person, {}).items():
+            rows.append(
+                {
+                    "user_id": person,
+                    "item_key": item_key,
+                    "word": entry["word"],
+                    "answer": entry["answer"],
+                    "review_count": int(entry["count"]),
+                }
+            )
+
+    try:
+        for person in PERSON_LABELS:
+            client.table("review_items").delete().eq("user_id", person).execute()
+        if rows:
+            client.table("review_items").upsert(rows).execute()
+        return True
+    except Exception:
+        return False
+
+
+def load_progress_data_supabase():
+    client = get_supabase_client()
+    if client is None:
+        return None
+    try:
+        response = client.table("deck_progress").select(
+            "user_id,deck_filename,completed_card_ids"
+        ).execute()
+    except Exception:
+        return None
+
+    progress_data = {person: {} for person in PERSON_LABELS}
+    for row in response.data or []:
+        user_id = str(row.get("user_id", "")).strip().lower()
+        if user_id not in PERSON_LABELS:
+            continue
+        filename = str(row.get("deck_filename", "")).strip()
+        card_ids = row.get("completed_card_ids", [])
+        if isinstance(card_ids, dict):
+            card_ids = card_ids.keys()
+        if not isinstance(card_ids, list) and not hasattr(card_ids, "__iter__"):
+            continue
+
+        normalized_ids = []
+        seen_ids = set()
+        for card_id in card_ids:
+            normalized_id = normalize_card_id(card_id)
+            if not normalized_id or normalized_id in seen_ids:
+                continue
+            seen_ids.add(normalized_id)
+            normalized_ids.append(normalized_id)
+
+        if filename and normalized_ids:
+            progress_data[user_id][filename] = sorted(normalized_ids, key=completion_sort_key)
+    return progress_data
+
+
+def save_progress_data_supabase(progress_data):
+    client = get_supabase_client()
+    if client is None:
+        return False
+
+    rows = []
+    for person in PERSON_LABELS:
+        for filename, card_ids in progress_data.get(person, {}).items():
+            normalized_ids = []
+            seen_ids = set()
+            for card_id in card_ids:
+                normalized_id = normalize_card_id(card_id)
+                if not normalized_id or normalized_id in seen_ids:
+                    continue
+                seen_ids.add(normalized_id)
+                normalized_ids.append(normalized_id)
+            if normalized_ids:
+                rows.append(
+                    {
+                        "user_id": person,
+                        "deck_filename": filename,
+                        "completed_card_ids": sorted(normalized_ids, key=completion_sort_key),
+                    }
+                )
+
+    try:
+        for person in PERSON_LABELS:
+            client.table("deck_progress").delete().eq("user_id", person).execute()
+        if rows:
+            client.table("deck_progress").upsert(rows).execute()
+        return True
+    except Exception:
+        return False
+
+
+def load_prefs():
+    local_pref_data = load_prefs_local()
+    if not cloud_sync_enabled():
+        return local_pref_data
+
+    cloud_pref_data = load_prefs_supabase()
+    if cloud_pref_data is None:
+        return local_pref_data
+    if prefs_are_default(cloud_pref_data) and not prefs_are_default(local_pref_data):
+        if save_prefs_supabase(local_pref_data):
+            return normalize_prefs(local_pref_data)
+    return cloud_pref_data
+
+
+def save_prefs(pref_data):
+    normalized = normalize_prefs(pref_data)
+    save_prefs_local(normalized)
+    save_prefs_supabase(normalized)
+
+
+def load_review_data():
+    local_review_data = load_review_data_local()
+    if not cloud_sync_enabled():
+        return local_review_data
+
+    cloud_review_data = load_review_data_supabase()
+    if cloud_review_data is None:
+        return local_review_data
+    if not review_data_has_entries(cloud_review_data) and review_data_has_entries(local_review_data):
+        if save_review_data_supabase(local_review_data):
+            return local_review_data
+    return cloud_review_data
+
+
+def save_review_data(review_data):
+    save_review_data_local(review_data)
+    save_review_data_supabase(review_data)
+
+
+def load_progress_data():
+    local_progress_data = load_progress_data_local()
+    if not cloud_sync_enabled():
+        return local_progress_data
+
+    cloud_progress_data = load_progress_data_supabase()
+    if cloud_progress_data is None:
+        return local_progress_data
+    if not progress_data_has_entries(cloud_progress_data) and progress_data_has_entries(local_progress_data):
+        if save_progress_data_supabase(local_progress_data):
+            return local_progress_data
+    return cloud_progress_data
+
+
+def save_progress_data(progress_data):
+    save_progress_data_local(progress_data)
+    save_progress_data_supabase(progress_data)
 
 
 def completed_ids_for(person, filename):
@@ -1145,10 +1479,15 @@ def render_grouped_deck_picker():
                     )
                     continue
 
-                for file_index, csv_file in enumerate(files):
+                for file_index, file_entry in enumerate(files):
+                    csv_file = file_entry["filename"]
                     with st.container(key=f"deck_category_file_{category_id}_{file_index}_wrap"):
                         if st.button(
-                            deck_picker_label(csv_file, st.session_state.active_person),
+                            deck_picker_label(
+                                csv_file,
+                                st.session_state.active_person,
+                                italicized=file_entry["italicized"],
+                            ),
                             key=f"deck_btn_{category_id}_{csv_file}",
                             use_container_width=True,
                         ):
@@ -1330,6 +1669,25 @@ div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
 div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 
 /* ---- Hamburger ---- */
+.st-key-header_quit_wrap {{
+    min-width: 2.8rem !important;
+}}
+.st-key-header_quit_wrap div[data-testid="stButton"] {{
+    display: flex !important;
+    justify-content: flex-end !important;
+}}
+.st-key-header_quit_wrap div[data-testid="stButton"] > button {{
+    min-height: 1.7rem !important;
+    width: auto !important;
+    padding: 0.08rem 0.42rem !important;
+    border-radius: 999px !important;
+    background-color: {BUTTON_COLORS['red']['bg']} !important;
+    border-color: {BUTTON_COLORS['red']['border']} !important;
+    color: {BUTTON_COLORS['red']['fg']} !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+}}
 .st-key-hamburger_wrap {{
     min-width: 2.5rem !important;
 }}
@@ -6323,7 +6681,11 @@ def stats_card_html(shown, total, correct, repeat, scored_total):
 def render_header():
     menu_icon = "✕" if st.session_state.menu_open else "☰"
     with st.container(key="header_row_wrap"):
-        title_col, ham_col = st.columns([1, 0.14], gap="small")
+        show_picker_quit = st.session_state.selected_csv is None
+        if show_picker_quit:
+            title_col, quit_col, ham_col = st.columns([1, 0.18, 0.14], gap="small")
+        else:
+            title_col, ham_col = st.columns([1, 0.14], gap="small")
         with title_col:
             st.markdown(
                 "<div class='title-row'>"
@@ -6334,6 +6696,13 @@ def render_header():
                 "</div>",
                 unsafe_allow_html=True,
             )
+        if show_picker_quit:
+            with quit_col:
+                with st.container(key="header_quit_wrap"):
+                    if st.button("Quit", key="header_quit_btn"):
+                        st.session_state.menu_open = False
+                        st.session_state.final_exit = True
+                        st.rerun()
         with ham_col:
             with st.container(key="hamburger_wrap"):
                 if st.button(menu_icon, key="hamburger_btn"):

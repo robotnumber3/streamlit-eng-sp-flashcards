@@ -2329,9 +2329,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-weight: 900 !important;
     font-size: 1.2rem !important;
     line-height: 1.1 !important;
-    min-height: 1.48rem !important;
-    padding-top: 0.06rem !important;
-    padding-bottom: 0.05rem !important;
+    min-height: 1.38rem !important;
+    padding-top: 0.03rem !important;
+    padding-bottom: 0.02rem !important;
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
@@ -2344,9 +2344,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     padding-left: 1.45rem !important;
     font-size: 0.88rem !important;
     line-height: 1.0 !important;
-    min-height: 1.55rem !important;
-    padding-top: 0.02rem !important;
-    padding-bottom: 0.02rem !important;
+    min-height: 1.42rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
@@ -2567,9 +2567,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
         font-size: 1.24rem !important;
         font-weight: 900 !important;
-        min-height: 1.38rem !important;
-        padding-top: 0.04rem !important;
-        padding-bottom: 0.02rem !important;
+        min-height: 1.30rem !important;
+        padding-top: 0.02rem !important;
+        padding-bottom: 0.01rem !important;
         border: none !important;
         box-shadow: none !important;
         background: transparent !important;
@@ -2580,7 +2580,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         padding-left: 1.55rem !important;
         padding-right: 0.35rem !important;
         font-size: 0.84rem !important;
-        min-height: 1.28rem !important;
+        min-height: 1.18rem !important;
         border: none !important;
         box-shadow: none !important;
         background: transparent !important;
@@ -5051,16 +5051,18 @@ def render_story_view():
         unsafe_allow_html=True,
     )
     if dialog_mode:
-        st.markdown(
-            "<div class='dialog-voice-readout'>"
-            "<div class='dialog-voice-readout-label'>Dialog Voices</div>"
-            "<div class='dialog-voice-readout-line' id='dialog-voice-speaker-a'>Speaker A: selecting...</div>"
-            "<div class='dialog-voice-readout-line' id='dialog-voice-speaker-b'>Speaker B: selecting...</div>"
-            "<div class='dialog-voice-readout-line' id='dialog-voice-current'>Current line: waiting...</div>"
-            "<div class='dialog-voice-readout-detected' id='dialog-voice-detected'>Spanish voices: scanning...</div>"
-            "</div>",
-            unsafe_allow_html=True,
-        )
+        pass
+        # Temporary dialog voice diagnostics retained for future debugging.
+        # st.markdown(
+        #     "<div class='dialog-voice-readout'>"
+        #     "<div class='dialog-voice-readout-label'>Dialog Voices</div>"
+        #     "<div class='dialog-voice-readout-line' id='dialog-voice-speaker-a'>Speaker A: selecting...</div>"
+        #     "<div class='dialog-voice-readout-line' id='dialog-voice-speaker-b'>Speaker B: selecting...</div>"
+        #     "<div class='dialog-voice-readout-line' id='dialog-voice-current'>Current line: waiting...</div>"
+        #     "<div class='dialog-voice-readout-detected' id='dialog-voice-detected'>Spanish voices: scanning...</div>"
+        #     "</div>",
+        #     unsafe_allow_html=True,
+        # )
 
     story_box_shield = story_box_shield_html(False)
 
