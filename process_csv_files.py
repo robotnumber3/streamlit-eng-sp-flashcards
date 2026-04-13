@@ -16,6 +16,14 @@ from shutil import move
 
 # Set this to your CSV folder
 CSV_FOLDER = "/Volumes/Squallywag/Python/Current Python Projects/streamlit_eng_sp_flashcards/csv/"
+ORIGINAL_BACKUP_FOLDER = "/Volumes/Squallywag/Python/Current Python Projects/streamlit_eng_sp_flashcards/CSV_ORIGINALS_BACKUP/"
+
+
+def original_backup_path(filepath):
+    source_path = Path(filepath)
+    backup_dir = Path(ORIGINAL_BACKUP_FOLDER)
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    return backup_dir / f"{source_path.stem}_ORIG{source_path.suffix}"
 
 
 def preserve_original_order(filename):
@@ -218,11 +226,10 @@ def process_new_file(filepath, filename, delimiter, header, data):
         else:
             data_sorted = sorted(data, key=lambda x: x[1].lower() if len(x) > 1 else '')
 
-        # Create _ORIG backup ONLY if it doesn't already exist
-        name_without_ext = filepath.rsplit('.csv', 1)[0]
-        orig_filepath = f"{name_without_ext}_ORIG.csv"
+        # Create _ORIG backup ONLY if it doesn't already exist.
+        orig_filepath = original_backup_path(filepath)
 
-        if not os.path.exists(orig_filepath):
+        if not orig_filepath.exists():
             # Rename original to _ORIG only on first run
             move(filepath, orig_filepath)
 

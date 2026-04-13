@@ -1,0 +1,15 @@
+Please write a list of the 50 most common, everyday Spanish verbs with Stem‑Changing irregularities (e > ie, o > ue, e > i, u > ue)
+
+The format should be:
+
+"I think {e > ie}";"[yo] pienso"
+"you think [sing, inf] {e > ie}";"[tú] piensas"
+"you think [sing, formal] {e > ie}";"[usted] piensa"
+"he thinks {e > ie}";"[él] piensa"
+"she thinks {e > ie}";"[ella] piensa"
+"we think";"[nosotros] pensamos"
+"they think {e > ie}";"[ustedes] piensan"
+
+There are 7 persons as shown above. For each of the 50 verbs, choose 2 different persons and use the format shown.
+
+Use approximately the same number of each person for the 100 lines.
