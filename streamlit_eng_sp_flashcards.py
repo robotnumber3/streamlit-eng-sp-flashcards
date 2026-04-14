@@ -3081,6 +3081,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storytransaudio_dialog_row_wrap,
 .st-key-storydisplay_row_wrap {{
     margin: 0 !important;
+    width: 100% !important;
 }}
 .st-key-storyplayback_row_wrap {{
     margin-bottom: 0.1rem !important;
@@ -3094,8 +3095,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storytransaudio_dialog_row_wrap [data-testid="stHorizontalBlock"] {{
     align-items: center !important;
     flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
     gap: 0.25rem !important;
     margin: 0 !important;
+    width: 100% !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"],
 .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"],
@@ -3185,6 +3188,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: calc((100% - 1.5rem) / 3) !important;
     justify-content: flex-start !important;
     margin: 0 !important;
+}}
+.st-key-storydisplay_row_wrap [data-testid="stMarkdownContainer"] p {{
+    white-space: nowrap !important;
+    font-size: 0.9rem !important;
 }}
 .st-key-storycontrol_row_wrap [data-testid="stHorizontalBlock"] {{
     display: flex !important;
@@ -3762,9 +3769,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storytransaudio_dialog_row_wrap [data-testid="stHorizontalBlock"] {{
         display: flex !important;
         flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
         gap: 0.35rem !important;
         align-items: center !important;
         height: auto !important;
+        width: 100% !important;
     }}
     .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"] {{
         flex: 0 0 calc((100% - 0.7rem) / 3) !important;
@@ -3801,24 +3810,28 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         flex-wrap: nowrap !important;
         justify-content: flex-start !important;
         align-items: center !important;
-        gap: 0.35rem !important;
+        gap: 0.18rem !important;
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
     }}
     .st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
-        flex: 0 0 calc((100% - 0.7rem) / 3) !important;
-        min-width: calc((100% - 0.7rem) / 3) !important;
-        width: calc((100% - 0.7rem) / 3) !important;
+        flex: 0 0 calc((100% - 0.36rem) / 3) !important;
+        min-width: calc((100% - 0.36rem) / 3) !important;
+        width: calc((100% - 0.36rem) / 3) !important;
         justify-content: flex-start !important;
         margin: 0 !important;
+    }}
+    .st-key-storydisplay_row_wrap [data-testid="stMarkdownContainer"] p {{
+        white-space: nowrap !important;
+        font-size: 0.78rem !important;
     }}
     .st-key-storyplayback_row_wrap {{
         margin-bottom: 0.06rem !important;
     }}
     .st-key-storytransaudio_story_row_wrap,
     .st-key-storytransaudio_dialog_row_wrap {{
-        margin-bottom: 0.01rem !important;
+        margin-bottom: 0 !important;
     }}
     .st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {{
         gap: 0.2rem !important;
