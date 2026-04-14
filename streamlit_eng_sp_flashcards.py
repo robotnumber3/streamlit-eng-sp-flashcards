@@ -6093,7 +6093,7 @@ def render_story_view():
             ta_cols = st.columns([0.28, 0.18, 0.18, 0.18] if dialog_mode else [0.36, 0.24, 0.32], gap="small")
             with ta_cols[0]:
                 st.checkbox(
-                    "Translate",
+                    "Prompt",
                     key="story_translation_checkbox",
                     on_change=toggle_story_translation,
                 )
@@ -6365,7 +6365,7 @@ def strip_spoken_text(text):
 
 def render_flashcard(prompt, solution, show_answer):
     q_inner = format_word(prompt, 'fc-word', 'fc-note')
-    q_html  = '<div class="fc-block"><div class="fc-section-label">Translate</div>' + q_inner + '</div>'
+    q_html  = '<div class="fc-block"><div class="fc-section-label">Prompt</div>' + q_inner + '</div>'
     st.markdown(q_html, unsafe_allow_html=True)
     if show_answer:
         a_inner = format_word(solution, 'fc-answer', 'fc-answer-note')
