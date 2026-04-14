@@ -2304,13 +2304,46 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-radius: 0 !important;
     justify-content: flex-start !important;
     text-align: left !important;
-    padding-left: 0.35rem !important;
+    font-weight: 900 !important;
+    font-size: 1.2rem !important;
+    padding-left: 0.02rem !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
-    min-height: 1.18rem !important;
-    line-height: 1 !important;
+    min-height: 1.38rem !important;
+    line-height: 1.1 !important;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
+}}
+.st-key-mobile_deck_picker_wrap .st-key-review_miguel_active_wrap div[data-testid="stButton"] > button > div,
+.st-key-mobile_deck_picker_wrap .st-key-review_david_active_wrap div[data-testid="stButton"] > button > div,
+.st-key-mobile_deck_picker_wrap .st-key-review_miguel_inactive_wrap div[data-testid="stButton"] > button > div,
+.st-key-mobile_deck_picker_wrap .st-key-review_david_inactive_wrap div[data-testid="stButton"] > button > div,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_active_wrap div[data-testid="stButton"] > button > div,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_david_active_wrap div[data-testid="stButton"] > button > div,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_inactive_wrap div[data-testid="stButton"] > button > div,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_david_inactive_wrap div[data-testid="stButton"] > button > div,
+.st-key-mobile_deck_picker_wrap .st-key-review_miguel_active_wrap div[data-testid="stButton"] > button p,
+.st-key-mobile_deck_picker_wrap .st-key-review_david_active_wrap div[data-testid="stButton"] > button p,
+.st-key-mobile_deck_picker_wrap .st-key-review_miguel_inactive_wrap div[data-testid="stButton"] > button p,
+.st-key-mobile_deck_picker_wrap .st-key-review_david_inactive_wrap div[data-testid="stButton"] > button p,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_active_wrap div[data-testid="stButton"] > button p,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_david_active_wrap div[data-testid="stButton"] > button p,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_inactive_wrap div[data-testid="stButton"] > button p,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_david_inactive_wrap div[data-testid="stButton"] > button p,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button > div,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button p,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stButton"] > button > div,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stButton"] > button p {{
+    font-weight: 900 !important;
+    font-size: 1.2rem !important;
+    line-height: 1.1 !important;
+}}
+.st-key-mobile_deck_picker_wrap .st-key-review_miguel_active_wrap,
+.st-key-mobile_deck_picker_wrap .st-key-review_david_active_wrap,
+.st-key-mobile_deck_picker_wrap .st-key-review_miguel_inactive_wrap,
+.st-key-mobile_deck_picker_wrap .st-key-review_david_inactive_wrap,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] {{
+    margin-bottom: 0.9rem !important;
 }}
 .special-deck-separator {{
     height: 1px;
@@ -3367,6 +3400,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     content: '★';
     color: #f2c94c !important;
     display: inline-block !important;
+    width: 0.82rem !important;
+    text-align: left !important;
     margin-right: 0.42rem !important;
     font-size: 0.98rem !important;
     line-height: 1 !important;
@@ -3380,6 +3415,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     content: '♥';
     color: {BUTTON_COLORS['blue']['border']} !important;
     display: inline-block !important;
+    width: 0.82rem !important;
+    text-align: left !important;
     margin-right: 0.42rem !important;
     font-size: 0.98rem !important;
     line-height: 1 !important;
