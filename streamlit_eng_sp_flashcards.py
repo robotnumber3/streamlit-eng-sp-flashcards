@@ -1645,13 +1645,29 @@ def toggle_story_display_mode():
     )
 
 
+def set_story_display_mode(mode):
+    normalized_mode = normalize_story_display_mode(mode)
+    st.session_state.story_display_mode = normalized_mode
+    st.session_state["story_display_mode_radio"] = normalized_mode
+
+
 def toggle_story_audio():
     st.session_state.story_audio_on = st.session_state.get("story_audio_checkbox", True)
+
+
+def toggle_story_audio_button():
+    st.session_state["story_audio_checkbox"] = not st.session_state.story_audio_on
+    toggle_story_audio()
 
 
 def toggle_story_repeat_spanish():
     st.session_state.story_repeat_spanish_on = st.session_state.get("story_repeat_checkbox", False)
     keep_story_playback_alive()
+
+
+def toggle_story_repeat_spanish_button():
+    st.session_state["story_repeat_checkbox"] = not st.session_state.story_repeat_spanish_on
+    toggle_story_repeat_spanish()
 
 
 def toggle_story_random():
@@ -1663,6 +1679,11 @@ def toggle_story_random():
         st.session_state.story_finished = False
         st.session_state.story_resume_next = False
         keep_story_playback_alive()
+
+
+def toggle_story_random_button():
+    st.session_state["story_random_checkbox"] = not st.session_state.story_random_on
+    toggle_story_random()
 
 
 def end_story_to_final_screen():
@@ -2207,6 +2228,26 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {BUTTON_COLORS['blue']['bg']} !important;
     border-color: {BUTTON_COLORS['blue']['border']} !important;
     color: {BUTTON_COLORS['blue']['fg']} !important;
+}}
+.st-key-storyaudio_wrap div[data-testid="stButton"] > button,
+.st-key-storyrandom_wrap div[data-testid="stButton"] > button,
+.st-key-storyrepeatoption_wrap div[data-testid="stButton"] > button,
+.st-key-storydisplay_spanish_wrap div[data-testid="stButton"] > button,
+.st-key-storydisplay_english_wrap div[data-testid="stButton"] > button,
+.st-key-storydisplay_both_wrap div[data-testid="stButton"] > button {{
+    background-color: color-mix(in srgb, {t['bg']} 72%, {t['card_bg']} 28%) !important;
+    border-color: color-mix(in srgb, {t['border']} 78%, {t['fg']} 22%) !important;
+    color: {t['fg']} !important;
+}}
+.st-key-storyaudio_on_wrap div[data-testid="stButton"] > button,
+.st-key-storyrandom_on_wrap div[data-testid="stButton"] > button,
+.st-key-storyrepeatoption_on_wrap div[data-testid="stButton"] > button,
+.st-key-storydisplay_spanish_on_wrap div[data-testid="stButton"] > button,
+.st-key-storydisplay_english_on_wrap div[data-testid="stButton"] > button,
+.st-key-storydisplay_both_on_wrap div[data-testid="stButton"] > button {{
+    background-color: color-mix(in srgb, {BUTTON_COLORS['blue']['bg']} 72%, white 28%) !important;
+    border-color: {BUTTON_COLORS['blue']['border']} !important;
+    color: color-mix(in srgb, {BUTTON_COLORS['blue']['fg']} 86%, white 14%) !important;
 }}
 .st-key-storyend_wrap div[data-testid="stButton"] > button {{
     background-color: {BUTTON_COLORS['red']['bg']} !important;
@@ -3177,6 +3218,20 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
     white-space: nowrap !important;
 }}
+.st-key-storytransaudio_story_row_wrap div[data-testid="stButton"],
+.st-key-storytransaudio_dialog_row_wrap div[data-testid="stButton"],
+.st-key-storydisplay_row_wrap div[data-testid="stButton"] {{
+    width: 100% !important;
+}}
+.st-key-storytransaudio_story_row_wrap div[data-testid="stButton"] > button,
+.st-key-storytransaudio_dialog_row_wrap div[data-testid="stButton"] > button,
+.st-key-storydisplay_row_wrap div[data-testid="stButton"] > button {{
+    width: 100% !important;
+    min-height: 2.15rem !important;
+    padding: 0.15rem 0.55rem !important;
+    white-space: nowrap !important;
+    font-size: 0.88rem !important;
+}}
 .st-key-storydisplay_row_wrap [data-testid="stElementContainer"] {{
     margin: 0 !important;
     padding: 0 !important;
@@ -3804,6 +3859,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         align-items: center !important;
         justify-content: flex-start !important;
         width: 100% !important;
+    }}
+    .st-key-storytransaudio_story_row_wrap div[data-testid="stButton"] > button,
+    .st-key-storytransaudio_dialog_row_wrap div[data-testid="stButton"] > button,
+    .st-key-storydisplay_row_wrap div[data-testid="stButton"] > button {{
+        width: 100% !important;
+        min-height: 2.25rem !important;
+        padding: 0.15rem 0.42rem !important;
+        font-size: 0.83rem !important;
     }}
     .st-key-storytransaudio_story_row_wrap .story-option-row,
     .st-key-storytransaudio_dialog_row_wrap .story-option-row {{
@@ -6228,41 +6291,41 @@ def render_story_view():
         with st.container(key="storytransaudio_dialog_row_wrap" if dialog_mode else "storytransaudio_story_row_wrap"):
             ta_cols = st.columns(3, gap="small")
             with ta_cols[0]:
-                st.checkbox(
-                    "Audio",
-                    key="story_audio_checkbox",
-                    on_change=toggle_story_audio,
-                )
+                with st.container(key="storyaudio_on_wrap" if st.session_state.story_audio_on else "storyaudio_wrap"):
+                    if st.button("Audio", key="story_audio_btn", use_container_width=True):
+                        toggle_story_audio_button()
+                        st.rerun()
             with ta_cols[1]:
-                st.checkbox(
-                    "Random",
-                    key="story_random_checkbox",
-                    on_change=toggle_story_random,
-                )
+                with st.container(key="storyrandom_on_wrap" if st.session_state.story_random_on else "storyrandom_wrap"):
+                    if st.button("Random", key="story_random_btn", use_container_width=True):
+                        toggle_story_random_button()
+                        st.rerun()
             if dialog_mode:
                 with ta_cols[2]:
-                    st.checkbox(
-                        "2x",
-                        key="story_repeat_checkbox",
-                        on_change=toggle_story_repeat_spanish,
-                    )
+                    with st.container(key="storyrepeatoption_on_wrap" if st.session_state.story_repeat_spanish_on else "storyrepeatoption_wrap"):
+                        if st.button("2x", key="story_repeat_btn_option", use_container_width=True):
+                            toggle_story_repeat_spanish_button()
+                            st.rerun()
             else:
                 with ta_cols[2]:
                     st.empty()
         with st.container(key="storydisplay_row_wrap"):
-            st.radio(
-                "Story display mode",
-                options=["spanish", "english", "both"],
-                horizontal=True,
-                key="story_display_mode_radio",
-                on_change=toggle_story_display_mode,
-                format_func=lambda value: {
-                    "spanish": "Spanish",
-                    "english": "English",
-                    "both": "Both",
-                }[value],
-                label_visibility="collapsed",
-            )
+            display_cols = st.columns(3, gap="small")
+            with display_cols[0]:
+                with st.container(key="storydisplay_spanish_on_wrap" if display_mode == "spanish" else "storydisplay_spanish_wrap"):
+                    if st.button("Spanish", key="story_display_spanish_btn", use_container_width=True):
+                        set_story_display_mode("spanish")
+                        st.rerun()
+            with display_cols[1]:
+                with st.container(key="storydisplay_english_on_wrap" if display_mode == "english" else "storydisplay_english_wrap"):
+                    if st.button("English", key="story_display_english_btn", use_container_width=True):
+                        set_story_display_mode("english")
+                        st.rerun()
+            with display_cols[2]:
+                with st.container(key="storydisplay_both_on_wrap" if display_mode == "both" else "storydisplay_both_wrap"):
+                    if st.button("Both", key="story_display_both_btn", use_container_width=True):
+                        set_story_display_mode("both")
+                        st.rerun()
 
     audio_enabled = st.session_state.story_audio_on
 
