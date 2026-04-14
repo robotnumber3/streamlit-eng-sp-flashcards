@@ -3136,24 +3136,27 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"],
 .st-key-storytransaudio_story_row_wrap [data-testid="stHorizontalBlock"],
-.st-key-storytransaudio_dialog_row_wrap [data-testid="stHorizontalBlock"] {{
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stHorizontalBlock"],
+.st-key-storydisplay_row_wrap [data-testid="stHorizontalBlock"] {{
     align-items: center !important;
     flex-wrap: nowrap !important;
     justify-content: flex-start !important;
-    gap: 0.25rem !important;
+    gap: 0.18rem !important;
     margin: 0 !important;
     width: 100% !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"],
 .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"],
-.st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] {{
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"],
+.st-key-storydisplay_row_wrap [data-testid="stColumn"] {{
     padding: 0 !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"] > div,
 .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"] > div,
-.st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] > div {{
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] > div,
+.st-key-storydisplay_row_wrap [data-testid="stColumn"] > div {{
     padding: 0 !important;
     width: 100% !important;
     display: flex !important;
@@ -3227,10 +3230,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storytransaudio_dialog_row_wrap div[data-testid="stButton"] > button,
 .st-key-storydisplay_row_wrap div[data-testid="stButton"] > button {{
     width: 100% !important;
-    min-height: 2.15rem !important;
-    padding: 0.15rem 0.55rem !important;
+    min-height: 1.12rem !important;
+    padding: 0.04rem 0.32rem !important;
     white-space: nowrap !important;
-    font-size: 0.88rem !important;
+    font-size: 0.76rem !important;
+    line-height: 1.05 !important;
 }}
 .st-key-storydisplay_row_wrap [data-testid="stElementContainer"] {{
     margin: 0 !important;
@@ -3834,27 +3838,34 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
 
     .st-key-storytransaudio_story_row_wrap [data-testid="stHorizontalBlock"],
-    .st-key-storytransaudio_dialog_row_wrap [data-testid="stHorizontalBlock"] {{
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stHorizontalBlock"],
+    .st-key-storydisplay_row_wrap [data-testid="stHorizontalBlock"] {{
         display: flex !important;
         flex-wrap: nowrap !important;
         justify-content: flex-start !important;
-        gap: 0.35rem !important;
+        gap: 0.18rem !important;
         align-items: center !important;
         height: auto !important;
         width: 100% !important;
     }}
     .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"] {{
-        flex: 0 0 calc((100% - 0.7rem) / 3) !important;
-        min-width: calc((100% - 0.7rem) / 3) !important;
-        width: calc((100% - 0.7rem) / 3) !important;
+        flex: 0 0 calc((100% - 0.36rem) / 3) !important;
+        min-width: calc((100% - 0.36rem) / 3) !important;
+        width: calc((100% - 0.36rem) / 3) !important;
     }}
     .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] {{
-        flex: 0 0 calc((100% - 0.7rem) / 3) !important;
-        min-width: calc((100% - 0.7rem) / 3) !important;
-        width: calc((100% - 0.7rem) / 3) !important;
+        flex: 0 0 calc((100% - 0.36rem) / 3) !important;
+        min-width: calc((100% - 0.36rem) / 3) !important;
+        width: calc((100% - 0.36rem) / 3) !important;
+    }}
+    .st-key-storydisplay_row_wrap [data-testid="stColumn"] {{
+        flex: 0 0 calc((100% - 0.36rem) / 3) !important;
+        min-width: calc((100% - 0.36rem) / 3) !important;
+        width: calc((100% - 0.36rem) / 3) !important;
     }}
     .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"] > div,
-    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] > div {{
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] > div,
+    .st-key-storydisplay_row_wrap [data-testid="stColumn"] > div {{
         display: flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
@@ -3864,9 +3875,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storytransaudio_dialog_row_wrap div[data-testid="stButton"] > button,
     .st-key-storydisplay_row_wrap div[data-testid="stButton"] > button {{
         width: 100% !important;
-        min-height: 2.25rem !important;
-        padding: 0.15rem 0.42rem !important;
-        font-size: 0.83rem !important;
+        min-height: 1.06rem !important;
+        padding: 0.02rem 0.24rem !important;
+        font-size: 0.64rem !important;
+        line-height: 1 !important;
     }}
     .st-key-storytransaudio_story_row_wrap .story-option-row,
     .st-key-storytransaudio_dialog_row_wrap .story-option-row {{
@@ -3909,7 +3921,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storytransaudio_story_row_wrap,
     .st-key-storytransaudio_dialog_row_wrap,
     .st-key-storydisplay_row_wrap {{
-        margin-bottom: 0 !important;
+        margin-bottom: 0.02rem !important;
         margin-left: -0.7rem !important;
         width: calc(100% + 0.7rem) !important;
     }}
