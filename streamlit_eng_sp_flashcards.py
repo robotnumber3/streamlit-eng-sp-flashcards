@@ -8410,13 +8410,14 @@ if st.session_state["regular_auto_mode"]:
     sentence_auto_mode = is_sentence_deck(st.session_state.selected_csv)
     prompt_language = "en" if current_direction == "EN_TO_ES" else "es"
     answer_language = "es" if current_direction == "EN_TO_ES" else "en"
+    include_english_audio = st.session_state["regular_auto_include_english"]
     preferred_gender = "female" if (st.session_state.index % 2 == 0) else "male"
     phase = "answer" if st.session_state.show_answer else "prompt"
     phase_text = solution if st.session_state.show_answer else prompt
     phase_language = answer_language if st.session_state.show_answer else prompt_language
     phase_is_spanish = phase_language == "es"
-    prompt_should_speak = prompt_language == "es" or (sentence_auto_mode and st.session_state["regular_auto_include_english"])
-    phase_should_speak = phase_is_spanish or (sentence_auto_mode and st.session_state["regular_auto_include_english"])
+    prompt_should_speak = prompt_language == "es" or include_english_audio
+    phase_should_speak = phase_is_spanish or include_english_audio
     phase_starts_sentence_pair = phase == "prompt" or not prompt_should_speak
     phase_delay_seconds = story_pause_seconds_for_text(phase_text) if sentence_auto_mode else (2.0 if st.session_state.show_answer else story_pause_seconds_for_text(prompt))
     phase_key = "|".join(
