@@ -3166,7 +3166,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"]:nth-child(2),
 .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:nth-child(2) {{
-    margin-left: -0.72rem !important;
+    margin-left: -1.02rem !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stMarkdownContainer"] p,
 .st-key-storytransaudio_story_row_wrap [data-testid="stMarkdownContainer"] p,
@@ -3914,7 +3914,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"]:nth-child(2),
     .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:nth-child(2) {{
-        margin-left: -0.92rem !important;
+        margin-left: -1.22rem !important;
     }}
     .st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {{
         gap: 0.2rem !important;
