@@ -411,7 +411,7 @@ def deck_picker_status(filename, person):
 def deck_picker_label(filename, person, italicized=False):
     symbol_map = {
         "review": "⭐",
-        "favorites": "♥",
+        "favorites": "♥︎",
         "dialog": "💬",
         "story": "📖",
         "untouched": "•",
@@ -3412,7 +3412,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mobile_deck_picker_wrap .st-key-favorites_david_inactive_wrap div[data-testid="stButton"] > button::before,
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"][data-testid="stButton"] > button::before,
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stButton"] > button::before {{
-    content: '♥';
+    content: '♥︎';
     color: {BUTTON_COLORS['blue']['border']} !important;
     display: inline-block !important;
     width: 1.05rem !important;
@@ -6156,7 +6156,7 @@ def render_story_view():
                         st.rerun()
             with control_cols[3]:
                 with st.container(key="storyfavorite_active_wrap" if current_story_favorited else "storyfavorite_wrap"):
-                    if st.button("♥", key="story_favorite_end_btn", use_container_width=True, disabled=current_story_favorited):
+                    if st.button("♥︎", key="story_favorite_end_btn", use_container_width=True, disabled=current_story_favorited):
                         add_current_story_line_to_favorites()
                         st.rerun()
     elif st.session_state.story_running:
@@ -6179,7 +6179,7 @@ def render_story_view():
                         st.rerun()
             with control_cols[3]:
                 with st.container(key="storyfavorite_active_wrap" if current_story_favorited else "storyfavorite_wrap"):
-                    if st.button("♥", key="story_favorite_running_btn", use_container_width=True, disabled=current_story_favorited):
+                    if st.button("♥︎", key="story_favorite_running_btn", use_container_width=True, disabled=current_story_favorited):
                         add_current_story_line_to_favorites()
                         st.rerun()
     else:
@@ -6200,7 +6200,7 @@ def render_story_view():
                 st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
             with control_cols[3]:
                 with st.container(key="storyfavorite_active_wrap" if current_story_favorited else "storyfavorite_wrap"):
-                    if st.button("♥", key="story_favorite_idle_btn", use_container_width=True, disabled=current_story_favorited):
+                    if st.button("♥︎", key="story_favorite_idle_btn", use_container_width=True, disabled=current_story_favorited):
                         add_current_story_line_to_favorites()
                         st.rerun()
 
@@ -7253,7 +7253,7 @@ def render_regular_auto_mode_controls():
             col1, col2, col3, col4 = st.columns(4, gap="small")
             with col1:
                 auto_mode_value = st.checkbox(
-                    "AUTO mode",
+                    "AUTO",
                     key="regular_auto_mode_checkbox",
                 )
             with col2:
@@ -7273,7 +7273,7 @@ def render_regular_auto_mode_controls():
                 )
         else:
             auto_mode_value = st.checkbox(
-                "AUTO mode",
+                "AUTO",
                 key="regular_auto_mode_checkbox",
             )
             st.session_state["regular_auto_english_checkbox"] = st.session_state["regular_auto_include_english"]
@@ -8094,7 +8094,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         else:
                             with st.container(key="favorite_wrap"):
                                 st.button(
-                                    "♥",
+                                    "♥︎",
                                     key="favorite_btn",
                                     on_click=add_current_card_to_favorites,
                                 )
