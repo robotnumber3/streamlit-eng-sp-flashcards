@@ -3082,13 +3082,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storydisplay_row_wrap {{
     margin: 0 !important;
 }}
-.st-key-storyplayback_row_wrap {{
-    margin-bottom: 0.1rem !important;
-}}
-.st-key-storytransaudio_story_row_wrap,
-.st-key-storytransaudio_dialog_row_wrap {{
-    margin-bottom: 0.1rem !important;
-}}
 .st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"],
 .st-key-storytransaudio_story_row_wrap [data-testid="stHorizontalBlock"],
 .st-key-storytransaudio_dialog_row_wrap [data-testid="stHorizontalBlock"] {{
@@ -3756,9 +3749,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         height: auto !important;
     }}
     .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"] {{
-        flex: 0 0 calc((100% - 0.7rem) / 3) !important;
-        min-width: calc((100% - 0.7rem) / 3) !important;
-        width: calc((100% - 0.7rem) / 3) !important;
+        flex: 0 0 calc((100% - 0.35rem) / 2) !important;
+        min-width: calc((100% - 0.35rem) / 2) !important;
+        width: calc((100% - 0.35rem) / 2) !important;
     }}
     .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] {{
         flex: 0 0 calc((100% - 0.7rem) / 3) !important;
@@ -3790,13 +3783,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         gap: 0.6rem !important;
         margin: 0 !important;
         padding: 0 !important;
-    }}
-    .st-key-storyplayback_row_wrap {{
-        margin-bottom: 0.06rem !important;
-    }}
-    .st-key-storytransaudio_story_row_wrap,
-    .st-key-storytransaudio_dialog_row_wrap {{
-        margin-bottom: 0.06rem !important;
     }}
     .st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {{
         gap: 0.2rem !important;
@@ -6174,7 +6160,7 @@ def render_story_view():
                     on_change=toggle_story_playback_step,
                 )
         with st.container(key="storytransaudio_dialog_row_wrap" if dialog_mode else "storytransaudio_story_row_wrap"):
-            ta_cols = st.columns(3, gap="small")
+            ta_cols = st.columns(3 if dialog_mode else 2, gap="small")
             with ta_cols[0]:
                 st.checkbox(
                     "Audio",
@@ -6194,9 +6180,6 @@ def render_story_view():
                         key="story_repeat_checkbox",
                         on_change=toggle_story_repeat_spanish,
                     )
-            else:
-                with ta_cols[2]:
-                    st.empty()
         with st.container(key="storydisplay_row_wrap"):
             st.radio(
                 "Story display mode",
