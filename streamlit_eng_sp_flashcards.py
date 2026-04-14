@@ -1346,9 +1346,8 @@ defaults = {
     "delete_review_confirm_key": None,
     "open_deck_categories": [],
     "story_playback_mode": "continuous",
-    "story_prompt_on": True,
+    "story_display_mode": "both",
     "story_audio_on": True,
-    "story_english_on": True,
     "story_repeat_spanish_on": False,
     "story_random_on": False,
     "story_started": False,
@@ -1361,10 +1360,20 @@ for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
 
-if "story_prompt_on" not in st.session_state:
-    st.session_state.story_prompt_on = True
-if "story_english_on" not in st.session_state:
-    st.session_state.story_english_on = st.session_state.get("story_translation_on", True)
+if "story_display_mode" not in st.session_state:
+    legacy_prompt_on = st.session_state.get("story_prompt_on", True)
+    legacy_english_on = st.session_state.get(
+        "story_english_on",
+        st.session_state.get("story_translation_on", True),
+    )
+    if legacy_prompt_on and legacy_english_on:
+        st.session_state.story_display_mode = "both"
+    elif legacy_prompt_on:
+        st.session_state.story_display_mode = "spanish"
+    elif legacy_english_on:
+        st.session_state.story_display_mode = "english"
+    else:
+        st.session_state.story_display_mode = "both"
 
 t = THEMES[st.session_state.theme]
 
@@ -1598,11 +1607,10 @@ def repeat_story():
 def sync_story_option_widget_state():
     st.session_state["story_playback_auto_checkbox"] = st.session_state.story_playback_mode == "continuous"
     st.session_state["story_playback_step_checkbox"] = st.session_state.story_playback_mode == "stop on every line"
-    st.session_state["story_prompt_checkbox"] = st.session_state.story_prompt_on
     st.session_state["story_audio_checkbox"] = st.session_state.story_audio_on
     st.session_state["story_repeat_checkbox"] = st.session_state.story_repeat_spanish_on
     st.session_state["story_random_checkbox"] = st.session_state.story_random_on
-    st.session_state["story_english_checkbox"] = st.session_state.story_english_on
+    st.session_state["story_display_mode_radio"] = normalize_story_display_mode(st.session_state.story_display_mode)
 
 
 def select_story_playback_mode(mode):
@@ -1625,12 +1633,16 @@ def toggle_story_playback_step():
         st.session_state["story_playback_step_checkbox"] = True
 
 
-def toggle_story_prompt():
-    st.session_state.story_prompt_on = st.session_state.get("story_prompt_checkbox", True)
+def normalize_story_display_mode(value):
+    if value in {"spanish", "english", "both"}:
+        return value
+    return "both"
 
 
-def toggle_story_english():
-    st.session_state.story_english_on = st.session_state.get("story_english_checkbox", True)
+def toggle_story_display_mode():
+    st.session_state.story_display_mode = normalize_story_display_mode(
+        st.session_state.get("story_display_mode_radio", "both")
+    )
 
 
 def toggle_story_audio():
@@ -3066,7 +3078,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-storyplayback_row_wrap,
 .st-key-storytransaudio_story_row_wrap,
-.st-key-storytransaudio_dialog_row_wrap {{
+.st-key-storytransaudio_dialog_row_wrap,
+.st-key-storydisplay_row_wrap {{
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"],
@@ -3088,6 +3101,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"] > div,
 .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] > div {{
     padding: 0 !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"]:first-child {{
     flex: 0 0 8.8rem !important;
@@ -3104,7 +3119,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin: 0 !important;
     padding: 0 !important;
 }}
+    width: 100% !important;
 .st-key-storyplayback_row_wrap [data-testid="stCheckbox"] label,
+.st-key-storydisplay_row_wrap [data-testid="stElementContainer"],
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] {{
+    margin: 0 !important;
+    padding: 0 !important;
+}}
 .st-key-storytransaudio_story_row_wrap [data-testid="stCheckbox"] label,
 .st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] label {{
     white-space: nowrap !important;
@@ -3112,35 +3133,46 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] > div,
 .st-key-storytransaudio_story_row_wrap [data-testid="stRadio"] > div,
-.st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"] > div {{
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] > div {{
     flex-direction: row !important;
     justify-content: flex-start !important;
+    gap: 0.75rem !important;
+}}
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"] > div {{
+    flex-direction: row !important;
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"] label,
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] label {{
     gap: 0.62rem !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] label,
 .st-key-storytransaudio_story_row_wrap [data-testid="stRadio"] label,
-.st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"] label {{
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stMarkdownContainer"] p,
+.st-key-storydisplay_row_wrap [data-testid="stMarkdownContainer"] p {{
     margin-bottom: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stMarkdownContainer"] p,
 .st-key-storytransaudio_story_row_wrap [data-testid="stMarkdownContainer"] p,
-.st-key-storytransaudio_dialog_row_wrap [data-testid="stMarkdownContainer"] p {{
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"],
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] {{
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"],
 .st-key-storytransaudio_story_row_wrap [data-testid="stRadio"],
 .st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"] {{
-    margin: 0 !important;
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"] > label,
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] > label {{
     padding: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] > label,
 .st-key-storytransaudio_story_row_wrap [data-testid="stRadio"] > label,
-.st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"] > label {{
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
     display: none !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
 .st-key-storytransaudio_story_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
 .st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+    justify-content: flex-start !important;
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: center !important;
@@ -3680,9 +3712,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         color: {t['muted']} !important;
     }}
 
-    /* ---- Phone: Translate + Audio + Random checkboxes ---- */
+    /* ---- Phone: Story option rows ---- */
     .st-key-storytransaudio_story_row_wrap,
-    .st-key-storytransaudio_dialog_row_wrap {{
+    .st-key-storytransaudio_dialog_row_wrap,
+    .st-key-storydisplay_row_wrap {{
         height: auto !important;
         overflow: visible !important;
     }}
@@ -3713,7 +3746,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-storyplayback_row_wrap [data-testid="stCheckbox"] label p,
     .st-key-storytransaudio_story_row_wrap [data-testid="stCheckbox"] label p,
-    .st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] label p {{
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] label p,
+    .st-key-storydisplay_row_wrap [data-testid="stRadio"] label p {{
         font-size: 0.92rem !important;
     }}
     .st-key-storyplayback_row_wrap [data-testid="stCheckbox"] label {{
@@ -3723,7 +3757,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storytransaudio_story_row_wrap [data-testid="stHorizontalBlock"],
     .st-key-storytransaudio_dialog_row_wrap [data-testid="stHorizontalBlock"] {{
         display: flex !important;
-        flex-wrap: wrap !important;
+        flex-wrap: nowrap !important;
         gap: 0.35rem !important;
         align-items: center !important;
         height: auto !important;
@@ -3733,15 +3767,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         min-width: calc((100% - 0.35rem) / 2) !important;
         width: calc((100% - 0.35rem) / 2) !important;
     }}
-    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:nth-child(1),
-    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:nth-child(2) {{
-        flex: 0 0 calc((100% - 0.35rem) / 2) !important;
-        min-width: calc((100% - 0.35rem) / 2) !important;
-        width: calc((100% - 0.35rem) / 2) !important;
-    }}
-    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:nth-child(3),
-    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:nth-child(4),
-    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:nth-child(5) {{
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] {{
         flex: 0 0 calc((100% - 0.7rem) / 3) !important;
         min-width: calc((100% - 0.7rem) / 3) !important;
         width: calc((100% - 0.7rem) / 3) !important;
@@ -3750,11 +3776,27 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] > div {{
         display: flex !important;
         align-items: center !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
     }}
     .st-key-storytransaudio_story_row_wrap .story-option-row,
     .st-key-storytransaudio_dialog_row_wrap .story-option-row {{
         position: relative !important;
         top: -0.45rem !important;
+    }}
+    .st-key-storydisplay_row_wrap [data-testid="stElementContainer"],
+    .st-key-storydisplay_row_wrap [data-testid="stRadio"] {{
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+    .st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        gap: 0.6rem !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }}
     .st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {{
         gap: 0.2rem !important;
@@ -6082,10 +6124,11 @@ def render_story_view():
     dialog_mode = current_playback_kind() == "dialog"
     story_card = current_story_card()
     sync_story_option_widget_state()
-    prompt_enabled = st.session_state.story_prompt_on
-    english_enabled = st.session_state.story_english_on
+    display_mode = normalize_story_display_mode(st.session_state.story_display_mode)
+    show_spanish = display_mode in {"spanish", "both"}
+    show_english = display_mode in {"english", "both"}
     spanish_text = story_card["answer"]
-    translation_text = story_card["word"] if english_enabled else ""
+    translation_text = story_card["word"] if show_english else ""
     story_position = st.session_state.index + 1
     story_total = len(st.session_state.order)
     story_progress_pct = (story_position / story_total * 100) if story_total else 0
@@ -6131,55 +6174,50 @@ def render_story_view():
                     on_change=toggle_story_playback_step,
                 )
         with st.container(key="storytransaudio_dialog_row_wrap" if dialog_mode else "storytransaudio_story_row_wrap"):
-            ta_cols = st.columns(5 if dialog_mode else 4, gap="small")
+            ta_cols = st.columns(3 if dialog_mode else 2, gap="small")
             with ta_cols[0]:
-                st.checkbox(
-                    "Prompt",
-                    key="story_prompt_checkbox",
-                    on_change=toggle_story_prompt,
-                )
-            with ta_cols[1]:
                 st.checkbox(
                     "Audio",
                     key="story_audio_checkbox",
                     on_change=toggle_story_audio,
                 )
-            with ta_cols[2]:
+            with ta_cols[1]:
                 st.checkbox(
                     "Random",
                     key="story_random_checkbox",
                     on_change=toggle_story_random,
                 )
             if dialog_mode:
-                with ta_cols[3]:
+                with ta_cols[2]:
                     st.checkbox(
                         "2x",
                         key="story_repeat_checkbox",
                         on_change=toggle_story_repeat_spanish,
                     )
-                with ta_cols[4]:
-                    st.checkbox(
-                        "English",
-                        key="story_english_checkbox",
-                        on_change=toggle_story_english,
-                    )
-            else:
-                with ta_cols[3]:
-                    st.checkbox(
-                        "English",
-                        key="story_english_checkbox",
-                        on_change=toggle_story_english,
-                    )
+        with st.container(key="storydisplay_row_wrap"):
+            st.radio(
+                "Story display mode",
+                options=["spanish", "english", "both"],
+                horizontal=True,
+                key="story_display_mode_radio",
+                on_change=toggle_story_display_mode,
+                format_func=lambda value: {
+                    "spanish": "Spanish",
+                    "english": "English",
+                    "both": "Both",
+                }[value],
+                label_visibility="collapsed",
+            )
 
     audio_enabled = st.session_state.story_audio_on
 
     story_spanish_html_lines = [
-        format_word(card["answer"], 'fc-word', 'fc-note') if prompt_enabled else '<div class="fc-word-placeholder">&nbsp;</div>'
+        format_word(card["answer"], 'fc-word', 'fc-note') if show_spanish else '<div class="fc-word-placeholder">&nbsp;</div>'
         for card in ordered_story_cards
     ]
     story_translation_html_lines = [
         format_word(card["word"], 'fc-answer', 'fc-answer-note')
-        if english_enabled else '<div class="fc-word-placeholder">&nbsp;</div>'
+        if show_english else '<div class="fc-word-placeholder">&nbsp;</div>'
         for card in ordered_story_cards
     ]
     last_story_index = max(len(ordered_story_cards) - 1, 0)
@@ -6312,7 +6350,7 @@ def render_story_view():
 
     story_box_shield = story_box_shield_html(False)
 
-    if prompt_enabled:
+    if show_spanish:
         spanish_html = (
             '<div class="story-display-block">'
             + story_box_shield
@@ -6324,7 +6362,7 @@ def render_story_view():
         )
         st.markdown(spanish_html, unsafe_allow_html=True)
 
-    if english_enabled:
+    if show_english:
         translation_inner = format_word(translation_text, 'fc-answer', 'fc-answer-note')
         translation_html = (
             '<div class="story-display-block">'
