@@ -2306,7 +2306,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     text-align: left !important;
     font-weight: 400 !important;
     font-size: 1rem !important;
-    padding-left: 0.26rem !important;
+    padding-left: 0.38rem !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
     min-height: 1.38rem !important;
