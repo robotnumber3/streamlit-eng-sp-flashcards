@@ -3137,6 +3137,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] label {{
     white-space: nowrap !important;
     margin: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: flex-start !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stMarkdownContainer"] p,
 .st-key-storytransaudio_story_row_wrap [data-testid="stMarkdownContainer"] p,
@@ -3179,13 +3182,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: 100% !important;
 }}
 .st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
-    gap: 0.75rem !important;
+    gap: 0.22rem !important;
     width: 100% !important;
 }}
 .st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
-    flex: 0 0 calc((100% - 1.5rem) / 3) !important;
-    min-width: calc((100% - 1.5rem) / 3) !important;
-    width: calc((100% - 1.5rem) / 3) !important;
+    flex: 0 0 calc((100% - 0.44rem) / 3) !important;
+    min-width: calc((100% - 0.44rem) / 3) !important;
+    width: calc((100% - 0.44rem) / 3) !important;
+    display: flex !important;
     justify-content: flex-start !important;
     margin: 0 !important;
 }}
@@ -3764,6 +3768,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storyplayback_row_wrap [data-testid="stCheckbox"] label {{
         width: fit-content !important;
     }}
+    .st-key-storytransaudio_story_row_wrap [data-testid="stCheckbox"] label,
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] label {{
+        width: 100% !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+    }}
 
     .st-key-storytransaudio_story_row_wrap [data-testid="stHorizontalBlock"],
     .st-key-storytransaudio_dialog_row_wrap [data-testid="stHorizontalBlock"] {{
@@ -3810,21 +3820,22 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         flex-wrap: nowrap !important;
         justify-content: flex-start !important;
         align-items: center !important;
-        gap: 0.18rem !important;
+        gap: 0.08rem !important;
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
     }}
     .st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
-        flex: 0 0 calc((100% - 0.36rem) / 3) !important;
-        min-width: calc((100% - 0.36rem) / 3) !important;
-        width: calc((100% - 0.36rem) / 3) !important;
+        flex: 0 0 calc((100% - 0.16rem) / 3) !important;
+        min-width: calc((100% - 0.16rem) / 3) !important;
+        width: calc((100% - 0.16rem) / 3) !important;
+        display: flex !important;
         justify-content: flex-start !important;
         margin: 0 !important;
     }}
     .st-key-storydisplay_row_wrap [data-testid="stMarkdownContainer"] p {{
         white-space: nowrap !important;
-        font-size: 0.78rem !important;
+        font-size: 0.76rem !important;
     }}
     .st-key-storyplayback_row_wrap {{
         margin-bottom: 0.06rem !important;
