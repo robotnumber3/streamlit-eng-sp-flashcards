@@ -2220,14 +2220,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {BUTTON_COLORS['blue']['fg']} !important;
 }}
 .st-key-autospeak_on_wrap div[data-testid="stButton"] > button {{
-    background-color: #cbb7f3 !important;
-    border-color: #5a338f !important;
-    color: #8f39ff !important;
+    background-color: {t['card_bg']} !important;
+    border-color: {t['border']} !important;
+    color: {t['fg']} !important;
 }}
 .st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
-    background-color: #cbb7f3 !important;
-    border-color: #5a338f !important;
-    color: #8f39ff !important;
+    background-color: {t['card_bg']} !important;
+    border-color: {t['border']} !important;
+    color: {t['muted']} !important;
 }}
 .st-key-autospeak_on_wrap div[data-testid="stButton"] > button,
 .st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
@@ -3135,8 +3135,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: 100% !important;
 }}
 .st-key-storycontrol_row_wrap [data-testid="stColumn"] {{
-    flex: 1 1 0 !important;
-    width: auto !important;
+    flex: 0 0 calc((100% - 1rem) / 3) !important;
+    width: calc((100% - 1rem) / 3) !important;
     min-width: 0 !important;
     max-width: none !important;
     padding: 0 !important;
@@ -3152,6 +3152,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 1.05rem !important;
     padding-left: 0.4rem !important;
     padding-right: 0.4rem !important;
+}}
+.story-control-spacer {{
+    width: 100%;
+    min-height: 2.9rem;
 }}
 .story-progress {{
     margin: 0.18rem 0 0.42rem 0;
@@ -6180,7 +6184,7 @@ def render_story_view():
                         st.rerun()
     else:
         with st.container(key="storycontrol_row_wrap"):
-            control_cols = st.columns(3, gap="small")
+            control_cols = st.columns(4, gap="small")
             with control_cols[0]:
                 with st.container(key="storystart_wrap"):
                     start_label = "RESUME" if st.session_state.story_started else "START"
@@ -6193,6 +6197,8 @@ def render_story_view():
                         stop_story()
                         st.rerun()
             with control_cols[2]:
+                st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
+            with control_cols[3]:
                 with st.container(key="storyfavorite_active_wrap" if current_story_favorited else "storyfavorite_wrap"):
                     if st.button("♥︎", key="story_favorite_idle_btn", use_container_width=True, disabled=current_story_favorited):
                         add_current_story_line_to_favorites()
