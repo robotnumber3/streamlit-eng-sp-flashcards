@@ -13,6 +13,11 @@ import pandas as pd
 import streamlit.components.v1 as components
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
+try:
+    from supabase import create_client
+except ImportError:
+    create_client = None
+
 if get_script_run_ctx() is None:
     print("Run this app with: streamlit run streamlit_eng_sp_flashcards.py")
     sys.exit(1)
@@ -28,6 +33,20 @@ PREFS_FILE = os.path.expanduser("~/.flashcards_prefs.json")
 REVIEWS_FILE = os.path.expanduser("~/.flashcards_reviews.json")
 PROGRESS_FILE = os.path.expanduser("~/.flashcards_progress.json")
 
+
+def configured_setting(name):
+    env_value = os.environ.get(name)
+    if env_value:
+        return env_value
+    try:
+        return st.secrets.get(name)
+    except Exception:
+        return None
+
+
+SUPABASE_URL = configured_setting("SUPABASE_URL")
+SUPABASE_ANON_KEY = configured_setting("SUPABASE_ANON_KEY")
+
 PERSON_LABELS = {
     "miguel": "Miguel",
     "david": "David",
@@ -37,6 +56,17 @@ REVIEW_DECK_VALUES = {
     for person in PERSON_LABELS
 }
 REVIEW_DECK_ORDER = [REVIEW_DECK_VALUES["miguel"], REVIEW_DECK_VALUES["david"]]
+
+
+@st.cache_resource(show_spinner=False)
+def get_supabase_client():
+    if create_client is None or not SUPABASE_URL or not SUPABASE_ANON_KEY:
+        return None
+    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+
+def cloud_sync_enabled():
+    return get_supabase_client() is not None
 
 # ------------------------------------------------------------------------
 # DECK PICKER GROUPING
@@ -63,6 +93,7 @@ DECK_PICKER_CATEGORIES = [
     {"id": "parts_of_speech", "title": "Parts of Speech", "tokens": ["pos"]},
     {"id": "vocab", "title": "Vocab", "tokens": ["vocab"]},
     {"id": "sentences", "title": "Sentences", "tokens": ["sentence"]},
+    {"id": "situations", "title": "Situations", "tokens": ["situations"]},
     {"id": "dialogs", "title": "Dialogs", "tokens": ["dialog"]},
     {"id": "stories", "title": "Stories", "tokens": ["story"]},
 ]
@@ -70,6 +101,7 @@ DECK_PICKER_DESCRIPTOR_CATEGORY_IDS = {
     "parts_of_speech",
     "vocab",
     "sentences",
+    "situations",
     "dialogs",
     "stories",
 }
@@ -104,8 +136,11 @@ def review_deck_person(deck_value):
     return None
 
 
-def review_deck_label(person):
-    return f"Review - {PERSON_LABELS[person]}"
+def review_deck_label(person, include_count=False):
+    label = f"Review - {PERSON_LABELS[person]}"
+    if include_count:
+        label += f" [{review_count_for(person)}]"
+    return label
 
 
 def normalized_filename(value):
@@ -121,6 +156,8 @@ def filename_matches_picker_category(filename, category):
     normalized_name = normalized_filename(filename)
     if category["id"] == "parts_of_speech":
         return normalized_name.startswith("pos_")
+    if category["id"] == "situations":
+        return normalized_name.startswith("situations")
     return filename_contains_any(normalized_name, category["tokens"])
 
 
@@ -205,18 +242,29 @@ def load_regular_deck(filename):
         first_line = handle.readline()
     separator = ";" if ";" in first_line else ","
     df = pd.read_csv(csv_path, sep=separator)
-    df.columns = [column.strip() for column in df.columns]
+    df.columns = [str(column).strip() for column in df.columns]
 
     lower_columns = {column.lower(): column for column in df.columns}
     id_column = lower_columns.get("id")
+    uses_headerless_layout = False
 
     if is_forced_en_es_deck(filename):
         content_columns = [column for column in df.columns if column != id_column]
         word_column = content_columns[0]
         answer_column = content_columns[1]
-    else:
+    elif "word" in lower_columns and "answer" in lower_columns:
         word_column = lower_columns["word"]
         answer_column = lower_columns["answer"]
+    else:
+        # Some legacy decks are plain two-column CSVs without a header row.
+        df = pd.read_csv(csv_path, sep=separator, header=None)
+        df.columns = [f"column_{index}" for index in range(len(df.columns))]
+        id_column = None
+        uses_headerless_layout = True
+        if len(df.columns) < 2:
+            raise ValueError(f"CSV deck '{filename}' must have at least two columns")
+        word_column = df.columns[0]
+        answer_column = df.columns[1]
 
     cards = []
     for _, row in df.iterrows():
@@ -234,7 +282,7 @@ def load_regular_deck(filename):
 
     return {
         "cards": cards,
-        "supports_completion": bool(id_column),
+        "supports_completion": bool(id_column) and not uses_headerless_layout,
     }
 
 
@@ -245,6 +293,24 @@ def display_deck_name(filename):
     if extension.lower() == ".csv":
         return f"{base_name} [{csv_row_counts.get(filename, 0)}]"
     return base_name
+
+
+def picker_display_deck_name(filename, person):
+    if is_review_deck(filename):
+        return review_deck_label(review_deck_person(filename), include_count=True)
+
+    base_name, extension = os.path.splitext(filename)
+    if extension.lower() != ".csv":
+        return base_name
+
+    total_cards = csv_row_counts.get(filename, 0)
+    progress_stats = deck_progress_stats(filename, person)
+    completed_cards = progress_stats.get("completed", 0)
+
+    if completed_cards > 0:
+        return f"{base_name} [{progress_stats['remaining']}/{progress_stats['total']}]"
+
+    return f"{base_name} [{total_cards}]"
 
 
 def is_dialog_deck(filename):
@@ -258,6 +324,10 @@ def is_story_deck(filename):
         and not is_dialog_deck(filename)
         and filename_contains_any(filename, ["story"])
     )
+
+
+def is_sentence_deck(filename):
+    return bool(filename) and not is_review_deck(filename) and filename_contains_any(filename, ["sentence"])
 
 
 def is_playback_deck(filename):
@@ -309,7 +379,7 @@ def deck_picker_label(filename, person, italicized=False):
         "complete": "✓",
     }
     status = deck_picker_status(filename, person)
-    deck_name = display_deck_name(filename)
+    deck_name = picker_display_deck_name(filename, person)
     if italicized:
         deck_name = f"*{deck_name}*"
     return f"{symbol_map[status]} {deck_name}"
@@ -470,7 +540,7 @@ def effective_direction(deck_value=None):
         return "EN_TO_ES"
     return direction_for_mode(st.session_state.direction_mode)
 
-def load_prefs():
+def load_prefs_local():
     try:
         with open(PREFS_FILE, encoding="utf-8") as f:
             return normalize_prefs(json.load(f))
@@ -478,7 +548,7 @@ def load_prefs():
         return normalize_prefs({})
 
 
-def save_prefs(pref_data):
+def save_prefs_local(pref_data):
     try:
         with open(PREFS_FILE, "w", encoding="utf-8") as f:
             json.dump(normalize_prefs(pref_data), f, ensure_ascii=False)
@@ -486,7 +556,7 @@ def save_prefs(pref_data):
         pass
 
 
-def load_review_data():
+def load_review_data_local():
     empty = {person: {} for person in PERSON_LABELS}
     try:
         with open(REVIEWS_FILE, encoding="utf-8") as f:
@@ -519,7 +589,7 @@ def load_review_data():
     return review_data
 
 
-def save_review_data(review_data):
+def save_review_data_local(review_data):
     try:
         with open(REVIEWS_FILE, "w", encoding="utf-8") as f:
             serializable = {
@@ -531,7 +601,7 @@ def save_review_data(review_data):
         pass
 
 
-def load_progress_data():
+def load_progress_data_local():
     empty = {person: {} for person in PERSON_LABELS}
     try:
         with open(PROGRESS_FILE, encoding="utf-8") as f:
@@ -562,7 +632,7 @@ def load_progress_data():
     return progress_data
 
 
-def save_progress_data(progress_data):
+def save_progress_data_local(progress_data):
     try:
         with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
             serializable = {
@@ -576,6 +646,273 @@ def save_progress_data(progress_data):
             json.dump(serializable, f, ensure_ascii=False, indent=2)
     except Exception:
         pass
+
+
+def prefs_are_default(pref_data):
+    normalized = normalize_prefs(pref_data)
+    return normalized["person_settings"] == normalize_prefs({})["person_settings"]
+
+
+def review_data_has_entries(review_data):
+    return any(review_data.get(person) for person in PERSON_LABELS)
+
+
+def progress_data_has_entries(progress_data):
+    return any(progress_data.get(person) for person in PERSON_LABELS)
+
+
+def load_prefs_supabase():
+    client = get_supabase_client()
+    if client is None:
+        return None
+    try:
+        response = client.table("user_preferences").select("*").execute()
+    except Exception:
+        return None
+
+    person_settings = {
+        person: default_person_prefs()
+        for person in PERSON_LABELS
+    }
+    for row in response.data or []:
+        user_id = str(row.get("user_id", "")).strip().lower()
+        if user_id not in PERSON_LABELS:
+            continue
+        person_settings[user_id] = sanitize_person_prefs(
+            {
+                "theme": row.get("theme"),
+                "direction_mode": row.get("direction_mode"),
+                "speech_speed": row.get("speech_speed"),
+                "show_hints": row.get("show_hints"),
+                "auto_speak_spanish": row.get("auto_speak_spanish"),
+                "story_reading_speed": row.get("story_reading_speed"),
+                "story_pause_amount": row.get("story_pause_amount"),
+            },
+            default_person_prefs(),
+        )
+
+    return normalize_prefs({
+        "active_person": "miguel",
+        "person_settings": person_settings,
+    })
+
+
+def save_prefs_supabase(pref_data):
+    client = get_supabase_client()
+    if client is None:
+        return False
+
+    normalized = normalize_prefs(pref_data)
+    rows = []
+    for person, person_pref_data in normalized["person_settings"].items():
+        rows.append(
+            {
+                "user_id": person,
+                "theme": person_pref_data["theme"],
+                "direction_mode": person_pref_data["direction_mode"],
+                "speech_speed": person_pref_data["speech_speed"],
+                "show_hints": person_pref_data["show_hints"],
+                "auto_speak_spanish": person_pref_data["auto_speak_spanish"],
+                "story_reading_speed": person_pref_data["story_reading_speed"],
+                "story_pause_amount": person_pref_data["story_pause_amount"],
+            }
+        )
+    try:
+        client.table("user_preferences").upsert(rows).execute()
+        return True
+    except Exception:
+        return False
+
+
+def load_review_data_supabase():
+    client = get_supabase_client()
+    if client is None:
+        return None
+    try:
+        response = client.table("review_items").select(
+            "user_id,item_key,word,answer,review_count"
+        ).execute()
+    except Exception:
+        return None
+
+    review_data = {person: {} for person in PERSON_LABELS}
+    for row in response.data or []:
+        user_id = str(row.get("user_id", "")).strip().lower()
+        if user_id not in PERSON_LABELS:
+            continue
+        word = str(row.get("word", "")).strip()
+        answer = str(row.get("answer", "")).strip()
+        try:
+            count = int(row.get("review_count", 0))
+        except (TypeError, ValueError):
+            count = 0
+        if not word or not answer or count <= 0:
+            continue
+        item_key = str(row.get("item_key") or review_item_key(word, answer))
+        review_data[user_id][item_key] = {
+            "word": word,
+            "answer": answer,
+            "count": count,
+        }
+    return review_data
+
+
+def save_review_data_supabase(review_data):
+    client = get_supabase_client()
+    if client is None:
+        return False
+
+    rows = []
+    for person in PERSON_LABELS:
+        for item_key, entry in review_data.get(person, {}).items():
+            rows.append(
+                {
+                    "user_id": person,
+                    "item_key": item_key,
+                    "word": entry["word"],
+                    "answer": entry["answer"],
+                    "review_count": int(entry["count"]),
+                }
+            )
+
+    try:
+        for person in PERSON_LABELS:
+            client.table("review_items").delete().eq("user_id", person).execute()
+        if rows:
+            client.table("review_items").upsert(rows).execute()
+        return True
+    except Exception:
+        return False
+
+
+def load_progress_data_supabase():
+    client = get_supabase_client()
+    if client is None:
+        return None
+    try:
+        response = client.table("deck_progress").select(
+            "user_id,deck_filename,completed_card_ids"
+        ).execute()
+    except Exception:
+        return None
+
+    progress_data = {person: {} for person in PERSON_LABELS}
+    for row in response.data or []:
+        user_id = str(row.get("user_id", "")).strip().lower()
+        if user_id not in PERSON_LABELS:
+            continue
+        filename = str(row.get("deck_filename", "")).strip()
+        card_ids = row.get("completed_card_ids", [])
+        if isinstance(card_ids, dict):
+            card_ids = card_ids.keys()
+        if not isinstance(card_ids, list) and not hasattr(card_ids, "__iter__"):
+            continue
+
+        normalized_ids = []
+        seen_ids = set()
+        for card_id in card_ids:
+            normalized_id = normalize_card_id(card_id)
+            if not normalized_id or normalized_id in seen_ids:
+                continue
+            seen_ids.add(normalized_id)
+            normalized_ids.append(normalized_id)
+
+        if filename and normalized_ids:
+            progress_data[user_id][filename] = sorted(normalized_ids, key=completion_sort_key)
+    return progress_data
+
+
+def save_progress_data_supabase(progress_data):
+    client = get_supabase_client()
+    if client is None:
+        return False
+
+    rows = []
+    for person in PERSON_LABELS:
+        for filename, card_ids in progress_data.get(person, {}).items():
+            normalized_ids = []
+            seen_ids = set()
+            for card_id in card_ids:
+                normalized_id = normalize_card_id(card_id)
+                if not normalized_id or normalized_id in seen_ids:
+                    continue
+                seen_ids.add(normalized_id)
+                normalized_ids.append(normalized_id)
+            if normalized_ids:
+                rows.append(
+                    {
+                        "user_id": person,
+                        "deck_filename": filename,
+                        "completed_card_ids": sorted(normalized_ids, key=completion_sort_key),
+                    }
+                )
+
+    try:
+        for person in PERSON_LABELS:
+            client.table("deck_progress").delete().eq("user_id", person).execute()
+        if rows:
+            client.table("deck_progress").upsert(rows).execute()
+        return True
+    except Exception:
+        return False
+
+
+def load_prefs():
+    local_pref_data = load_prefs_local()
+    if not cloud_sync_enabled():
+        return local_pref_data
+
+    cloud_pref_data = load_prefs_supabase()
+    if cloud_pref_data is None:
+        return local_pref_data
+    if prefs_are_default(cloud_pref_data) and not prefs_are_default(local_pref_data):
+        if save_prefs_supabase(local_pref_data):
+            return normalize_prefs(local_pref_data)
+    return cloud_pref_data
+
+
+def save_prefs(pref_data):
+    normalized = normalize_prefs(pref_data)
+    save_prefs_local(normalized)
+    save_prefs_supabase(normalized)
+
+
+def load_review_data():
+    local_review_data = load_review_data_local()
+    if not cloud_sync_enabled():
+        return local_review_data
+
+    cloud_review_data = load_review_data_supabase()
+    if cloud_review_data is None:
+        return local_review_data
+    if not review_data_has_entries(cloud_review_data) and review_data_has_entries(local_review_data):
+        if save_review_data_supabase(local_review_data):
+            return local_review_data
+    return cloud_review_data
+
+
+def save_review_data(review_data):
+    save_review_data_local(review_data)
+    save_review_data_supabase(review_data)
+
+
+def load_progress_data():
+    local_progress_data = load_progress_data_local()
+    if not cloud_sync_enabled():
+        return local_progress_data
+
+    cloud_progress_data = load_progress_data_supabase()
+    if cloud_progress_data is None:
+        return local_progress_data
+    if not progress_data_has_entries(cloud_progress_data) and progress_data_has_entries(local_progress_data):
+        if save_progress_data_supabase(local_progress_data):
+            return local_progress_data
+    return cloud_progress_data
+
+
+def save_progress_data(progress_data):
+    save_progress_data_local(progress_data)
+    save_progress_data_supabase(progress_data)
 
 
 def completed_ids_for(person, filename):
@@ -664,17 +1001,19 @@ def current_prefs():
         person: dict(st.session_state.person_settings.get(person, default_person_prefs()))
         for person in PERSON_LABELS
     }
-    person_settings[current_person] = {
-        "theme": st.session_state.theme,
-        "direction_mode": st.session_state.direction_mode,
-        "speech_speed": st.session_state.speech_speed,
-        "show_hints": st.session_state.show_hints,
-        "auto_speak_spanish": st.session_state.auto_speak_spanish,
-        "story_reading_speed": st.session_state.story_reading_speed,
-        "story_pause_amount": st.session_state.story_pause_amount,
-    }
+    saved_active_person = current_person if current_person in PERSON_LABELS else prefs["active_person"]
+    if current_person in PERSON_LABELS:
+        person_settings[current_person] = {
+            "theme": st.session_state.theme,
+            "direction_mode": st.session_state.direction_mode,
+            "speech_speed": st.session_state.speech_speed,
+            "show_hints": st.session_state.show_hints,
+            "auto_speak_spanish": st.session_state.auto_speak_spanish,
+            "story_reading_speed": st.session_state.story_reading_speed,
+            "story_pause_amount": st.session_state.story_pause_amount,
+        }
     return {
-        "active_person": st.session_state.active_person,
+        "active_person": saved_active_person,
         "person_settings": person_settings,
     }
 
@@ -800,8 +1139,8 @@ THEMES = {
 prefs = load_prefs()
 review_data = load_review_data()
 progress_data = load_progress_data()
-active_person = prefs["active_person"]
-active_person_prefs = prefs["person_settings"][active_person]
+startup_person = prefs["active_person"] if prefs["active_person"] in PERSON_LABELS else next(iter(PERSON_LABELS))
+active_person_prefs = prefs["person_settings"][startup_person]
 
 defaults = {
     "theme":          active_person_prefs["theme"],
@@ -813,8 +1152,8 @@ defaults = {
     "auto_speak_spanish_generation": 0,
     "story_reading_speed": active_person_prefs["story_reading_speed"],
     "story_pause_amount": active_person_prefs["story_pause_amount"],
-    "active_person":  active_person,
-    "person_radio":   active_person,
+    "active_person":  None,
+    "person_radio":   None,
     "person_selector_visible": True,
     "person_settings": prefs["person_settings"],
     "review_data":    review_data,
@@ -826,12 +1165,14 @@ defaults = {
     "index":          0,
     "show_answer":    False,
     "regular_auto_mode": False,
+    "regular_auto_include_english": True,
     "regular_auto_repeat_spanish": False,
-    "regular_auto_cue_prompt": False,
+    "regular_auto_cue_prompt": True,
     "regular_auto_generation": 0,
     "regular_auto_mode_checkbox": False,
+    "regular_auto_english_checkbox": True,
     "regular_auto_repeat_checkbox": False,
-    "regular_auto_cue_checkbox": False,
+    "regular_auto_cue_checkbox": True,
     "direction":      direction_for_mode(active_person_prefs["direction_mode"]),
     "quit_requested": False,
     "final_exit":     False,
@@ -840,6 +1181,7 @@ defaults = {
     "score_correct":  0,
     "score_repeat":   0,
     "erase_review_confirm": False,
+    "initialize_all_decks_confirm": False,
     "delete_review_confirm_key": None,
     "open_deck_categories": [],
     "story_playback_mode": "continuous",
@@ -861,20 +1203,12 @@ t = THEMES[st.session_state.theme]
 
 
 def sync_menu_widget_state():
-    direction_labels = {
-        "random": "Random 50/50",
-        "en_to_es": "EN → ES only",
-        "es_to_en": "ES → EN only",
-    }
-    st.session_state.theme_radio = st.session_state.theme
-    st.session_state.dir_radio = direction_labels[st.session_state.direction_mode]
-    st.session_state.speech_speed_radio = st.session_state.speech_speed
-    st.session_state.hints_radio = "Hints ON" if st.session_state.show_hints else "Hints OFF"
-    st.session_state.story_reading_speed_radio = st.session_state.story_reading_speed
-    st.session_state.story_pause_amount_radio = st.session_state.story_pause_amount
+    return
 
 
 def store_active_person_prefs():
+    if st.session_state.active_person not in PERSON_LABELS:
+        return
     st.session_state.person_settings[st.session_state.active_person] = {
         "theme": st.session_state.theme,
         "direction_mode": st.session_state.direction_mode,
@@ -890,7 +1224,17 @@ def close_menu_and_save():
     store_active_person_prefs()
     save_prefs(current_prefs())
     st.session_state.menu_open = False
-    st.session_state.erase_review_confirm = False
+    clear_menu_destructive_confirms()
+
+
+def activate_person(person):
+    if person not in PERSON_LABELS:
+        return
+    st.session_state.active_person = person
+    st.session_state.person_selector_visible = False
+    apply_person_prefs(person)
+    clear_menu_destructive_confirms()
+    save_prefs(current_prefs())
 
 
 def render_menu_backdrop_close_handler():
@@ -940,8 +1284,22 @@ def apply_person_prefs(person):
     sync_menu_widget_state()
 
 
+def clear_menu_destructive_confirms():
+    st.session_state.erase_review_confirm = False
+    st.session_state.initialize_all_decks_confirm = False
+
+
 def review_count_for(person):
     return len(st.session_state.review_data.get(person, {}))
+
+
+def person_has_regular_deck_progress(person):
+    person_progress = st.session_state.progress_data.get(person, {})
+    return any(
+        card_ids
+        for filename, card_ids in person_progress.items()
+        if not is_review_deck(filename)
+    )
 
 
 def review_deck_selectable(deck_value):
@@ -952,6 +1310,8 @@ def review_deck_selectable(deck_value):
 
 
 def visible_review_deck_values():
+    if review_count_for(st.session_state.active_person) <= 0:
+        return []
     active_review_value = REVIEW_DECK_VALUES[st.session_state.active_person]
     return [active_review_value]
 
@@ -966,12 +1326,14 @@ def reset_study_state(reset_selected=True):
     st.session_state.index = 0
     st.session_state.show_answer = False
     st.session_state["regular_auto_mode"] = False
+    st.session_state["regular_auto_include_english"] = True
     st.session_state["regular_auto_repeat_spanish"] = False
-    st.session_state["regular_auto_cue_prompt"] = False
+    st.session_state["regular_auto_cue_prompt"] = True
     st.session_state["regular_auto_generation"] += 1
     st.session_state["regular_auto_mode_checkbox"] = False
+    st.session_state["regular_auto_english_checkbox"] = True
     st.session_state["regular_auto_repeat_checkbox"] = False
-    st.session_state["regular_auto_cue_checkbox"] = False
+    st.session_state["regular_auto_cue_checkbox"] = True
     st.session_state.quit_requested = False
     st.session_state.final_exit = False
     st.session_state["score_actions"] = 0
@@ -1120,7 +1482,7 @@ def activate_deck(deck_value):
 
 def go_back_to_deck_picker():
     st.session_state.menu_open = False
-    st.session_state.erase_review_confirm = False
+    clear_menu_destructive_confirms()
     reset_study_state(reset_selected=True)
 
 
@@ -1148,7 +1510,7 @@ def render_grouped_deck_picker():
                 with st.container(key=review_wrap):
                     with st.container(key=f"mobile_deck_entry_review_{person}_wrap"):
                         if st.button(
-                            review_deck_label(person),
+                            review_deck_label(person, include_count=True),
                             key=f"deck_btn_review_{person}",
                             use_container_width=True,
                             disabled=not review_enabled,
@@ -1254,9 +1616,18 @@ def purge_remaining_occurrences(card_index, current_position=None):
 def erase_review_deck(person):
     st.session_state.review_data[person] = {}
     save_review_data(st.session_state.review_data)
-    st.session_state.erase_review_confirm = False
+    clear_menu_destructive_confirms()
     st.session_state.menu_open = False
     if st.session_state.selected_csv == REVIEW_DECK_VALUES[person]:
+        reset_study_state(reset_selected=True)
+
+
+def initialize_all_decks(person):
+    st.session_state.progress_data[person] = {}
+    save_progress_data(st.session_state.progress_data)
+    clear_menu_destructive_confirms()
+    st.session_state.menu_open = False
+    if st.session_state.selected_csv and not is_review_deck(st.session_state.selected_csv):
         reset_study_state(reset_selected=True)
 
 # ------------------------------------------------------------------------
@@ -1330,6 +1701,17 @@ html, body, p, div, span, label, [class*="st-"] {{
     justify-content: flex-start !important;
     gap: 1.3rem !important;
 }}
+.st-key-person_radio_wrap [data-testid="stWidgetLabel"] {{
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+}}
+.st-key-person_radio_wrap [data-testid="stWidgetLabel"] p {{
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+}}
 .st-key-person_radio_wrap label p {{
     font-size: 0.95rem !important;
 }}
@@ -1372,6 +1754,44 @@ div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
 div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 
 /* ---- Hamburger ---- */
+.st-key-header_quit_wrap {{
+    min-width: 3.2rem !important;
+    margin-top: 0.5rem !important;
+}}
+.st-key-header_quit_wrap div[data-testid="stButton"] {{
+    display: flex !important;
+    justify-content: flex-end !important;
+}}
+.st-key-header_quit_wrap div[data-testid="stButton"] > button {{
+    min-height: 1.55rem !important;
+    min-width: 2.7rem !important;
+    width: auto !important;
+    padding: 0.06rem 0.42rem !important;
+    border-radius: 999px !important;
+    background-color: {t['bg']} !important;
+    border-color: {t['fg']} !important;
+    color: #ff3b30 !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 0.8rem !important;
+    font-weight: 400 !important;
+    line-height: 1 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+}}
+.st-key-header_quit_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+.st-key-header_quit_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
+.st-key-header_quit_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
+.st-key-header_quit_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 0.8rem !important;
+    font-weight: 400 !important;
+    line-height: 1 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    color: #ff3b30 !important;
+    margin: 0 !important;
+}}
 .st-key-hamburger_wrap {{
     min-width: 2.5rem !important;
 }}
@@ -1607,28 +2027,44 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 
 /* ---- Small centered icon button row ---- */
+.st-key-icon_btn_row_wrap {{
+    margin-top: 0.32rem !important;
+    margin-bottom: 0 !important;
+}}
+.st-key-icon_btn_row_wrap [data-testid="stVerticalBlock"] {{
+    gap: 0 !important;
+}}
+.st-key-icon_btn_row_wrap [data-testid="stElementContainer"] {{
+    margin: 0 !important;
+}}
 .st-key-icon_btn_row_wrap [data-testid="stHorizontalBlock"] {{
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    justify-content: center !important;
-    gap: 0.8rem !important;
-    width: fit-content !important;
-    margin: 0 auto !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
 }}
 .st-key-icon_btn_row_wrap [data-testid="stColumn"] {{
-    flex: 0 0 4.8rem !important;
-    width: 4.8rem !important;
-    min-width: 4.8rem !important;
-    max-width: 4.8rem !important;
+    min-width: 0 !important;
 }}
 .st-key-icon_btn_row_wrap [data-testid="stColumn"] > div,
 .st-key-icon_btn_row_wrap div[data-testid="stButton"],
 .st-key-icon_btn_row_wrap div[data-testid="stButton"] > div {{
     width: 100% !important;
 }}
+.st-key-icon_btn_row_wrap .st-key-showanswer_wrap div[data-testid="stButton"] {{
+    display: flex !important;
+    justify-content: flex-start !important;
+}}
+.st-key-icon_btn_row_wrap .st-key-quitbefore_wrap div[data-testid="stButton"] {{
+    display: flex !important;
+    justify-content: flex-end !important;
+}}
 .st-key-icon_btn_row_wrap div[data-testid="stButton"] > button {{
-    width: 100% !important;
+    width: 4.8rem !important;
     min-height: 3.2rem !important;
     font-size: 1.55rem !important;
     font-weight: 700 !important;
@@ -1643,26 +2079,46 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 
 /* ---- Revealed answer action row ---- */
+.st-key-answer_action_row_wrap {{
+    margin-top: 0.32rem !important;
+    margin-bottom: 0 !important;
+}}
+.st-key-answer_action_row_wrap [data-testid="stVerticalBlock"] {{
+    gap: 0 !important;
+}}
+.st-key-answer_action_row_wrap [data-testid="stElementContainer"] {{
+    margin: 0 !important;
+}}
 .st-key-answer_action_row_wrap [data-testid="stHorizontalBlock"] {{
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    justify-content: center !important;
+    justify-content: space-between !important;
     align-items: center !important;
-    gap: 0.26rem !important;
-    width: fit-content !important;
-    margin: 0 auto !important;
+    gap: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
 }}
 .st-key-answer_action_row_wrap [data-testid="stColumn"] {{
-    flex: 0 0 3.6rem !important;
-    width: 3.6rem !important;
-    min-width: 3.6rem !important;
-    max-width: 3.6rem !important;
+    min-width: 0 !important;
 }}
 .st-key-answer_action_row_wrap [data-testid="stColumn"] > div,
 .st-key-answer_action_row_wrap div[data-testid="stButton"],
 .st-key-answer_action_row_wrap div[data-testid="stButton"] > div {{
     width: 100% !important;
+}}
+.st-key-answer_action_row_wrap .st-key-correct_wrap div[data-testid="stButton"],
+.st-key-answer_action_row_wrap .st-key-repeat_wrap div[data-testid="stButton"] {{
+    display: flex !important;
+    justify-content: flex-start !important;
+}}
+.st-key-answer_action_row_wrap .st-key-speaker_wrap div[data-testid="stButton"],
+.st-key-answer_action_row_wrap .st-key-autospeak_on_wrap div[data-testid="stButton"],
+.st-key-answer_action_row_wrap .st-key-autospeak_off_wrap div[data-testid="stButton"],
+.st-key-answer_action_row_wrap .st-key-del_active_wrap div[data-testid="stButton"],
+.st-key-answer_action_row_wrap .st-key-del_confirm_wrap div[data-testid="stButton"] {{
+    display: flex !important;
+    justify-content: flex-end !important;
 }}
 .st-key-answer_action_row_wrap .st-key-speaker_wrap,
 .st-key-answer_action_row_wrap .st-key-speaker_wrap > div,
@@ -1682,6 +2138,35 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-height: 3.2rem !important;
     font-size: 1.55rem !important;
     font-weight: 700 !important;
+}}
+.st-key-action_left_group_wrap [data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    gap: 0.26rem !important;
+    width: fit-content !important;
+    margin: 0 !important;
+}}
+.st-key-action_left_group_wrap [data-testid="stColumn"] {{
+    flex: 0 0 3.6rem !important;
+    width: 3.6rem !important;
+    min-width: 3.6rem !important;
+    max-width: 3.6rem !important;
+}}
+.st-key-action_right_group_wrap [data-testid="stHorizontalBlock"] {{
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-end !important;
+    gap: 0.26rem !important;
+    width: fit-content !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}}
+.st-key-action_right_group_wrap [data-testid="stColumn"] {{
+    flex: 0 0 3.6rem !important;
+    width: 3.6rem !important;
+    min-width: 3.6rem !important;
+    max-width: 3.6rem !important;
 }}
 .st-key-answer_action_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
 .st-key-answer_action_row_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
@@ -1857,17 +2342,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     white-space: nowrap;
 }}
 .title-sub {{
-    margin-top: 0.18rem;
-    font-size: 0.78rem;
-    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    line-height: 1;
     color: {t['muted']};
     letter-spacing: 0.08em;
     text-transform: uppercase;
-}}
-.title-sub {{
-    font-size: 0.8rem;
-    font-weight: 400;
-    color: {t['muted']};
+    margin-top: 0.18rem;
     white-space: nowrap;
 }}
 
@@ -1904,15 +2386,35 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     line-height: 1.2;
 }}
 .st-key-erase_review_wrap,
-.st-key-erase_review_confirm_wrap {{
+.st-key-erase_review_confirm_wrap,
+.st-key-initialize_all_decks_wrap,
+.st-key-initialize_all_decks_confirm_wrap {{
     margin-top: 0.95rem !important;
+}}
+.st-key-erase_review_slot_wrap,
+.st-key-initialize_all_decks_slot_wrap {{
+    height: 4.15rem !important;
+    min-height: 4.15rem !important;
+    max-height: 4.15rem !important;
+    overflow: hidden !important;
+}}
+.st-key-erase_review_slot_wrap > div[data-testid="stVerticalBlock"],
+.st-key-initialize_all_decks_slot_wrap > div[data-testid="stVerticalBlock"] {{
+    gap: 0 !important;
+    height: 100% !important;
 }}
 .st-key-clear_erase_review_confirm_wrap {{
     display: none !important;
 }}
+.st-key-clear_initialize_all_decks_confirm_wrap {{
+    display: none !important;
+}}
 .st-key-erase_review_wrap div[data-testid="stButton"] > button,
-.st-key-erase_review_confirm_wrap div[data-testid="stButton"] > button {{
+.st-key-erase_review_confirm_wrap div[data-testid="stButton"] > button,
+.st-key-initialize_all_decks_wrap div[data-testid="stButton"] > button,
+.st-key-initialize_all_decks_confirm_wrap div[data-testid="stButton"] > button {{
     min-height: 2.65rem !important;
+    width: 100% !important;
     font-size: 0.95rem !important;
     font-weight: 700 !important;
 }}
@@ -1920,6 +2422,27 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {t['danger']} !important;
     border-color: {t['danger']} !important;
     color: white !important;
+    animation: destructiveConfirmPulse 1s ease-in-out infinite !important;
+}}
+.st-key-initialize_all_decks_confirm_wrap div[data-testid="stButton"] > button {{
+    background-color: {t['danger']} !important;
+    border-color: {t['danger']} !important;
+    color: white !important;
+    animation: destructiveConfirmPulse 1s ease-in-out infinite !important;
+}}
+@keyframes destructiveConfirmPulse {{
+    0%, 100% {{
+        background-color: {t['danger']} !important;
+        border-color: {t['danger']} !important;
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.0), 0 0 0.18rem rgba(120, 0, 0, 0.22);
+        filter: brightness(0.88) saturate(0.95);
+    }}
+    50% {{
+        background-color: {t['danger_light']} !important;
+        border-color: {t['danger']} !important;
+        box-shadow: 0 0 0 0.24rem rgba(255, 255, 255, 0.22), 0 0 1rem rgba(255, 84, 84, 0.65), 0 0 1.65rem rgba(255, 48, 48, 0.35);
+        filter: brightness(1.42) saturate(1.2);
+    }}
 }}
 
 /* ---- Deck strip ---- */
@@ -2441,6 +2964,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         margin: 0 !important;
         padding: 0 !important;
     }}
+    .st-key-person_radio_wrap [data-testid="stWidgetLabel"] p {{
+        font-size: 0.92rem !important;
+    }}
     .st-key-person_radio_wrap [data-testid="stRadio"] > div {{
         margin: 0 !important;
         padding: 0 !important;
@@ -2898,7 +3424,7 @@ def render_delete_confirm_timeout():
                         clearInterval(timer);
                     }
                 }, 150);
-            }, 2000);
+            }, 5000);
         })();
         </script>
         """,
@@ -2907,7 +3433,7 @@ def render_delete_confirm_timeout():
 
 
 def clear_erase_review_confirm():
-    st.session_state.erase_review_confirm = False
+    clear_menu_destructive_confirms()
 
 
 def render_erase_review_confirm_timeout():
@@ -2934,7 +3460,43 @@ def render_erase_review_confirm_timeout():
                         clearInterval(timer);
                     }
                 }, 150);
-            }, 2000);
+            }, 5000);
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def clear_initialize_all_decks_confirm():
+    clear_menu_destructive_confirms()
+
+
+def render_initialize_all_decks_confirm_timeout():
+    components.html(
+        """
+        <script>
+        (function() {
+            function clickClearButton() {
+                var doc = window.parent.document;
+                var button = doc.querySelector('.st-key-clear_initialize_all_decks_confirm_wrap button');
+                if (!button) {
+                    return false;
+                }
+                button.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+                return true;
+            }
+
+            setTimeout(function() {
+                if (clickClearButton()) return;
+                var attempts = 0;
+                var timer = setInterval(function() {
+                    attempts += 1;
+                    if (clickClearButton() || attempts >= 10) {
+                        clearInterval(timer);
+                    }
+                }, 500);
+            }, 5000);
         })();
         </script>
         """,
@@ -5205,6 +5767,7 @@ def format_word(text, word_class, note_class):
 
 def strip_spoken_text(text):
     spoken_text = re.sub(r'\[.*?\]|\(.*?\)|\{.*?\}', '', text)
+    spoken_text = re.sub(r'_{3,}', ' ', spoken_text)
     spoken_text = re.sub(r'\s+', ' ', spoken_text)
     return spoken_text.strip()
 
@@ -5784,22 +6347,10 @@ def inject_flashcard_speech_runtime():
                 clearPendingSpeech();
 
                 function speakNow() {
-                    var utterance = new UtteranceCtor(speechText);
                     var voice = pickVoice('es', {
                         preferredGender: preferredGender,
                         randomize: randomize,
                     });
-
-                    utterance.lang = voice ? voice.lang : 'es-ES';
-                    utterance.rate = speechRate;
-                    if (voice) utterance.voice = voice;
-
-                    doc._fcSpeechActiveUtterance = utterance;
-                    utterance.onend = utterance.onerror = function() {
-                        if (doc._fcSpeechActiveUtterance === utterance) {
-                            doc._fcSpeechActiveUtterance = null;
-                        }
-                    };
 
                     if (cancelFirst) {
                         try {
@@ -5811,6 +6362,18 @@ def inject_flashcard_speech_runtime():
                     doc._fcSpeechPendingTimer = parentWindow.setTimeout(function() {
                         doc._fcSpeechPendingTimer = null;
                         try {
+                            var utterance = new UtteranceCtor(speechText);
+                            utterance.lang = voice ? voice.lang : 'es-ES';
+                            utterance.rate = speechRate;
+                            if (voice) utterance.voice = voice;
+
+                            doc._fcSpeechActiveUtterance = utterance;
+                            utterance.onend = utterance.onerror = function() {
+                                if (doc._fcSpeechActiveUtterance === utterance) {
+                                    doc._fcSpeechActiveUtterance = null;
+                                }
+                            };
+
                             synth.speak(utterance);
                         } catch (error) {
                             if (speechKey) {
@@ -5864,6 +6427,7 @@ def inject_speech_priming():
             var doc = window.parent.document;
             var synth = window.parent.speechSynthesis || window.speechSynthesis;
             var AudioCtx = window.parent.AudioContext || window.parent.webkitAudioContext || window.AudioContext || window.webkitAudioContext;
+            var cueAudioSrc = 'data:audio/wav;base64,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';
 
             if (!doc || !synth) return;
             if (doc._fcSpeechPrimingAttached) return;
@@ -5890,6 +6454,61 @@ def inject_speech_priming():
             }
 
             function primeCueAudio() {
+                if (!doc._fcCueAudioElement) {
+                    try {
+                        var cueAudioElement = new Audio(cueAudioSrc);
+                        cueAudioElement.preload = 'auto';
+                        cueAudioElement.playsInline = true;
+                        cueAudioElement.setAttribute('playsinline', '');
+                        cueAudioElement.style.display = 'none';
+                        if (doc.body && !cueAudioElement.parentNode) {
+                            doc.body.appendChild(cueAudioElement);
+                        }
+                        doc._fcCueAudioElement = cueAudioElement;
+                    } catch (error) {
+                    }
+                }
+
+                doc._fcCreateCueAudioInstance = function() {
+                    var sourceAudio = doc._fcCueAudioElement;
+                    if (!sourceAudio || !sourceAudio.src) return null;
+                    try {
+                        var cueAudio = sourceAudio.cloneNode(true);
+                        cueAudio.preload = 'auto';
+                        cueAudio.playsInline = true;
+                        cueAudio.setAttribute('playsinline', '');
+                        cueAudio.style.display = 'none';
+                        if (doc.body) {
+                            doc.body.appendChild(cueAudio);
+                        }
+                        return cueAudio;
+                    } catch (error) {
+                        return null;
+                    }
+                };
+
+                if (doc._fcCueAudioElement) {
+                    try {
+                        var audioEl = doc._fcCueAudioElement;
+                        audioEl.volume = 1;
+                        audioEl.currentTime = 0;
+                        var playAttempt = audioEl.play();
+                        if (playAttempt && typeof playAttempt.then === 'function') {
+                            playAttempt.then(function() {
+                                audioEl.pause();
+                                audioEl.currentTime = 0;
+                                doc._fcCueAudioPrimed = true;
+                            }).catch(function() {
+                            });
+                        } else {
+                            audioEl.pause();
+                            audioEl.currentTime = 0;
+                            doc._fcCueAudioPrimed = true;
+                        }
+                    } catch (error) {
+                    }
+                }
+
                 if (!AudioCtx) return;
 
                 try {
@@ -5923,22 +6542,11 @@ def inject_speech_priming():
                 }
             }
 
-            doc._fcSpeechPrimeHandler = function(event) {
-                var target = event.target;
-                if (!target || !target.closest) return;
-                if (
-                    target.closest('input[type="checkbox"]') ||
-                    target.closest('.fc-block') ||
-                    target.closest('.st-key-showanswer_wrap button') ||
-                    target.closest('.st-key-correct_wrap button') ||
-                    target.closest('.st-key-repeat_wrap button') ||
-                    target.closest('.st-key-autospeak_on_wrap button') ||
-                    target.closest('.st-key-autospeak_off_wrap button') ||
-                    target.closest('.st-key-speaker_wrap button')
-                ) {
-                    primeSpeech();
-                    primeCueAudio();
-                }
+            doc._fcPrimeCueAudioNow = primeCueAudio;
+
+            doc._fcSpeechPrimeHandler = function() {
+                primeSpeech();
+                primeCueAudio();
             };
 
             doc.body.addEventListener('click', doc._fcSpeechPrimeHandler, true);
@@ -5984,7 +6592,7 @@ def render_speaker_button(text):
             color: {t['info']};
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
-            margin-top: 0.12rem;
+            margin-top: 0.32rem;
         }}
         </style>
         <button id="speak-btn" type="button">🔊</button>
@@ -6030,7 +6638,7 @@ def render_auto_speak_spanish(text, speech_key):
             var speechText = {json.dumps(speech_text)};
             var speechRate = {speech_rate};
             var speechKey = {json.dumps(speech_key)};
-            if (!doc || !synth || !speechText || !speechKey) return;
+            if (!doc || !synth || !speechText || !speechKey ) return;
             if (doc._autoSpeakSpanishKey === speechKey) return;
             doc._autoSpeakSpanishKey = speechKey;
 
@@ -6051,27 +6659,35 @@ def render_auto_speak_spanish(text, speech_key):
 def render_regular_auto_mode_controls():
     with st.container(key="regular_auto_controls_wrap"):
         if st.session_state["regular_auto_mode"]:
-            col1, col2, col3 = st.columns(3, gap="small")
+            col1, col2, col3, col4 = st.columns(4, gap="small")
             with col1:
                 auto_mode_value = st.checkbox(
                     "AUTO mode",
                     key="regular_auto_mode_checkbox",
                 )
             with col2:
-                repeat_value = st.checkbox(
-                    "REPEAT 2x",
-                    key="regular_auto_repeat_checkbox",
+                english_value = st.checkbox(
+                    "ENGLISH",
+                    key="regular_auto_english_checkbox",
                 )
             with col3:
                 cue_value = st.checkbox(
                     "CUE",
                     key="regular_auto_cue_checkbox",
                 )
+            with col4:
+                repeat_value = st.checkbox(
+                    "REPEAT 2x",
+                    key="regular_auto_repeat_checkbox",
+                )
         else:
             auto_mode_value = st.checkbox(
                 "AUTO mode",
                 key="regular_auto_mode_checkbox",
             )
+            st.session_state["regular_auto_english_checkbox"] = st.session_state["regular_auto_include_english"]
+            st.session_state["regular_auto_cue_checkbox"] = st.session_state["regular_auto_cue_prompt"]
+            english_value = st.session_state["regular_auto_include_english"]
             repeat_value = st.session_state["regular_auto_repeat_spanish"]
             cue_value = st.session_state["regular_auto_cue_prompt"]
 
@@ -6080,6 +6696,13 @@ def render_regular_auto_mode_controls():
         st.session_state["regular_auto_generation"] += 1
         if auto_mode_value:
             st.session_state.show_answer = False
+            st.session_state["regular_auto_english_checkbox"] = st.session_state["regular_auto_include_english"]
+            st.session_state["regular_auto_cue_checkbox"] = st.session_state["regular_auto_cue_prompt"]
+        st.rerun()
+
+    if english_value != st.session_state["regular_auto_include_english"]:
+        st.session_state["regular_auto_include_english"] = english_value
+        st.session_state["regular_auto_generation"] += 1
         st.rerun()
 
     if repeat_value != st.session_state["regular_auto_repeat_spanish"]:
@@ -6131,7 +6754,7 @@ def render_regular_auto_mode_cleanup():
     )
 
 
-def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_after_seconds, preferred_gender, repeat_spanish, cue_prompt):
+def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_after_seconds, preferred_gender, repeat_spanish, cue_prompt, should_speak=True, cue_before_speech=False):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
     action_delay_ms = max(int(pause_after_seconds * 1000), 0)
@@ -6153,9 +6776,12 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
                 preferredGender: {json.dumps(preferred_gender)},
                 repeatSpanish: {str(repeat_spanish).lower()},
                 cuePrompt: {str(cue_prompt).lower()},
+                shouldSpeak: {str(should_speak).lower()},
+                cueBeforeSpeech: {str(cue_before_speech).lower()},
             }};
 
-            if (!doc || !synth || !UtteranceCtor || !config.text || !config.phaseKey) return;
+            if (!doc || !synth || !UtteranceCtor || !config.phaseKey) return;
+            if (config.shouldSpeak && !config.text) return;
 
             var controller = doc._regularAutoController || {{ timerIds: [], phaseKey: null }};
             doc._regularAutoController = controller;
@@ -6216,62 +6842,159 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
                 return true;
             }}
 
-            function playPromptCue(onDone) {{
+            function playCueSequence(cueCount, onDone) {{
                 var AudioCtx = parentWindow.AudioContext || parentWindow.webkitAudioContext || window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) {{
+                var remainingCueCount = Math.max(cueCount || 1, 1);
+                var finished = false;
+
+                function finishCue() {{
+                    if (finished || controller.phaseKey !== config.phaseKey) return;
+                    finished = true;
                     onDone();
-                    return;
                 }}
 
-                try {{
-                    if (!doc._fcCueAudioContext) {{
-                        doc._fcCueAudioContext = new AudioCtx();
-                    }}
-
-                    var audioContext = doc._fcCueAudioContext;
-                    var finished = false;
-
-                    function finishCue() {{
-                        if (finished || controller.phaseKey !== config.phaseKey) return;
-                        finished = true;
-                        onDone();
-                    }}
-
-                    function startCue() {{
-                        var startAt = audioContext.currentTime + 0.02;
-                        var oscillator = audioContext.createOscillator();
-                        var gainNode = audioContext.createGain();
-
-                        oscillator.type = 'triangle';
-                        oscillator.frequency.setValueAtTime(1046.5, startAt);
-
-                        gainNode.gain.setValueAtTime(0.0001, startAt);
-                        gainNode.gain.exponentialRampToValueAtTime(0.16, startAt + 0.02);
-                        gainNode.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.16);
-
-                        oscillator.connect(gainNode);
-                        gainNode.connect(audioContext.destination);
-
-                        oscillator.start(startAt);
-                        oscillator.stop(startAt + 0.18);
-
-                        queueTimeout(finishCue, 140);
-                    }}
-
-                    if (audioContext.state === 'suspended' && typeof audioContext.resume === 'function') {{
-                        queueTimeout(finishCue, 140);
-                        audioContext.resume().then(function() {{
-                            if (controller.phaseKey !== config.phaseKey) return;
-                            startCue();
-                        }}).catch(function() {{
-                        }});
+                function playSingleHtmlCue(onCueDone) {{
+                    var createCueAudioInstance = doc._fcCreateCueAudioInstance;
+                    if (typeof createCueAudioInstance !== 'function') {{
+                        onCueDone(false);
                         return;
                     }}
 
-                    startCue();
-                }} catch (error) {{
-                    onDone();
+                    try {{
+                        var audioEl = createCueAudioInstance();
+                        if (!audioEl) {{
+                            onCueDone(false);
+                            return;
+                        }}
+                        var completed = false;
+                        var finishHtmlCue = function(success) {{
+                            if (completed) return;
+                            completed = true;
+                            audioEl.onended = null;
+                            audioEl.onerror = null;
+                            if (audioEl.parentNode) {{
+                                audioEl.parentNode.removeChild(audioEl);
+                            }}
+                            onCueDone(success);
+                        }};
+
+                        audioEl.currentTime = 0;
+                        audioEl.volume = 1;
+                        audioEl.onended = function() {{
+                            finishHtmlCue(true);
+                        }};
+                        audioEl.onerror = function() {{
+                            finishHtmlCue(false);
+                        }};
+
+                        var playAttempt = audioEl.play();
+                        if (playAttempt && typeof playAttempt.then === 'function') {{
+                            playAttempt.then(function() {{
+                                queueTimeout(function() {{
+                                    finishHtmlCue(true);
+                                }}, 260);
+                            }}).catch(function() {{
+                                finishHtmlCue(false);
+                            }});
+                        }} else {{
+                            queueTimeout(function() {{
+                                finishHtmlCue(true);
+                            }}, 260);
+                        }}
+                    }} catch (error) {{
+                        onCueDone(false);
+                    }}
                 }}
+
+                function scheduleHtmlCueSequence() {{
+                    if (finished || controller.phaseKey !== config.phaseKey) return;
+                    playSingleHtmlCue(function(success) {{
+                        if (finished || controller.phaseKey !== config.phaseKey) return;
+                        if (!success) {{
+                            scheduleWebAudioCueSequence();
+                            return;
+                        }}
+                        remainingCueCount -= 1;
+                        if (remainingCueCount <= 0) {{
+                            queueTimeout(finishCue, 620);
+                            return;
+                        }}
+                        queueTimeout(scheduleHtmlCueSequence, 220);
+                    }});
+                }}
+
+                function scheduleWebAudioCueSequence() {{
+                    if (!AudioCtx) {{
+                        finishCue();
+                        return;
+                    }}
+
+                    try {{
+                        if (!doc._fcCueAudioContext) {{
+                            doc._fcCueAudioContext = new AudioCtx();
+                        }}
+
+                        var audioContext = doc._fcCueAudioContext;
+
+                        function startSingleCue() {{
+                            var startAt = audioContext.currentTime + 0.02;
+                            var oscillator = audioContext.createOscillator();
+                            var gainNode = audioContext.createGain();
+
+                            oscillator.type = 'sine';
+                            oscillator.frequency.setValueAtTime(1318.5, startAt);
+
+                            gainNode.gain.setValueAtTime(0.0001, startAt);
+                            gainNode.gain.exponentialRampToValueAtTime(0.28, startAt + 0.018);
+                            gainNode.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.22);
+
+                            oscillator.connect(gainNode);
+                            gainNode.connect(audioContext.destination);
+
+                            oscillator.start(startAt);
+                            oscillator.stop(startAt + 0.24);
+                        }}
+
+                        function scheduleSingleCue() {{
+                            if (finished || controller.phaseKey !== config.phaseKey) return;
+                            startSingleCue();
+                            remainingCueCount -= 1;
+                            if (remainingCueCount <= 0) {{
+                                queueTimeout(finishCue, 720);
+                                return;
+                            }}
+                            queueTimeout(scheduleSingleCue, 320);
+                        }}
+
+                        if (typeof audioContext.resume === 'function') {{
+                            audioContext.resume().then(function() {{
+                                if (controller.phaseKey !== config.phaseKey) return;
+                                scheduleSingleCue();
+                            }}).catch(function() {{
+                                finishCue();
+                            }});
+                            return;
+                        }}
+
+                        scheduleSingleCue();
+                    }} catch (error) {{
+                        finishCue();
+                    }}
+                }}
+
+                if (typeof doc._fcPrimeCueAudioNow === 'function') {{
+                    try {{
+                        doc._fcPrimeCueAudioNow();
+                    }} catch (error) {{
+                    }}
+                }}
+
+                if (doc._fcCueAudioElement) {{
+                    scheduleHtmlCueSequence();
+                    return;
+                }}
+
+                scheduleWebAudioCueSequence();
             }}
 
             function speakOnce(text, language, preferredGender, onDone) {{
@@ -6328,11 +7051,17 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
             }}
 
             function startSpeechSequence() {{
+                if (!config.shouldSpeak) {{
+                    finalizePhase();
+                    return;
+                }}
                 speakSequence(finalizePhase);
             }}
 
-            if (config.cuePrompt && config.phase === 'prompt') {{
-                playPromptCue(startSpeechSequence);
+            if (config.cueBeforeSpeech && config.shouldSpeak) {{
+                playCueSequence(1, startSpeechSequence);
+            }} else if (config.cuePrompt && config.phase === 'prompt') {{
+                playCueSequence(1, startSpeechSequence);
             }} else {{
                 startSpeechSequence();
             }}
@@ -6362,52 +7091,64 @@ def stats_card_html(shown, total, correct, repeat, scored_total):
     """, unsafe_allow_html=True)
 
 
-def render_header():
+def render_header(summary_mode=False):
     menu_icon = "✕" if st.session_state.menu_open else "☰"
     with st.container(key="header_row_wrap"):
-        title_col, ham_col = st.columns([1, 0.14], gap="small")
+        show_picker_quit = st.session_state.selected_csv is None and not summary_mode
+        show_menu_button = not st.session_state.person_selector_visible and not summary_mode
+        title_subtitle = "" if summary_mode else PERSON_LABELS.get(st.session_state.active_person, "")
+        if summary_mode:
+            title_col = st.container()
+            quit_col = None
+            ham_col = None
+        elif show_picker_quit and show_menu_button:
+            title_col, quit_col, ham_col = st.columns([1, 0.24, 0.12], gap="small")
+        elif show_picker_quit:
+            title_col, quit_col = st.columns([1, 0.24], gap="small")
+        else:
+            title_col, ham_col = st.columns([1, 0.14], gap="small")
         with title_col:
             st.markdown(
                 "<div class='title-row'>"
                 "<div>"
                 "<span class='title-main'>Spanish Flashcards</span>"
-                "<div class='title-sub'>" + PERSON_LABELS[st.session_state.active_person] + "</div>"
+                "<div class='title-sub'>" + title_subtitle + "</div>"
                 "</div>"
                 "</div>",
                 unsafe_allow_html=True,
             )
-        with ham_col:
-            with st.container(key="hamburger_wrap"):
-                if st.button(menu_icon, key="hamburger_btn"):
-                    if st.session_state.menu_open:
-                        close_menu_and_save()
-                    else:
-                        st.session_state.menu_open = True
-                    st.rerun()
+        if show_picker_quit:
+            with quit_col:
+                with st.container(key="header_quit_wrap"):
+                    if st.button("QUIT", key="header_quit_btn"):
+                        st.session_state.menu_open = False
+                        st.session_state.final_exit = True
+                        st.rerun()
+        if show_menu_button:
+            with ham_col:
+                with st.container(key="hamburger_wrap"):
+                    if st.button(menu_icon, key="hamburger_btn"):
+                        if st.session_state.menu_open:
+                            close_menu_and_save()
+                        else:
+                            st.session_state.menu_open = True
+                        st.rerun()
+    if summary_mode:
+        return
     if st.session_state.menu_open:
         return
     if st.session_state.person_selector_visible:
         with st.container(key="person_radio_wrap"):
             selected_person = st.radio(
-                "Person",
+                "Select user:",
                 options=list(PERSON_LABELS.keys()),
+                index=None,
                 horizontal=True,
                 format_func=lambda value: PERSON_LABELS[value],
-                label_visibility="collapsed",
                 key="person_radio",
             )
-            if selected_person != st.session_state.active_person:
-                store_active_person_prefs()
-                st.session_state.active_person = selected_person
-                apply_person_prefs(selected_person)
-                st.session_state.erase_review_confirm = False
-                save_prefs(current_prefs())
-                if is_review_deck(st.session_state.selected_csv):
-                    review_person = review_deck_person(st.session_state.selected_csv)
-                    if review_person != selected_person:
-                        reset_study_state(reset_selected=True)
-                elif st.session_state.selected_csv:
-                    reset_study_state(reset_selected=False)
+            if selected_person in PERSON_LABELS and selected_person != st.session_state.active_person:
+                activate_person(selected_person)
                 st.rerun()
 
 
@@ -6415,6 +7156,7 @@ def render_menu():
     if not st.session_state.menu_open:
         return
     active_review_count = review_count_for(st.session_state.active_person)
+    has_regular_progress = person_has_regular_deck_progress(st.session_state.active_person)
     active_person_label = PERSON_LABELS[st.session_state.active_person]
     st.markdown('<div class="menu-backdrop"></div>', unsafe_allow_html=True)
     render_menu_backdrop_close_handler()
@@ -6427,22 +7169,25 @@ def render_menu():
             index=0 if st.session_state.show_hints else 1,
             horizontal=True,
             label_visibility="collapsed",
-            key="hints_radio",
         )
         hints_enabled = new_hints == "Hints ON"
         if hints_enabled != st.session_state.show_hints:
             st.session_state.show_hints = hints_enabled
             store_active_person_prefs()
-            st.session_state.erase_review_confirm = False
+            sync_menu_widget_state()
+            save_prefs(current_prefs())
+            clear_menu_destructive_confirms()
             st.rerun()
         st.markdown('<div class="menu-section-label">Theme</div>', unsafe_allow_html=True)
         new_theme = st.radio("Theme", options=["light", "dark", "aqua", "amber"],
                              index=["light","dark","aqua", "amber"].index(st.session_state.theme),
-                             label_visibility="collapsed", key="theme_radio")
+                             label_visibility="collapsed")
         if new_theme != st.session_state.theme:
             st.session_state.theme     = new_theme
             store_active_person_prefs()
-            st.session_state.erase_review_confirm = False
+            sync_menu_widget_state()
+            save_prefs(current_prefs())
+            clear_menu_destructive_confirms()
             st.rerun()
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Direction</div>',
                     unsafe_allow_html=True)
@@ -6450,12 +7195,14 @@ def render_menu():
         dir_keys    = ["random", "en_to_es", "es_to_en"]
         cur_idx     = dir_keys.index(st.session_state.direction_mode)
         new_dir     = st.radio("Direction", options=dir_options, index=cur_idx,
-                               label_visibility="collapsed", key="dir_radio")
+                               label_visibility="collapsed")
         if dir_options.index(new_dir) != cur_idx:
             st.session_state.direction_mode = dir_keys[dir_options.index(new_dir)]
             st.session_state.direction = direction_for_mode(st.session_state.direction_mode)
             store_active_person_prefs()
-            st.session_state.erase_review_confirm = False
+            sync_menu_widget_state()
+            save_prefs(current_prefs())
+            clear_menu_destructive_confirms()
             st.rerun()
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Speech Speed</div>',
                     unsafe_allow_html=True)
@@ -6474,14 +7221,15 @@ def render_menu():
             format_func=lambda value: speed_labels[value],
             horizontal=True,
             label_visibility="collapsed",
-            key="speech_speed_radio",
         )
         if new_speed != st.session_state.speech_speed:
             st.session_state.speech_speed = new_speed
             store_active_person_prefs()
-            st.session_state.erase_review_confirm = False
+            sync_menu_widget_state()
+            save_prefs(current_prefs())
+            clear_menu_destructive_confirms()
             st.rerun()
-        st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">STORY MODE &ndash; PAUSES BETWEEN SENTENCES</div>',
+        st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">STORY &amp; DIALOG MODES &ndash; PAUSES BETWEEN SENTENCES</div>',
                     unsafe_allow_html=True)
         story_timing_options = [5, 4, 3, 2, 1]
         st.markdown('<div class="menu-field-label">Reading speed (1 = fastest)</div>', unsafe_allow_html=True)
@@ -6491,12 +7239,13 @@ def render_menu():
             index=story_timing_options.index(st.session_state.story_reading_speed),
             horizontal=True,
             label_visibility="collapsed",
-            key="story_reading_speed_radio",
         )
         if new_story_reading_speed != st.session_state.story_reading_speed:
             st.session_state.story_reading_speed = new_story_reading_speed
             store_active_person_prefs()
-            st.session_state.erase_review_confirm = False
+            sync_menu_widget_state()
+            save_prefs(current_prefs())
+            clear_menu_destructive_confirms()
             st.rerun()
         st.markdown('<div class="menu-field-label">Pause amount (1 = shortest)</div>', unsafe_allow_html=True)
         new_story_pause_amount = st.radio(
@@ -6505,30 +7254,59 @@ def render_menu():
             index=story_timing_options.index(st.session_state.story_pause_amount),
             horizontal=True,
             label_visibility="collapsed",
-            key="story_pause_amount_radio",
         )
         if new_story_pause_amount != st.session_state.story_pause_amount:
             st.session_state.story_pause_amount = new_story_pause_amount
             store_active_person_prefs()
-            st.session_state.erase_review_confirm = False
+            sync_menu_widget_state()
+            save_prefs(current_prefs())
+            clear_menu_destructive_confirms()
             st.rerun()
         if active_review_count > 0:
-            erase_label = f"Erase Review Deck ({active_person_label})"
+            erase_label = f"Erase Review Deck for {active_person_label}"
             erase_wrap_key = "erase_review_confirm_wrap" if st.session_state.erase_review_confirm else "erase_review_wrap"
-            with st.container(key=erase_wrap_key):
-                if st.button(
-                    erase_label,
-                    key="erase_review_btn",
-                ):
-                    if st.session_state.erase_review_confirm:
-                        erase_review_deck(st.session_state.active_person)
-                    else:
-                        st.session_state.erase_review_confirm = True
-                    st.rerun()
-            if st.session_state.erase_review_confirm:
-                with st.container(key="clear_erase_review_confirm_wrap"):
-                    st.button("__clear_erase_review_confirm__", key="clear_erase_review_confirm_btn", on_click=clear_erase_review_confirm)
-                render_erase_review_confirm_timeout()
+            with st.container(key="erase_review_slot_wrap"):
+                with st.container(key=erase_wrap_key):
+                    if st.button(
+                        erase_label,
+                        key="erase_review_btn",
+                        use_container_width=True,
+                    ):
+                        if st.session_state.erase_review_confirm:
+                            erase_review_deck(st.session_state.active_person)
+                        else:
+                            st.session_state.initialize_all_decks_confirm = False
+                            st.session_state.erase_review_confirm = True
+                        st.rerun()
+                if st.session_state.erase_review_confirm:
+                    with st.container(key="clear_erase_review_confirm_wrap"):
+                        st.button("__clear_erase_review_confirm__", key="clear_erase_review_confirm_btn", on_click=clear_erase_review_confirm)
+                    render_erase_review_confirm_timeout()
+
+        if has_regular_progress:
+            initialize_wrap_key = "initialize_all_decks_confirm_wrap" if st.session_state.initialize_all_decks_confirm else "initialize_all_decks_wrap"
+            initialize_label = f"Initialize ALL decks for {active_person_label}"
+            with st.container(key="initialize_all_decks_slot_wrap"):
+                with st.container(key=initialize_wrap_key):
+                    if st.button(
+                        "VERIFY initialization of all decks" if st.session_state.initialize_all_decks_confirm else initialize_label,
+                        key="initialize_all_decks_btn",
+                        use_container_width=True,
+                    ):
+                        if st.session_state.initialize_all_decks_confirm:
+                            initialize_all_decks(st.session_state.active_person)
+                        else:
+                            st.session_state.erase_review_confirm = False
+                            st.session_state.initialize_all_decks_confirm = True
+                        st.rerun()
+                if st.session_state.initialize_all_decks_confirm:
+                    with st.container(key="clear_initialize_all_decks_confirm_wrap"):
+                        st.button(
+                            "__clear_initialize_all_decks_confirm__",
+                            key="clear_initialize_all_decks_confirm_btn",
+                            on_click=clear_initialize_all_decks_confirm,
+                        )
+                    render_initialize_all_decks_confirm_timeout()
 
 
 def render_deck_strip():
@@ -6616,11 +7394,15 @@ def render_study_mode_picker():
             st.rerun()
 
 
-def render_buttons(show_answer, spanish_audio_text):
+def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answer=False):
     if st.session_state["regular_auto_mode"]:
         with st.container(key="icon_btn_row_wrap"):
-            _, center_col, _ = st.columns([0.7, 1, 0.7])
-            with center_col:
+            left_col, spacer_col, right_col = st.columns([1, 4, 1], gap="small")
+            with left_col:
+                st.empty()
+            with spacer_col:
+                st.empty()
+            with right_col:
                 with st.container(key="quitbefore_wrap"):
                     if st.button("🛑", key="quitbefore_btn"):
                         st.session_state.quit_requested = True
@@ -6629,39 +7411,60 @@ def render_buttons(show_answer, spanish_audio_text):
 
     if not show_answer:
         with st.container(key="icon_btn_row_wrap"):
-            col1, col2 = st.columns(2)
-            with col1:
+            left_col, spacer_col, right_col = st.columns([1, 4, 1], gap="small")
+            with left_col:
                 with st.container(key="showanswer_wrap"):
                     st.button("➜", key="showanswer_btn", on_click=reveal_answer)
-            with col2:
-                with st.container(key="quitbefore_wrap"):
-                    if st.button("🛑", key="quitbefore_btn"):
-                        st.session_state.quit_requested = True
-                        st.rerun()
+            with spacer_col:
+                st.empty()
+            with right_col:
+                if spanish_visible_before_answer:
+                    with st.container(key="action_right_group_wrap"):
+                        right_group_columns = st.columns(2, gap="small")
+                        with right_group_columns[0]:
+                            with st.container(key="speaker_wrap"):
+                                render_speaker_button(spanish_audio_text)
+                        with right_group_columns[1]:
+                            with st.container(key="quitbefore_wrap"):
+                                if st.button("🛑", key="quitbefore_btn"):
+                                    st.session_state.quit_requested = True
+                                    st.rerun()
+                else:
+                    with st.container(key="quitbefore_wrap"):
+                        if st.button("🛑", key="quitbefore_btn"):
+                            st.session_state.quit_requested = True
+                            st.rerun()
         return
 
     review_mode = is_review_deck(st.session_state.selected_csv)
     with st.container(key="answer_action_row_wrap"):
-        action_columns = st.columns(5 if review_mode else 4, gap="small")
-        col1, col2, col3, col4 = action_columns[:4]
-        with col1:
-            with st.container(key="correct_wrap"):
-                st.button("✓", key="correct_btn", on_click=mark_correct)
-        with col2:
-            with st.container(key="repeat_wrap"):
-                st.button("?", key="repeat_btn", on_click=mark_repeat)
-        with col3:
-            with st.container(key="speaker_wrap"):
-                render_speaker_button(spanish_audio_text)
-        with col4:
-            auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
-            auto_speak_label = "☒∞" if st.session_state.auto_speak_spanish else "☐∞"
-            with st.container(key=auto_speak_key):
-                st.button(auto_speak_label, key="autospeak_btn", on_click=toggle_auto_speak_spanish)
+        left_col, spacer_col, right_col = st.columns([2, 2.8, 2], gap="small")
+        with left_col:
+            with st.container(key="action_left_group_wrap"):
+                left_group_columns = st.columns(2, gap="small")
+                with left_group_columns[0]:
+                    with st.container(key="correct_wrap"):
+                        st.button("✓", key="correct_btn", on_click=mark_correct)
+                with left_group_columns[1]:
+                    with st.container(key="repeat_wrap"):
+                        st.button("?", key="repeat_btn", on_click=mark_repeat)
+        with spacer_col:
+            st.empty()
+        with right_col:
+            with st.container(key="action_right_group_wrap"):
+                right_group_columns = st.columns(3 if review_mode else 2, gap="small")
+                with right_group_columns[0]:
+                    with st.container(key="speaker_wrap"):
+                        render_speaker_button(spanish_audio_text)
+                with right_group_columns[1]:
+                    auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
+                    auto_speak_label = "☒∞" if st.session_state.auto_speak_spanish else "☐∞"
+                    with st.container(key=auto_speak_key):
+                        st.button(auto_speak_label, key="autospeak_btn", on_click=toggle_auto_speak_spanish)
         if review_mode:
             current_card = st.session_state.cards[current_card_index()]
             delete_armed = st.session_state.delete_review_confirm_key == current_review_card_key(current_card)
-            with action_columns[4]:
+            with right_group_columns[2]:
                 with st.container(key="del_confirm_wrap" if delete_armed else "del_active_wrap"):
                     st.button("X", key="del_btn", on_click=delete_current_review_card)
             if delete_armed:
@@ -6692,12 +7495,14 @@ def restart_mistakes_only():
     st.session_state.index = 0
     st.session_state.show_answer = False
     st.session_state["regular_auto_mode"] = False
+    st.session_state["regular_auto_include_english"] = True
     st.session_state["regular_auto_repeat_spanish"] = False
-    st.session_state["regular_auto_cue_prompt"] = False
+    st.session_state["regular_auto_cue_prompt"] = True
     st.session_state["regular_auto_generation"] += 1
     st.session_state["regular_auto_mode_checkbox"] = False
+    st.session_state["regular_auto_english_checkbox"] = True
     st.session_state["regular_auto_repeat_checkbox"] = False
-    st.session_state["regular_auto_cue_checkbox"] = False
+    st.session_state["regular_auto_cue_checkbox"] = True
     st.session_state.quit_requested = False
     st.session_state.final_exit = False
     st.session_state.menu_open = False
@@ -6711,7 +7516,7 @@ def restart_mistakes_only():
 # ========================================================================
 
 if st.session_state.final_exit:
-    render_header()
+    render_header(summary_mode=True)
     render_menu()
     st.markdown(
         "<div class='title-block'>"
@@ -6730,6 +7535,8 @@ if st.session_state.selected_csv is None:
     render_header()
     render_menu()
     if st.session_state.menu_open:
+        st.stop()
+    if st.session_state.person_selector_visible:
         st.stop()
     render_grouped_deck_picker()
     st.stop()
@@ -6825,7 +7632,7 @@ if is_playback_deck(st.session_state.selected_csv):
 # ========================================================================
 
 if st.session_state.quit_requested:
-    render_header()
+    render_header(summary_mode=True)
     render_menu()
     st.markdown("<div class='summary-title'>Session Summary</div>", unsafe_allow_html=True)
 
@@ -6923,15 +7730,25 @@ inject_flashcard_speech_runtime()
 inject_speech_priming()
 render_regular_auto_mode_controls()
 render_flashcard(prompt, solution, st.session_state.show_answer)
+render_buttons(
+    st.session_state.show_answer,
+    spanish_text,
+    spanish_visible_before_answer=spanish_visible_phase == "prompt-visible",
+)
 render_regular_auto_hidden_buttons()
 if st.session_state["regular_auto_mode"]:
+    sentence_auto_mode = is_sentence_deck(st.session_state.selected_csv)
     prompt_language = "en" if current_direction == "EN_TO_ES" else "es"
     answer_language = "es" if current_direction == "EN_TO_ES" else "en"
     preferred_gender = "female" if (st.session_state.index % 2 == 0) else "male"
     phase = "answer" if st.session_state.show_answer else "prompt"
     phase_text = solution if st.session_state.show_answer else prompt
     phase_language = answer_language if st.session_state.show_answer else prompt_language
-    phase_delay_seconds = 2.0 if st.session_state.show_answer else story_pause_seconds_for_text(prompt)
+    phase_is_spanish = phase_language == "es"
+    prompt_should_speak = prompt_language == "es" or (sentence_auto_mode and st.session_state["regular_auto_include_english"])
+    phase_should_speak = phase_is_spanish or (sentence_auto_mode and st.session_state["regular_auto_include_english"])
+    phase_starts_sentence_pair = phase == "prompt" or not prompt_should_speak
+    phase_delay_seconds = story_pause_seconds_for_text(phase_text) if sentence_auto_mode else (2.0 if st.session_state.show_answer else story_pause_seconds_for_text(prompt))
     phase_key = "|".join(
         [
             st.session_state.selected_csv or "",
@@ -6951,6 +7768,8 @@ if st.session_state["regular_auto_mode"]:
         preferred_gender=preferred_gender,
         repeat_spanish=st.session_state["regular_auto_repeat_spanish"],
         cue_prompt=st.session_state["regular_auto_cue_prompt"],
+        should_speak=phase_should_speak,
+        cue_before_speech=st.session_state["regular_auto_cue_prompt"] and sentence_auto_mode and phase_should_speak and phase_starts_sentence_pair,
     )
 else:
     render_regular_auto_mode_cleanup()
@@ -6972,4 +7791,3 @@ if not st.session_state["regular_auto_mode"] and st.session_state.auto_speak_spa
         ]
     )
     render_auto_speak_spanish(spanish_text, auto_speak_event_key)
-render_buttons(st.session_state.show_answer, spanish_text)

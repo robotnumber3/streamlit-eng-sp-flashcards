@@ -31,6 +31,7 @@ st.set_page_config(page_title="Spanish Flashcards", page_icon="🌿", layout="wi
 CSV_FOLDER = os.path.join(os.path.dirname(__file__), "csv")
 PREFS_FILE = os.path.expanduser("~/.flashcards_prefs.json")
 REVIEWS_FILE = os.path.expanduser("~/.flashcards_reviews.json")
+FAVORITES_FILE = os.path.expanduser("~/.flashcards_favorites.json")
 PROGRESS_FILE = os.path.expanduser("~/.flashcards_progress.json")
 
 
@@ -55,7 +56,12 @@ REVIEW_DECK_VALUES = {
     person: f"__review_{person}__"
     for person in PERSON_LABELS
 }
+FAVORITES_DECK_VALUES = {
+    person: f"__favorites_{person}__"
+    for person in PERSON_LABELS
+}
 REVIEW_DECK_ORDER = [REVIEW_DECK_VALUES["miguel"], REVIEW_DECK_VALUES["david"]]
+FAVORITES_DECK_ORDER = [FAVORITES_DECK_VALUES["miguel"], FAVORITES_DECK_VALUES["david"]]
 
 
 @st.cache_resource(show_spinner=False)
@@ -125,8 +131,20 @@ def review_item_key(word, answer):
     return json.dumps([word, answer], ensure_ascii=False, separators=(",", ":"))
 
 
+def favorite_item_key(source_deck, source_id, source_index, word, answer):
+    return json.dumps(
+        [source_deck or "", source_id or "", source_index, word, answer],
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+
+
 def is_review_deck(deck_value):
     return deck_value in REVIEW_DECK_VALUES.values()
+
+
+def is_favorites_deck(deck_value):
+    return deck_value in FAVORITES_DECK_VALUES.values()
 
 
 def review_deck_person(deck_value):
@@ -136,10 +154,24 @@ def review_deck_person(deck_value):
     return None
 
 
+def favorites_deck_person(deck_value):
+    for person, favorites_value in FAVORITES_DECK_VALUES.items():
+        if favorites_value == deck_value:
+            return person
+    return None
+
+
 def review_deck_label(person, include_count=False):
     label = f"Review - {PERSON_LABELS[person]}"
     if include_count:
         label += f" [{review_count_for(person)}]"
+    return label
+
+
+def favorites_deck_label(person, include_count=False):
+    label = f"Favorites - {PERSON_LABELS[person]}"
+    if include_count:
+        label += f" [{favorites_count_for(person)}]"
     return label
 
 
@@ -289,6 +321,8 @@ def load_regular_deck(filename):
 def display_deck_name(filename):
     if is_review_deck(filename):
         return review_deck_label(review_deck_person(filename))
+    if is_favorites_deck(filename):
+        return favorites_deck_label(favorites_deck_person(filename), include_count=True)
     base_name, extension = os.path.splitext(filename)
     if extension.lower() == ".csv":
         return f"{base_name} [{csv_row_counts.get(filename, 0)}]"
@@ -298,6 +332,8 @@ def display_deck_name(filename):
 def picker_display_deck_name(filename, person):
     if is_review_deck(filename):
         return review_deck_label(review_deck_person(filename), include_count=True)
+    if is_favorites_deck(filename):
+        return favorites_deck_label(favorites_deck_person(filename), include_count=True)
 
     base_name, extension = os.path.splitext(filename)
     if extension.lower() != ".csv":
@@ -314,20 +350,21 @@ def picker_display_deck_name(filename, person):
 
 
 def is_dialog_deck(filename):
-    return bool(filename) and not is_review_deck(filename) and filename_contains_any(filename, ["dialog"])
+    return bool(filename) and not is_review_deck(filename) and not is_favorites_deck(filename) and filename_contains_any(filename, ["dialog"])
 
 
 def is_story_deck(filename):
     return (
         bool(filename)
         and not is_review_deck(filename)
+        and not is_favorites_deck(filename)
         and not is_dialog_deck(filename)
         and filename_contains_any(filename, ["story"])
     )
 
 
 def is_sentence_deck(filename):
-    return bool(filename) and not is_review_deck(filename) and filename_contains_any(filename, ["sentence"])
+    return bool(filename) and not is_review_deck(filename) and not is_favorites_deck(filename) and filename_contains_any(filename, ["sentence"])
 
 
 def is_playback_deck(filename):
@@ -348,6 +385,8 @@ def deck_completion_metadata(filename):
 def deck_picker_status(filename, person):
     if is_review_deck(filename):
         return "review"
+    if is_favorites_deck(filename):
+        return "favorites"
     if is_dialog_deck(filename):
         return "dialog"
     if is_story_deck(filename):
@@ -372,6 +411,7 @@ def deck_picker_status(filename, person):
 def deck_picker_label(filename, person, italicized=False):
     symbol_map = {
         "review": "⭐",
+        "favorites": "♥",
         "dialog": "💬",
         "story": "📖",
         "untouched": "•",
@@ -386,7 +426,7 @@ def deck_picker_label(filename, person, italicized=False):
 
 
 def is_forced_en_es_deck(filename):
-    return bool(filename) and not is_review_deck(filename) and "EN_ES" in os.path.basename(filename)
+    return bool(filename) and not is_review_deck(filename) and not is_favorites_deck(filename) and "EN_ES" in os.path.basename(filename)
 
 
 def current_playback_kind():
@@ -601,6 +641,46 @@ def save_review_data_local(review_data):
         pass
 
 
+def load_favorites_data_local():
+    empty = {person: {} for person in PERSON_LABELS}
+    try:
+        with open(FAVORITES_FILE, encoding="utf-8") as f:
+            raw = json.load(f)
+    except Exception:
+        return empty
+
+    favorites_data = {person: {} for person in PERSON_LABELS}
+    for person in PERSON_LABELS:
+        person_entries = raw.get(person, [])
+        if isinstance(person_entries, dict):
+            person_entries = person_entries.values()
+        if not isinstance(person_entries, list) and not hasattr(person_entries, "__iter__"):
+            continue
+        for entry in person_entries:
+            if not isinstance(entry, dict):
+                continue
+            word = str(entry.get("word", "")).strip()
+            answer = str(entry.get("answer", "")).strip()
+            if word and answer:
+                favorites_data[person][review_item_key(word, answer)] = {
+                    "word": word,
+                    "answer": answer,
+                }
+    return favorites_data
+
+
+def save_favorites_data_local(favorites_data):
+    try:
+        with open(FAVORITES_FILE, "w", encoding="utf-8") as f:
+            serializable = {
+                person: list(favorites_data.get(person, {}).values())
+                for person in PERSON_LABELS
+            }
+            json.dump(serializable, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+
 def load_progress_data_local():
     empty = {person: {} for person in PERSON_LABELS}
     try:
@@ -655,6 +735,10 @@ def prefs_are_default(pref_data):
 
 def review_data_has_entries(review_data):
     return any(review_data.get(person) for person in PERSON_LABELS)
+
+
+def favorites_data_has_entries(favorites_data):
+    return any(favorites_data.get(person) for person in PERSON_LABELS)
 
 
 def progress_data_has_entries(progress_data):
@@ -785,6 +869,61 @@ def save_review_data_supabase(review_data):
         return False
 
 
+def load_favorites_data_supabase():
+    client = get_supabase_client()
+    if client is None:
+        return None
+    try:
+        response = client.table("favorite_items").select(
+            "user_id,item_key,word,answer"
+        ).execute()
+    except Exception:
+        return None
+
+    favorites_data = {person: {} for person in PERSON_LABELS}
+    for row in response.data or []:
+        user_id = str(row.get("user_id", "")).strip().lower()
+        if user_id not in PERSON_LABELS:
+            continue
+        word = str(row.get("word", "")).strip()
+        answer = str(row.get("answer", "")).strip()
+        if not word or not answer:
+            continue
+        item_key = str(row.get("item_key") or review_item_key(word, answer))
+        favorites_data[user_id][item_key] = {
+            "word": word,
+            "answer": answer,
+        }
+    return favorites_data
+
+
+def save_favorites_data_supabase(favorites_data):
+    client = get_supabase_client()
+    if client is None:
+        return False
+
+    rows = []
+    for person in PERSON_LABELS:
+        for item_key, entry in favorites_data.get(person, {}).items():
+            rows.append(
+                {
+                    "user_id": person,
+                    "item_key": item_key,
+                    "word": entry["word"],
+                    "answer": entry["answer"],
+                }
+            )
+
+    try:
+        for person in PERSON_LABELS:
+            client.table("favorite_items").delete().eq("user_id", person).execute()
+        if rows:
+            client.table("favorite_items").upsert(rows).execute()
+        return True
+    except Exception:
+        return False
+
+
 def load_progress_data_supabase():
     client = get_supabase_client()
     if client is None:
@@ -894,6 +1033,25 @@ def load_review_data():
 def save_review_data(review_data):
     save_review_data_local(review_data)
     save_review_data_supabase(review_data)
+
+
+def load_favorites_data():
+    local_favorites_data = load_favorites_data_local()
+    if not cloud_sync_enabled():
+        return local_favorites_data
+
+    cloud_favorites_data = load_favorites_data_supabase()
+    if cloud_favorites_data is None:
+        return local_favorites_data
+    if not favorites_data_has_entries(cloud_favorites_data) and favorites_data_has_entries(local_favorites_data):
+        if save_favorites_data_supabase(local_favorites_data):
+            return local_favorites_data
+    return cloud_favorites_data
+
+
+def save_favorites_data(favorites_data):
+    save_favorites_data_local(favorites_data)
+    save_favorites_data_supabase(favorites_data)
 
 
 def load_progress_data():
@@ -1138,6 +1296,7 @@ THEMES = {
 
 prefs = load_prefs()
 review_data = load_review_data()
+favorites_data = load_favorites_data()
 progress_data = load_progress_data()
 startup_person = prefs["active_person"] if prefs["active_person"] in PERSON_LABELS else next(iter(PERSON_LABELS))
 active_person_prefs = prefs["person_settings"][startup_person]
@@ -1157,6 +1316,7 @@ defaults = {
     "person_selector_visible": True,
     "person_settings": prefs["person_settings"],
     "review_data":    review_data,
+    "favorites_data": favorites_data,
     "progress_data":  progress_data,
     "selected_csv":   None,
     "study_mode":     None,
@@ -1181,6 +1341,7 @@ defaults = {
     "score_correct":  0,
     "score_repeat":   0,
     "erase_review_confirm": False,
+    "erase_favorites_confirm": False,
     "initialize_all_decks_confirm": False,
     "delete_review_confirm_key": None,
     "open_deck_categories": [],
@@ -1286,6 +1447,7 @@ def apply_person_prefs(person):
 
 def clear_menu_destructive_confirms():
     st.session_state.erase_review_confirm = False
+    st.session_state.erase_favorites_confirm = False
     st.session_state.initialize_all_decks_confirm = False
 
 
@@ -1293,12 +1455,16 @@ def review_count_for(person):
     return len(st.session_state.review_data.get(person, {}))
 
 
+def favorites_count_for(person):
+    return len(st.session_state.favorites_data.get(person, {}))
+
+
 def person_has_regular_deck_progress(person):
     person_progress = st.session_state.progress_data.get(person, {})
     return any(
         card_ids
         for filename, card_ids in person_progress.items()
-        if not is_review_deck(filename)
+        if not is_review_deck(filename) and not is_favorites_deck(filename)
     )
 
 
@@ -1309,11 +1475,25 @@ def review_deck_selectable(deck_value):
     return person == st.session_state.active_person and review_count_for(person) > 0
 
 
+def favorites_deck_selectable(deck_value):
+    if not is_favorites_deck(deck_value):
+        return True
+    person = favorites_deck_person(deck_value)
+    return person == st.session_state.active_person and favorites_count_for(person) > 0
+
+
 def visible_review_deck_values():
     if review_count_for(st.session_state.active_person) <= 0:
         return []
     active_review_value = REVIEW_DECK_VALUES[st.session_state.active_person]
     return [active_review_value]
+
+
+def visible_favorites_deck_values():
+    if favorites_count_for(st.session_state.active_person) <= 0:
+        return []
+    active_favorites_value = FAVORITES_DECK_VALUES[st.session_state.active_person]
+    return [active_favorites_value]
 
 
 def reset_study_state(reset_selected=True):
@@ -1470,12 +1650,13 @@ def end_story_to_final_screen():
 def activate_deck(deck_value):
     reset_study_state(reset_selected=False)
     st.session_state.selected_csv = deck_value
+    st.session_state.open_deck_categories = []
     if is_dialog_deck(deck_value):
         st.session_state.study_mode = "dialog"
     elif is_story_deck(deck_value):
         st.session_state.study_mode = "story"
     else:
-        st.session_state.study_mode = "all" if is_review_deck(deck_value) else None
+        st.session_state.study_mode = "all" if (is_review_deck(deck_value) or is_favorites_deck(deck_value)) else None
     st.session_state.person_selector_visible = False
     st.session_state.direction = effective_direction(deck_value)
 
@@ -1483,6 +1664,7 @@ def activate_deck(deck_value):
 def go_back_to_deck_picker():
     st.session_state.menu_open = False
     clear_menu_destructive_confirms()
+    st.session_state.open_deck_categories = []
     reset_study_state(reset_selected=True)
 
 
@@ -1490,7 +1672,9 @@ def render_grouped_deck_picker():
     # Category titles come from DECK_PICKER_CATEGORIES near the top of the file.
     # That block is the single place to change the category order or matching.
     review_deck_values = visible_review_deck_values()
+    favorites_deck_values = visible_favorites_deck_values()
     grouped_files = picker_files_by_category()
+    special_deck_count = 0
 
     with st.container(key="mobile_deck_picker_wrap"):
         st.markdown(
@@ -1505,18 +1689,39 @@ def render_grouped_deck_picker():
                 review_value = REVIEW_DECK_VALUES[person]
                 if review_value not in review_deck_values:
                     continue
+                special_deck_count += 1
                 review_enabled = review_deck_selectable(review_value)
                 review_wrap = f"review_{person}_{'active' if review_enabled else 'inactive'}_wrap"
                 with st.container(key=review_wrap):
-                    with st.container(key=f"mobile_deck_entry_review_{person}_wrap"):
-                        if st.button(
-                            review_deck_label(person, include_count=True),
-                            key=f"deck_btn_review_{person}",
-                            use_container_width=True,
-                            disabled=not review_enabled,
-                        ):
-                            activate_deck(review_value)
-                            st.rerun()
+                    if st.button(
+                        review_deck_label(person, include_count=True),
+                        key=f"deck_btn_review_{person}",
+                        use_container_width=True,
+                        disabled=not review_enabled,
+                    ):
+                        activate_deck(review_value)
+                        st.rerun()
+
+            for person in PERSON_LABELS:
+                favorites_value = FAVORITES_DECK_VALUES[person]
+                if favorites_value not in favorites_deck_values:
+                    continue
+                special_deck_count += 1
+                favorites_enabled = favorites_deck_selectable(favorites_value)
+                favorites_wrap = f"favorites_{person}_{'active' if favorites_enabled else 'inactive'}_wrap"
+                with st.container(key=favorites_wrap):
+                    if st.button(
+                        favorites_deck_label(person, include_count=True),
+                        key=f"deck_btn_favorites_{person}",
+                        use_container_width=True,
+                        disabled=not favorites_enabled,
+                    ):
+                        activate_deck(favorites_value)
+                        st.rerun()
+
+            if special_deck_count > 0:
+                st.markdown("<div class='special-deck-separator'></div>", unsafe_allow_html=True)
+                st.markdown("<div class='special-deck-after-gap'></div>", unsafe_allow_html=True)
 
             for category in DECK_PICKER_CATEGORIES:
                 category_id = category["id"]
@@ -1572,6 +1777,44 @@ def current_review_card_key(card):
     return review_item_key(card["word"], card["answer"])
 
 
+def current_favorite_person():
+    if is_favorites_deck(st.session_state.selected_csv):
+        return favorites_deck_person(st.session_state.selected_csv)
+    return st.session_state.active_person
+
+
+def favorite_item_from_card(card, source_deck=None, source_index=None):
+    effective_source_deck = source_deck or st.session_state.selected_csv
+    effective_source_index = current_card_index() if source_index is None else source_index
+    source_id = card.get("id")
+    return {
+        "source_deck": effective_source_deck,
+        "source_id": source_id,
+        "source_index": effective_source_index,
+        "word": card["word"],
+        "answer": card["answer"],
+    }
+
+
+def favorite_item_key_from_entry(entry):
+    return favorite_item_key(
+        entry.get("source_deck"),
+        entry.get("source_id"),
+        entry.get("source_index"),
+        entry.get("word", ""),
+        entry.get("answer", ""),
+    )
+
+
+def current_favorite_card_key(card):
+    entry = favorite_item_from_card(
+        card,
+        source_deck=card.get("source_deck"),
+        source_index=card.get("source_index"),
+    )
+    return favorite_item_key_from_entry(entry)
+
+
 def upsert_review_item(person, word, answer, count=5):
     key = review_item_key(word, answer)
     st.session_state.review_data.setdefault(person, {})[key] = {
@@ -1604,6 +1847,49 @@ def delete_review_item(person, word, answer):
     return True
 
 
+def favorite_entry_exists(person, card, source_deck=None, source_index=None):
+    entry = favorite_item_from_card(card, source_deck=source_deck, source_index=source_index)
+    key = favorite_item_key_from_entry(entry)
+    favorites_for_person = st.session_state.favorites_data.get(person, {})
+    if key in favorites_for_person:
+        return True
+    return any(
+        favorite_entry.get("word") == entry["word"]
+        and favorite_entry.get("answer") == entry["answer"]
+        for favorite_entry in favorites_for_person.values()
+    )
+
+
+def upsert_favorite_item(person, card, source_deck=None, source_index=None):
+    entry = favorite_item_from_card(card, source_deck=source_deck, source_index=source_index)
+    key = favorite_item_key_from_entry(entry)
+    st.session_state.favorites_data.setdefault(person, {})[key] = entry
+    save_favorites_data(st.session_state.favorites_data)
+    return key
+
+
+def delete_favorite_item(person, card, source_deck=None, source_index=None):
+    entry = favorite_item_from_card(card, source_deck=source_deck, source_index=source_index)
+    key = favorite_item_key_from_entry(entry)
+    favorites_for_person = st.session_state.favorites_data.get(person, {})
+    if key not in favorites_for_person:
+        matching_key = next(
+            (
+                existing_key
+                for existing_key, favorite_entry in favorites_for_person.items()
+                if favorite_entry.get("word") == entry["word"]
+                and favorite_entry.get("answer") == entry["answer"]
+            ),
+            None,
+        )
+        if matching_key is None:
+            return False
+        key = matching_key
+    del st.session_state.favorites_data[person][key]
+    save_favorites_data(st.session_state.favorites_data)
+    return True
+
+
 def purge_remaining_occurrences(card_index, current_position=None):
     if current_position is None:
         current_position = st.session_state.index
@@ -1619,6 +1905,15 @@ def erase_review_deck(person):
     clear_menu_destructive_confirms()
     st.session_state.menu_open = False
     if st.session_state.selected_csv == REVIEW_DECK_VALUES[person]:
+        reset_study_state(reset_selected=True)
+
+
+def erase_favorites_deck(person):
+    st.session_state.favorites_data[person] = {}
+    save_favorites_data(st.session_state.favorites_data)
+    clear_menu_destructive_confirms()
+    st.session_state.menu_open = False
+    if st.session_state.selected_csv == FAVORITES_DECK_VALUES[person]:
         reset_study_state(reset_selected=True)
 
 
@@ -1839,6 +2134,27 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-color: {BUTTON_COLORS['yellow']['border']} !important;
     color: {BUTTON_COLORS['yellow']['fg']} !important;
 }}
+.st-key-favorite_wrap div[data-testid="stButton"] > button {{
+    background-color: color-mix(in srgb, {BUTTON_COLORS['blue']['bg']} 68%, {t['bg']} 32%) !important;
+    border-color: {BUTTON_COLORS['blue']['border']} !important;
+    color: {BUTTON_COLORS['blue']['fg']} !important;
+}}
+.st-key-favorite_active_wrap div[data-testid="stButton"] > button,
+.st-key-storyfavorite_active_wrap div[data-testid="stButton"] > button {{
+    background-color: color-mix(in srgb, {BUTTON_COLORS['blue']['bg']} 44%, {t['bg']} 56%) !important;
+    border-color: color-mix(in srgb, {BUTTON_COLORS['blue']['border']} 52%, {t['border']} 48%) !important;
+    color: color-mix(in srgb, {BUTTON_COLORS['blue']['fg']} 35%, white 65%) !important;
+    opacity: 1 !important;
+}}
+.st-key-storyfavorite_wrap div[data-testid="stButton"] > button {{
+    background-color: color-mix(in srgb, {BUTTON_COLORS['blue']['bg']} 68%, {t['bg']} 32%) !important;
+    border-color: {BUTTON_COLORS['blue']['border']} !important;
+    color: {BUTTON_COLORS['blue']['fg']} !important;
+}}
+.st-key-favorite_active_wrap div[data-testid="stButton"] > button:disabled,
+.st-key-storyfavorite_active_wrap div[data-testid="stButton"] > button:disabled {{
+    cursor: default !important;
+}}
 .st-key-storypause_wrap div[data-testid="stButton"] > button {{
     background-color: #ffd9b0 !important;
     border-color: #d97706 !important;
@@ -1904,14 +2220,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {BUTTON_COLORS['blue']['fg']} !important;
 }}
 .st-key-autospeak_on_wrap div[data-testid="stButton"] > button {{
-    background-color: {BUTTON_COLORS['blue']['bg']} !important;
-    border-color: {BUTTON_COLORS['blue']['border']} !important;
-    color: {BUTTON_COLORS['blue']['fg']} !important;
+    background-color: {t['card_bg']} !important;
+    border-color: {t['border']} !important;
+    color: {t['fg']} !important;
 }}
 .st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
-    background-color: color-mix(in srgb, {BUTTON_COLORS['blue']['bg']} 58%, {t['bg']} 42%) !important;
-    border-color: {BUTTON_COLORS['blue']['border']} !important;
-    color: color-mix(in srgb, {BUTTON_COLORS['blue']['fg']} 78%, white 22%) !important;
+    background-color: {t['card_bg']} !important;
+    border-color: {t['border']} !important;
+    color: {t['muted']} !important;
 }}
 .st-key-autospeak_on_wrap div[data-testid="stButton"] > button,
 .st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
@@ -1952,8 +2268,20 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {t['review']} !important;
     font-weight: 700 !important;
 }}
+.st-key-favorites_miguel_active_wrap div[data-testid="stButton"] > button,
+.st-key-favorites_david_active_wrap div[data-testid="stButton"] > button {{
+    background-color: color-mix(in srgb, {BUTTON_COLORS['blue']['bg']} 72%, {t['bg']} 28%) !important;
+    color: color-mix(in srgb, {BUTTON_COLORS['blue']['fg']} 38%, white 62%) !important;
+    font-weight: 700 !important;
+}}
 .st-key-review_miguel_inactive_wrap div[data-testid="stButton"] > button,
 .st-key-review_david_inactive_wrap div[data-testid="stButton"] > button {{
+    background-color: rgba(128, 128, 128, 0.10) !important;
+    color: {t['muted']} !important;
+    opacity: 1 !important;
+}}
+.st-key-favorites_miguel_inactive_wrap div[data-testid="stButton"] > button,
+.st-key-favorites_david_inactive_wrap div[data-testid="stButton"] > button {{
     background-color: rgba(128, 128, 128, 0.10) !important;
     color: {t['muted']} !important;
     opacity: 1 !important;
@@ -1962,8 +2290,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mobile_deck_picker_wrap .st-key-review_david_active_wrap div[data-testid="stButton"] > button,
 .st-key-mobile_deck_picker_wrap .st-key-review_miguel_inactive_wrap div[data-testid="stButton"] > button,
 .st-key-mobile_deck_picker_wrap .st-key-review_david_inactive_wrap div[data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_active_wrap div[data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_david_active_wrap div[data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_inactive_wrap div[data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_david_inactive_wrap div[data-testid="stButton"] > button,
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"][data-testid="stButton"] > button,
-.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button {{
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"][data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stButton"] > button {{
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -1971,6 +2305,20 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     justify-content: flex-start !important;
     text-align: left !important;
     padding-left: 0.35rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    min-height: 1.18rem !important;
+    line-height: 1 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}}
+.special-deck-separator {{
+    height: 1px;
+    background: color-mix(in srgb, {t['border']} 72%, transparent 28%);
+    margin: 0.9rem 0 !important;
+}}
+.special-deck-after-gap {{
+    height: 0.9rem;
 }}
 .st-key-mistakesonly_wrap div[data-testid="stButton"] > button:disabled {{
     background-color: rgba(128, 128, 128, 0.14) !important;
@@ -2030,6 +2378,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-icon_btn_row_wrap {{
     margin-top: 0.32rem !important;
     margin-bottom: 0 !important;
+    padding-right: 0.62rem !important;
+    box-sizing: border-box !important;
 }}
 .st-key-icon_btn_row_wrap [data-testid="stVerticalBlock"] {{
     gap: 0 !important;
@@ -2082,6 +2432,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-answer_action_row_wrap {{
     margin-top: 0.32rem !important;
     margin-bottom: 0 !important;
+    padding-right: 0.62rem !important;
+    box-sizing: border-box !important;
 }}
 .st-key-answer_action_row_wrap [data-testid="stVerticalBlock"] {{
     gap: 0 !important;
@@ -2108,7 +2460,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: 100% !important;
 }}
 .st-key-answer_action_row_wrap .st-key-correct_wrap div[data-testid="stButton"],
-.st-key-answer_action_row_wrap .st-key-repeat_wrap div[data-testid="stButton"] {{
+.st-key-answer_action_row_wrap .st-key-repeat_wrap div[data-testid="stButton"],
+.st-key-answer_action_row_wrap .st-key-favorite_wrap div[data-testid="stButton"],
+.st-key-answer_action_row_wrap .st-key-favorite_active_wrap div[data-testid="stButton"] {{
     display: flex !important;
     justify-content: flex-start !important;
 }}
@@ -2131,7 +2485,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-width: 100% !important;
     max-width: 100% !important;
     display: block !important;
-    margin: 0.12rem 0 0 0 !important;
+    margin: 0.16rem 0 0 0 !important;
+}}
+.st-key-icon_btn_row_wrap .st-key-speaker_wrap iframe {{
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    margin: 0.16rem 0 0 0 !important;
 }}
 .st-key-answer_action_row_wrap div[data-testid="stButton"] > button {{
     width: 3.6rem !important;
@@ -2387,11 +2748,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-erase_review_wrap,
 .st-key-erase_review_confirm_wrap,
+.st-key-erase_favorites_wrap,
+.st-key-erase_favorites_confirm_wrap,
 .st-key-initialize_all_decks_wrap,
 .st-key-initialize_all_decks_confirm_wrap {{
     margin-top: 0.95rem !important;
 }}
 .st-key-erase_review_slot_wrap,
+.st-key-erase_favorites_slot_wrap,
 .st-key-initialize_all_decks_slot_wrap {{
     height: 4.15rem !important;
     min-height: 4.15rem !important;
@@ -2399,6 +2763,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     overflow: hidden !important;
 }}
 .st-key-erase_review_slot_wrap > div[data-testid="stVerticalBlock"],
+.st-key-erase_favorites_slot_wrap > div[data-testid="stVerticalBlock"],
 .st-key-initialize_all_decks_slot_wrap > div[data-testid="stVerticalBlock"] {{
     gap: 0 !important;
     height: 100% !important;
@@ -2406,11 +2771,16 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-clear_erase_review_confirm_wrap {{
     display: none !important;
 }}
+.st-key-clear_erase_favorites_confirm_wrap {{
+    display: none !important;
+}}
 .st-key-clear_initialize_all_decks_confirm_wrap {{
     display: none !important;
 }}
 .st-key-erase_review_wrap div[data-testid="stButton"] > button,
 .st-key-erase_review_confirm_wrap div[data-testid="stButton"] > button,
+.st-key-erase_favorites_wrap div[data-testid="stButton"] > button,
+.st-key-erase_favorites_confirm_wrap div[data-testid="stButton"] > button,
 .st-key-initialize_all_decks_wrap div[data-testid="stButton"] > button,
 .st-key-initialize_all_decks_confirm_wrap div[data-testid="stButton"] > button {{
     min-height: 2.65rem !important;
@@ -2419,6 +2789,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-weight: 700 !important;
 }}
 .st-key-erase_review_confirm_wrap div[data-testid="stButton"] > button {{
+    background-color: {t['danger']} !important;
+    border-color: {t['danger']} !important;
+    color: white !important;
+    animation: destructiveConfirmPulse 1s ease-in-out infinite !important;
+}}
+.st-key-erase_favorites_confirm_wrap div[data-testid="stButton"] > button {{
     background-color: {t['danger']} !important;
     border-color: {t['danger']} !important;
     color: white !important;
@@ -2848,9 +3224,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     box-shadow: none !important;
     background: transparent !important;
     padding: 0 !important;
+}} 
+.st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] {{
+    gap: 0 !important;
+}}
+.st-key-mobile_deck_picker_wrap [data-testid="stElementContainer"] {{
+    margin: 0 !important;
 }}
 .mobile-deck-picker-gap {{
-    height: 0.58rem;
+    height: 0.86rem;
 }}
 [class*="st-key-deck_category_toggle_"],
 [class*="st-key-deck_category_file_"],
@@ -2858,6 +3240,49 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
+}}
+.st-key-deck_category_toggle_miguel_wrap {{
+    margin-top: 0.9rem !important;
+}}
+[class*="st-key-mobile_deck_entry_review_"],
+[class*="st-key-mobile_deck_entry_favorites_"],
+.st-key-review_miguel_active_wrap,
+.st-key-review_david_active_wrap,
+.st-key-review_miguel_inactive_wrap,
+.st-key-review_david_inactive_wrap,
+.st-key-favorites_miguel_active_wrap,
+.st-key-favorites_david_active_wrap,
+.st-key-favorites_miguel_inactive_wrap,
+.st-key-favorites_david_inactive_wrap {{
+    margin: 0 !important;
+    padding: 0 !important;
+}}
+[class*="st-key-mobile_deck_entry_review_"] [data-testid="stVerticalBlock"],
+[class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stVerticalBlock"],
+.st-key-review_miguel_active_wrap [data-testid="stVerticalBlock"],
+.st-key-review_david_active_wrap [data-testid="stVerticalBlock"],
+.st-key-review_miguel_inactive_wrap [data-testid="stVerticalBlock"],
+.st-key-review_david_inactive_wrap [data-testid="stVerticalBlock"],
+.st-key-favorites_miguel_active_wrap [data-testid="stVerticalBlock"],
+.st-key-favorites_david_active_wrap [data-testid="stVerticalBlock"],
+.st-key-favorites_miguel_inactive_wrap [data-testid="stVerticalBlock"],
+.st-key-favorites_david_inactive_wrap [data-testid="stVerticalBlock"] {{
+    gap: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}}
+[class*="st-key-mobile_deck_entry_review_"] [data-testid="stElementContainer"],
+[class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stElementContainer"],
+.st-key-review_miguel_active_wrap [data-testid="stElementContainer"],
+.st-key-review_david_active_wrap [data-testid="stElementContainer"],
+.st-key-review_miguel_inactive_wrap [data-testid="stElementContainer"],
+.st-key-review_david_inactive_wrap [data-testid="stElementContainer"],
+.st-key-favorites_miguel_active_wrap [data-testid="stElementContainer"],
+.st-key-favorites_david_active_wrap [data-testid="stElementContainer"],
+.st-key-favorites_miguel_inactive_wrap [data-testid="stElementContainer"],
+.st-key-favorites_david_inactive_wrap [data-testid="stElementContainer"] {{
+    margin: 0 !important;
+    padding: 0 !important;
 }}
 [class*="st-key-deck_category_toggle_"] [data-testid="stVerticalBlockBorderWrapper"],
 [class*="st-key-deck_category_file_"] [data-testid="stVerticalBlockBorderWrapper"],
@@ -2941,6 +3366,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button::before {{
     content: '★';
     color: #f2c94c !important;
+    display: inline-block !important;
+    margin-right: 0.42rem !important;
+    font-size: 0.98rem !important;
+    line-height: 1 !important;
+}}
+.st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_active_wrap div[data-testid="stButton"] > button::before,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_david_active_wrap div[data-testid="stButton"] > button::before,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_inactive_wrap div[data-testid="stButton"] > button::before,
+.st-key-mobile_deck_picker_wrap .st-key-favorites_david_inactive_wrap div[data-testid="stButton"] > button::before,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"][data-testid="stButton"] > button::before,
+.st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stButton"] > button::before {{
+    content: '♥';
+    color: {BUTTON_COLORS['blue']['border']} !important;
     display: inline-block !important;
     margin-right: 0.42rem !important;
     font-size: 0.98rem !important;
@@ -3166,8 +3604,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         color: {t['review']} !important;
         font-weight: 700 !important;
     }}
+    .st-key-favorites_miguel_active_wrap [data-testid="stButton"] > button,
+    .st-key-favorites_david_active_wrap [data-testid="stButton"] > button {{
+        color: {BUTTON_COLORS['blue']['fg']} !important;
+        font-weight: 700 !important;
+    }}
     .st-key-review_miguel_inactive_wrap [data-testid="stButton"] > button,
     .st-key-review_david_inactive_wrap [data-testid="stButton"] > button {{
+        color: {t['muted']} !important;
+    }}
+    .st-key-favorites_miguel_inactive_wrap [data-testid="stButton"] > button,
+    .st-key-favorites_david_inactive_wrap [data-testid="stButton"] > button {{
         color: {t['muted']} !important;
     }}
 
@@ -3360,6 +3807,9 @@ def mark_correct():
         decrement_review_item(review_person, card["word"], card["answer"])
         card["repeat_score"] = max(card["repeat_score"] - 1, 0)
         advance_card()
+    elif is_favorites_deck(st.session_state.selected_csv):
+        card["repeat_score"] = max(card["repeat_score"] - 1, 0)
+        advance_card()
     else:
         if card.get("id"):
             mark_card_completed(st.session_state.active_person, st.session_state.selected_csv, card["id"])
@@ -3396,8 +3846,51 @@ def delete_current_review_card():
     advance_card(schedule_current=False)
 
 
+def add_current_card_to_favorites(source_deck=None, source_index=None, advance_after=False):
+    if not st.session_state.cards:
+        return
+    card = st.session_state.cards[current_card_index()]
+    upsert_favorite_item(
+        current_favorite_person(),
+        card,
+        source_deck=source_deck,
+        source_index=source_index,
+    )
+    if advance_after:
+        if is_playback_deck(st.session_state.selected_csv):
+            advance_story_line()
+        else:
+            card["scored"] = True
+            advance_card(schedule_current=False)
+
+
+def delete_current_favorite_card():
+    if not is_favorites_deck(st.session_state.selected_csv):
+        return
+    idx = current_card_index()
+    card = st.session_state.cards[idx]
+    favorites_person = favorites_deck_person(st.session_state.selected_csv)
+    delete_favorite_item(
+        favorites_person,
+        card,
+        source_deck=card.get("source_deck"),
+        source_index=card.get("source_index"),
+    )
+    st.session_state.delete_review_confirm_key = None
+
+
 def clear_delete_review_confirm():
     st.session_state.delete_review_confirm_key = None
+
+
+def add_current_story_line_to_favorites():
+    if not st.session_state.cards:
+        return
+    add_current_card_to_favorites(
+        source_deck=st.session_state.selected_csv,
+        source_index=current_card_index(),
+        advance_after=True,
+    )
 
 
 def render_delete_confirm_timeout():
@@ -3444,6 +3937,42 @@ def render_erase_review_confirm_timeout():
             function clickClearButton() {
                 var doc = window.parent.document;
                 var button = doc.querySelector('.st-key-clear_erase_review_confirm_wrap button');
+                if (!button) {
+                    return false;
+                }
+                button.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+                return true;
+            }
+
+            setTimeout(function() {
+                if (clickClearButton()) return;
+                var attempts = 0;
+                var timer = setInterval(function() {
+                    attempts += 1;
+                    if (clickClearButton() || attempts >= 10) {
+                        clearInterval(timer);
+                    }
+                }, 150);
+            }, 5000);
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def clear_erase_favorites_confirm():
+    clear_menu_destructive_confirms()
+
+
+def render_erase_favorites_confirm_timeout():
+    components.html(
+        """
+        <script>
+        (function() {
+            function clickClearButton() {
+                var doc = window.parent.document;
+                var button = doc.querySelector('.st-key-clear_erase_favorites_confirm_wrap button');
                 if (!button) {
                     return false;
                 }
@@ -5492,6 +6021,12 @@ def render_story_view():
         for card in ordered_story_cards
     ]
     story_pause_delay = story_pause_delays[st.session_state.index] if story_pause_delays else 0.0
+    current_story_favorited = favorite_entry_exists(
+        st.session_state.active_person,
+        story_card,
+        source_deck=st.session_state.selected_csv,
+        source_index=current_card_index(),
+    )
 
     with st.container(key="storyoptions_stack_wrap"):
         with st.container(key="storyplayback_row_wrap"):
@@ -5562,7 +6097,7 @@ def render_story_view():
 
     if story_show_end_controls:
         with st.container(key="storycontrol_row_wrap"):
-            control_cols = st.columns(3, gap="small")
+            control_cols = st.columns(4, gap="small")
             with control_cols[0]:
                 with st.container(key="storyrepeat_wrap"):
                     if st.button("REPEAT", key="story_repeat_btn", use_container_width=True):
@@ -5578,9 +6113,14 @@ def render_story_view():
                     if st.button("END", key="story_end_btn", use_container_width=True):
                         end_story_to_final_screen()
                         st.rerun()
+            with control_cols[3]:
+                with st.container(key="storyfavorite_active_wrap" if current_story_favorited else "storyfavorite_wrap"):
+                    if st.button("♥", key="story_favorite_end_btn", use_container_width=True, disabled=current_story_favorited):
+                        add_current_story_line_to_favorites()
+                        st.rerun()
     elif st.session_state.story_running:
         with st.container(key="storycontrol_row_wrap"):
-            control_cols = st.columns(3, gap="small")
+            control_cols = st.columns(4, gap="small")
             with control_cols[0]:
                 with st.container(key="storypause_wrap"):
                     if st.button("PAUSE", key="story_pause_btn", use_container_width=True):
@@ -5596,9 +6136,14 @@ def render_story_view():
                     if st.button("NEXT", key="story_next_running_btn", use_container_width=True):
                         advance_story_line()
                         st.rerun()
+            with control_cols[3]:
+                with st.container(key="storyfavorite_active_wrap" if current_story_favorited else "storyfavorite_wrap"):
+                    if st.button("♥", key="story_favorite_running_btn", use_container_width=True, disabled=current_story_favorited):
+                        add_current_story_line_to_favorites()
+                        st.rerun()
     else:
         with st.container(key="storycontrol_row_wrap"):
-            control_cols = st.columns(3, gap="small")
+            control_cols = st.columns(4, gap="small")
             with control_cols[0]:
                 with st.container(key="storystart_wrap"):
                     start_label = "RESUME" if st.session_state.story_started else "START"
@@ -5612,6 +6157,11 @@ def render_story_view():
                         st.rerun()
             with control_cols[2]:
                 st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
+            with control_cols[3]:
+                with st.container(key="storyfavorite_active_wrap" if current_story_favorited else "storyfavorite_wrap"):
+                    if st.button("♥", key="story_favorite_idle_btn", use_container_width=True, disabled=current_story_favorited):
+                        add_current_story_line_to_favorites()
+                        st.rerun()
 
     if not audio_enabled:
         render_story_mobile_controller_cleanup()
@@ -6592,7 +7142,7 @@ def render_speaker_button(text):
             color: {t['info']};
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
-            margin-top: 0.32rem;
+            margin-top: 0.24rem;
         }}
         </style>
         <button id="speak-btn" type="button">🔊</button>
@@ -7156,6 +7706,7 @@ def render_menu():
     if not st.session_state.menu_open:
         return
     active_review_count = review_count_for(st.session_state.active_person)
+    active_favorites_count = favorites_count_for(st.session_state.active_person)
     has_regular_progress = person_has_regular_deck_progress(st.session_state.active_person)
     active_person_label = PERSON_LABELS[st.session_state.active_person]
     st.markdown('<div class="menu-backdrop"></div>', unsafe_allow_html=True)
@@ -7263,18 +7814,20 @@ def render_menu():
             clear_menu_destructive_confirms()
             st.rerun()
         if active_review_count > 0:
-            erase_label = f"Erase Review Deck for {active_person_label}"
+            erase_label = f"Erase ⭐️ REVIEW ⭐️ deck for {active_person_label}"
+            erase_verify_label = "Verify ⭐️ REVIEW ⭐️ deck deletion!"
             erase_wrap_key = "erase_review_confirm_wrap" if st.session_state.erase_review_confirm else "erase_review_wrap"
             with st.container(key="erase_review_slot_wrap"):
                 with st.container(key=erase_wrap_key):
                     if st.button(
-                        erase_label,
+                        erase_verify_label if st.session_state.erase_review_confirm else erase_label,
                         key="erase_review_btn",
                         use_container_width=True,
                     ):
                         if st.session_state.erase_review_confirm:
                             erase_review_deck(st.session_state.active_person)
                         else:
+                            st.session_state.erase_favorites_confirm = False
                             st.session_state.initialize_all_decks_confirm = False
                             st.session_state.erase_review_confirm = True
                         st.rerun()
@@ -7283,13 +7836,41 @@ def render_menu():
                         st.button("__clear_erase_review_confirm__", key="clear_erase_review_confirm_btn", on_click=clear_erase_review_confirm)
                     render_erase_review_confirm_timeout()
 
+        if active_favorites_count > 0:
+            erase_favorites_label = f"Erase 💙 FAVORITES 💙 deck for {active_person_label}"
+            erase_favorites_verify_label = "Verify 💙 FAVORITES 💙 deck deletion!"
+            erase_favorites_wrap_key = "erase_favorites_confirm_wrap" if st.session_state.erase_favorites_confirm else "erase_favorites_wrap"
+            with st.container(key="erase_favorites_slot_wrap"):
+                with st.container(key=erase_favorites_wrap_key):
+                    if st.button(
+                        erase_favorites_verify_label if st.session_state.erase_favorites_confirm else erase_favorites_label,
+                        key="erase_favorites_btn",
+                        use_container_width=True,
+                    ):
+                        if st.session_state.erase_favorites_confirm:
+                            erase_favorites_deck(st.session_state.active_person)
+                        else:
+                            st.session_state.erase_review_confirm = False
+                            st.session_state.initialize_all_decks_confirm = False
+                            st.session_state.erase_favorites_confirm = True
+                        st.rerun()
+                if st.session_state.erase_favorites_confirm:
+                    with st.container(key="clear_erase_favorites_confirm_wrap"):
+                        st.button(
+                            "__clear_erase_favorites_confirm__",
+                            key="clear_erase_favorites_confirm_btn",
+                            on_click=clear_erase_favorites_confirm,
+                        )
+                    render_erase_favorites_confirm_timeout()
+
         if has_regular_progress:
             initialize_wrap_key = "initialize_all_decks_confirm_wrap" if st.session_state.initialize_all_decks_confirm else "initialize_all_decks_wrap"
-            initialize_label = f"Initialize ALL decks for {active_person_label}"
+            initialize_label = f"Initialize ❗ ALL ❗ decks for {active_person_label}"
+            initialize_verify_label = "Verify ❗ ALL ❗ decks deletion!"
             with st.container(key="initialize_all_decks_slot_wrap"):
                 with st.container(key=initialize_wrap_key):
                     if st.button(
-                        "VERIFY initialization of all decks" if st.session_state.initialize_all_decks_confirm else initialize_label,
+                        initialize_verify_label if st.session_state.initialize_all_decks_confirm else initialize_label,
                         key="initialize_all_decks_btn",
                         use_container_width=True,
                     ):
@@ -7297,6 +7878,7 @@ def render_menu():
                             initialize_all_decks(st.session_state.active_person)
                         else:
                             st.session_state.erase_review_confirm = False
+                            st.session_state.erase_favorites_confirm = False
                             st.session_state.initialize_all_decks_confirm = True
                         st.rerun()
                 if st.session_state.initialize_all_decks_confirm:
@@ -7397,30 +7979,29 @@ def render_study_mode_picker():
 def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answer=False):
     if st.session_state["regular_auto_mode"]:
         with st.container(key="icon_btn_row_wrap"):
-            left_col, spacer_col, right_col = st.columns([1, 4, 1], gap="small")
+            left_col, right_col = st.columns(2, gap="small")
             with left_col:
                 st.empty()
-            with spacer_col:
-                st.empty()
             with right_col:
-                with st.container(key="quitbefore_wrap"):
-                    if st.button("🛑", key="quitbefore_btn"):
-                        st.session_state.quit_requested = True
-                        st.rerun()
+                with st.container(key="action_right_group_wrap"):
+                    right_group_columns = st.columns(1, gap="small")
+                    with right_group_columns[0]:
+                        with st.container(key="quitbefore_wrap"):
+                            if st.button("🛑", key="quitbefore_btn"):
+                                st.session_state.quit_requested = True
+                                st.rerun()
         return
 
     if not show_answer:
         with st.container(key="icon_btn_row_wrap"):
-            left_col, spacer_col, right_col = st.columns([1, 4, 1], gap="small")
+            left_col, right_col = st.columns(2, gap="small")
             with left_col:
                 with st.container(key="showanswer_wrap"):
                     st.button("➜", key="showanswer_btn", on_click=reveal_answer)
-            with spacer_col:
-                st.empty()
             with right_col:
-                if spanish_visible_before_answer:
-                    with st.container(key="action_right_group_wrap"):
-                        right_group_columns = st.columns(2, gap="small")
+                with st.container(key="action_right_group_wrap"):
+                    right_group_columns = st.columns(2 if spanish_visible_before_answer else 1, gap="small")
+                    if spanish_visible_before_answer:
                         with right_group_columns[0]:
                             with st.container(key="speaker_wrap"):
                                 render_speaker_button(spanish_audio_text)
@@ -7429,27 +8010,53 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                 if st.button("🛑", key="quitbefore_btn"):
                                     st.session_state.quit_requested = True
                                     st.rerun()
-                else:
-                    with st.container(key="quitbefore_wrap"):
-                        if st.button("🛑", key="quitbefore_btn"):
-                            st.session_state.quit_requested = True
-                            st.rerun()
+                    else:
+                        with right_group_columns[0]:
+                            with st.container(key="quitbefore_wrap"):
+                                if st.button("🛑", key="quitbefore_btn"):
+                                    st.session_state.quit_requested = True
+                                    st.rerun()
         return
 
     review_mode = is_review_deck(st.session_state.selected_csv)
+    favorites_mode = is_favorites_deck(st.session_state.selected_csv)
+    current_card = st.session_state.cards[current_card_index()]
+    current_card_is_favorite = favorite_entry_exists(st.session_state.active_person, current_card)
+    current_favorites_entry_exists = favorite_entry_exists(
+        current_favorite_person(),
+        current_card,
+        source_deck=current_card.get("source_deck"),
+        source_index=current_card.get("source_index"),
+    ) if favorites_mode else False
     with st.container(key="answer_action_row_wrap"):
-        left_col, spacer_col, right_col = st.columns([2, 2.8, 2], gap="small")
+        left_col, right_col = st.columns(2, gap="small")
         with left_col:
             with st.container(key="action_left_group_wrap"):
-                left_group_columns = st.columns(2, gap="small")
+                left_group_columns = st.columns(2 if (review_mode or favorites_mode) else 3, gap="small")
                 with left_group_columns[0]:
                     with st.container(key="correct_wrap"):
                         st.button("✓", key="correct_btn", on_click=mark_correct)
                 with left_group_columns[1]:
-                    with st.container(key="repeat_wrap"):
-                        st.button("?", key="repeat_btn", on_click=mark_repeat)
-        with spacer_col:
-            st.empty()
+                    if favorites_mode:
+                        if current_favorites_entry_exists:
+                            with st.container(key="del_active_wrap"):
+                                st.button("🗑", key="del_btn", on_click=delete_current_favorite_card)
+                        else:
+                            st.empty()
+                    else:
+                        with st.container(key="repeat_wrap"):
+                            st.button("?", key="repeat_btn", on_click=mark_repeat)
+                if not review_mode and not favorites_mode:
+                    with left_group_columns[2]:
+                        if current_card_is_favorite:
+                            st.empty()
+                        else:
+                            with st.container(key="favorite_wrap"):
+                                st.button(
+                                    "♥",
+                                    key="favorite_btn",
+                                    on_click=add_current_card_to_favorites,
+                                )
         with right_col:
             with st.container(key="action_right_group_wrap"):
                 right_group_columns = st.columns(3 if review_mode else 2, gap="small")
@@ -7462,7 +8069,6 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     with st.container(key=auto_speak_key):
                         st.button(auto_speak_label, key="autospeak_btn", on_click=toggle_auto_speak_spanish)
         if review_mode:
-            current_card = st.session_state.cards[current_card_index()]
             delete_armed = st.session_state.delete_review_confirm_key == current_review_card_key(current_card)
             with right_group_columns[2]:
                 with st.container(key="del_confirm_wrap" if delete_armed else "del_active_wrap"):
@@ -7543,6 +8149,7 @@ if st.session_state.selected_csv is None:
 
 if (
     not is_review_deck(st.session_state.selected_csv)
+    and not is_favorites_deck(st.session_state.selected_csv)
     and not is_playback_deck(st.session_state.selected_csv)
     and st.session_state.study_mode is None
 ):
@@ -7570,6 +8177,23 @@ if st.session_state.loaded_csv != st.session_state.selected_csv or not st.sessio
              "shown": False, "scored": False, "repeat_score": item["count"], "error_flag": 0}
             for item in review_items
         ]
+    elif is_favorites_deck(st.session_state.selected_csv):
+        favorites_person = favorites_deck_person(st.session_state.selected_csv)
+        favorite_items = list(st.session_state.favorites_data.get(favorites_person, {}).values())
+        st.session_state.cards = [
+            {
+                "id": item.get("source_id"),
+                "word": item["word"],
+                "answer": item["answer"],
+                "shown": False,
+                "scored": False,
+                "repeat_score": 1,
+                "error_flag": 0,
+                "source_deck": item.get("source_deck"),
+                "source_index": item.get("source_index"),
+            }
+            for item in favorite_items
+        ]
     else:
         deck_data = load_regular_deck(st.session_state.selected_csv)
         st.session_state.cards = deck_data["cards"]
@@ -7590,6 +8214,7 @@ if st.session_state.loaded_csv != st.session_state.selected_csv or not st.sessio
 
 if (
     not is_review_deck(st.session_state.selected_csv)
+    and not is_favorites_deck(st.session_state.selected_csv)
     and not is_playback_deck(st.session_state.selected_csv)
     and st.session_state.study_mode == "remaining"
     and not st.session_state.cards
@@ -7690,7 +8315,11 @@ if st.session_state.quit_requested:
 
 if st.session_state.cards and st.session_state.order:
     if st.session_state.index >= len(st.session_state.order):
-        if not is_review_deck(st.session_state.selected_csv) and st.session_state.study_mode == "remaining":
+        if (
+            not is_review_deck(st.session_state.selected_csv)
+            and not is_favorites_deck(st.session_state.selected_csv)
+            and st.session_state.study_mode == "remaining"
+        ):
             clear_deck_progress(st.session_state.active_person, st.session_state.selected_csv)
             st.session_state.study_mode = "all"
         st.session_state.quit_requested = True
