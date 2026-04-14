@@ -3095,8 +3095,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-storytransaudio_story_row_wrap,
 .st-key-storytransaudio_dialog_row_wrap {{
-    margin-left: -0.72rem !important;
-    width: calc(100% + 0.72rem) !important;
+    margin-top: -0.14rem !important;
+    margin-left: -1.12rem !important;
+    width: calc(100% + 1.12rem) !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"],
 .st-key-storytransaudio_story_row_wrap [data-testid="stHorizontalBlock"],
@@ -3163,6 +3164,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: fit-content !important;
     margin-right: auto !important;
 }}
+.st-key-storytransaudio_story_row_wrap [data-testid="stColumn"]:nth-child(2),
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:nth-child(2) {{
+    margin-left: -0.72rem !important;
+}}
 .st-key-storyplayback_row_wrap [data-testid="stMarkdownContainer"] p,
 .st-key-storytransaudio_story_row_wrap [data-testid="stMarkdownContainer"] p,
 .st-key-storytransaudio_dialog_row_wrap [data-testid="stMarkdownContainer"] p,
@@ -3219,6 +3224,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storydisplay_row_wrap [data-testid="stMarkdownContainer"] p {{
     white-space: nowrap !important;
     font-size: 0.9rem !important;
+}}
+.st-key-storydisplay_row_wrap {{
+    margin-top: -0.18rem !important;
 }}
 .st-key-storycontrol_row_wrap [data-testid="stHorizontalBlock"] {{
     display: flex !important;
@@ -3885,8 +3893,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         white-space: nowrap !important;
         font-size: 0.76rem !important;
     }}
+    .st-key-storydisplay_row_wrap {{
+        margin-top: -0.18rem !important;
+    }}
     .st-key-storyplayback_row_wrap {{
-        margin-bottom: 0.01rem !important;
+        margin-bottom: 0 !important;
     }}
     .st-key-storytransaudio_story_row_wrap,
     .st-key-storytransaudio_dialog_row_wrap,
@@ -3897,8 +3908,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-storytransaudio_story_row_wrap,
     .st-key-storytransaudio_dialog_row_wrap {{
-        margin-left: -0.86rem !important;
-        width: calc(100% + 0.86rem) !important;
+        margin-top: -0.16rem !important;
+        margin-left: -1.32rem !important;
+        width: calc(100% + 1.32rem) !important;
+    }}
+    .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"]:nth-child(2),
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:nth-child(2) {{
+        margin-left: -0.92rem !important;
     }}
     .st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {{
         gap: 0.2rem !important;
