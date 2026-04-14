@@ -3099,7 +3099,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storydisplay_row_wrap [data-testid="stHorizontalBlock"] {{
     align-items: center !important;
     flex-wrap: nowrap !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     gap: 0.18rem !important;
     margin: 0 !important;
     width: 100% !important;
@@ -3112,7 +3112,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex: 1 1 0 !important;
     min-width: 0 !important;
     display: flex !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"] > div,
 .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"] > div,
@@ -3121,7 +3121,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     padding: 0 !important;
     width: 100% !important;
     display: flex !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     align-items: center !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"]:first-child {{
@@ -3147,7 +3147,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin: 0 !important;
     width: 100% !important;
     display: flex !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stMarkdownContainer"] p,
 .st-key-storytransaudio_story_row_wrap [data-testid="stMarkdownContainer"] p,
@@ -3192,14 +3192,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
     gap: 0.3rem !important;
     width: 100% !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
 }}
 .st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
     flex: 0 0 calc((100% - 0.44rem) / 3) !important;
     min-width: calc((100% - 0.44rem) / 3) !important;
     width: calc((100% - 0.44rem) / 3) !important;
     display: flex !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     margin: 0 !important;
 }}
 .st-key-storydisplay_row_wrap [data-testid="stMarkdownContainer"] p {{
@@ -3781,7 +3781,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] label {{
         width: 100% !important;
         display: flex !important;
-        justify-content: center !important;
+        justify-content: flex-start !important;
     }}
 
     .st-key-storytransaudio_story_row_wrap [data-testid="stHorizontalBlock"],
@@ -3789,7 +3789,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storydisplay_row_wrap [data-testid="stHorizontalBlock"] {{
         display: flex !important;
         flex-wrap: nowrap !important;
-        justify-content: center !important;
+        justify-content: flex-start !important;
         gap: 0.18rem !important;
         align-items: center !important;
         height: auto !important;
@@ -3815,7 +3815,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storydisplay_row_wrap [data-testid="stColumn"] > div {{
         display: flex !important;
         align-items: center !important;
-        justify-content: center !important;
+        justify-content: flex-start !important;
         width: 100% !important;
     }}
     .st-key-storytransaudio_story_row_wrap div[data-testid="stButton"] > button,
@@ -3843,7 +3843,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
         display: flex !important;
         flex-wrap: nowrap !important;
-        justify-content: center !important;
+        justify-content: flex-start !important;
         align-items: center !important;
         gap: 0.08rem !important;
         margin: 0 !important;
@@ -3855,7 +3855,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         min-width: calc((100% - 0.16rem) / 3) !important;
         width: calc((100% - 0.16rem) / 3) !important;
         display: flex !important;
-        justify-content: center !important;
+        justify-content: flex-start !important;
         margin: 0 !important;
     }}
     .st-key-storydisplay_row_wrap [data-testid="stMarkdownContainer"] p {{
