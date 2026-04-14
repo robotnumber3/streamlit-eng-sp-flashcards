@@ -3087,8 +3087,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin-bottom: 0.1rem !important;
 }}
 .st-key-storytransaudio_story_row_wrap,
-.st-key-storytransaudio_dialog_row_wrap {{
+.st-key-storytransaudio_dialog_row_wrap,
+.st-key-storydisplay_row_wrap {{
     margin-bottom: 0.1rem !important;
+    margin-left: -0.45rem !important;
+    width: calc(100% + 0.45rem) !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"],
 .st-key-storytransaudio_story_row_wrap [data-testid="stHorizontalBlock"],
@@ -3841,8 +3844,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         margin-bottom: 0.06rem !important;
     }}
     .st-key-storytransaudio_story_row_wrap,
-    .st-key-storytransaudio_dialog_row_wrap {{
+    .st-key-storytransaudio_dialog_row_wrap,
+    .st-key-storydisplay_row_wrap {{
         margin-bottom: 0 !important;
+        margin-left: -0.7rem !important;
+        width: calc(100% + 0.7rem) !important;
     }}
     .st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {{
         gap: 0.2rem !important;
