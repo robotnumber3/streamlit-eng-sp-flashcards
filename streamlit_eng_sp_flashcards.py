@@ -2304,9 +2304,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-radius: 0 !important;
     justify-content: flex-start !important;
     text-align: left !important;
-    font-weight: 900 !important;
-    font-size: 1.2rem !important;
-    padding-left: 0.02rem !important;
+    font-weight: 400 !important;
+    font-size: 1rem !important;
+    padding-left: 0.26rem !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
     min-height: 1.38rem !important;
@@ -2334,8 +2334,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button p,
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stButton"] > button > div,
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stButton"] > button p {{
-    font-weight: 900 !important;
-    font-size: 1.2rem !important;
+    font-weight: 400 !important;
+    font-size: 1rem !important;
     line-height: 1.1 !important;
 }}
 .st-key-mobile_deck_picker_wrap .st-key-review_miguel_active_wrap,
