@@ -3400,9 +3400,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     content: '★';
     color: #f2c94c !important;
     display: inline-block !important;
-    width: 0.82rem !important;
+    width: 1.05rem !important;
     text-align: left !important;
-    margin-right: 0.42rem !important;
+    margin-right: 0.58rem !important;
     font-size: 0.98rem !important;
     line-height: 1 !important;
 }}
@@ -3415,9 +3415,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     content: '♥';
     color: {BUTTON_COLORS['blue']['border']} !important;
     display: inline-block !important;
-    width: 0.82rem !important;
+    width: 1.05rem !important;
     text-align: left !important;
-    margin-right: 0.42rem !important;
+    margin-right: 0.58rem !important;
     font-size: 0.98rem !important;
     line-height: 1 !important;
 }}
