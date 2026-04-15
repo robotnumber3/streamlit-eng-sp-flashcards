@@ -6,6 +6,7 @@ import random
 import os
 import sys
 import json
+import base64
 import html
 import math
 import re
@@ -33,6 +34,14 @@ PREFS_FILE = os.path.expanduser("~/.flashcards_prefs.json")
 REVIEWS_FILE = os.path.expanduser("~/.flashcards_reviews.json")
 FAVORITES_FILE = os.path.expanduser("~/.flashcards_favorites.json")
 PROGRESS_FILE = os.path.expanduser("~/.flashcards_progress.json")
+SPLASH_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "axolotl_david_miguel.png")
+GOODBYE_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "axolotl_waving_goodbye.png")
+SPLASH_IMAGE_DIMENSION = 1600
+SPLASH_ACTIONS = {
+    "david": [(285, 575), (727, 575), (727, 1387), (282, 1387)],
+    "miguel": [(925, 575), (1363, 575), (1363, 1387), (925, 1387)],
+    "quit": [(984, 54), (1252, 164), (1218, 321), (997, 232)],
+}
 
 
 def configured_setting(name):
@@ -73,6 +82,23 @@ def get_supabase_client():
 
 def cloud_sync_enabled():
     return get_supabase_client() is not None
+
+
+@st.cache_data(show_spinner=False)
+def image_data_uri(image_path):
+    if not os.path.exists(image_path):
+        return None
+    with open(image_path, "rb") as image_handle:
+        encoded = base64.b64encode(image_handle.read()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
+
+
+def splash_image_data_uri():
+    return image_data_uri(SPLASH_IMAGE_PATH)
+
+
+def goodbye_image_data_uri():
+    return image_data_uri(GOODBYE_IMAGE_PATH)
 
 # ------------------------------------------------------------------------
 # DECK PICKER GROUPING
@@ -1413,6 +1439,117 @@ def activate_person(person):
     save_prefs(current_prefs())
 
 
+def clear_splash_query_action():
+    if "splash_action" in st.query_params:
+        del st.query_params["splash_action"]
+
+
+def handle_splash_action():
+    action = st.query_params.get("splash_action")
+    if action not in SPLASH_ACTIONS:
+        return
+
+    clear_splash_query_action()
+
+    if action in PERSON_LABELS:
+        if st.session_state.selected_csv is None and st.session_state.person_selector_visible:
+            activate_person(action)
+            st.rerun()
+        return
+
+    if action == "quit" and st.session_state.selected_csv is None and st.session_state.person_selector_visible:
+        st.session_state.menu_open = False
+        st.session_state.final_exit = True
+        st.rerun()
+
+
+def polygon_points_attribute(points):
+    return " ".join(f"{x},{y}" for x, y in points)
+
+
+def render_splash_selector():
+    splash_data_uri = splash_image_data_uri()
+    if not splash_data_uri:
+        with st.container(key="person_radio_wrap"):
+            selected_person = st.radio(
+                "Select user:",
+                options=list(PERSON_LABELS.keys()),
+                index=None,
+                horizontal=True,
+                format_func=lambda value: PERSON_LABELS[value],
+                key="person_radio",
+            )
+            if selected_person in PERSON_LABELS and selected_person != st.session_state.active_person:
+                activate_person(selected_person)
+                st.rerun()
+        return
+
+    polygon_markup = "".join(
+        "<a href='?splash_action="
+        + html.escape(action)
+        + "' target='_self' class='splash-link' aria-label='"
+        + html.escape(action.title())
+        + "'><polygon class='splash-hotspot' points='"
+        + polygon_points_attribute(points)
+        + "'></polygon></a>"
+        for action, points in SPLASH_ACTIONS.items()
+    )
+
+    splash_html = f"""
+            <div class="splash-shell">
+                <div class="splash-frame">
+                    <img src="{splash_data_uri}" alt="Spanish Flashcards splash screen" class="splash-image" />
+                    <svg class="splash-overlay" viewBox="0 0 {SPLASH_IMAGE_DIMENSION} {SPLASH_IMAGE_DIMENSION}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+                        {polygon_markup}
+                    </svg>
+                </div>
+            </div>
+            <style>
+                html, body {{
+                    margin: 0;
+                    padding: 0;
+                    background: transparent;
+                }}
+                .splash-shell {{
+                    width: 100%;
+                    padding: 0.25rem 0 0.2rem;
+                    box-sizing: border-box;
+                }}
+                .splash-frame {{
+                    position: relative;
+                    width: 100%;
+                    aspect-ratio: 1 / 1;
+                    border-radius: 1.2rem;
+                    overflow: hidden;
+                }}
+                .splash-image,
+                .splash-overlay {{
+                    position: absolute;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: block;
+                }}
+                .splash-hotspot {{
+                    fill: rgba(0, 0, 0, 0.001);
+                    stroke: transparent;
+                    stroke-width: 0;
+                    cursor: pointer;
+                    pointer-events: all;
+                }}
+                .splash-link {{
+                    cursor: pointer;
+                }}
+                .splash-hotspot:hover,
+                .splash-hotspot:active {{
+                    fill: rgba(0, 0, 0, 0.001);
+                    stroke: transparent;
+                }}
+            </style>
+    """
+
+    st.markdown(splash_html, unsafe_allow_html=True)
+
 def render_menu_backdrop_close_handler():
     components.html(
         """
@@ -1464,6 +1601,9 @@ def clear_menu_destructive_confirms():
     st.session_state.erase_review_confirm = False
     st.session_state.erase_favorites_confirm = False
     st.session_state.initialize_all_decks_confirm = False
+
+
+handle_splash_action()
 
 
 def review_count_for(person):
@@ -7886,6 +8026,10 @@ def stats_card_html(shown, total, correct, repeat, scored_total):
 
 
 def render_header(summary_mode=False):
+    if not summary_mode and st.session_state.person_selector_visible:
+        render_splash_selector()
+        return
+
     menu_icon = "✕" if st.session_state.menu_open else "☰"
     with st.container(key="header_row_wrap"):
         show_picker_quit = st.session_state.selected_csv is None and not summary_mode
@@ -7932,18 +8076,7 @@ def render_header(summary_mode=False):
     if st.session_state.menu_open:
         return
     if st.session_state.person_selector_visible:
-        with st.container(key="person_radio_wrap"):
-            selected_person = st.radio(
-                "Select user:",
-                options=list(PERSON_LABELS.keys()),
-                index=None,
-                horizontal=True,
-                format_func=lambda value: PERSON_LABELS[value],
-                key="person_radio",
-            )
-            if selected_person in PERSON_LABELS and selected_person != st.session_state.active_person:
-                activate_person(selected_person)
-                st.rerun()
+        render_splash_selector()
 
 
 def render_menu():
@@ -8366,13 +8499,25 @@ def restart_mistakes_only():
 # ========================================================================
 
 if st.session_state.final_exit:
-    render_header(summary_mode=True)
-    render_menu()
+    goodbye_data_uri = goodbye_image_data_uri()
+    goodbye_image_markup = (
+        f"<div class='exit-image-wrap'><img src='{goodbye_data_uri}' alt='Goodbye axolotl' class='exit-image' /></div>"
+        if goodbye_data_uri
+        else "<div class='exit-image-wrap'></div>"
+    )
     st.markdown(
-        "<div class='title-block'>"
-        "<div class='title-big'>Buen trabajo!</div>"
-        "<div class='title-big-sub'>Keep practicing every day</div>"
-        "</div>",
+        "<div class='exit-screen'>"
+        "<div class='title-big exit-title'>Buen trabajo!</div>"
+        + goodbye_image_markup
+        + "<div class='title-big-sub exit-subtitle'>KEEP PRACTICING EVERY DAY</div>"
+        "</div>"
+        "<style>"
+        ".exit-screen { text-align: center; padding: 2.2rem 0 0.8rem 0; }"
+        ".exit-title { display: block; }"
+        ".exit-image-wrap { margin: 1rem auto 1rem auto; max-width: 360px; }"
+        ".exit-image { display: block; width: 100%; height: auto; margin: 0 auto; }"
+        ".exit-subtitle { display: block; margin-top: 0; }"
+        "</style>",
         unsafe_allow_html=True,
     )
     st.stop()

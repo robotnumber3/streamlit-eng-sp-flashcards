@@ -1346,7 +1346,7 @@ defaults = {
     "delete_review_confirm_key": None,
     "open_deck_categories": [],
     "story_playback_mode": "continuous",
-    "story_translation_on": True,
+    "story_display_mode": "both",
     "story_audio_on": True,
     "story_repeat_spanish_on": False,
     "story_random_on": False,
@@ -1359,6 +1359,21 @@ defaults = {
 for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
+
+if "story_display_mode" not in st.session_state:
+    legacy_prompt_on = st.session_state.get("story_prompt_on", True)
+    legacy_english_on = st.session_state.get(
+        "story_english_on",
+        st.session_state.get("story_translation_on", True),
+    )
+    if legacy_prompt_on and legacy_english_on:
+        st.session_state.story_display_mode = "both"
+    elif legacy_prompt_on:
+        st.session_state.story_display_mode = "spanish"
+    elif legacy_english_on:
+        st.session_state.story_display_mode = "english"
+    else:
+        st.session_state.story_display_mode = "both"
 
 t = THEMES[st.session_state.theme]
 
@@ -1592,10 +1607,10 @@ def repeat_story():
 def sync_story_option_widget_state():
     st.session_state["story_playback_auto_checkbox"] = st.session_state.story_playback_mode == "continuous"
     st.session_state["story_playback_step_checkbox"] = st.session_state.story_playback_mode == "stop on every line"
-    st.session_state["story_translation_checkbox"] = st.session_state.story_translation_on
     st.session_state["story_audio_checkbox"] = st.session_state.story_audio_on
     st.session_state["story_repeat_checkbox"] = st.session_state.story_repeat_spanish_on
     st.session_state["story_random_checkbox"] = st.session_state.story_random_on
+    st.session_state["story_display_mode_radio"] = normalize_story_display_mode(st.session_state.story_display_mode)
 
 
 def select_story_playback_mode(mode):
@@ -1618,8 +1633,16 @@ def toggle_story_playback_step():
         st.session_state["story_playback_step_checkbox"] = True
 
 
-def toggle_story_translation():
-    st.session_state.story_translation_on = st.session_state.get("story_translation_checkbox", True)
+def normalize_story_display_mode(value):
+    if value in {"spanish", "english", "both"}:
+        return value
+    return "both"
+
+
+def toggle_story_display_mode():
+    st.session_state.story_display_mode = normalize_story_display_mode(
+        st.session_state.get("story_display_mode_radio", "both")
+    )
 
 
 def toggle_story_audio():
@@ -2220,14 +2243,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {BUTTON_COLORS['blue']['fg']} !important;
 }}
 .st-key-autospeak_on_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['card_bg']} !important;
-    border-color: {t['border']} !important;
-    color: {t['fg']} !important;
+    background-color: #cbb7f3 !important;
+    border-color: #5a338f !important;
+    color: #8f39ff !important;
 }}
 .st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['card_bg']} !important;
-    border-color: {t['border']} !important;
-    color: {t['muted']} !important;
+    background-color: #cbb7f3 !important;
+    border-color: #5a338f !important;
+    color: #8f39ff !important;
 }}
 .st-key-autospeak_on_wrap div[data-testid="stButton"] > button,
 .st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
@@ -3054,23 +3077,58 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap,
-.st-key-storytransaudio_row_wrap {{
+.st-key-storytransaudio_story_row_wrap,
+.st-key-storytransaudio_dialog_row_wrap,
+.st-key-storydisplay_row_wrap {{
     margin: 0 !important;
+    width: 100% !important;
+}}
+.st-key-storyplayback_row_wrap {{
+    margin-bottom: 0.02rem !important;
+}}
+.st-key-storytransaudio_story_row_wrap,
+.st-key-storytransaudio_dialog_row_wrap,
+.st-key-storydisplay_row_wrap {{
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+}}
+.st-key-storytransaudio_story_row_wrap,
+.st-key-storytransaudio_dialog_row_wrap {{
+    margin-top: -0.14rem !important;
+    margin-left: -1.12rem !important;
+    width: calc(100% + 1.12rem) !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stHorizontalBlock"],
-.st-key-storytransaudio_row_wrap [data-testid="stHorizontalBlock"] {{
+.st-key-storytransaudio_story_row_wrap [data-testid="stHorizontalBlock"],
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stHorizontalBlock"],
+.st-key-storydisplay_row_wrap [data-testid="stHorizontalBlock"] {{
     align-items: center !important;
     flex-wrap: nowrap !important;
-    gap: 0.25rem !important;
+    justify-content: flex-start !important;
+    gap: 0.18rem !important;
     margin: 0 !important;
+    width: 100% !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"],
-.st-key-storytransaudio_row_wrap [data-testid="stColumn"] {{
+.st-key-storytransaudio_story_row_wrap [data-testid="stColumn"],
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"],
+.st-key-storydisplay_row_wrap [data-testid="stColumn"] {{
     padding: 0 !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    justify-content: flex-start !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"] > div,
-.st-key-storytransaudio_row_wrap [data-testid="stColumn"] > div {{
+.st-key-storytransaudio_story_row_wrap [data-testid="stColumn"] > div,
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] > div,
+.st-key-storydisplay_row_wrap [data-testid="stColumn"] > div {{
     padding: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"]:first-child {{
     flex: 0 0 8.8rem !important;
@@ -3082,48 +3140,93 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     white-space: nowrap !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stCheckbox"],
-.st-key-storytransaudio_row_wrap [data-testid="stCheckbox"] {{
+.st-key-storytransaudio_story_row_wrap [data-testid="stCheckbox"],
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] {{
     margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
+}}
+.st-key-storytransaudio_story_row_wrap [data-testid="stCheckbox"],
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] {{
+    width: fit-content !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stCheckbox"] label,
-.st-key-storytransaudio_row_wrap [data-testid="stCheckbox"] label {{
+.st-key-storytransaudio_story_row_wrap [data-testid="stCheckbox"] label,
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] label {{
     white-space: nowrap !important;
     margin: 0 !important;
-}}
-.st-key-storyplayback_row_wrap [data-testid="stRadio"] > div,
-.st-key-storytransaudio_row_wrap [data-testid="stRadio"] > div {{
-    flex-direction: row !important;
+    width: 100% !important;
+    display: flex !important;
     justify-content: flex-start !important;
-    gap: 0.62rem !important;
 }}
-.st-key-storyplayback_row_wrap [data-testid="stRadio"] label,
-.st-key-storytransaudio_row_wrap [data-testid="stRadio"] label {{
-    margin-bottom: 0 !important;
+.st-key-storytransaudio_story_row_wrap [data-testid="stCheckbox"] label,
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] label {{
+    width: fit-content !important;
+    margin-right: auto !important;
+}}
+.st-key-storytransaudio_story_row_wrap [data-testid="stColumn"]:nth-child(2),
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:nth-child(2) {{
+    margin-left: -1.02rem !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stMarkdownContainer"] p,
-.st-key-storytransaudio_row_wrap [data-testid="stMarkdownContainer"] p {{
+.st-key-storytransaudio_story_row_wrap [data-testid="stMarkdownContainer"] p,
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stMarkdownContainer"] p,
+.st-key-storydisplay_row_wrap [data-testid="stMarkdownContainer"] p {{
     margin: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"],
-.st-key-storytransaudio_row_wrap [data-testid="stRadio"] {{
+.st-key-storytransaudio_story_row_wrap [data-testid="stRadio"],
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"],
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] {{
     margin: 0 !important;
     padding: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] > label,
-.st-key-storytransaudio_row_wrap [data-testid="stRadio"] > label {{
+.st-key-storytransaudio_story_row_wrap [data-testid="stRadio"] > label,
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"] > label,
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] > label {{
     display: none !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
-.st-key-storytransaudio_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+.st-key-storytransaudio_story_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
+.st-key-storytransaudio_dialog_row_wrap [data-testid="stRadio"] div[role="radiogroup"],
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: center !important;
+    justify-content: flex-start !important;
     margin: 0 !important;
     padding: 0 !important;
 }}
 .st-key-storyplayback_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
     white-space: nowrap !important;
+}}
+.st-key-storydisplay_row_wrap [data-testid="stElementContainer"] {{
+    margin: 0 !important;
+    padding: 0 !important;
+}}
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] {{
+    width: 100% !important;
+}}
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+    gap: 1.36rem !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+}}
+.st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
+    flex: 0 0 calc((100% - 2.72rem) / 3) !important;
+    min-width: calc((100% - 2.72rem) / 3) !important;
+    width: calc((100% - 2.72rem) / 3) !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    margin: 0 !important;
+}}
+.st-key-storydisplay_row_wrap [data-testid="stMarkdownContainer"] p {{
+    white-space: nowrap !important;
+    font-size: 0.9rem !important;
+}}
+.st-key-storydisplay_row_wrap {{
+    margin-top: -0.18rem !important;
 }}
 .st-key-storycontrol_row_wrap [data-testid="stHorizontalBlock"] {{
     display: flex !important;
@@ -3135,8 +3238,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: 100% !important;
 }}
 .st-key-storycontrol_row_wrap [data-testid="stColumn"] {{
-    flex: 0 0 calc((100% - 1rem) / 3) !important;
-    width: calc((100% - 1rem) / 3) !important;
+    flex: 1 1 0 !important;
+    width: auto !important;
     min-width: 0 !important;
     max-width: none !important;
     padding: 0 !important;
@@ -3152,10 +3255,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 1.05rem !important;
     padding-left: 0.4rem !important;
     padding-right: 0.4rem !important;
-}}
-.story-control-spacer {{
-    width: 100%;
-    min-height: 2.9rem;
 }}
 .story-progress {{
     margin: 0.18rem 0 0.42rem 0;
@@ -3659,8 +3758,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         color: {t['muted']} !important;
     }}
 
-    /* ---- Phone: Translate + Audio + Random checkboxes ---- */
-    .st-key-storytransaudio_row_wrap {{
+    /* ---- Phone: Story option rows ---- */
+    .st-key-storytransaudio_story_row_wrap,
+    .st-key-storytransaudio_dialog_row_wrap,
+    .st-key-storydisplay_row_wrap {{
         height: auto !important;
         overflow: visible !important;
     }}
@@ -3690,32 +3791,130 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         white-space: nowrap !important;
     }}
     .st-key-storyplayback_row_wrap [data-testid="stCheckbox"] label p,
-    .st-key-storytransaudio_row_wrap [data-testid="stCheckbox"] label p {{
+    .st-key-storytransaudio_story_row_wrap [data-testid="stCheckbox"] label p,
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] label p,
+    .st-key-storydisplay_row_wrap [data-testid="stRadio"] label p {{
         font-size: 0.92rem !important;
     }}
     .st-key-storyplayback_row_wrap [data-testid="stCheckbox"] label {{
         width: fit-content !important;
     }}
-
-    .st-key-storytransaudio_row_wrap [data-testid="stHorizontalBlock"] {{
+    .st-key-storytransaudio_story_row_wrap [data-testid="stCheckbox"] label,
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] label {{
+        width: fit-content !important;
         display: flex !important;
-        flex-wrap: wrap !important;
-        gap: 0.35rem !important;
+        justify-content: flex-start !important;
+        margin-right: auto !important;
+    }}
+    .st-key-storytransaudio_story_row_wrap [data-testid="stCheckbox"],
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stCheckbox"] {{
+        width: fit-content !important;
+    }}
+    .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"]:first-child [data-testid="stCheckbox"],
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:first-child [data-testid="stCheckbox"] {{
+        margin-left: -0.48rem !important;
+    }}
+
+    .st-key-storytransaudio_story_row_wrap [data-testid="stHorizontalBlock"],
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stHorizontalBlock"],
+    .st-key-storydisplay_row_wrap [data-testid="stHorizontalBlock"] {{
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        gap: 0.18rem !important;
         align-items: center !important;
         height: auto !important;
+        width: 100% !important;
     }}
-    .st-key-storytransaudio_row_wrap [data-testid="stColumn"] {{
-        flex: 0 0 auto !important;
-        min-width: fit-content !important;
-        width: auto !important;
+    .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"] {{
+        flex: 0 0 calc((100% - 0.36rem) / 3) !important;
+        min-width: calc((100% - 0.36rem) / 3) !important;
+        width: calc((100% - 0.36rem) / 3) !important;
     }}
-    .st-key-storytransaudio_row_wrap [data-testid="stColumn"] > div {{
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] {{
+        flex: 0 0 calc((100% - 0.36rem) / 3) !important;
+        min-width: calc((100% - 0.36rem) / 3) !important;
+        width: calc((100% - 0.36rem) / 3) !important;
+    }}
+    .st-key-storydisplay_row_wrap [data-testid="stColumn"] {{
+        flex: 0 0 calc((100% - 0.36rem) / 3) !important;
+        min-width: calc((100% - 0.36rem) / 3) !important;
+        width: calc((100% - 0.36rem) / 3) !important;
+    }}
+    .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"] > div,
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"] > div,
+    .st-key-storydisplay_row_wrap [data-testid="stColumn"] > div {{
         display: flex !important;
         align-items: center !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
     }}
-    .st-key-storytransaudio_row_wrap .story-option-row {{
+    .st-key-storytransaudio_story_row_wrap div[data-testid="stButton"] > button,
+    .st-key-storytransaudio_dialog_row_wrap div[data-testid="stButton"] > button,
+    .st-key-storydisplay_row_wrap div[data-testid="stButton"] > button {{
+        width: 100% !important;
+        min-height: 1.06rem !important;
+        padding: 0.02rem 0.24rem !important;
+        font-size: 0.64rem !important;
+        line-height: 1 !important;
+    }}
+    .st-key-storytransaudio_story_row_wrap .story-option-row,
+    .st-key-storytransaudio_dialog_row_wrap .story-option-row {{
         position: relative !important;
         top: -0.45rem !important;
+    }}
+    .st-key-storydisplay_row_wrap [data-testid="stElementContainer"],
+    .st-key-storydisplay_row_wrap [data-testid="stRadio"] {{
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+    .st-key-storydisplay_row_wrap [data-testid="stRadio"] {{
+        width: 100% !important;
+    }}
+    .st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] {{
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        gap: 1.08rem !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }}
+    .st-key-storydisplay_row_wrap [data-testid="stRadio"] div[role="radiogroup"] > label {{
+        flex: 0 0 calc((100% - 2.16rem) / 3) !important;
+        min-width: calc((100% - 2.16rem) / 3) !important;
+        width: calc((100% - 2.16rem) / 3) !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+        margin: 0 !important;
+    }}
+    .st-key-storydisplay_row_wrap [data-testid="stMarkdownContainer"] p {{
+        white-space: nowrap !important;
+        font-size: 0.76rem !important;
+    }}
+    .st-key-storydisplay_row_wrap {{
+        margin-top: -0.18rem !important;
+    }}
+    .st-key-storyplayback_row_wrap {{
+        margin-bottom: 0 !important;
+    }}
+    .st-key-storytransaudio_story_row_wrap,
+    .st-key-storytransaudio_dialog_row_wrap,
+    .st-key-storydisplay_row_wrap {{
+        margin-bottom: 0 !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+    }}
+    .st-key-storytransaudio_story_row_wrap,
+    .st-key-storytransaudio_dialog_row_wrap {{
+        margin-top: -0.16rem !important;
+        margin-left: -1.32rem !important;
+        width: calc(100% + 1.32rem) !important;
+    }}
+    .st-key-storytransaudio_story_row_wrap [data-testid="stColumn"]:nth-child(2),
+    .st-key-storytransaudio_dialog_row_wrap [data-testid="stColumn"]:nth-child(2) {{
+        margin-left: -1.22rem !important;
     }}
     .st-key-regular_auto_controls_wrap [data-testid="stHorizontalBlock"] {{
         gap: 0.2rem !important;
@@ -6043,8 +6242,11 @@ def render_story_view():
     dialog_mode = current_playback_kind() == "dialog"
     story_card = current_story_card()
     sync_story_option_widget_state()
+    display_mode = normalize_story_display_mode(st.session_state.story_display_mode)
+    show_spanish = display_mode in {"spanish", "both"}
+    show_english = display_mode in {"english", "both"}
     spanish_text = story_card["answer"]
-    translation_text = story_card["word"] if st.session_state.story_translation_on else ""
+    translation_text = story_card["word"] if show_english else ""
     story_position = st.session_state.index + 1
     story_total = len(st.session_state.order)
     story_progress_pct = (story_position / story_total * 100) if story_total else 0
@@ -6089,44 +6291,54 @@ def render_story_view():
                     key="story_playback_step_checkbox",
                     on_change=toggle_story_playback_step,
                 )
-        with st.container(key="storytransaudio_row_wrap"):
-            ta_cols = st.columns([0.28, 0.18, 0.18, 0.18] if dialog_mode else [0.36, 0.24, 0.32], gap="small")
+        with st.container(key="storytransaudio_dialog_row_wrap" if dialog_mode else "storytransaudio_story_row_wrap"):
+            ta_cols = st.columns(3, gap="small")
             with ta_cols[0]:
-                st.checkbox(
-                    "Prompt",
-                    key="story_translation_checkbox",
-                    on_change=toggle_story_translation,
-                )
-            with ta_cols[1]:
                 st.checkbox(
                     "Audio",
                     key="story_audio_checkbox",
                     on_change=toggle_story_audio,
                 )
-            with ta_cols[2]:
+            with ta_cols[1]:
                 st.checkbox(
                     "Random",
                     key="story_random_checkbox",
                     on_change=toggle_story_random,
                 )
             if dialog_mode:
-                with ta_cols[3]:
+                with ta_cols[2]:
                     st.checkbox(
                         "2x",
                         key="story_repeat_checkbox",
                         on_change=toggle_story_repeat_spanish,
                     )
+            else:
+                with ta_cols[2]:
+                    st.empty()
+        with st.container(key="storydisplay_row_wrap"):
+            st.radio(
+                "Story display mode",
+                options=["spanish", "english", "both"],
+                horizontal=True,
+                key="story_display_mode_radio",
+                on_change=toggle_story_display_mode,
+                format_func=lambda value: {
+                    "spanish": "Spanish",
+                    "english": "English",
+                    "both": "Both",
+                }[value],
+                label_visibility="collapsed",
+            )
 
-    translation_enabled = st.session_state.story_translation_on
     audio_enabled = st.session_state.story_audio_on
 
     story_spanish_html_lines = [
-        format_word(card["answer"], 'fc-word', 'fc-note')
+        format_word(card["answer"], 'fc-word', 'fc-note') if show_spanish else '<div class="fc-word-placeholder">&nbsp;</div>'
         for card in ordered_story_cards
     ]
     story_translation_html_lines = [
         format_word(card["word"], 'fc-answer', 'fc-answer-note')
-        if translation_enabled else '<div class="fc-word-placeholder">&nbsp;</div>'
+        if show_english else '<div class="fc-word-placeholder">&nbsp;</div>'
         for card in ordered_story_cards
     ]
     last_story_index = max(len(ordered_story_cards) - 1, 0)
@@ -6184,7 +6396,7 @@ def render_story_view():
                         st.rerun()
     else:
         with st.container(key="storycontrol_row_wrap"):
-            control_cols = st.columns(4, gap="small")
+            control_cols = st.columns(3, gap="small")
             with control_cols[0]:
                 with st.container(key="storystart_wrap"):
                     start_label = "RESUME" if st.session_state.story_started else "START"
@@ -6197,8 +6409,6 @@ def render_story_view():
                         stop_story()
                         st.rerun()
             with control_cols[2]:
-                st.markdown('<div class="story-control-spacer"></div>', unsafe_allow_html=True)
-            with control_cols[3]:
                 with st.container(key="storyfavorite_active_wrap" if current_story_favorited else "storyfavorite_wrap"):
                     if st.button("♥︎", key="story_favorite_idle_btn", use_container_width=True, disabled=current_story_favorited):
                         add_current_story_line_to_favorites()
@@ -6261,18 +6471,19 @@ def render_story_view():
 
     story_box_shield = story_box_shield_html(False)
 
-    spanish_html = (
-        '<div class="story-display-block">'
-        + story_box_shield +
-        '<div class="fc-section-label">Spanish</div>'
-        + '<div id="story-spanish-content">'
-        + format_word(spanish_text, 'fc-word', 'fc-note')
-        + '</div>'
-        + '</div>'
-    )
-    st.markdown(spanish_html, unsafe_allow_html=True)
+    if show_spanish:
+        spanish_html = (
+            '<div class="story-display-block">'
+            + story_box_shield
+            + '<div class="fc-section-label">Spanish</div>'
+            + '<div id="story-spanish-content">'
+            + format_word(spanish_text, 'fc-word', 'fc-note')
+            + '</div>'
+            + '</div>'
+        )
+        st.markdown(spanish_html, unsafe_allow_html=True)
 
-    if translation_enabled:
+    if show_english:
         translation_inner = format_word(translation_text, 'fc-answer', 'fc-answer-note')
         translation_html = (
             '<div class="story-display-block">'
@@ -6283,15 +6494,7 @@ def render_story_view():
             + '</div>'
             + '</div>'
         )
-    else:
-        translation_html = (
-            '<div class="story-display-block story-display-block-empty">'
-            + story_box_shield +
-            '<div class="fc-section-label">Translation</div>'
-            '<div id="story-translation-content"><div class="fc-word-placeholder">&nbsp;</div></div>'
-            '</div>'
-        )
-    st.markdown(translation_html, unsafe_allow_html=True)
+        st.markdown(translation_html, unsafe_allow_html=True)
     render_story_box_shield_handler()
 
     with st.container(key="storyadvance_hidden_wrap"):
