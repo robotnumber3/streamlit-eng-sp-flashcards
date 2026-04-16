@@ -5802,6 +5802,7 @@ def render_story_start_unlock_handler(
                 controller.dialogFemaleVoice = null;
                 controller.dialogFirstSpeaker = null;
             }} else if (controller.storyRunToken !== config.storyRunToken) {{
+                var wasAwaitingServerStart = !!controller.awaitingServerStart;
                 var preservedIndex = typeof controller.localIndex === 'number'
                     ? controller.localIndex
                     : config.serverIndex;
@@ -5814,7 +5815,7 @@ def render_story_start_unlock_handler(
                 controller.pendingManualSpeakIndex = null;
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
-                controller.awaitingServerStart = false;
+                controller.awaitingServerStart = wasAwaitingServerStart && !!config.running;
                 controller.preserveLocalIndexOnRestart = !!config.running;
                 controller.localIndex = (config.running && controller.active)
                     ? preservedIndex
@@ -5863,6 +5864,7 @@ def render_story_start_unlock_handler(
             attachHandler('.st-key-storynext_wrap button', '_storyMobileNextHandler', nextFromGesture);
 
             if (!config.running) {{
+                controller.awaitingServerStart = false;
                 if (!controller.active) {{
                     controller.localIndex = config.serverIndex;
                 }} else if (typeof controller.pausedDisplayIndex === 'number') {{
@@ -5874,7 +5876,7 @@ def render_story_start_unlock_handler(
             renderLocalStoryViewStable(controller.localIndex);
             setDebug('ready: ' + (controller.localIndex + 1) + ' running=' + config.running + ' auto=' + controller.autoAdvance);
 
-            if (config.running && !controller.active && !controller.isSpeaking) {{
+            if (config.running && (controller.awaitingServerStart || !controller.active) && !controller.isSpeaking) {{
                 controller.active = true;
                 controller.running = true;
                 controller.awaitingServerStart = false;
@@ -6887,6 +6889,7 @@ def render_story_view():
             resume_next=st.session_state.story_resume_next,
             dialog_mode=dialog_mode,
             repeat_spanish=dialog_mode and st.session_state.story_repeat_spanish_on,
+            initial_render_delay_seconds=1.0,
         )
 
     if not st.session_state.story_started:
