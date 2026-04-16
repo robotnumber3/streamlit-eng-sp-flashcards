@@ -3937,8 +3937,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         height: 0.62rem !important;
     }}
     .st-key-mobile_deck_picker_wrap {{
-        padding: 0.22rem 0.22rem !important;
-        border-radius: 0.7rem !important;
+        padding: 0 !important;
+        margin-top: -0.35rem !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
     }}
     .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
         border: none !important;
@@ -6188,12 +6192,13 @@ def render_story_auto_advance(delay_seconds):
     )
 
 
-def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialog_mode=False, repeat_spanish=False):
+def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialog_mode=False, repeat_spanish=False, render_delay_seconds=0):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
     story_index = st.session_state.index
     story_run_token = st.session_state.story_run_token
     delay_ms = max(int(delay_seconds * 1000), 0)
+    render_delay_ms = max(int(render_delay_seconds * 1000), 0)
     last_story_index = max(len(st.session_state.order) - 1, 0)
     components.html(
         f"""
@@ -6212,6 +6217,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
             var storyRunToken = {story_run_token};
             var autoAdvance = {str(auto_advance).lower()};
             var delayMs = {delay_ms};
+            var renderDelayMs = {render_delay_ms};
             var lastStoryIndex = {last_story_index};
             var dialogMode = {str(dialog_mode).lower()};
             var repeatSpanish = {str(repeat_spanish).lower()};
@@ -6601,8 +6607,34 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                 speakPass();
             }}
 
+            function startSpeechAfterRenderDelay(runSpeech) {{
+                var execute = function() {{
+                    if (renderDelayMs > 0) {{
+                        window.setTimeout(runSpeech, renderDelayMs);
+                    }} else {{
+                        runSpeech();
+                    }}
+                }};
+
+                if (typeof parentWindow.requestAnimationFrame === 'function') {{
+                    parentWindow.requestAnimationFrame(function() {{
+                        parentWindow.requestAnimationFrame(execute);
+                    }});
+                    return;
+                }}
+
+                if (typeof window.requestAnimationFrame === 'function') {{
+                    window.requestAnimationFrame(function() {{
+                        window.requestAnimationFrame(execute);
+                    }});
+                    return;
+                }}
+
+                window.setTimeout(execute, 0);
+            }}
+
             if (synth.getVoices && synth.getVoices().length) {{
-                speakNow();
+                startSpeechAfterRenderDelay(speakNow);
                 return;
             }}
 
@@ -6610,7 +6642,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
             function handleVoicesChanged() {{
                 if (handled) return;
                 handled = true;
-                speakNow();
+                startSpeechAfterRenderDelay(speakNow);
             }}
 
             if (typeof synth.addEventListener === 'function') {{
@@ -6915,6 +6947,7 @@ def render_story_view():
             delay_seconds=story_pause_delay,
             dialog_mode=dialog_mode,
             repeat_spanish=dialog_mode and st.session_state.story_repeat_spanish_on,
+            render_delay_seconds=1.0,
         )
 
     if st.session_state.story_playback_mode == "stop on every line" and st.session_state.story_running:
