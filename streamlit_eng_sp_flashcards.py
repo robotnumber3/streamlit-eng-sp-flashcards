@@ -5667,9 +5667,14 @@ def render_story_start_unlock_handler(
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
                 controller.localIndex = targetIndex;
-                controller.awaitingServerStart = true;
                 renderLocalStoryViewStable(targetIndex);
-                setDebug('start queued: ' + (targetIndex + 1));
+                setDebug('start gesture: ' + (targetIndex + 1));
+                if (controller.autoAdvance) {{
+                    queueAutoFrom(targetIndex);
+                    return;
+                }}
+                controller.pendingManualSpeakIndex = targetIndex;
+                speakLine(targetIndex);
             }}
 
             function stepAdvanceFromGesture() {{
