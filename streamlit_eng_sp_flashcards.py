@@ -5639,6 +5639,12 @@ def render_story_start_unlock_handler(
                     return;
                 }}
                 controller.lastStartGestureAt = now;
+                try {{
+                    if (typeof doc._fcSpeechPrimeHandler === 'function') {{
+                        doc._fcSpeechPrimeHandler();
+                    }}
+                }} catch (error) {{
+                }}
                 controller.active = true;
                 controller.running = true;
                 controller.ignorePauseUntil = Date.now() + 1200;
