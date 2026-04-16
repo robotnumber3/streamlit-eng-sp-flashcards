@@ -1,17 +1,173 @@
-# REV 57
-# streamlit_eng_sp_flashcards.py
 
+# --- ALL IMPORTS AT TOP ---
+import pathlib
 import streamlit as st
 import random
 import os
+import time
+import secrets
 import sys
 import json
+import base64
 import html
 import math
 import re
 import pandas as pd
 import streamlit.components.v1 as components
 from streamlit.runtime.scriptrunner import get_script_run_ctx
+
+# Set page config FIRST
+st.set_page_config(page_title="Spanish Flashcards", page_icon="🌿", layout="wide")
+
+# REV 57
+# streamlit_eng_sp_flashcards.py
+
+# --- SIMPLE LOGIN SCREEN (before splash) ---
+LOGIN_FLOW_VERSION = 3
+LOGIN_HANDOFF_FILE = os.path.expanduser("~/.flashcards_login_handoff.json")
+LOGIN_HANDOFF_TTL_SECONDS = 300
+LOGIN_PASSWORDS = [
+    "141592",  # Replace with your real passwords
+    "3141",
+    "2565",
+    "62252",
+    "062252",
+    "2456",
+    "020456"
+]
+
+
+def save_login_handoff(token):
+    payload = {
+        "token": token,
+        "expires_at": int(time.time()) + LOGIN_HANDOFF_TTL_SECONDS,
+        "version": LOGIN_FLOW_VERSION,
+    }
+    try:
+        with open(LOGIN_HANDOFF_FILE, "w", encoding="utf-8") as handoff_file:
+            json.dump(payload, handoff_file)
+    except OSError:
+        return
+
+
+def clear_login_handoff():
+    try:
+        os.remove(LOGIN_HANDOFF_FILE)
+    except FileNotFoundError:
+        return
+    except OSError:
+        return
+
+
+def consume_login_handoff(token):
+    if not token:
+        return False
+    try:
+        with open(LOGIN_HANDOFF_FILE, encoding="utf-8") as handoff_file:
+            payload = json.load(handoff_file)
+    except (OSError, json.JSONDecodeError):
+        clear_login_handoff()
+        return False
+
+    is_valid = (
+        payload.get("version") == LOGIN_FLOW_VERSION
+        and payload.get("token") == token
+        and int(payload.get("expires_at", 0)) >= int(time.time())
+    )
+    clear_login_handoff()
+    return is_valid
+
+
+def clear_login_handoff_query_param():
+    if "auth_handoff" in st.query_params:
+        del st.query_params["auth_handoff"]
+
+
+def login_screen():
+    if st.session_state.get("is_logged_in"):
+        return  # Already logged in, do not show login fields
+    st.markdown(
+        """
+        <style>
+        .st-key-login_password_wrap,
+        .st-key-login_button_wrap {
+            width: min(100%, 14rem);
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .st-key-login_password_wrap [data-baseweb="input"] {
+            width: 100%;
+        }
+        .st-key-login_button_wrap .stButton,
+        .st-key-login_button_wrap .stButton > button {
+            width: 100%;
+        }
+        .st-key-login_button_wrap .stButton > button {
+            background: linear-gradient(135deg, #006847 0%, #008f5a 100%);
+            color: #ffffff;
+            border: 2px solid #00573b;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            min-height: 2.75rem;
+            box-shadow: 0 10px 20px rgba(0, 104, 71, 0.18);
+        }
+        .st-key-login_button_wrap .stButton > button:hover {
+            background: linear-gradient(135deg, #00573b 0%, #007e50 100%);
+            border-color: #00442d;
+            color: #ffffff;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    left_col, center_col, right_col = st.columns([1.2, 1, 1.2])
+    with center_col:
+        st.markdown(
+            """
+            <div style="text-align:center; margin-top:6rem; margin-bottom:2.5rem;">
+                <h1 style="font-size:2.2rem; margin:0; white-space:nowrap;">
+                    <span style="color:#006847;">Spanish</span>
+                    <span style="color:#ce1126;">Flashcards</span>
+                </h1>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        with st.container(key="login_password_wrap"):
+            pw = st.text_input("Password", type="password", key="login_password", help="Enter your password to continue.")
+        with st.container(key="login_button_wrap"):
+            login_btn = st.button("LOGIN", key="login_button", type="primary", use_container_width=True)
+    if login_btn or (pw and st.session_state.get("_login_attempted")):
+        st.session_state["_login_attempted"] = True
+        if pw in LOGIN_PASSWORDS:
+            handoff_token = secrets.token_urlsafe(24)
+            st.session_state["is_logged_in"] = True
+            st.session_state["login_handoff_token"] = handoff_token
+            st.session_state["_login_attempted"] = False
+            save_login_handoff(handoff_token)
+            st.rerun()
+        else:
+            st.error("Incorrect password. Please try again.")
+    st.stop()
+
+if st.session_state.get("login_flow_version") != LOGIN_FLOW_VERSION:
+    st.session_state["login_flow_version"] = LOGIN_FLOW_VERSION
+    st.session_state["_login_attempted"] = False
+
+if "is_logged_in" not in st.session_state:
+    st.session_state["is_logged_in"] = False
+if "login_handoff_token" not in st.session_state:
+    st.session_state["login_handoff_token"] = None
+
+handoff_token = st.query_params.get("auth_handoff")
+if not st.session_state.get("is_logged_in") and consume_login_handoff(handoff_token):
+    st.session_state["is_logged_in"] = True
+    st.session_state["login_handoff_token"] = None
+    clear_login_handoff_query_param()
+
+if not st.session_state.get("is_logged_in"):
+    login_screen()
 
 try:
     from supabase import create_client
@@ -26,13 +182,21 @@ if get_script_run_ctx() is None:
 # CONFIG
 # ------------------------------------------------------------------------
 
-st.set_page_config(page_title="Spanish Flashcards", page_icon="🌿", layout="wide")
+
 
 CSV_FOLDER = os.path.join(os.path.dirname(__file__), "csv")
 PREFS_FILE = os.path.expanduser("~/.flashcards_prefs.json")
 REVIEWS_FILE = os.path.expanduser("~/.flashcards_reviews.json")
 FAVORITES_FILE = os.path.expanduser("~/.flashcards_favorites.json")
 PROGRESS_FILE = os.path.expanduser("~/.flashcards_progress.json")
+SPLASH_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "axolotl_david_miguel.png")
+GOODBYE_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "axolotl_waving_goodbye.png")
+SPLASH_IMAGE_DIMENSION = 1600
+SPLASH_ACTIONS = {
+    "david": [(285, 575), (727, 575), (727, 1387), (282, 1387)],
+    "miguel": [(925, 575), (1363, 575), (1363, 1387), (925, 1387)],
+    "quit": [(984, 54), (1252, 164), (1218, 321), (997, 232)],
+}
 
 
 def configured_setting(name):
@@ -47,6 +211,7 @@ def configured_setting(name):
 
 SUPABASE_URL = configured_setting("SUPABASE_URL")
 SUPABASE_ANON_KEY = configured_setting("SUPABASE_ANON_KEY")
+SUPABASE_SERVICE_ROLE_KEY = configured_setting("SUPABASE_SERVICE_ROLE_KEY")
 
 PERSON_LABELS = {
     "miguel": "Miguel",
@@ -66,13 +231,35 @@ FAVORITES_DECK_ORDER = [FAVORITES_DECK_VALUES["miguel"], FAVORITES_DECK_VALUES["
 
 @st.cache_resource(show_spinner=False)
 def get_supabase_client():
-    if create_client is None or not SUPABASE_URL or not SUPABASE_ANON_KEY:
+    supabase_key = SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY
+    if SUPABASE_SERVICE_ROLE_KEY:
+        print("[SUPABASE] Using service role key (SUPABASE_SERVICE_ROLE_KEY)")
+    else:
+        print("[SUPABASE] Using anon key (SUPABASE_ANON_KEY)")
+    if create_client is None or not SUPABASE_URL or not supabase_key:
         return None
-    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+    return create_client(SUPABASE_URL, supabase_key)
 
 
 def cloud_sync_enabled():
     return get_supabase_client() is not None
+
+
+@st.cache_data(show_spinner=False)
+def image_data_uri(image_path):
+    if not os.path.exists(image_path):
+        return None
+    with open(image_path, "rb") as image_handle:
+        encoded = base64.b64encode(image_handle.read()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
+
+
+def splash_image_data_uri():
+    return image_data_uri(SPLASH_IMAGE_PATH)
+
+
+def goodbye_image_data_uri():
+    return image_data_uri(GOODBYE_IMAGE_PATH)
 
 # ------------------------------------------------------------------------
 # DECK PICKER GROUPING
@@ -193,11 +380,49 @@ def filename_matches_picker_category(filename, category):
     return filename_contains_any(normalized_name, category["tokens"])
 
 
+def story_title_row_present_in_file(filename):
+    if (
+        not filename
+        or is_review_deck(filename)
+        or is_favorites_deck(filename)
+        or filename_contains_any(filename, ["dialog"])
+        or not filename_contains_any(filename, ["story"])
+    ):
+        return False
+
+    csv_path = os.path.join(CSV_FOLDER, filename)
+    try:
+        with open(csv_path, "r", encoding="utf-8") as handle:
+            first_line = handle.readline()
+        separator = ";" if ";" in first_line else ","
+        df = pd.read_csv(csv_path, sep=separator, nrows=1)
+        df.columns = [str(column).strip() for column in df.columns]
+        if df.empty:
+            return False
+
+        lower_columns = {column.lower(): column for column in df.columns}
+        id_column = lower_columns.get("id")
+        word_column = lower_columns.get("word")
+        if word_column is None:
+            content_columns = [column for column in df.columns if column != id_column]
+            if not content_columns:
+                return False
+            word_column = content_columns[0]
+
+        first_english = str(df.iloc[0][word_column]).strip()
+        return first_english.lower().startswith("title:")
+    except Exception:
+        return False
+
+
 def csv_data_row_count(filename):
     file_path = os.path.join(CSV_FOLDER, filename)
     try:
         with open(file_path, encoding="utf-8", errors="ignore") as handle:
-            return max(sum(1 for _ in handle) - 1, 0)
+            row_count = max(sum(1 for _ in handle) - 1, 0)
+        if story_title_row_present_in_file(filename):
+            row_count = max(row_count - 1, 0)
+        return row_count
     except Exception:
         return 0
 
@@ -1408,10 +1633,129 @@ def activate_person(person):
         return
     st.session_state.active_person = person
     st.session_state.person_selector_visible = False
+    st.session_state.login_handoff_token = None
+    clear_login_handoff()
     apply_person_prefs(person)
     clear_menu_destructive_confirms()
     save_prefs(current_prefs())
 
+
+def clear_splash_query_action():
+    if "splash_action" in st.query_params:
+        del st.query_params["splash_action"]
+    clear_login_handoff_query_param()
+
+
+def handle_splash_action():
+    action = st.query_params.get("splash_action")
+    if action not in SPLASH_ACTIONS:
+        return
+
+    clear_splash_query_action()
+
+    if action in PERSON_LABELS:
+        if st.session_state.selected_csv is None and st.session_state.person_selector_visible:
+            activate_person(action)
+            st.rerun()
+        return
+
+    if action == "quit" and st.session_state.selected_csv is None and st.session_state.person_selector_visible:
+        st.session_state.menu_open = False
+        st.session_state.final_exit = True
+        st.rerun()
+
+
+def polygon_points_attribute(points):
+    return " ".join(f"{x},{y}" for x, y in points)
+
+
+def render_splash_selector():
+    splash_data_uri = splash_image_data_uri()
+    if not splash_data_uri:
+        with st.container(key="person_radio_wrap"):
+            selected_person = st.radio(
+                "Select user:",
+                options=list(PERSON_LABELS.keys()),
+                index=None,
+                horizontal=True,
+                format_func=lambda value: PERSON_LABELS[value],
+                key="person_radio",
+            )
+            if selected_person in PERSON_LABELS and selected_person != st.session_state.active_person:
+                activate_person(selected_person)
+                st.rerun()
+        return
+
+    handoff_query = ""
+    if st.session_state.get("login_handoff_token"):
+        handoff_query = "&auth_handoff=" + html.escape(st.session_state["login_handoff_token"])
+
+    polygon_markup = "".join(
+        "<a href='?splash_action="
+        + html.escape(action)
+        + handoff_query
+        + "' target='_self' class='splash-link' aria-label='"
+        + html.escape(action.title())
+        + "'><polygon class='splash-hotspot' points='"
+        + polygon_points_attribute(points)
+        + "'></polygon></a>"
+        for action, points in SPLASH_ACTIONS.items()
+    )
+
+    splash_html = f"""
+            <div class="splash-shell">
+                <div class="splash-frame">
+                    <img src="{splash_data_uri}" alt="Spanish Flashcards splash screen" class="splash-image" />
+                    <svg class="splash-overlay" viewBox="0 0 {SPLASH_IMAGE_DIMENSION} {SPLASH_IMAGE_DIMENSION}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+                        {polygon_markup}
+                    </svg>
+                </div>
+            </div>
+            <style>
+                html, body {{
+                    margin: 0;
+                    padding: 0;
+                    background: transparent;
+                }}
+                .splash-shell {{
+                    width: 100%;
+                    padding: 0.25rem 0 0.2rem;
+                    box-sizing: border-box;
+                }}
+                .splash-frame {{
+                    position: relative;
+                    width: 100%;
+                    aspect-ratio: 1 / 1;
+                    border-radius: 1.2rem;
+                    overflow: hidden;
+                }}
+                .splash-image,
+                .splash-overlay {{
+                    position: absolute;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: block;
+                }}
+                .splash-hotspot {{
+                    fill: rgba(0, 0, 0, 0.001);
+                    stroke: transparent;
+                    stroke-width: 0;
+                    cursor: pointer;
+                    pointer-events: all;
+                }}
+                .splash-link {{
+                    cursor: pointer;
+                }}
+                .splash-hotspot:hover,
+                .splash-hotspot:active {{
+                    fill: rgba(0, 0, 0, 0.001);
+                    stroke: transparent;
+                }}
+            </style>
+    """
+
+    st.markdown(splash_html, unsafe_allow_html=True)
 
 def render_menu_backdrop_close_handler():
     components.html(
@@ -1466,6 +1810,9 @@ def clear_menu_destructive_confirms():
     st.session_state.initialize_all_decks_confirm = False
 
 
+handle_splash_action()
+
+
 def review_count_for(person):
     return len(st.session_state.review_data.get(person, {}))
 
@@ -1512,6 +1859,7 @@ def visible_favorites_deck_values():
 
 
 def reset_study_state(reset_selected=True):
+    was_logged_in = st.session_state.get("is_logged_in", False)
     if reset_selected:
         st.session_state.selected_csv = None
     st.session_state.study_mode = None
@@ -1542,23 +1890,36 @@ def reset_study_state(reset_selected=True):
     st.session_state.story_finished = False
     st.session_state.story_run_token = 0
     st.session_state.story_resume_next = False
+    st.session_state["is_logged_in"] = was_logged_in
+
+
+def story_title_prefix_present():
+    if not is_story_deck(st.session_state.selected_csv) or not st.session_state.cards:
+        return False
+    first_english = str(st.session_state.cards[0].get("word", "")).strip()
+    return first_english.lower().startswith("title:")
+
+
+def story_playable_card_indexes():
+    start_index = 1 if story_title_prefix_present() else 0
+    return list(range(start_index, len(st.session_state.cards)))
 
 
 def rebuild_story_order():
-    st.session_state.order = list(range(len(st.session_state.cards)))
+    st.session_state.order = story_playable_card_indexes()
     if st.session_state.story_random_on:
         random.shuffle(st.session_state.order)
 
 
 def rebuild_story_order_preserving_current():
-    if not st.session_state.cards:
+    if not st.session_state.order:
         st.session_state.order = []
         st.session_state.index = 0
         return
 
     current_position = min(st.session_state.index, max(len(st.session_state.order) - 1, 0))
     current_card = current_card_index() if st.session_state.order else 0
-    remaining = [idx for idx in range(len(st.session_state.cards)) if idx != current_card]
+    remaining = [idx for idx in story_playable_card_indexes() if idx != current_card]
 
     if st.session_state.story_random_on:
         random.shuffle(remaining)
@@ -1588,10 +1949,10 @@ def reset_story_playback():
 
 
 def finish_story():
-    if not st.session_state.cards:
+    if not st.session_state.order:
         reset_story_playback()
         return
-    st.session_state.index = max(len(st.session_state.cards) - 1, 0)
+    st.session_state.index = max(len(st.session_state.order) - 1, 0)
     st.session_state.story_started = True
     st.session_state.story_running = False
     st.session_state.story_finished = True
@@ -3058,7 +3419,22 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     letter-spacing: 0.06em; text-transform: uppercase;
 }}
 .story-title-block {{
-    padding: 0.5rem 0 0.22rem 0;
+    padding: 1.05rem 0 0.55rem 0;
+    text-align: center;
+}}
+.story-title-spanish {{
+    font-family: 'Fraunces', serif;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: {t['accent']};
+}}
+.story-title-english {{
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: {t['accent']};
 }}
 .story-option-row {{
     font-size: 0.95rem;
@@ -4363,9 +4739,22 @@ def current_story_card():
     return st.session_state.cards[current_card_index()]
 
 
+def story_title_card():
+    if not story_title_prefix_present():
+        return None
+    return st.session_state.cards[0]
+
+
+def story_title_english_text():
+    title_card = story_title_card()
+    if title_card is None:
+        return ""
+    return re.sub(r"^title:\s*", "", str(title_card["word"]).strip(), flags=re.IGNORECASE)
+
+
 def advance_story_line():
     next_index = st.session_state.index + 1
-    if next_index >= len(st.session_state.cards):
+    if next_index >= len(st.session_state.order):
         finish_story()
         return
     st.session_state.index = next_index
@@ -5740,7 +6129,7 @@ def render_story_ignore_tap_handler():
 def render_story_auto_advance(delay_seconds):
     delay_ms = max(int(delay_seconds * 1000), 0)
     story_index = st.session_state.index
-    last_story_index = max(len(st.session_state.cards) - 1, 0)
+    last_story_index = max(len(st.session_state.order) - 1, 0)
     components.html(
         f"""
         <script>
@@ -5805,7 +6194,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
     story_index = st.session_state.index
     story_run_token = st.session_state.story_run_token
     delay_ms = max(int(delay_seconds * 1000), 0)
-    last_story_index = max(len(st.session_state.cards) - 1, 0)
+    last_story_index = max(len(st.session_state.order) - 1, 0)
     components.html(
         f"""
         <script>
@@ -6241,6 +6630,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
 def render_story_view():
     dialog_mode = current_playback_kind() == "dialog"
     story_card = current_story_card()
+    title_card = None if dialog_mode else story_title_card()
     sync_story_option_widget_state()
     display_mode = normalize_story_display_mode(st.session_state.story_display_mode)
     show_spanish = display_mode in {"spanish", "both"}
@@ -6413,6 +6803,16 @@ def render_story_view():
                     if st.button("♥︎", key="story_favorite_idle_btn", use_container_width=True, disabled=current_story_favorited):
                         add_current_story_line_to_favorites()
                         st.rerun()
+        if not st.session_state.story_started and title_card is not None:
+            title_spanish = html.escape(str(title_card["answer"]))
+            title_english = html.escape(story_title_english_text())
+            st.markdown(
+                "<div class='story-title-block'>"
+                f"<div class='story-title-spanish'>{title_spanish}</div>"
+                f"<div class='story-title-english'>{title_english}</div>"
+                "</div>",
+                unsafe_allow_html=True,
+            )
 
     if not audio_enabled:
         render_story_mobile_controller_cleanup()
@@ -7886,6 +8286,10 @@ def stats_card_html(shown, total, correct, repeat, scored_total):
 
 
 def render_header(summary_mode=False):
+    if not summary_mode and st.session_state.person_selector_visible:
+        render_splash_selector()
+        return
+
     menu_icon = "✕" if st.session_state.menu_open else "☰"
     with st.container(key="header_row_wrap"):
         show_picker_quit = st.session_state.selected_csv is None and not summary_mode
@@ -7932,18 +8336,7 @@ def render_header(summary_mode=False):
     if st.session_state.menu_open:
         return
     if st.session_state.person_selector_visible:
-        with st.container(key="person_radio_wrap"):
-            selected_person = st.radio(
-                "Select user:",
-                options=list(PERSON_LABELS.keys()),
-                index=None,
-                horizontal=True,
-                format_func=lambda value: PERSON_LABELS[value],
-                key="person_radio",
-            )
-            if selected_person in PERSON_LABELS and selected_person != st.session_state.active_person:
-                activate_person(selected_person)
-                st.rerun()
+        render_splash_selector()
 
 
 def render_menu():
@@ -8366,13 +8759,25 @@ def restart_mistakes_only():
 # ========================================================================
 
 if st.session_state.final_exit:
-    render_header(summary_mode=True)
-    render_menu()
+    goodbye_data_uri = goodbye_image_data_uri()
+    goodbye_image_markup = (
+        f"<div class='exit-image-wrap'><img src='{goodbye_data_uri}' alt='Goodbye axolotl' class='exit-image' /></div>"
+        if goodbye_data_uri
+        else "<div class='exit-image-wrap'></div>"
+    )
     st.markdown(
-        "<div class='title-block'>"
-        "<div class='title-big'>Buen trabajo!</div>"
-        "<div class='title-big-sub'>Keep practicing every day</div>"
-        "</div>",
+        "<div class='exit-screen'>"
+        "<div class='title-big exit-title'>Buen trabajo!</div>"
+        + goodbye_image_markup
+        + "<div class='title-big-sub exit-subtitle'>KEEP PRACTICING EVERY DAY</div>"
+        "</div>"
+        "<style>"
+        ".exit-screen { text-align: center; padding: 2.2rem 0 0.8rem 0; }"
+        ".exit-title { display: block; }"
+        ".exit-image-wrap { margin: 1rem auto 1rem auto; max-width: 360px; }"
+        ".exit-image { display: block; width: 100%; height: auto; margin: 0 auto; }"
+        ".exit-subtitle { display: block; margin-top: 0; }"
+        "</style>",
         unsafe_allow_html=True,
     )
     st.stop()
@@ -8483,7 +8888,7 @@ scored_total  = st.session_state["score_actions"]
 # ========================================================================
 
 if is_playback_deck(st.session_state.selected_csv):
-    if st.session_state.index >= len(st.session_state.cards):
+    if st.session_state.index >= len(st.session_state.order):
         go_back_to_deck_picker()
         st.rerun()
 

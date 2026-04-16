@@ -4,7 +4,8 @@ Process Spanish vocabulary CSV files.
 - Add 'id' column to 2-column CSVs
 - If a file is missing a header row, create a standard header automatically
 - For files with existing ids, add sequential ids to new rows
-- Sort by column 2 (Spanish translation) or column 1 (id)
+- Preserve existing row order
+- Remove empty rows and empty columns
 - Auto-detects comma or semicolon delimiters
 - Rename original to _ORIG version
 """
@@ -24,16 +25,6 @@ def original_backup_path(filepath):
     backup_dir = Path(ORIGINAL_BACKUP_FOLDER)
     backup_dir.mkdir(parents=True, exist_ok=True)
     return backup_dir / f"{source_path.stem}_ORIG{source_path.suffix}"
-
-
-def preserve_original_order(filename):
-    """Return True for sequential-content files whose row order matters.
-
-    Dialogs and stories are not study decks where alphabetical sorting helps;
-    their line order is part of the content itself and must be preserved.
-    """
-    lower_name = filename.lower()
-    return 'dialog' in lower_name or 'story' in lower_name
 
 def detect_delimiter(filepath):
     """Auto-detect delimiter (comma or semicolon) in CSV file."""
@@ -66,6 +57,35 @@ def normalize_header_cell(value):
     return value.strip().lower()
 
 
+def sanitize_rows(rows):
+    """Remove blank rows and columns that contain no data anywhere."""
+    trimmed_rows = []
+
+    for row in rows:
+        row_values = list(row)
+
+        while row_values and not row_values[-1].strip():
+            row_values.pop()
+
+        if any(cell.strip() for cell in row_values):
+            trimmed_rows.append(row_values)
+
+    if not trimmed_rows:
+        return []
+
+    max_columns = max(len(row) for row in trimmed_rows)
+    keep_indexes = []
+
+    for column_index in range(max_columns):
+        if any(column_index < len(row) and row[column_index].strip() for row in trimmed_rows):
+            keep_indexes.append(column_index)
+
+    return [
+        [row[column_index] for column_index in keep_indexes if column_index < len(row)]
+        for row in trimmed_rows
+    ]
+
+
 def detect_header_type(row):
     """Return the recognized header type for a row, if any."""
     normalized = [normalize_header_cell(cell) for cell in row]
@@ -87,15 +107,13 @@ def process_csv(filepath):
         return True  # Silently skip backups
 
     # Read the CSV file and inspect the first row before deciding whether a
-    # header already exists. Dialog files were processed without headers, so the
-    # first row must be treated as data unless it clearly matches a known header.
+    # header already exists. Treat the first row as data unless it clearly
+    # matches a known header.
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            sample = f.read(2048)
-            f.seek(0)
             delimiter = detect_delimiter(filepath)
             reader = csv.reader(f, delimiter=delimiter, quotechar='"')
-            rows = [row for row in reader if row and any(cell.strip() for cell in row)]
+            rows = sanitize_rows(list(reader))
     except Exception as e:
         print(f"  ✗ {filename} — error reading file: {e}")
         return False
@@ -160,47 +178,34 @@ def process_existing_id_file(filepath, filename, delimiter, header, data):
     """Process a file that already has an id column (3 columns).
     Keeps existing ids unchanged, assigns new sequential ids to rows without ids."""
     try:
-        # Separate rows with ids from rows without ids
-        rows_with_id = []
-        rows_without_id = []
-
+        # Determine the next id without disturbing the original row order.
+        existing_ids = []
         for row in data:
             if len(row) > 0 and row[0].strip():
-                # Try to parse as integer id
+                try:
+                    existing_ids.append(int(row[0].strip()))
+                except ValueError:
+                    continue
+
+        max_id = max(existing_ids, default=0)
+
+        final_data = []
+        for row in data:
+            if len(row) > 0 and row[0].strip():
                 try:
                     id_val = int(row[0].strip())
-                    # Store id separately and the rest of the row (without the id)
-                    rows_with_id.append((id_val, row[1:]))
+                    final_data.append([str(id_val)] + row[1:])
+                    continue
                 except ValueError:
-                    rows_without_id.append(row)
+                    pass
+
+            if len(row) >= 3:
+                row_payload = row[1:]
             else:
-                # Row without id - could be 2 or 3 columns
-                # If it's 3 columns with empty first, keep only columns 2-3
-                if len(row) >= 3:
-                    rows_without_id.append(row[1:])  # Skip the empty id column
-                else:
-                    rows_without_id.append(row)
+                row_payload = row
 
-        # Get max id from existing rows
-        max_id = 0
-        if rows_with_id:
-            max_id = max(id_val for id_val, _ in rows_with_id)
-            # Sort rows with ids by their id
-            rows_with_id.sort(key=lambda x: x[0])
-
-        # Preserve authored order for dialogs/stories. Regular vocab decks still
-        # benefit from sorting by the answer column.
-        if not preserve_original_order(filename):
-            rows_without_id.sort(key=lambda x: x[1].lower() if len(x) > 1 else '')
-
-        # Assign new ids to rows without ids
-        final_data = []
-        for id_val, row_data in rows_with_id:
-            final_data.append([str(id_val)] + row_data)
-
-        for row in rows_without_id:
             max_id += 1
-            final_data.append([str(max_id)] + row)
+            final_data.append([str(max_id)] + row_payload)
 
         # Write back to file
         with open(filepath, 'w', encoding='utf-8', newline='') as f:
@@ -208,7 +213,8 @@ def process_existing_id_file(filepath, filename, delimiter, header, data):
             writer.writerow(header)
             writer.writerows(final_data)
 
-        print(f"  ✓ {filename} ({len(final_data)} rows, {len(rows_without_id)} new ids) — updated")
+        new_id_count = len(final_data) - len(existing_ids)
+        print(f"  ✓ {filename} ({len(final_data)} rows, {new_id_count} new ids) — updated")
         return True
 
     except Exception as e:
@@ -219,12 +225,7 @@ def process_existing_id_file(filepath, filename, delimiter, header, data):
 def process_new_file(filepath, filename, delimiter, header, data):
     """Process a new 2-column file (add id column)."""
     try:
-        # Preserve authored order for dialogs/stories. Regular vocab decks still
-        # benefit from sorting by the answer column.
-        if preserve_original_order(filename):
-            data_sorted = list(data)
-        else:
-            data_sorted = sorted(data, key=lambda x: x[1].lower() if len(x) > 1 else '')
+        data_rows = list(data)
 
         # Create _ORIG backup ONLY if it doesn't already exist.
         orig_filepath = original_backup_path(filepath)
@@ -239,10 +240,10 @@ def process_new_file(filepath, filename, delimiter, header, data):
             # Write header with new 'id' column
             writer.writerow(['id'] + header)
             # Write data rows with sequential IDs
-            for i, row in enumerate(data_sorted, start=1):
+            for i, row in enumerate(data_rows, start=1):
                 writer.writerow([i] + row)
 
-        print(f"  ✓ {filename} ({len(data_sorted)} rows) — processed")
+        print(f"  ✓ {filename} ({len(data_rows)} rows) — processed")
         return True
 
     except Exception as e:
