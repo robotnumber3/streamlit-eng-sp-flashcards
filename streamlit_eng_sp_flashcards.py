@@ -5685,7 +5685,7 @@ def render_story_start_unlock_handler(
                 if (startMode !== 'RESUME' && targetIndex === 0) {{
                     try {{
                         controller.awaitingServerStart = true;
-                        controller.pendingInitialStartDelayMs = 3000;
+                        controller.pendingInitialStartDelayMs = 2000;
                         setDebug('start primed: ' + (targetIndex + 1));
                         if (typeof synth.cancel === 'function') {{
                             synth.cancel();
