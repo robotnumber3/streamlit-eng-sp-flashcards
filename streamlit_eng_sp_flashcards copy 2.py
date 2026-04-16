@@ -3937,8 +3937,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         height: 0.62rem !important;
     }}
     .st-key-mobile_deck_picker_wrap {{
-        padding: 0.22rem 0.22rem !important;
-        border-radius: 0.7rem !important;
+        padding: 0 !important;
+        margin-top: -0.35rem !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
     }}
     .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
         border: none !important;
@@ -4908,10 +4912,12 @@ def render_story_start_unlock_handler(
     resume_next=False,
     dialog_mode=False,
     repeat_spanish=False,
+    initial_render_delay_seconds=0,
 ):
     spoken_lines = [strip_spoken_text(text) for text in story_lines]
     speech_rate = speech_rate_value()
     delay_ms = max(int(delay_seconds * 1000), 0)
+    initial_render_delay_ms = max(int(initial_render_delay_seconds * 1000), 0)
     story_key = st.session_state.selected_csv or ""
     story_run_token = st.session_state.story_run_token + (0 if running else 1)
     components.html(
@@ -4935,6 +4941,7 @@ def render_story_start_unlock_handler(
                 serverIndex: {current_index},
                 autoAdvance: {str(auto_advance).lower()},
                 delayMs: {delay_ms},
+                initialRenderDelayMs: {initial_render_delay_ms},
                 running: {str(running).lower()},
                 resumeNext: {str(resume_next).lower()},
                 dialogMode: {str(dialog_mode).lower()},
@@ -5044,6 +5051,33 @@ def render_story_start_unlock_handler(
                         renderLocalStoryView(index);
                     }}, delay);
                 }});
+            }}
+
+            function runAfterRenderDelay(callback) {{
+                var explicitStartDelayMs = controller.pendingInitialStartDelayMs || 0;
+                var effectiveDelayMs = explicitStartDelayMs > 0
+                    ? explicitStartDelayMs
+                    : (controller.initialRenderDelayMs || 0);
+                if (isPhoneStoryMode() && explicitStartDelayMs <= 0) {{
+                    effectiveDelayMs = Math.min(effectiveDelayMs, 60);
+                }}
+
+                function execute() {{
+                    if (effectiveDelayMs > 0) {{
+                        parentWindow.setTimeout(callback, effectiveDelayMs);
+                    }} else {{
+                        callback();
+                    }}
+                }}
+
+                if (typeof parentWindow.requestAnimationFrame === 'function') {{
+                    parentWindow.requestAnimationFrame(function() {{
+                        parentWindow.requestAnimationFrame(execute);
+                    }});
+                    return;
+                }}
+
+                parentWindow.setTimeout(execute, 0);
             }}
 
             function pickStandardVoice() {{
@@ -5608,11 +5642,27 @@ def render_story_start_unlock_handler(
             }}
 
             function startFromGesture() {{
+                function startImmediately(index) {{
+                    setDebug('start gesture: ' + (index + 1));
+                    if (controller.autoAdvance) {{
+                        queueAutoFrom(index);
+                        return;
+                    }}
+                    controller.pendingManualSpeakIndex = index;
+                    speakLine(index);
+                }}
+
                 var now = Date.now();
                 if (controller.lastStartGestureAt && now - controller.lastStartGestureAt < 900) {{
                     return;
                 }}
                 controller.lastStartGestureAt = now;
+                try {{
+                    if (typeof doc._fcSpeechPrimeHandler === 'function') {{
+                        doc._fcSpeechPrimeHandler();
+                    }}
+                }} catch (error) {{
+                }}
                 controller.active = true;
                 controller.running = true;
                 controller.ignorePauseUntil = Date.now() + 1200;
@@ -5631,13 +5681,30 @@ def render_story_start_unlock_handler(
                 controller.pausedDisplayIndex = null;
                 controller.localIndex = targetIndex;
                 renderLocalStoryViewStable(targetIndex);
-                setDebug('start gesture: ' + (targetIndex + 1));
-                if (controller.autoAdvance) {{
-                    queueAutoFrom(targetIndex);
-                    return;
+
+                if (startMode !== 'RESUME' && targetIndex === 0) {{
+                    try {{
+                        controller.awaitingServerStart = true;
+                        controller.pendingInitialStartDelayMs = 2000;
+                        setDebug('start primed: ' + (targetIndex + 1));
+                        if (typeof synth.cancel === 'function') {{
+                            synth.cancel();
+                        }}
+                        if (typeof synth.resume === 'function') {{
+                            synth.resume();
+                        }}
+                        var primer = new SpeechSynthesisUtterance('.');
+                        primer.volume = 0;
+                        primer.rate = 1;
+                        synth.speak(primer);
+                        return;
+                    }} catch (error) {{
+                        controller.awaitingServerStart = false;
+                        controller.pendingInitialStartDelayMs = 0;
+                    }}
                 }}
-                controller.pendingManualSpeakIndex = targetIndex;
-                speakLine(targetIndex);
+
+                startImmediately(targetIndex);
             }}
 
             function stepAdvanceFromGesture() {{
@@ -5776,10 +5843,14 @@ def render_story_start_unlock_handler(
                 controller.queuedNextIndex = null;
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
+                controller.awaitingServerStart = false;
+                controller.pendingInitialStartDelayMs = 0;
                 controller.dialogMaleVoice = null;
                 controller.dialogFemaleVoice = null;
                 controller.dialogFirstSpeaker = null;
             }} else if (controller.storyRunToken !== config.storyRunToken) {{
+                var wasAwaitingServerStart = !!controller.awaitingServerStart;
+                var preservedInitialStartDelayMs = controller.pendingInitialStartDelayMs || 0;
                 var preservedIndex = typeof controller.localIndex === 'number'
                     ? controller.localIndex
                     : config.serverIndex;
@@ -5792,6 +5863,8 @@ def render_story_start_unlock_handler(
                 controller.pendingManualSpeakIndex = null;
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
+                controller.awaitingServerStart = wasAwaitingServerStart && !!config.running;
+                controller.pendingInitialStartDelayMs = controller.awaitingServerStart ? preservedInitialStartDelayMs : 0;
                 controller.preserveLocalIndexOnRestart = !!config.running;
                 controller.localIndex = (config.running && controller.active)
                     ? preservedIndex
@@ -5812,6 +5885,7 @@ def render_story_start_unlock_handler(
             controller.serverIndex = config.serverIndex;
             controller.autoAdvance = config.autoAdvance;
             controller.delayMs = config.delayMs;
+            controller.initialRenderDelayMs = config.initialRenderDelayMs;
             controller.resumeNext = config.resumeNext;
             controller.dialogMode = config.dialogMode;
             controller.repeatSpanish = config.repeatSpanish;
@@ -5839,6 +5913,8 @@ def render_story_start_unlock_handler(
             attachHandler('.st-key-storynext_wrap button', '_storyMobileNextHandler', nextFromGesture);
 
             if (!config.running) {{
+                controller.awaitingServerStart = false;
+                controller.pendingInitialStartDelayMs = 0;
                 if (!controller.active) {{
                     controller.localIndex = config.serverIndex;
                 }} else if (typeof controller.pausedDisplayIndex === 'number') {{
@@ -5850,20 +5926,25 @@ def render_story_start_unlock_handler(
             renderLocalStoryViewStable(controller.localIndex);
             setDebug('ready: ' + (controller.localIndex + 1) + ' running=' + config.running + ' auto=' + controller.autoAdvance);
 
-            if (config.running && !controller.active && !controller.isSpeaking) {{
+            if (config.running && (controller.awaitingServerStart || !controller.active) && !controller.isSpeaking) {{
                 controller.active = true;
                 controller.running = true;
+                controller.awaitingServerStart = false;
                 controller.preserveLocalIndexOnRestart = false;
                 controller.pausedDisplayIndex = null;
                 controller.queuedNextIndex = null;
                 controller.pendingManualSpeakIndex = null;
                 setDebug('restart run: ' + (controller.localIndex + 1));
-                if (controller.autoAdvance) {{
-                    queueAutoFrom(controller.localIndex);
-                }} else {{
-                    controller.pendingManualSpeakIndex = controller.localIndex;
-                    speakLine(controller.localIndex);
-                }}
+                runAfterRenderDelay(function() {{
+                    controller.pendingInitialStartDelayMs = 0;
+                    if (!controller.running) return;
+                    if (controller.autoAdvance) {{
+                        queueAutoFrom(controller.localIndex);
+                    }} else {{
+                        controller.pendingManualSpeakIndex = controller.localIndex;
+                        speakLine(controller.localIndex);
+                    }}
+                }});
                 return;
             }}
 
@@ -6188,12 +6269,13 @@ def render_story_auto_advance(delay_seconds):
     )
 
 
-def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialog_mode=False, repeat_spanish=False):
+def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialog_mode=False, repeat_spanish=False, render_delay_seconds=0):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
     story_index = st.session_state.index
     story_run_token = st.session_state.story_run_token
     delay_ms = max(int(delay_seconds * 1000), 0)
+    render_delay_ms = max(int(render_delay_seconds * 1000), 0)
     last_story_index = max(len(st.session_state.order) - 1, 0)
     components.html(
         f"""
@@ -6212,6 +6294,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
             var storyRunToken = {story_run_token};
             var autoAdvance = {str(auto_advance).lower()};
             var delayMs = {delay_ms};
+            var renderDelayMs = {render_delay_ms};
             var lastStoryIndex = {last_story_index};
             var dialogMode = {str(dialog_mode).lower()};
             var repeatSpanish = {str(repeat_spanish).lower()};
@@ -6601,8 +6684,34 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
                 speakPass();
             }}
 
+            function startSpeechAfterRenderDelay(runSpeech) {{
+                var execute = function() {{
+                    if (renderDelayMs > 0) {{
+                        window.setTimeout(runSpeech, renderDelayMs);
+                    }} else {{
+                        runSpeech();
+                    }}
+                }};
+
+                if (typeof parentWindow.requestAnimationFrame === 'function') {{
+                    parentWindow.requestAnimationFrame(function() {{
+                        parentWindow.requestAnimationFrame(execute);
+                    }});
+                    return;
+                }}
+
+                if (typeof window.requestAnimationFrame === 'function') {{
+                    window.requestAnimationFrame(function() {{
+                        window.requestAnimationFrame(execute);
+                    }});
+                    return;
+                }}
+
+                window.setTimeout(execute, 0);
+            }}
+
             if (synth.getVoices && synth.getVoices().length) {{
-                speakNow();
+                startSpeechAfterRenderDelay(speakNow);
                 return;
             }}
 
@@ -6610,7 +6719,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
             function handleVoicesChanged() {{
                 if (handled) return;
                 handled = true;
-                speakNow();
+                startSpeechAfterRenderDelay(speakNow);
             }}
 
             if (typeof synth.addEventListener === 'function') {{
@@ -6831,6 +6940,7 @@ def render_story_view():
             resume_next=st.session_state.story_resume_next,
             dialog_mode=dialog_mode,
             repeat_spanish=dialog_mode and st.session_state.story_repeat_spanish_on,
+            initial_render_delay_seconds=1.0,
         )
 
     if not st.session_state.story_started:
@@ -6915,6 +7025,7 @@ def render_story_view():
             delay_seconds=story_pause_delay,
             dialog_mode=dialog_mode,
             repeat_spanish=dialog_mode and st.session_state.story_repeat_spanish_on,
+            render_delay_seconds=1.0,
         )
 
     if st.session_state.story_playback_mode == "stop on every line" and st.session_state.story_running:

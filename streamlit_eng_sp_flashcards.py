@@ -8059,6 +8059,90 @@ def render_regular_auto_mode_cleanup():
     )
 
 
+def render_browser_audio_cleanup():
+    components.html(
+        """
+        <script>
+        (function() {
+            var parentWindow = window.parent;
+            var doc = parentWindow.document;
+            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
+            var debugEl = doc.getElementById('story-mobile-debug');
+            var bindings = [
+                ['.st-key-storystart_wrap button', '_storyMobileStartHandler'],
+                ['.st-key-storypause_wrap button', '_storyMobilePauseHandler'],
+                ['.st-key-storystop_wrap button', '_storyMobileStopHandler'],
+                ['.st-key-storynext_wrap button', '_storyMobileNextHandler'],
+            ];
+            var eventNames = ['click', 'touchend'];
+            var storyController = doc._storyMobileController;
+            var regularController = doc._regularAutoController;
+
+            bindings.forEach(function(binding) {
+                var element = doc.querySelector(binding[0]);
+                var handler = doc[binding[1]];
+                if (!element || !handler) return;
+                eventNames.forEach(function(eventName) {
+                    element.removeEventListener(eventName, handler, true);
+                });
+                doc[binding[1]] = null;
+            });
+
+            if (storyController) {
+                if (storyController.advanceTimer) {
+                    clearTimeout(storyController.advanceTimer);
+                    storyController.advanceTimer = null;
+                }
+                if (storyController.advanceRetryTimer) {
+                    clearInterval(storyController.advanceRetryTimer);
+                    storyController.advanceRetryTimer = null;
+                }
+                if (storyController.queueToken) {
+                    storyController.queueToken += 1;
+                }
+                storyController.running = false;
+                storyController.active = false;
+                storyController.isSpeaking = false;
+                storyController.speakingKey = null;
+                storyController.queuedNextIndex = null;
+                storyController.pendingManualSpeakIndex = null;
+                storyController.resumeTargetIndex = null;
+                storyController.pendingInitialStartDelayMs = 0;
+                storyController.awaitingServerStart = false;
+            }
+
+            if (regularController && regularController.timerIds) {
+                regularController.timerIds.forEach(function(timerId) {
+                    parentWindow.clearTimeout(timerId);
+                });
+                regularController.timerIds = [];
+            }
+            if (regularController) {
+                regularController.phaseKey = null;
+            }
+
+            doc._storyPauseRequested = null;
+            doc._storyPauseResumeState = null;
+            doc._storyPauseCaptureKey = null;
+
+            if (synth) {
+                try {
+                    synth.cancel();
+                } catch (error) {
+                }
+            }
+
+            if (debugEl) {
+                debugEl.style.display = 'block';
+                debugEl.textContent = 'DEBUG: inactive';
+            }
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
 def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_after_seconds, preferred_gender, repeat_spanish, cue_prompt, should_speak=True, cue_before_speech=False):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
@@ -8870,6 +8954,7 @@ def restart_mistakes_only():
 # ========================================================================
 
 if st.session_state.final_exit:
+    render_browser_audio_cleanup()
     goodbye_data_uri = goodbye_image_data_uri()
     goodbye_image_markup = (
         f"<div class='exit-image-wrap'><img src='{goodbye_data_uri}' alt='Goodbye axolotl' class='exit-image' /></div>"
@@ -8898,6 +8983,7 @@ if st.session_state.final_exit:
 # ========================================================================
 
 if st.session_state.selected_csv is None:
+    render_browser_audio_cleanup()
     render_header()
     render_menu()
     if st.session_state.menu_open:
@@ -9017,6 +9103,7 @@ if is_playback_deck(st.session_state.selected_csv):
 # ========================================================================
 
 if st.session_state.quit_requested:
+    render_browser_audio_cleanup()
     render_header(summary_mode=True)
     render_menu()
     st.markdown("<div class='summary-title'>Session Summary</div>", unsafe_allow_html=True)
