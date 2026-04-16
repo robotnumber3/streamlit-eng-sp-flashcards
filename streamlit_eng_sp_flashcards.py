@@ -56,6 +56,7 @@ def configured_setting(name):
 
 SUPABASE_URL = configured_setting("SUPABASE_URL")
 SUPABASE_ANON_KEY = configured_setting("SUPABASE_ANON_KEY")
+SUPABASE_SERVICE_ROLE_KEY = configured_setting("SUPABASE_SERVICE_ROLE_KEY")
 
 PERSON_LABELS = {
     "miguel": "Miguel",
@@ -75,9 +76,10 @@ FAVORITES_DECK_ORDER = [FAVORITES_DECK_VALUES["miguel"], FAVORITES_DECK_VALUES["
 
 @st.cache_resource(show_spinner=False)
 def get_supabase_client():
-    if create_client is None or not SUPABASE_URL or not SUPABASE_ANON_KEY:
+    supabase_key = SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY
+    if create_client is None or not SUPABASE_URL or not supabase_key:
         return None
-    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+    return create_client(SUPABASE_URL, supabase_key)
 
 
 def cloud_sync_enabled():
@@ -219,11 +221,49 @@ def filename_matches_picker_category(filename, category):
     return filename_contains_any(normalized_name, category["tokens"])
 
 
+def story_title_row_present_in_file(filename):
+    if (
+        not filename
+        or is_review_deck(filename)
+        or is_favorites_deck(filename)
+        or filename_contains_any(filename, ["dialog"])
+        or not filename_contains_any(filename, ["story"])
+    ):
+        return False
+
+    csv_path = os.path.join(CSV_FOLDER, filename)
+    try:
+        with open(csv_path, "r", encoding="utf-8") as handle:
+            first_line = handle.readline()
+        separator = ";" if ";" in first_line else ","
+        df = pd.read_csv(csv_path, sep=separator, nrows=1)
+        df.columns = [str(column).strip() for column in df.columns]
+        if df.empty:
+            return False
+
+        lower_columns = {column.lower(): column for column in df.columns}
+        id_column = lower_columns.get("id")
+        word_column = lower_columns.get("word")
+        if word_column is None:
+            content_columns = [column for column in df.columns if column != id_column]
+            if not content_columns:
+                return False
+            word_column = content_columns[0]
+
+        first_english = str(df.iloc[0][word_column]).strip()
+        return first_english.lower().startswith("title:")
+    except Exception:
+        return False
+
+
 def csv_data_row_count(filename):
     file_path = os.path.join(CSV_FOLDER, filename)
     try:
         with open(file_path, encoding="utf-8", errors="ignore") as handle:
-            return max(sum(1 for _ in handle) - 1, 0)
+            row_count = max(sum(1 for _ in handle) - 1, 0)
+        if story_title_row_present_in_file(filename):
+            row_count = max(row_count - 1, 0)
+        return row_count
     except Exception:
         return 0
 
@@ -1684,21 +1724,33 @@ def reset_study_state(reset_selected=True):
     st.session_state.story_resume_next = False
 
 
+def story_title_prefix_present():
+    if not is_story_deck(st.session_state.selected_csv) or not st.session_state.cards:
+        return False
+    first_english = str(st.session_state.cards[0].get("word", "")).strip()
+    return first_english.lower().startswith("title:")
+
+
+def story_playable_card_indexes():
+    start_index = 1 if story_title_prefix_present() else 0
+    return list(range(start_index, len(st.session_state.cards)))
+
+
 def rebuild_story_order():
-    st.session_state.order = list(range(len(st.session_state.cards)))
+    st.session_state.order = story_playable_card_indexes()
     if st.session_state.story_random_on:
         random.shuffle(st.session_state.order)
 
 
 def rebuild_story_order_preserving_current():
-    if not st.session_state.cards:
+    if not st.session_state.order:
         st.session_state.order = []
         st.session_state.index = 0
         return
 
     current_position = min(st.session_state.index, max(len(st.session_state.order) - 1, 0))
     current_card = current_card_index() if st.session_state.order else 0
-    remaining = [idx for idx in range(len(st.session_state.cards)) if idx != current_card]
+    remaining = [idx for idx in story_playable_card_indexes() if idx != current_card]
 
     if st.session_state.story_random_on:
         random.shuffle(remaining)
@@ -1728,10 +1780,10 @@ def reset_story_playback():
 
 
 def finish_story():
-    if not st.session_state.cards:
+    if not st.session_state.order:
         reset_story_playback()
         return
-    st.session_state.index = max(len(st.session_state.cards) - 1, 0)
+    st.session_state.index = max(len(st.session_state.order) - 1, 0)
     st.session_state.story_started = True
     st.session_state.story_running = False
     st.session_state.story_finished = True
@@ -3198,7 +3250,22 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     letter-spacing: 0.06em; text-transform: uppercase;
 }}
 .story-title-block {{
-    padding: 0.5rem 0 0.22rem 0;
+    padding: 1.05rem 0 0.55rem 0;
+    text-align: center;
+}}
+.story-title-spanish {{
+    font-family: 'Fraunces', serif;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: {t['accent']};
+}}
+.story-title-english {{
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: {t['accent']};
 }}
 .story-option-row {{
     font-size: 0.95rem;
@@ -4503,9 +4570,22 @@ def current_story_card():
     return st.session_state.cards[current_card_index()]
 
 
+def story_title_card():
+    if not story_title_prefix_present():
+        return None
+    return st.session_state.cards[0]
+
+
+def story_title_english_text():
+    title_card = story_title_card()
+    if title_card is None:
+        return ""
+    return re.sub(r"^title:\s*", "", str(title_card["word"]).strip(), flags=re.IGNORECASE)
+
+
 def advance_story_line():
     next_index = st.session_state.index + 1
-    if next_index >= len(st.session_state.cards):
+    if next_index >= len(st.session_state.order):
         finish_story()
         return
     st.session_state.index = next_index
@@ -5880,7 +5960,7 @@ def render_story_ignore_tap_handler():
 def render_story_auto_advance(delay_seconds):
     delay_ms = max(int(delay_seconds * 1000), 0)
     story_index = st.session_state.index
-    last_story_index = max(len(st.session_state.cards) - 1, 0)
+    last_story_index = max(len(st.session_state.order) - 1, 0)
     components.html(
         f"""
         <script>
@@ -5945,7 +6025,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
     story_index = st.session_state.index
     story_run_token = st.session_state.story_run_token
     delay_ms = max(int(delay_seconds * 1000), 0)
-    last_story_index = max(len(st.session_state.cards) - 1, 0)
+    last_story_index = max(len(st.session_state.order) - 1, 0)
     components.html(
         f"""
         <script>
@@ -6381,6 +6461,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
 def render_story_view():
     dialog_mode = current_playback_kind() == "dialog"
     story_card = current_story_card()
+    title_card = None if dialog_mode else story_title_card()
     sync_story_option_widget_state()
     display_mode = normalize_story_display_mode(st.session_state.story_display_mode)
     show_spanish = display_mode in {"spanish", "both"}
@@ -6553,6 +6634,16 @@ def render_story_view():
                     if st.button("♥︎", key="story_favorite_idle_btn", use_container_width=True, disabled=current_story_favorited):
                         add_current_story_line_to_favorites()
                         st.rerun()
+        if not st.session_state.story_started and title_card is not None:
+            title_spanish = html.escape(str(title_card["answer"]))
+            title_english = html.escape(story_title_english_text())
+            st.markdown(
+                "<div class='story-title-block'>"
+                f"<div class='story-title-spanish'>{title_spanish}</div>"
+                f"<div class='story-title-english'>{title_english}</div>"
+                "</div>",
+                unsafe_allow_html=True,
+            )
 
     if not audio_enabled:
         render_story_mobile_controller_cleanup()
@@ -8628,7 +8719,7 @@ scored_total  = st.session_state["score_actions"]
 # ========================================================================
 
 if is_playback_deck(st.session_state.selected_csv):
-    if st.session_state.index >= len(st.session_state.cards):
+    if st.session_state.index >= len(st.session_state.order):
         go_back_to_deck_picker()
         st.rerun()
 
