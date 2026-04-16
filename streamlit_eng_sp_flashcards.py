@@ -4912,10 +4912,12 @@ def render_story_start_unlock_handler(
     resume_next=False,
     dialog_mode=False,
     repeat_spanish=False,
+    initial_render_delay_seconds=0,
 ):
     spoken_lines = [strip_spoken_text(text) for text in story_lines]
     speech_rate = speech_rate_value()
     delay_ms = max(int(delay_seconds * 1000), 0)
+    initial_render_delay_ms = max(int(initial_render_delay_seconds * 1000), 0)
     story_key = st.session_state.selected_csv or ""
     story_run_token = st.session_state.story_run_token + (0 if running else 1)
     components.html(
@@ -4939,6 +4941,7 @@ def render_story_start_unlock_handler(
                 serverIndex: {current_index},
                 autoAdvance: {str(auto_advance).lower()},
                 delayMs: {delay_ms},
+                initialRenderDelayMs: {initial_render_delay_ms},
                 running: {str(running).lower()},
                 resumeNext: {str(resume_next).lower()},
                 dialogMode: {str(dialog_mode).lower()},
@@ -5048,6 +5051,25 @@ def render_story_start_unlock_handler(
                         renderLocalStoryView(index);
                     }}, delay);
                 }});
+            }}
+
+            function runAfterRenderDelay(callback) {{
+                function execute() {{
+                    if (controller.initialRenderDelayMs > 0) {{
+                        parentWindow.setTimeout(callback, controller.initialRenderDelayMs);
+                    }} else {{
+                        callback();
+                    }}
+                }}
+
+                if (typeof parentWindow.requestAnimationFrame === 'function') {{
+                    parentWindow.requestAnimationFrame(function() {{
+                        parentWindow.requestAnimationFrame(execute);
+                    }});
+                    return;
+                }}
+
+                parentWindow.setTimeout(execute, 0);
             }}
 
             function pickStandardVoice() {{
@@ -5634,14 +5656,9 @@ def render_story_start_unlock_handler(
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
                 controller.localIndex = targetIndex;
+                controller.awaitingServerStart = true;
                 renderLocalStoryViewStable(targetIndex);
-                setDebug('start gesture: ' + (targetIndex + 1));
-                if (controller.autoAdvance) {{
-                    queueAutoFrom(targetIndex);
-                    return;
-                }}
-                controller.pendingManualSpeakIndex = targetIndex;
-                speakLine(targetIndex);
+                setDebug('start queued: ' + (targetIndex + 1));
             }}
 
             function stepAdvanceFromGesture() {{
@@ -5780,6 +5797,7 @@ def render_story_start_unlock_handler(
                 controller.queuedNextIndex = null;
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
+                controller.awaitingServerStart = false;
                 controller.dialogMaleVoice = null;
                 controller.dialogFemaleVoice = null;
                 controller.dialogFirstSpeaker = null;
@@ -5796,6 +5814,7 @@ def render_story_start_unlock_handler(
                 controller.pendingManualSpeakIndex = null;
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
+                controller.awaitingServerStart = false;
                 controller.preserveLocalIndexOnRestart = !!config.running;
                 controller.localIndex = (config.running && controller.active)
                     ? preservedIndex
@@ -5816,6 +5835,7 @@ def render_story_start_unlock_handler(
             controller.serverIndex = config.serverIndex;
             controller.autoAdvance = config.autoAdvance;
             controller.delayMs = config.delayMs;
+            controller.initialRenderDelayMs = config.initialRenderDelayMs;
             controller.resumeNext = config.resumeNext;
             controller.dialogMode = config.dialogMode;
             controller.repeatSpanish = config.repeatSpanish;
@@ -5857,17 +5877,21 @@ def render_story_start_unlock_handler(
             if (config.running && !controller.active && !controller.isSpeaking) {{
                 controller.active = true;
                 controller.running = true;
+                controller.awaitingServerStart = false;
                 controller.preserveLocalIndexOnRestart = false;
                 controller.pausedDisplayIndex = null;
                 controller.queuedNextIndex = null;
                 controller.pendingManualSpeakIndex = null;
                 setDebug('restart run: ' + (controller.localIndex + 1));
-                if (controller.autoAdvance) {{
-                    queueAutoFrom(controller.localIndex);
-                }} else {{
-                    controller.pendingManualSpeakIndex = controller.localIndex;
-                    speakLine(controller.localIndex);
-                }}
+                runAfterRenderDelay(function() {{
+                    if (!controller.running) return;
+                    if (controller.autoAdvance) {{
+                        queueAutoFrom(controller.localIndex);
+                    }} else {{
+                        controller.pendingManualSpeakIndex = controller.localIndex;
+                        speakLine(controller.localIndex);
+                    }}
+                }});
                 return;
             }}
 
