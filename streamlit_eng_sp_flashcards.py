@@ -1,9 +1,11 @@
-# REV 57
-# streamlit_eng_sp_flashcards.py
 
+# --- ALL IMPORTS AT TOP ---
+import pathlib
 import streamlit as st
 import random
 import os
+import time
+import secrets
 import sys
 import json
 import base64
@@ -13,6 +15,154 @@ import re
 import pandas as pd
 import streamlit.components.v1 as components
 from streamlit.runtime.scriptrunner import get_script_run_ctx
+
+# Set page config FIRST
+st.set_page_config(page_title="Spanish Flashcards", page_icon="🌿", layout="wide")
+
+# REV 57
+# streamlit_eng_sp_flashcards.py
+
+# --- SIMPLE LOGIN SCREEN (before splash) ---
+LOGIN_FLOW_VERSION = 3
+LOGIN_HANDOFF_FILE = os.path.expanduser("~/.flashcards_login_handoff.json")
+LOGIN_HANDOFF_TTL_SECONDS = 300
+LOGIN_PASSWORDS = [
+    "141592",  # Replace with your real passwords
+    "3141",
+    "2565",
+    "62252",
+    "062252",
+    "2456",
+    "020456"
+]
+
+
+def save_login_handoff(token):
+    payload = {
+        "token": token,
+        "expires_at": int(time.time()) + LOGIN_HANDOFF_TTL_SECONDS,
+        "version": LOGIN_FLOW_VERSION,
+    }
+    try:
+        with open(LOGIN_HANDOFF_FILE, "w", encoding="utf-8") as handoff_file:
+            json.dump(payload, handoff_file)
+    except OSError:
+        return
+
+
+def clear_login_handoff():
+    try:
+        os.remove(LOGIN_HANDOFF_FILE)
+    except FileNotFoundError:
+        return
+    except OSError:
+        return
+
+
+def consume_login_handoff(token):
+    if not token:
+        return False
+    try:
+        with open(LOGIN_HANDOFF_FILE, encoding="utf-8") as handoff_file:
+            payload = json.load(handoff_file)
+    except (OSError, json.JSONDecodeError):
+        clear_login_handoff()
+        return False
+
+    is_valid = (
+        payload.get("version") == LOGIN_FLOW_VERSION
+        and payload.get("token") == token
+        and int(payload.get("expires_at", 0)) >= int(time.time())
+    )
+    clear_login_handoff()
+    return is_valid
+
+
+def clear_login_handoff_query_param():
+    if "auth_handoff" in st.query_params:
+        del st.query_params["auth_handoff"]
+
+
+def login_screen():
+    if st.session_state.get("is_logged_in"):
+        return  # Already logged in, do not show login fields
+    st.markdown(
+        """
+        <style>
+        .st-key-login_button_wrap .stButton,
+        .st-key-login_button_wrap .stButton > button {
+            width: 100%;
+        }
+        .st-key-login_button_wrap .stButton > button {
+            background: linear-gradient(135deg, #006847 0%, #008f5a 100%);
+            color: #ffffff;
+            border: 2px solid #00573b;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            min-height: 2.75rem;
+            box-shadow: 0 10px 20px rgba(0, 104, 71, 0.18);
+        }
+        .st-key-login_button_wrap .stButton > button:hover {
+            background: linear-gradient(135deg, #00573b 0%, #007e50 100%);
+            border-color: #00442d;
+            color: #ffffff;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    left_col, center_col, right_col = st.columns([1.2, 1, 1.2])
+    with center_col:
+        st.markdown(
+            """
+            <div style="text-align:center; margin-top:6rem; margin-bottom:2.5rem;">
+                <h1 style="font-size:2.2rem; margin:0; white-space:nowrap;">
+                    <span style="color:#006847;">Spanish</span>
+                    <span style="color:#ce1126;">Flashcards</span>
+                </h1>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        with st.container(key="login_password_wrap"):
+            input_left, input_center, input_right = st.columns([0.2, 3.2, 0.6])
+            with input_center:
+                pw = st.text_input("Password", type="password", key="login_password", help="Enter your password to continue.")
+        with st.container(key="login_button_wrap"):
+            button_left, button_center, button_right = st.columns([0.2, 3.2, 0.6])
+            with button_center:
+                login_btn = st.button("LOGIN", key="login_button", type="primary")
+    if login_btn or (pw and st.session_state.get("_login_attempted")):
+        st.session_state["_login_attempted"] = True
+        if pw in LOGIN_PASSWORDS:
+            handoff_token = secrets.token_urlsafe(24)
+            st.session_state["is_logged_in"] = True
+            st.session_state["login_handoff_token"] = handoff_token
+            st.session_state["_login_attempted"] = False
+            save_login_handoff(handoff_token)
+            st.rerun()
+        else:
+            st.error("Incorrect password. Please try again.")
+    st.stop()
+
+if st.session_state.get("login_flow_version") != LOGIN_FLOW_VERSION:
+    st.session_state["login_flow_version"] = LOGIN_FLOW_VERSION
+    st.session_state["_login_attempted"] = False
+
+if "is_logged_in" not in st.session_state:
+    st.session_state["is_logged_in"] = False
+if "login_handoff_token" not in st.session_state:
+    st.session_state["login_handoff_token"] = None
+
+handoff_token = st.query_params.get("auth_handoff")
+if not st.session_state.get("is_logged_in") and consume_login_handoff(handoff_token):
+    st.session_state["is_logged_in"] = True
+    st.session_state["login_handoff_token"] = None
+    clear_login_handoff_query_param()
+
+if not st.session_state.get("is_logged_in"):
+    login_screen()
 
 try:
     from supabase import create_client
@@ -27,7 +177,7 @@ if get_script_run_ctx() is None:
 # CONFIG
 # ------------------------------------------------------------------------
 
-st.set_page_config(page_title="Spanish Flashcards", page_icon="🌿", layout="wide")
+
 
 CSV_FOLDER = os.path.join(os.path.dirname(__file__), "csv")
 PREFS_FILE = os.path.expanduser("~/.flashcards_prefs.json")
@@ -77,6 +227,10 @@ FAVORITES_DECK_ORDER = [FAVORITES_DECK_VALUES["miguel"], FAVORITES_DECK_VALUES["
 @st.cache_resource(show_spinner=False)
 def get_supabase_client():
     supabase_key = SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY
+    if SUPABASE_SERVICE_ROLE_KEY:
+        print("[SUPABASE] Using service role key (SUPABASE_SERVICE_ROLE_KEY)")
+    else:
+        print("[SUPABASE] Using anon key (SUPABASE_ANON_KEY)")
     if create_client is None or not SUPABASE_URL or not supabase_key:
         return None
     return create_client(SUPABASE_URL, supabase_key)
@@ -1474,6 +1628,8 @@ def activate_person(person):
         return
     st.session_state.active_person = person
     st.session_state.person_selector_visible = False
+    st.session_state.login_handoff_token = None
+    clear_login_handoff()
     apply_person_prefs(person)
     clear_menu_destructive_confirms()
     save_prefs(current_prefs())
@@ -1482,6 +1638,7 @@ def activate_person(person):
 def clear_splash_query_action():
     if "splash_action" in st.query_params:
         del st.query_params["splash_action"]
+    clear_login_handoff_query_param()
 
 
 def handle_splash_action():
@@ -1524,9 +1681,14 @@ def render_splash_selector():
                 st.rerun()
         return
 
+    handoff_query = ""
+    if st.session_state.get("login_handoff_token"):
+        handoff_query = "&auth_handoff=" + html.escape(st.session_state["login_handoff_token"])
+
     polygon_markup = "".join(
         "<a href='?splash_action="
         + html.escape(action)
+        + handoff_query
         + "' target='_self' class='splash-link' aria-label='"
         + html.escape(action.title())
         + "'><polygon class='splash-hotspot' points='"
@@ -1692,6 +1854,7 @@ def visible_favorites_deck_values():
 
 
 def reset_study_state(reset_selected=True):
+    was_logged_in = st.session_state.get("is_logged_in", False)
     if reset_selected:
         st.session_state.selected_csv = None
     st.session_state.study_mode = None
@@ -1722,6 +1885,7 @@ def reset_study_state(reset_selected=True):
     st.session_state.story_finished = False
     st.session_state.story_run_token = 0
     st.session_state.story_resume_next = False
+    st.session_state["is_logged_in"] = was_logged_in
 
 
 def story_title_prefix_present():
