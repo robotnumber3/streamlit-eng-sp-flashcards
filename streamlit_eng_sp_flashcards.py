@@ -5054,9 +5054,14 @@ def render_story_start_unlock_handler(
             }}
 
             function runAfterRenderDelay(callback) {{
+                var effectiveDelayMs = controller.initialRenderDelayMs || 0;
+                if (isPhoneStoryMode()) {{
+                    effectiveDelayMs = Math.min(effectiveDelayMs, 60);
+                }}
+
                 function execute() {{
-                    if (controller.initialRenderDelayMs > 0) {{
-                        parentWindow.setTimeout(callback, controller.initialRenderDelayMs);
+                    if (effectiveDelayMs > 0) {{
+                        parentWindow.setTimeout(callback, effectiveDelayMs);
                     }} else {{
                         callback();
                     }}
