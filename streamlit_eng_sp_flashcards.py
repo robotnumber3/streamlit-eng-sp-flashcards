@@ -89,6 +89,15 @@ def login_screen():
     st.markdown(
         """
         <style>
+        .st-key-login_password_wrap,
+        .st-key-login_button_wrap {
+            width: min(100%, 14rem);
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .st-key-login_password_wrap [data-baseweb="input"] {
+            width: 100%;
+        }
         .st-key-login_button_wrap .stButton,
         .st-key-login_button_wrap .stButton > button {
             width: 100%;
@@ -126,13 +135,9 @@ def login_screen():
             unsafe_allow_html=True,
         )
         with st.container(key="login_password_wrap"):
-            input_left, input_center, input_right = st.columns([0.2, 3.2, 0.6])
-            with input_center:
-                pw = st.text_input("Password", type="password", key="login_password", help="Enter your password to continue.")
+            pw = st.text_input("Password", type="password", key="login_password", help="Enter your password to continue.")
         with st.container(key="login_button_wrap"):
-            button_left, button_center, button_right = st.columns([0.2, 3.2, 0.6])
-            with button_center:
-                login_btn = st.button("LOGIN", key="login_button", type="primary")
+            login_btn = st.button("LOGIN", key="login_button", type="primary", use_container_width=True)
     if login_btn or (pw and st.session_state.get("_login_attempted")):
         st.session_state["_login_attempted"] = True
         if pw in LOGIN_PASSWORDS:
