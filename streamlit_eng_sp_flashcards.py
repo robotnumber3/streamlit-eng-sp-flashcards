@@ -5054,8 +5054,11 @@ def render_story_start_unlock_handler(
             }}
 
             function runAfterRenderDelay(callback) {{
-                var effectiveDelayMs = controller.initialRenderDelayMs || 0;
-                if (isPhoneStoryMode()) {{
+                var explicitStartDelayMs = controller.pendingInitialStartDelayMs || 0;
+                var effectiveDelayMs = explicitStartDelayMs > 0
+                    ? explicitStartDelayMs
+                    : (controller.initialRenderDelayMs || 0);
+                if (isPhoneStoryMode() && explicitStartDelayMs <= 0) {{
                     effectiveDelayMs = Math.min(effectiveDelayMs, 60);
                 }}
 
@@ -5639,6 +5642,16 @@ def render_story_start_unlock_handler(
             }}
 
             function startFromGesture() {{
+                function startImmediately(index) {{
+                    setDebug('start gesture: ' + (index + 1));
+                    if (controller.autoAdvance) {{
+                        queueAutoFrom(index);
+                        return;
+                    }}
+                    controller.pendingManualSpeakIndex = index;
+                    speakLine(index);
+                }}
+
                 var now = Date.now();
                 if (controller.lastStartGestureAt && now - controller.lastStartGestureAt < 900) {{
                     return;
@@ -5668,13 +5681,30 @@ def render_story_start_unlock_handler(
                 controller.pausedDisplayIndex = null;
                 controller.localIndex = targetIndex;
                 renderLocalStoryViewStable(targetIndex);
-                setDebug('start gesture: ' + (targetIndex + 1));
-                if (controller.autoAdvance) {{
-                    queueAutoFrom(targetIndex);
-                    return;
+
+                if (startMode !== 'RESUME' && targetIndex === 0) {{
+                    try {{
+                        controller.awaitingServerStart = true;
+                        controller.pendingInitialStartDelayMs = 3000;
+                        setDebug('start primed: ' + (targetIndex + 1));
+                        if (typeof synth.cancel === 'function') {{
+                            synth.cancel();
+                        }}
+                        if (typeof synth.resume === 'function') {{
+                            synth.resume();
+                        }}
+                        var primer = new SpeechSynthesisUtterance('.');
+                        primer.volume = 0;
+                        primer.rate = 1;
+                        synth.speak(primer);
+                        return;
+                    }} catch (error) {{
+                        controller.awaitingServerStart = false;
+                        controller.pendingInitialStartDelayMs = 0;
+                    }}
                 }}
-                controller.pendingManualSpeakIndex = targetIndex;
-                speakLine(targetIndex);
+
+                startImmediately(targetIndex);
             }}
 
             function stepAdvanceFromGesture() {{
@@ -5814,11 +5844,13 @@ def render_story_start_unlock_handler(
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
                 controller.awaitingServerStart = false;
+                controller.pendingInitialStartDelayMs = 0;
                 controller.dialogMaleVoice = null;
                 controller.dialogFemaleVoice = null;
                 controller.dialogFirstSpeaker = null;
             }} else if (controller.storyRunToken !== config.storyRunToken) {{
                 var wasAwaitingServerStart = !!controller.awaitingServerStart;
+                var preservedInitialStartDelayMs = controller.pendingInitialStartDelayMs || 0;
                 var preservedIndex = typeof controller.localIndex === 'number'
                     ? controller.localIndex
                     : config.serverIndex;
@@ -5832,6 +5864,7 @@ def render_story_start_unlock_handler(
                 controller.resumeTargetIndex = null;
                 controller.pausedDisplayIndex = null;
                 controller.awaitingServerStart = wasAwaitingServerStart && !!config.running;
+                controller.pendingInitialStartDelayMs = controller.awaitingServerStart ? preservedInitialStartDelayMs : 0;
                 controller.preserveLocalIndexOnRestart = !!config.running;
                 controller.localIndex = (config.running && controller.active)
                     ? preservedIndex
@@ -5881,6 +5914,7 @@ def render_story_start_unlock_handler(
 
             if (!config.running) {{
                 controller.awaitingServerStart = false;
+                controller.pendingInitialStartDelayMs = 0;
                 if (!controller.active) {{
                     controller.localIndex = config.serverIndex;
                 }} else if (typeof controller.pausedDisplayIndex === 'number') {{
@@ -5902,6 +5936,7 @@ def render_story_start_unlock_handler(
                 controller.pendingManualSpeakIndex = null;
                 setDebug('restart run: ' + (controller.localIndex + 1));
                 runAfterRenderDelay(function() {{
+                    controller.pendingInitialStartDelayMs = 0;
                     if (!controller.running) return;
                     if (controller.autoAdvance) {{
                         queueAutoFrom(controller.localIndex);
