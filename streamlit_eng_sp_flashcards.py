@@ -9416,7 +9416,7 @@ def render_progress_screen():
         "<div class='title-big-sub progress-subtitle'>12-month learned cards history</div>"
         "</div>"
         "<style>"
-        ".progress-screen { width: 100%; text-align: center; padding: 1.8rem 0 0.2rem 0; }"
+        ".progress-screen { width: 100%; text-align: center; padding: 0.75rem 0 0.1rem 0; }"
         f".progress-title {{ display: block; color: {progress_accent_color}; margin-bottom: 0.3rem; }}"
         ".progress-subtitle { display: block; margin-top: 0; }"
         ".progress-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem 1rem; margin: 1.25rem 0 0.9rem 0; }"
@@ -9431,6 +9431,15 @@ def render_progress_screen():
         ".st-key-progress_chart_inner_wrap [data-testid='stVerticalBlockBorderWrapper'] { display: block !important; width: 100% !important; max-width: 100% !important; border: none !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; }"
         ".st-key-progress_chart_inner_wrap [data-testid='stImage'], .st-key-progress_chart_inner_wrap [data-testid='stPyplot'] { width: 100% !important; max-width: 100% !important; margin: 0 auto !important; overflow: hidden; display: block; }"
         ".st-key-progress_chart_inner_wrap img, .st-key-progress_chart_inner_wrap canvas { width: 100% !important; max-width: 100% !important; display: block; margin: 0 auto; }"
+        ".st-key-progress_btn_row_wrap { width: 100%; margin: 0.7rem 0 0 0; }"
+        ".st-key-progress_btn_row_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 23rem); margin: 0 auto; padding: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; }"
+        ".st-key-progress_btn_row_wrap [data-testid='stHorizontalBlock'] { display: flex !important; flex-wrap: nowrap !important; gap: 0.7rem !important; justify-content: center !important; width: 100% !important; }"
+        ".st-key-progress_btn_row_wrap [data-testid='stColumn'] { flex: 1 1 0 !important; min-width: 0 !important; }"
+        ".st-key-progress_btn_row_wrap [data-testid='stColumn'] > div { width: 100% !important; }"
+        ".st-key-progress_back_wrap, .st-key-progress_restart_wrap { width: 100%; margin: 0; }"
+        ".st-key-progress_back_wrap [data-testid='stVerticalBlockBorderWrapper'], .st-key-progress_restart_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: 100%; margin: 0 auto; padding: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; }"
+        ".st-key-progress_back_wrap .stButton, .st-key-progress_back_wrap .stButton > button, .st-key-progress_restart_wrap .stButton, .st-key-progress_restart_wrap .stButton > button { width: 100%; }"
+        "@media (max-width: 767px) { .progress-screen { padding-top: 0.35rem; } .st-key-progress_btn_row_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 22rem); } }"
         "</style>",
         unsafe_allow_html=True,
     )
@@ -9525,30 +9534,40 @@ if st.session_state.final_exit:
         + "<div class='title-big-sub exit-subtitle'>SIGUE PRACTICANDO TODOS LOS DÍAS</div>"
         "</div>"
         "<style>"
-        ".exit-screen { width: 100%; text-align: center; padding: 2.2rem 0 0.8rem 0; }"
-        ".exit-title { display: block; color: #ce1126; }"
-        ".exit-image-wrap { width: 100%; margin: 1rem auto 1rem auto; padding: 0.25rem 0 0.2rem; box-sizing: border-box; max-width: none; }"
+        ".exit-screen { width: 100%; text-align: center; padding: 0.8rem 0 0.35rem 0; }"
+        ".exit-title { display: block; color: #ce1126; margin-bottom: 0.25rem; }"
+        ".exit-image-wrap { width: 100%; margin: 0.4rem auto 0.55rem auto; padding: 0.1rem 0 0; box-sizing: border-box; max-width: none; }"
         ".exit-image { display: block; width: 100%; height: auto; margin: 0 auto; }"
         ".exit-subtitle { display: block; margin-top: 0; }"
-        ".st-key-exit_restart_wrap { width: 100%; margin: 0.9rem 0 0 0; }"
-        ".st-key-exit_restart_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 10rem); margin: 0 auto; padding: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; }"
+        ".st-key-exit_btn_row_wrap { width: 100%; margin: 0.65rem 0 0 0; }"
+        ".st-key-exit_btn_row_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 23rem); margin: 0 auto; padding: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; }"
+        ".st-key-exit_btn_row_wrap [data-testid='stHorizontalBlock'] { display: flex !important; flex-wrap: nowrap !important; gap: 0.7rem !important; justify-content: center !important; width: 100% !important; }"
+        ".st-key-exit_btn_row_wrap [data-testid='stColumn'] { flex: 1 1 0 !important; min-width: 0 !important; }"
+        ".st-key-exit_btn_row_wrap [data-testid='stColumn'] > div { width: 100% !important; }"
+        ".st-key-exit_restart_wrap,"
+        ".st-key-exit_progress_wrap { width: 100%; margin: 0; }"
+        ".st-key-exit_restart_wrap [data-testid='stVerticalBlockBorderWrapper'],"
         ".st-key-exit_restart_wrap .stButton,"
         ".st-key-exit_restart_wrap .stButton > button { width: 100%; }"
         ".st-key-exit_restart_wrap .stButton > button { background: linear-gradient(135deg, #006847 0%, #008f5a 100%); color: #ffffff; border: 2px solid #00573b; border-radius: 0.75rem; font-weight: 700; letter-spacing: 0.08em; min-height: 2.75rem; box-shadow: 0 10px 20px rgba(0, 104, 71, 0.18); }"
         ".st-key-exit_restart_wrap .stButton > button:hover { background: linear-gradient(135deg, #00573b 0%, #007e50 100%); border-color: #00442d; color: #ffffff; }"
-        ".st-key-exit_progress_wrap { width: 100%; margin: 0.7rem 0 0 0; }"
-        ".st-key-exit_progress_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 10rem); margin: 0 auto; padding: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; }"
+        ".st-key-exit_progress_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: 100%; margin: 0 auto; padding: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; }"
         ".st-key-exit_progress_wrap .stButton,"
         ".st-key-exit_progress_wrap .stButton > button { width: 100%; }"
-        ".st-key-exit_progress_wrap .stButton > button { background: transparent; color: #e8e4dc; border: 2px solid #008fb3; border-radius: 0.75rem; font-weight: 700; letter-spacing: 0.08em; min-height: 2.6rem; }"
+        ".st-key-exit_progress_wrap .stButton > button { background: transparent; color: #e8e4dc; border: 2px solid #008fb3; border-radius: 0.75rem; font-weight: 700; letter-spacing: 0.08em; min-height: 2.75rem; }"
         ".st-key-exit_progress_wrap .stButton > button:hover { background: rgba(255,255,255,0.03); color: #ffffff; border-color: #00a9d4; }"
+        "@media (max-width: 767px) { .exit-screen { padding-top: 0.35rem; } .exit-image-wrap { margin-top: 0.25rem; margin-bottom: 0.45rem; } .st-key-exit_btn_row_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 22rem); } }"
         "</style>",
         unsafe_allow_html=True,
     )
-    with st.container(key="exit_progress_wrap"):
-        st.button("PROGRESS", key="exit_progress_btn", on_click=open_progress_screen)
-    with st.container(key="exit_restart_wrap"):
-        st.button("RESTART", key="exit_restart_btn", on_click=restart_to_splash)
+    with st.container(key="exit_btn_row_wrap"):
+        progress_col, restart_col = st.columns(2)
+        with progress_col:
+            with st.container(key="exit_progress_wrap"):
+                st.button("PROGRESS", key="exit_progress_btn", on_click=open_progress_screen, use_container_width=True)
+        with restart_col:
+            with st.container(key="exit_restart_wrap"):
+                st.button("RESTART", key="exit_restart_btn", on_click=restart_to_splash, use_container_width=True)
     st.stop()
 
 # ========================================================================
