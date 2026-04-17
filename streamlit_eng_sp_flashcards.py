@@ -9431,15 +9431,10 @@ def render_progress_screen():
         ".st-key-progress_chart_inner_wrap [data-testid='stVerticalBlockBorderWrapper'] { display: block !important; width: 100% !important; max-width: 100% !important; border: none !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; }"
         ".st-key-progress_chart_inner_wrap [data-testid='stImage'], .st-key-progress_chart_inner_wrap [data-testid='stPyplot'] { width: 100% !important; max-width: 100% !important; margin: 0 auto !important; overflow: hidden; display: block; }"
         ".st-key-progress_chart_inner_wrap img, .st-key-progress_chart_inner_wrap canvas { width: 100% !important; max-width: 100% !important; display: block; margin: 0 auto; }"
-        ".st-key-progress_btn_row_wrap { width: 100%; margin: 0.7rem 0 0 0; }"
-        ".st-key-progress_btn_row_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 23rem); margin: 0 auto; padding: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; }"
-        ".st-key-progress_btn_row_wrap [data-testid='stHorizontalBlock'] { display: flex !important; flex-wrap: nowrap !important; gap: 0.7rem !important; justify-content: center !important; width: 100% !important; }"
-        ".st-key-progress_btn_row_wrap [data-testid='stColumn'] { flex: 1 1 0 !important; min-width: 0 !important; }"
-        ".st-key-progress_btn_row_wrap [data-testid='stColumn'] > div { width: 100% !important; }"
-        ".st-key-progress_back_wrap, .st-key-progress_restart_wrap { width: 100%; margin: 0; }"
-        ".st-key-progress_back_wrap [data-testid='stVerticalBlockBorderWrapper'], .st-key-progress_restart_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: 100%; margin: 0 auto; padding: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; }"
-        ".st-key-progress_back_wrap .stButton, .st-key-progress_back_wrap .stButton > button, .st-key-progress_restart_wrap .stButton, .st-key-progress_restart_wrap .stButton > button { width: 100%; }"
-        "@media (max-width: 767px) { .progress-screen { padding-top: 0.35rem; } .st-key-progress_btn_row_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 22rem); } }"
+        ".st-key-progress_back_wrap { width: 100%; margin: 0.7rem 0 0 0; }"
+        ".st-key-progress_back_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 11rem); margin: 0 auto; padding: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; }"
+        ".st-key-progress_back_wrap .stButton, .st-key-progress_back_wrap .stButton > button { width: 100%; }"
+        "@media (max-width: 767px) { .progress-screen { padding-top: 0.35rem; } .st-key-progress_back_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 11rem); } }"
         "</style>",
         unsafe_allow_html=True,
     )
@@ -9496,14 +9491,8 @@ def render_progress_screen():
             unsafe_allow_html=True,
         )
 
-    with st.container(key="progress_btn_row_wrap"):
-        back_col, restart_col = st.columns(2)
-        with back_col:
-            with st.container(key="progress_back_wrap"):
-                st.button("BACK", key="progress_back_btn", on_click=close_progress_screen, use_container_width=True)
-        with restart_col:
-            with st.container(key="progress_restart_wrap"):
-                st.button("RESTART", key="progress_restart_btn", on_click=restart_to_splash, use_container_width=True)
+    with st.container(key="progress_back_wrap"):
+        st.button("BACK", key="progress_back_btn", on_click=close_progress_screen, use_container_width=True)
 
 
 if st.session_state.active_person in PERSON_LABELS and not st.session_state.person_selector_visible:
