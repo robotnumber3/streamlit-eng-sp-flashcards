@@ -9514,16 +9514,18 @@ def render_progress_screen():
         ax.set_yticks(y_ticks)
         ax.yaxis.tick_right()
         ax.yaxis.set_label_position("right")
-        ax.tick_params(axis="y", labelsize=7.5, colors="#5f6880", length=0, pad=3, labelright=True, labelleft=False)
+        ax.tick_params(axis="y", labelsize=7.5, colors="#5f6880", length=0, pad=3, labelright=True, labelleft=True)
         ax.tick_params(axis="x", length=0)
         ax.grid(axis="y", color="#d8deea", linewidth=0.8)
         ax.grid(axis="x", visible=False)
         for tick_label in ax.get_yticklabels():
             tick_label.set_fontweight("bold")
+        for tick_label in ax.get_yticklabels(minor=False):
+            tick_label.set_fontweight("bold")
         for spine_name in ["top", "right", "left", "bottom"]:
             ax.spines[spine_name].set_visible(False)
-        fig.text(0.988, 0.52, "# Trackable Cards Learned", rotation=270, va="center", ha="center", fontsize=8, color="#4f5568", fontweight="bold")
-        fig.subplots_adjust(left=0.035, right=0.93, bottom=0.30, top=0.98)
+        fig.text(0.018, 0.52, "# Trackable Cards Learned", rotation=90, va="center", ha="center", fontsize=8, color="#4f5568", fontweight="bold")
+        fig.subplots_adjust(left=0.055, right=0.93, bottom=0.30, top=0.98)
 
         st.markdown("<div class='progress-chart-shell'>", unsafe_allow_html=True)
         with st.container(key="progress_chart_wrap"):
