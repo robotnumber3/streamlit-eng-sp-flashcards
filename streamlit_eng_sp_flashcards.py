@@ -239,6 +239,17 @@ MONTHLY_PROGRESS_HISTORY_TABLE = "monthly_progress_history"
 SPLASH_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "axolotl_david_miguel.png")
 GOODBYE_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "axolotl_waving_goodbye.png")
 SPLASH_IMAGE_DIMENSION = 1600
+TRACKABLE_COUNT_EXCLUDED_FILENAME_TOKENS = [
+    "text",
+    "sentence",
+    "sentences",
+    "conjugated",
+    "situation",
+    "situations",
+    "dialog",
+    "story",
+    "stories",
+]
 SPLASH_ACTIONS = {
     "david": [(285, 575), (727, 575), (727, 1387), (282, 1387)],
     "miguel": [(925, 575), (1363, 575), (1363, 1387), (925, 1387)],
@@ -429,6 +440,10 @@ def normalized_filename(value):
 def filename_contains_any(value, tokens):
     filename = normalized_filename(value)
     return any(token.lower() in filename for token in tokens)
+
+
+def exclude_from_trackable_count(filename):
+    return filename_contains_any(filename, TRACKABLE_COUNT_EXCLUDED_FILENAME_TOKENS)
 
 
 def filename_matches_picker_category(filename, category):
@@ -664,8 +679,9 @@ def is_playback_deck(filename):
 def deck_completion_metadata(filename):
     deck_data = load_regular_deck(filename)
     valid_ids = [card["id"] for card in deck_data["cards"] if card.get("id")]
+    supports_completion = deck_data["supports_completion"] and not exclude_from_trackable_count(filename)
     return {
-        "supported": deck_data["supports_completion"],
+        "supported": supports_completion,
         "total": len(deck_data["cards"]),
         "valid_ids": valid_ids,
     }
