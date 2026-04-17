@@ -3643,6 +3643,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     gap: 0 !important;
     height: 100% !important;
 }}
+.st-key-initialize_all_decks_slot_wrap {{
+    height: 5.35rem !important;
+    min-height: 5.35rem !important;
+    max-height: 5.35rem !important;
+}}
 .st-key-clear_erase_review_confirm_wrap {{
     display: none !important;
 }}
@@ -3680,6 +3685,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-color: {t['danger']} !important;
     color: white !important;
     animation: destructiveConfirmPulse 1s ease-in-out infinite !important;
+}}
+@media (max-width: 767px) {{
+    .st-key-initialize_all_decks_slot_wrap {{
+        height: 5.9rem !important;
+        min-height: 5.9rem !important;
+        max-height: 5.9rem !important;
+    }}
 }}
 @keyframes destructiveConfirmPulse {{
     0%, 100% {{
