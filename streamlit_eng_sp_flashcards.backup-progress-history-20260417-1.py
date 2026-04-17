@@ -12,8 +12,6 @@ import base64
 import html
 import math
 import re
-from datetime import date, datetime
-import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit.components.v1 as components
 from streamlit.runtime.scriptrunner import get_script_run_ctx
@@ -83,18 +81,6 @@ def consume_login_handoff(token):
 def clear_login_handoff_query_param():
     if "auth_handoff" in st.query_params:
         del st.query_params["auth_handoff"]
-
-
-def ensure_login_handoff_token():
-    if not st.session_state.get("is_logged_in"):
-        return None
-    existing_token = st.session_state.get("login_handoff_token")
-    if existing_token:
-        return existing_token
-    handoff_token = secrets.token_urlsafe(24)
-    st.session_state["login_handoff_token"] = handoff_token
-    save_login_handoff(handoff_token)
-    return handoff_token
 
 
 def login_screen():
@@ -235,7 +221,6 @@ PREFS_FILE = os.path.expanduser("~/.flashcards_prefs.json")
 REVIEWS_FILE = os.path.expanduser("~/.flashcards_reviews.json")
 FAVORITES_FILE = os.path.expanduser("~/.flashcards_favorites.json")
 PROGRESS_FILE = os.path.expanduser("~/.flashcards_progress.json")
-MONTHLY_PROGRESS_HISTORY_TABLE = "monthly_progress_history"
 SPLASH_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "axolotl_david_miguel.png")
 GOODBYE_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "axolotl_waving_goodbye.png")
 SPLASH_IMAGE_DIMENSION = 1600
@@ -1364,260 +1349,6 @@ def save_progress_data(progress_data):
     save_progress_data_supabase(progress_data)
 
 
-def empty_monthly_progress_history():
-    return {person: {} for person in PERSON_LABELS}
-
-
-def normalize_month_key(value):
-    if value is None:
-        return None
-    try:
-        return datetime.strptime(str(value).strip(), "%Y-%m").strftime("%Y-%m")
-    except ValueError:
-        return None
-
-
-def month_start_from_key(month_key):
-    normalized = normalize_month_key(month_key)
-    if normalized is None:
-        return None
-    return datetime.strptime(normalized, "%Y-%m").date().replace(day=1)
-
-
-def month_key_from_date(value):
-    return value.strftime("%Y-%m")
-
-
-def add_months(value, months):
-    total_months = (value.year * 12 + (value.month - 1)) + months
-    year = total_months // 12
-    month = total_months % 12 + 1
-    return date(year, month, 1)
-
-
-def previous_month_start(value):
-    return add_months(value.replace(day=1), -1)
-
-
-def month_key_sort_key(month_key):
-    normalized = normalize_month_key(month_key)
-    if normalized is None:
-        return (0, 0)
-    year_text, month_text = normalized.split("-", 1)
-    return (int(year_text), int(month_text))
-
-
-def month_keys_between(start_month_key, end_month_key):
-    start_month = month_start_from_key(start_month_key)
-    end_month = month_start_from_key(end_month_key)
-    if start_month is None or end_month is None or start_month > end_month:
-        return []
-
-    month_keys = []
-    current_month = start_month
-    while current_month <= end_month:
-        month_keys.append(month_key_from_date(current_month))
-        current_month = add_months(current_month, 1)
-    return month_keys
-
-
-def load_monthly_progress_history():
-    empty = empty_monthly_progress_history()
-    client = get_supabase_client()
-    if client is None:
-        return empty
-    try:
-        response = client.table(MONTHLY_PROGRESS_HISTORY_TABLE).select(
-            "user_id,month_key,learned_count"
-        ).execute()
-    except Exception:
-        return empty
-
-    history = empty_monthly_progress_history()
-    for row in response.data or []:
-        user_id = str(row.get("user_id", "")).strip().lower()
-        if user_id not in PERSON_LABELS:
-            continue
-        month_key = normalize_month_key(row.get("month_key"))
-        if month_key is None:
-            continue
-        try:
-            learned_count = int(row.get("learned_count", 0))
-        except (TypeError, ValueError):
-            learned_count = 0
-        history[user_id][month_key] = max(learned_count, 0)
-    return history
-
-
-def save_monthly_progress_history_rows(rows):
-    if not rows:
-        return True
-    client = get_supabase_client()
-    if client is None:
-        return False
-
-    normalized_rows = []
-    for row in rows:
-        user_id = str(row.get("user_id", "")).strip().lower()
-        month_key = normalize_month_key(row.get("month_key"))
-        if user_id not in PERSON_LABELS or month_key is None:
-            continue
-        try:
-            learned_count = int(row.get("learned_count", 0))
-        except (TypeError, ValueError):
-            learned_count = 0
-        normalized_rows.append(
-            {
-                "user_id": user_id,
-                "month_key": month_key,
-                "learned_count": max(learned_count, 0),
-            }
-        )
-
-    if not normalized_rows:
-        return True
-
-    try:
-        client.table(MONTHLY_PROGRESS_HISTORY_TABLE).upsert(normalized_rows).execute()
-        return True
-    except Exception:
-        return False
-
-
-def delete_monthly_progress_history(person):
-    client = get_supabase_client()
-    if client is None:
-        return False
-    try:
-        client.table(MONTHLY_PROGRESS_HISTORY_TABLE).delete().eq("user_id", person).execute()
-        return True
-    except Exception:
-        return False
-
-
-def current_trackable_cards_count():
-    trackable_total = 0
-    for filename in csv_files:
-        metadata = deck_completion_metadata(filename)
-        if metadata["supported"]:
-            trackable_total += metadata["total"]
-    return trackable_total
-
-
-def learned_words_completed_count_value(person):
-    total_completed = 0
-    person_progress = st.session_state.progress_data.get(person, {})
-    for filename in csv_files:
-        metadata = deck_completion_metadata(filename)
-        if not metadata["supported"]:
-            continue
-        completed_ids = set(person_progress.get(filename, []))
-        if not completed_ids:
-            continue
-        total_completed += len(completed_ids & set(metadata["valid_ids"]))
-    return total_completed
-
-
-def ensure_monthly_progress_snapshot(person, today=None):
-    if person not in PERSON_LABELS:
-        return False
-
-    today = today or date.today()
-    target_month_key = month_key_from_date(previous_month_start(today))
-    current_learned_count = learned_words_completed_count_value(person)
-    person_history = dict(st.session_state.monthly_progress_history.get(person, {}))
-    if target_month_key in person_history:
-        existing_count = int(person_history.get(target_month_key, 0))
-        if existing_count == current_learned_count:
-            return False
-        replacement_row = {
-            "user_id": person,
-            "month_key": target_month_key,
-            "learned_count": current_learned_count,
-        }
-        if not save_monthly_progress_history_rows([replacement_row]):
-            return False
-        st.session_state.monthly_progress_history.setdefault(person, {})[target_month_key] = current_learned_count
-        return True
-
-    rows_to_insert = []
-    existing_month_keys = sorted(person_history.keys(), key=month_key_sort_key)
-
-    if not existing_month_keys:
-        rows_to_insert.append(
-            {
-                "user_id": person,
-                "month_key": target_month_key,
-                "learned_count": current_learned_count,
-            }
-        )
-    else:
-        latest_month_key = existing_month_keys[-1]
-        if month_key_sort_key(latest_month_key) >= month_key_sort_key(target_month_key):
-            return False
-        last_known_count = int(person_history.get(latest_month_key, 0))
-        missing_month_keys = month_keys_between(
-            month_key_from_date(add_months(month_start_from_key(latest_month_key), 1)),
-            target_month_key,
-        )
-        for month_key in missing_month_keys[:-1]:
-            rows_to_insert.append(
-                {
-                    "user_id": person,
-                    "month_key": month_key,
-                    "learned_count": last_known_count,
-                }
-            )
-        rows_to_insert.append(
-            {
-                "user_id": person,
-                "month_key": target_month_key,
-                "learned_count": current_learned_count,
-            }
-        )
-
-    if not save_monthly_progress_history_rows(rows_to_insert):
-        return False
-
-    updated_history = st.session_state.monthly_progress_history.setdefault(person, {})
-    for row in rows_to_insert:
-        updated_history[row["month_key"]] = int(row["learned_count"])
-    return bool(rows_to_insert)
-
-
-def progress_chart_rows(person, months=12, today=None):
-    today = today or date.today()
-    previous_month = previous_month_start(today)
-    live_learned_count = learned_words_completed_count_value(person)
-
-    rows = []
-    month_cursor = previous_month
-    for offset in range(months):
-        month_cursor = add_months(previous_month, offset)
-        month_key = month_key_from_date(month_cursor)
-        if offset == 0:
-            learned_count = live_learned_count
-        else:
-            learned_count = None
-
-        rows.append(
-            {
-                "Month": month_cursor.strftime("%b %y"),
-                "month_key": month_key,
-                "Learned Cards": learned_count,
-            }
-        )
-    return rows
-
-
-def open_progress_screen():
-    st.session_state.progress_screen_open = True
-
-
-def close_progress_screen():
-    st.session_state.progress_screen_open = False
-
-
 def completed_ids_for(person, filename):
     return set(st.session_state.progress_data.get(person, {}).get(filename, []))
 
@@ -1843,7 +1574,6 @@ prefs = load_prefs()
 review_data = load_review_data()
 favorites_data = load_favorites_data()
 progress_data = load_progress_data()
-monthly_progress_history = load_monthly_progress_history()
 startup_person = prefs["active_person"] if prefs["active_person"] in PERSON_LABELS else next(iter(PERSON_LABELS))
 active_person_prefs = prefs["person_settings"][startup_person]
 
@@ -1864,7 +1594,6 @@ defaults = {
     "review_data":    review_data,
     "favorites_data": favorites_data,
     "progress_data":  progress_data,
-    "monthly_progress_history": monthly_progress_history,
     "selected_csv":   None,
     "study_mode":     None,
     "cards":          [],
@@ -1883,7 +1612,6 @@ defaults = {
     "direction":      direction_for_mode(active_person_prefs["direction_mode"]),
     "quit_requested": False,
     "final_exit":     False,
-    "progress_screen_open": False,
     "loaded_csv":     None,
     "score_actions":  0,
     "score_correct":  0,
@@ -1961,7 +1689,6 @@ def activate_person(person):
     apply_person_prefs(person)
     clear_menu_destructive_confirms()
     save_prefs(current_prefs())
-    ensure_monthly_progress_snapshot(person)
 
 
 def clear_splash_query_action():
@@ -1995,7 +1722,6 @@ def polygon_points_attribute(points):
 
 def render_splash_selector():
     splash_data_uri = splash_image_data_uri()
-    handoff_token = ensure_login_handoff_token()
     if not splash_data_uri:
         with st.container(key="person_radio_wrap"):
             selected_person = st.radio(
@@ -2012,8 +1738,8 @@ def render_splash_selector():
         return
 
     handoff_query = ""
-    if handoff_token:
-        handoff_query = "&auth_handoff=" + html.escape(handoff_token)
+    if st.session_state.get("login_handoff_token"):
+        handoff_query = "&auth_handoff=" + html.escape(st.session_state["login_handoff_token"])
 
     polygon_markup = "".join(
         "<a href='?splash_action="
@@ -2156,7 +1882,17 @@ def person_has_regular_deck_progress(person):
 
 
 def learned_words_completed_count(person):
-    return learned_words_completed_count_value(person)
+    total_completed = 0
+    person_progress = st.session_state.progress_data.get(person, {})
+    for filename in csv_files:
+        metadata = deck_completion_metadata(filename)
+        if not metadata["supported"]:
+            continue
+        completed_ids = set(person_progress.get(filename, []))
+        if not completed_ids:
+            continue
+        total_completed += len(completed_ids & set(metadata["valid_ids"]))
+    return total_completed
 
 
 def learned_words_challenge_available(person):
@@ -2685,11 +2421,8 @@ def erase_favorites_deck(person):
 def initialize_all_decks(person):
     st.session_state.progress_data[person] = {}
     save_progress_data(st.session_state.progress_data)
-    if delete_monthly_progress_history(person):
-        st.session_state.monthly_progress_history[person] = {}
     clear_menu_destructive_confirms()
     st.session_state.menu_open = False
-    st.session_state.progress_screen_open = False
     if st.session_state.selected_csv and not is_review_deck(st.session_state.selected_csv):
         reset_study_state(reset_selected=True)
 
@@ -9129,8 +8862,8 @@ def render_menu():
 
         if has_regular_progress:
             initialize_wrap_key = "initialize_all_decks_confirm_wrap" if st.session_state.initialize_all_decks_confirm else "initialize_all_decks_wrap"
-            initialize_label = f"Initialize ❗ ALL ❗ decks + history for {active_person_label}"
-            initialize_verify_label = "Verify ❗ ALL ❗ decks + history deletion!"
+            initialize_label = f"Initialize ❗ ALL ❗ decks for {active_person_label}"
+            initialize_verify_label = "Verify ❗ ALL ❗ decks deletion!"
             with st.container(key="initialize_all_decks_slot_wrap"):
                 with st.container(key=initialize_wrap_key):
                     if st.button(
@@ -9388,123 +9121,7 @@ def restart_to_splash():
     st.session_state.menu_open = False
     st.session_state.quit_requested = False
     st.session_state.final_exit = False
-    st.session_state.progress_screen_open = False
     st.session_state.open_deck_categories = []
-
-
-def render_progress_screen():
-    ensure_monthly_progress_snapshot(st.session_state.active_person)
-    current_learned_count = learned_words_completed_count(st.session_state.active_person)
-    current_trackable_count = current_trackable_cards_count()
-    chart_rows = progress_chart_rows(st.session_state.active_person, months=12)
-    cloud_history_available = cloud_sync_enabled()
-    learned_percent = 0.0
-    if current_trackable_count > 0:
-        learned_percent = current_learned_count / current_trackable_count * 100.0
-    chart_values = [int(row["Learned Cards"]) for row in chart_rows if row.get("Learned Cards") is not None]
-    chart_max_value = max(chart_values) if chart_values else 0
-    y_axis_max = max(5, chart_max_value + max(3, math.ceil(chart_max_value * 0.25)))
-    progress_accent_color = t["fg"]
-    y_tick_step = max(1, math.ceil(y_axis_max / 6))
-    y_ticks = list(range(0, y_axis_max + 1, y_tick_step))
-    if y_ticks[-1] != y_axis_max:
-        y_ticks.append(y_axis_max)
-
-    st.markdown(
-        "<div class='progress-screen'>"
-        "<div class='title-big progress-title'>Progress</div>"
-        "<div class='title-big-sub progress-subtitle'>12-month learned cards history</div>"
-        "</div>"
-        "<style>"
-        ".progress-screen { width: 100%; text-align: center; padding: 1.8rem 0 0.2rem 0; }"
-        f".progress-title {{ display: block; color: {progress_accent_color}; margin-bottom: 0.3rem; }}"
-        ".progress-subtitle { display: block; margin-top: 0; }"
-        ".progress-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem 1rem; margin: 1.25rem 0 0.9rem 0; }"
-        ".progress-card { border: 1px solid rgba(0,0,0,0.08); border-radius: 0.9rem; padding: 0.85rem 0.7rem; background: rgba(255,255,255,0.04); text-align: center; }"
-        ".progress-card-label { font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.72; margin-bottom: 0.25rem; }"
-        ".progress-card-value { font-size: 1.35rem; font-weight: 700; line-height: 1.1; }"
-        ".progress-note { font-size: 0.88rem; opacity: 0.82; margin: 0.7rem 0 0.2rem 0; text-align: center; }"
-        ".progress-chart-shell { width: 100%; display: block; margin: 0.35rem 0 0 0; }"
-        f".st-key-progress_chart_wrap {{ display: block; width: 100%; margin: 0 auto; border: 2px solid {progress_accent_color}; border-radius: 0; padding: 0.18rem 0.16rem 0.16rem 0.16rem; background: rgba(255,255,255,0.02); box-sizing: border-box; overflow: hidden; text-align: center; }}"
-        ".st-key-progress_chart_wrap [data-testid='stVerticalBlockBorderWrapper'] { display: block !important; width: 100% !important; max-width: 100% !important; border: none !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; }"
-        ".st-key-progress_chart_inner_wrap { width: calc(100% - 8px); max-width: calc(100% - 8px); margin: 0 auto; overflow: hidden; }"
-        ".st-key-progress_chart_inner_wrap [data-testid='stVerticalBlockBorderWrapper'] { display: block !important; width: 100% !important; max-width: 100% !important; border: none !important; background: transparent !important; box-shadow: none !important; padding: 0 !important; }"
-        ".st-key-progress_chart_inner_wrap [data-testid='stImage'], .st-key-progress_chart_inner_wrap [data-testid='stPyplot'] { width: 100% !important; max-width: 100% !important; margin: 0 auto !important; overflow: hidden; display: block; }"
-        ".st-key-progress_chart_inner_wrap img, .st-key-progress_chart_inner_wrap canvas { width: 100% !important; max-width: 100% !important; display: block; margin: 0 auto; }"
-        "</style>",
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        "<div class='progress-summary-grid'>"
-        f"<div class='progress-card'><div class='progress-card-label'>Learned To Date</div><div class='progress-card-value'>{current_learned_count}</div></div>"
-        f"<div class='progress-card'><div class='progress-card-label'>Trackable Cards To Date</div><div class='progress-card-value'>{current_trackable_count}</div></div>"
-        f"<div class='progress-card'><div class='progress-card-label'>% Cards Learned</div><div class='progress-card-value'>{learned_percent:.2f}%</div></div>"
-        f"<div class='progress-card'><div class='progress-card-label'>User</div><div class='progress-card-value'>{PERSON_LABELS[st.session_state.active_person]}</div></div>"
-        "</div>",
-        unsafe_allow_html=True,
-    )
-
-    if not chart_rows:
-        st.markdown("<div class='progress-note'>No chart data available yet.</div>", unsafe_allow_html=True)
-    else:
-        month_labels = [row["Month"] for row in chart_rows]
-        x_positions = list(range(len(chart_rows)))
-        plotted_x = [index for index, row in enumerate(chart_rows) if row.get("Learned Cards") is not None]
-        plotted_y = [int(chart_rows[index]["Learned Cards"]) for index in plotted_x]
-
-        fig, ax = plt.subplots(figsize=(7.2, 2.7), dpi=100)
-        fig.patch.set_facecolor("white")
-        ax.set_facecolor("white")
-        if plotted_x and plotted_y:
-            ax.scatter(plotted_x, plotted_y, s=38, color="#6e9df0", zorder=3)
-        ax.set_xlim(-0.5, len(chart_rows) - 0.28)
-        ax.set_ylim(0, y_axis_max)
-        ax.set_xticks(x_positions)
-        ax.set_xticklabels(month_labels, rotation=90, fontsize=7.5, color="#5f6880", fontweight="bold")
-        ax.set_yticks(y_ticks)
-        ax.tick_params(axis="y", labelsize=7.5, colors="#5f6880", length=0, pad=1)
-        ax.tick_params(axis="x", length=0)
-        ax.grid(axis="y", color="#d8deea", linewidth=0.8)
-        ax.grid(axis="x", visible=False)
-        for tick_label in ax.get_yticklabels():
-            tick_label.set_fontweight("bold")
-        for spine_name in ["top", "right", "left", "bottom"]:
-            ax.spines[spine_name].set_visible(False)
-        fig.text(0.018, 0.52, "# Trackable Cards Learned", rotation=90, va="center", ha="center", fontsize=8, color="#4f5568", fontweight="bold")
-        fig.subplots_adjust(left=0.05, right=0.985, bottom=0.30, top=0.98)
-
-        st.markdown("<div class='progress-chart-shell'>", unsafe_allow_html=True)
-        with st.container(key="progress_chart_wrap"):
-            with st.container(key="progress_chart_inner_wrap"):
-                st.pyplot(fig, clear_figure=True, use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-        plt.close(fig)
-
-    if not cloud_history_available:
-        st.markdown(
-            "<div class='progress-note'>Monthly history needs Supabase connectivity. Current totals are still shown.</div>",
-            unsafe_allow_html=True,
-        )
-
-    with st.container(key="progress_btn_row_wrap"):
-        back_col, restart_col = st.columns(2)
-        with back_col:
-            with st.container(key="progress_back_wrap"):
-                st.button("BACK", key="progress_back_btn", on_click=close_progress_screen, use_container_width=True)
-        with restart_col:
-            with st.container(key="progress_restart_wrap"):
-                st.button("RESTART", key="progress_restart_btn", on_click=restart_to_splash, use_container_width=True)
-
-
-if st.session_state.active_person in PERSON_LABELS and not st.session_state.person_selector_visible:
-    ensure_monthly_progress_snapshot(st.session_state.active_person)
-
-
-if st.session_state.progress_screen_open:
-    render_browser_audio_cleanup()
-    render_progress_screen()
-    st.stop()
 
 # ========================================================================
 # FINAL EXIT
@@ -9536,17 +9153,9 @@ if st.session_state.final_exit:
         ".st-key-exit_restart_wrap .stButton > button { width: 100%; }"
         ".st-key-exit_restart_wrap .stButton > button { background: linear-gradient(135deg, #006847 0%, #008f5a 100%); color: #ffffff; border: 2px solid #00573b; border-radius: 0.75rem; font-weight: 700; letter-spacing: 0.08em; min-height: 2.75rem; box-shadow: 0 10px 20px rgba(0, 104, 71, 0.18); }"
         ".st-key-exit_restart_wrap .stButton > button:hover { background: linear-gradient(135deg, #00573b 0%, #007e50 100%); border-color: #00442d; color: #ffffff; }"
-        ".st-key-exit_progress_wrap { width: 100%; margin: 0.7rem 0 0 0; }"
-        ".st-key-exit_progress_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 10rem); margin: 0 auto; padding: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; }"
-        ".st-key-exit_progress_wrap .stButton,"
-        ".st-key-exit_progress_wrap .stButton > button { width: 100%; }"
-        ".st-key-exit_progress_wrap .stButton > button { background: transparent; color: #e8e4dc; border: 2px solid #008fb3; border-radius: 0.75rem; font-weight: 700; letter-spacing: 0.08em; min-height: 2.6rem; }"
-        ".st-key-exit_progress_wrap .stButton > button:hover { background: rgba(255,255,255,0.03); color: #ffffff; border-color: #00a9d4; }"
         "</style>",
         unsafe_allow_html=True,
     )
-    with st.container(key="exit_progress_wrap"):
-        st.button("PROGRESS", key="exit_progress_btn", on_click=open_progress_screen)
     with st.container(key="exit_restart_wrap"):
         st.button("RESTART", key="exit_restart_btn", on_click=restart_to_splash)
     st.stop()

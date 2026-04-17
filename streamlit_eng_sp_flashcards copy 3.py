@@ -89,14 +89,37 @@ def login_screen():
     st.markdown(
         """
         <style>
+        .st-key-login_title_wrap {
+            width: 100%;
+            margin: 6rem auto 0 auto;
+            text-align: center;
+        }
+        .st-key-login_form_wrap {
+            width: min(100%, 10rem);
+            margin: 2.5rem auto 0 auto;
+            transform: translateX(-1.5rem);
+        }
+        .st-key-login_form_wrap [data-testid="stVerticalBlock"] {
+            gap: 0 !important;
+        }
         .st-key-login_password_wrap,
         .st-key-login_button_wrap {
-            width: min(100%, 14rem);
-            margin-left: auto;
-            margin-right: auto;
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .st-key-login_password_wrap [data-testid="stWidgetLabel"] {
+            margin-bottom: 0.3rem;
+        }
+        .st-key-login_password_wrap [data-testid="stWidgetLabel"] p {
+            font-size: 0.95rem !important;
+            font-weight: 500 !important;
         }
         .st-key-login_password_wrap [data-baseweb="input"] {
             width: 100%;
+        }
+        .st-key-login_password_wrap [data-baseweb="base-input"] {
+            min-height: 2.5rem;
         }
         .st-key-login_button_wrap .stButton,
         .st-key-login_button_wrap .stButton > button {
@@ -117,15 +140,23 @@ def login_screen():
             border-color: #00442d;
             color: #ffffff;
         }
+        @media (max-width: 767px) {
+            .st-key-login_title_wrap {
+                margin-top: 5rem;
+            }
+            .st-key-login_form_wrap {
+                width: min(100%, 10rem);
+                transform: translateX(-1.5rem);
+            }
+        }
         </style>
         """,
         unsafe_allow_html=True,
     )
-    left_col, center_col, right_col = st.columns([1.2, 1, 1.2])
-    with center_col:
+    with st.container(key="login_title_wrap"):
         st.markdown(
             """
-            <div style="text-align:center; margin-top:6rem; margin-bottom:2.5rem;">
+            <div>
                 <h1 style="font-size:2.2rem; margin:0; white-space:nowrap;">
                     <span style="color:#006847;">Spanish</span>
                     <span style="color:#ce1126;">Flashcards</span>
@@ -134,6 +165,7 @@ def login_screen():
             """,
             unsafe_allow_html=True,
         )
+    with st.container(key="login_form_wrap"):
         with st.container(key="login_password_wrap"):
             pw = st.text_input("Password", type="password", key="login_password", help="Enter your password to continue.")
         with st.container(key="login_button_wrap"):
@@ -310,6 +342,11 @@ BUTTON_COLORS = {
     "red": {"bg": "#f8d8d8", "border": "#c23b22", "fg": "#7f1717"},
 }
 
+LEARNED_WORDS_CHALLENGE_VALUE = "__learned_words_challenge__"
+LEARNED_WORDS_CHALLENGE_LABEL = "Learned Words Challenge [20]"
+LEARNED_WORDS_CHALLENGE_MIN_CARDS = 20
+LEARNED_WORDS_CHALLENGE_SESSION_SIZE = 20
+
 csv_files = [f for f in os.listdir(CSV_FOLDER) if f.endswith(".csv")]
 csv_files.sort(key=str.lower)
 
@@ -360,6 +397,14 @@ def favorites_deck_label(person, include_count=False):
     if include_count:
         label += f" [{favorites_count_for(person)}]"
     return label
+
+
+def is_learned_words_challenge(deck_value):
+    return deck_value == LEARNED_WORDS_CHALLENGE_VALUE
+
+
+def learned_words_challenge_label():
+    return LEARNED_WORDS_CHALLENGE_LABEL
 
 
 def normalized_filename(value):
@@ -544,6 +589,8 @@ def load_regular_deck(filename):
 
 
 def display_deck_name(filename):
+    if is_learned_words_challenge(filename):
+        return learned_words_challenge_label()
     if is_review_deck(filename):
         return review_deck_label(review_deck_person(filename))
     if is_favorites_deck(filename):
@@ -555,6 +602,8 @@ def display_deck_name(filename):
 
 
 def picker_display_deck_name(filename, person):
+    if is_learned_words_challenge(filename):
+        return learned_words_challenge_label()
     if is_review_deck(filename):
         return review_deck_label(review_deck_person(filename), include_count=True)
     if is_favorites_deck(filename):
@@ -608,6 +657,8 @@ def deck_completion_metadata(filename):
 
 
 def deck_picker_status(filename, person):
+    if is_learned_words_challenge(filename):
+        return "challenge"
     if is_review_deck(filename):
         return "review"
     if is_favorites_deck(filename):
@@ -1826,8 +1877,63 @@ def person_has_regular_deck_progress(person):
     return any(
         card_ids
         for filename, card_ids in person_progress.items()
-        if not is_review_deck(filename) and not is_favorites_deck(filename)
+        if not is_review_deck(filename) and not is_favorites_deck(filename) and not is_learned_words_challenge(filename)
     )
+
+
+def learned_words_completed_count(person):
+    total_completed = 0
+    person_progress = st.session_state.progress_data.get(person, {})
+    for filename in csv_files:
+        metadata = deck_completion_metadata(filename)
+        if not metadata["supported"]:
+            continue
+        completed_ids = set(person_progress.get(filename, []))
+        if not completed_ids:
+            continue
+        total_completed += len(completed_ids & set(metadata["valid_ids"]))
+    return total_completed
+
+
+def learned_words_challenge_available(person):
+    return learned_words_completed_count(person) >= LEARNED_WORDS_CHALLENGE_MIN_CARDS
+
+
+def build_learned_words_challenge_cards(person):
+    learned_cards = []
+    person_progress = st.session_state.progress_data.get(person, {})
+
+    for filename in csv_files:
+        completed_ids = set(person_progress.get(filename, []))
+        if not completed_ids:
+            continue
+
+        deck_data = load_regular_deck(filename)
+        if not deck_data["supports_completion"]:
+            continue
+
+        for source_index, card in enumerate(deck_data["cards"]):
+            card_id = card.get("id")
+            if not card_id or card_id not in completed_ids:
+                continue
+            learned_cards.append(
+                {
+                    "id": card_id,
+                    "word": card["word"],
+                    "answer": card["answer"],
+                    "shown": False,
+                    "scored": False,
+                    "repeat_score": 1,
+                    "error_flag": 0,
+                    "source_deck": filename,
+                    "source_index": source_index,
+                }
+            )
+
+    if len(learned_cards) < LEARNED_WORDS_CHALLENGE_SESSION_SIZE:
+        return []
+
+    return random.sample(learned_cards, LEARNED_WORDS_CHALLENGE_SESSION_SIZE)
 
 
 def review_deck_selectable(deck_value):
@@ -2040,7 +2146,7 @@ def activate_deck(deck_value):
     elif is_story_deck(deck_value):
         st.session_state.study_mode = "story"
     else:
-        st.session_state.study_mode = "all" if (is_review_deck(deck_value) or is_favorites_deck(deck_value)) else None
+        st.session_state.study_mode = "all" if (is_review_deck(deck_value) or is_favorites_deck(deck_value) or is_learned_words_challenge(deck_value)) else None
     st.session_state.person_selector_visible = False
     st.session_state.direction = effective_direction(deck_value)
 
@@ -2069,6 +2175,17 @@ def render_grouped_deck_picker():
         )
         deck_container = st.container(height=580)
         with deck_container:
+            if learned_words_challenge_available(st.session_state.active_person):
+                special_deck_count += 1
+                with st.container(key="learned_words_challenge_active_wrap"):
+                    if st.button(
+                        learned_words_challenge_label(),
+                        key="deck_btn_learned_words_challenge",
+                        use_container_width=True,
+                    ):
+                        activate_deck(LEARNED_WORDS_CHALLENGE_VALUE)
+                        st.rerun()
+
             for person in PERSON_LABELS:
                 review_value = REVIEW_DECK_VALUES[person]
                 if review_value not in review_deck_values:
@@ -2658,6 +2775,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: color-mix(in srgb, {BUTTON_COLORS['blue']['fg']} 38%, white 62%) !important;
     font-weight: 700 !important;
 }}
+.st-key-learned_words_challenge_active_wrap div[data-testid="stButton"] > button {{
+    background-color: color-mix(in srgb, {BUTTON_COLORS['red']['bg']} 70%, {t['bg']} 30%) !important;
+    color: {BUTTON_COLORS['red']['border']} !important;
+    font-weight: 700 !important;
+}}
 .st-key-review_miguel_inactive_wrap div[data-testid="stButton"] > button,
 .st-key-review_david_inactive_wrap div[data-testid="stButton"] > button {{
     background-color: rgba(128, 128, 128, 0.10) !important;
@@ -2674,6 +2796,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mobile_deck_picker_wrap .st-key-review_david_active_wrap div[data-testid="stButton"] > button,
 .st-key-mobile_deck_picker_wrap .st-key-review_miguel_inactive_wrap div[data-testid="stButton"] > button,
 .st-key-mobile_deck_picker_wrap .st-key-review_david_inactive_wrap div[data-testid="stButton"] > button,
+.st-key-mobile_deck_picker_wrap .st-key-learned_words_challenge_active_wrap div[data-testid="stButton"] > button,
 .st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_active_wrap div[data-testid="stButton"] > button,
 .st-key-mobile_deck_picker_wrap .st-key-favorites_david_active_wrap div[data-testid="stButton"] > button,
 .st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_inactive_wrap div[data-testid="stButton"] > button,
@@ -2688,7 +2811,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-radius: 0 !important;
     justify-content: flex-start !important;
     text-align: left !important;
-    font-weight: 400 !important;
+    font-weight: 600 !important;
     font-size: 1rem !important;
     padding-left: 0.38rem !important;
     padding-top: 0 !important;
@@ -2702,6 +2825,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mobile_deck_picker_wrap .st-key-review_david_active_wrap div[data-testid="stButton"] > button > div,
 .st-key-mobile_deck_picker_wrap .st-key-review_miguel_inactive_wrap div[data-testid="stButton"] > button > div,
 .st-key-mobile_deck_picker_wrap .st-key-review_david_inactive_wrap div[data-testid="stButton"] > button > div,
+.st-key-mobile_deck_picker_wrap .st-key-learned_words_challenge_active_wrap div[data-testid="stButton"] > button > div,
 .st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_active_wrap div[data-testid="stButton"] > button > div,
 .st-key-mobile_deck_picker_wrap .st-key-favorites_david_active_wrap div[data-testid="stButton"] > button > div,
 .st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_inactive_wrap div[data-testid="stButton"] > button > div,
@@ -2710,6 +2834,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mobile_deck_picker_wrap .st-key-review_david_active_wrap div[data-testid="stButton"] > button p,
 .st-key-mobile_deck_picker_wrap .st-key-review_miguel_inactive_wrap div[data-testid="stButton"] > button p,
 .st-key-mobile_deck_picker_wrap .st-key-review_david_inactive_wrap div[data-testid="stButton"] > button p,
+.st-key-mobile_deck_picker_wrap .st-key-learned_words_challenge_active_wrap div[data-testid="stButton"] > button p,
 .st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_active_wrap div[data-testid="stButton"] > button p,
 .st-key-mobile_deck_picker_wrap .st-key-favorites_david_active_wrap div[data-testid="stButton"] > button p,
 .st-key-mobile_deck_picker_wrap .st-key-favorites_miguel_inactive_wrap div[data-testid="stButton"] > button p,
@@ -2718,7 +2843,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button p,
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stButton"] > button > div,
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stButton"] > button p {{
-    font-weight: 400 !important;
+    font-weight: 600 !important;
     font-size: 1rem !important;
     line-height: 1.1 !important;
 }}
@@ -2726,6 +2851,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mobile_deck_picker_wrap .st-key-review_david_active_wrap,
 .st-key-mobile_deck_picker_wrap .st-key-review_miguel_inactive_wrap,
 .st-key-mobile_deck_picker_wrap .st-key-review_david_inactive_wrap,
+.st-key-mobile_deck_picker_wrap .st-key-learned_words_challenge_active_wrap,
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] {{
     margin-bottom: 0.9rem !important;
 }}
@@ -3754,6 +3880,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 [class*="st-key-mobile_deck_entry_review_"],
 [class*="st-key-mobile_deck_entry_favorites_"],
+.st-key-learned_words_challenge_active_wrap,
 .st-key-review_miguel_active_wrap,
 .st-key-review_david_active_wrap,
 .st-key-review_miguel_inactive_wrap,
@@ -3767,6 +3894,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 [class*="st-key-mobile_deck_entry_review_"] [data-testid="stVerticalBlock"],
 [class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stVerticalBlock"],
+.st-key-learned_words_challenge_active_wrap [data-testid="stVerticalBlock"],
 .st-key-review_miguel_active_wrap [data-testid="stVerticalBlock"],
 .st-key-review_david_active_wrap [data-testid="stVerticalBlock"],
 .st-key-review_miguel_inactive_wrap [data-testid="stVerticalBlock"],
@@ -3781,6 +3909,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 [class*="st-key-mobile_deck_entry_review_"] [data-testid="stElementContainer"],
 [class*="st-key-mobile_deck_entry_favorites_"] [data-testid="stElementContainer"],
+.st-key-learned_words_challenge_active_wrap [data-testid="stElementContainer"],
 .st-key-review_miguel_active_wrap [data-testid="stElementContainer"],
 .st-key-review_david_active_wrap [data-testid="stElementContainer"],
 .st-key-review_miguel_inactive_wrap [data-testid="stElementContainer"],
@@ -3874,6 +4003,16 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_review_"] [data-testid="stButton"] > button::before {{
     content: '★';
     color: #f2c94c !important;
+    display: inline-block !important;
+    width: 1.05rem !important;
+    text-align: left !important;
+    margin-right: 0.58rem !important;
+    font-size: 0.98rem !important;
+    line-height: 1 !important;
+}}
+.st-key-mobile_deck_picker_wrap .st-key-learned_words_challenge_active_wrap div[data-testid="stButton"] > button::before {{
+    content: '🎯';
+    color: {BUTTON_COLORS['red']['border']} !important;
     display: inline-block !important;
     width: 1.05rem !important;
     text-align: left !important;
@@ -4374,7 +4513,33 @@ def render_mobile_deck_picker_height_fix():
                 });
 
                 var target = candidates[0];
+                var phoneLayout = isPhoneLayout();
+                var wrapStyle = parentWindow.getComputedStyle(wrap);
                 var targetHeight = isPhoneLayout() ? '70svh' : '75svh';
+
+                if (phoneLayout) {
+                    wrap.style.border = '';
+                    wrap.style.boxShadow = '';
+                    wrap.style.background = '';
+                    wrap.style.borderRadius = '';
+                    wrap.style.padding = '';
+                    target.style.border = '';
+                    target.style.boxShadow = '';
+                    target.style.background = '';
+                    target.style.borderRadius = '';
+                    target.style.padding = '';
+                } else {
+                    wrap.style.border = 'none';
+                    wrap.style.boxShadow = 'none';
+                    wrap.style.background = 'transparent';
+                    target.style.border = wrapStyle.border;
+                    target.style.boxShadow = 'none';
+                    target.style.background = 'transparent';
+                    target.style.borderRadius = wrapStyle.borderRadius;
+                    target.style.padding = wrapStyle.padding;
+                    target.style.boxSizing = 'border-box';
+                }
+
                 target.style.height = targetHeight;
                 target.style.maxHeight = targetHeight;
                 target.style.minHeight = targetHeight;
@@ -4431,7 +4596,7 @@ def mark_correct():
         card["repeat_score"] = max(card["repeat_score"] - 1, 0)
         advance_card()
     else:
-        if card.get("id"):
+        if card.get("id") and not is_learned_words_challenge(st.session_state.selected_csv):
             mark_card_completed(st.session_state.active_person, st.session_state.selected_csv, card["id"])
         card["repeat_score"] = max(card["repeat_score"] - 1, 0)
         advance_card()
@@ -8059,6 +8224,90 @@ def render_regular_auto_mode_cleanup():
     )
 
 
+def render_browser_audio_cleanup():
+    components.html(
+        """
+        <script>
+        (function() {
+            var parentWindow = window.parent;
+            var doc = parentWindow.document;
+            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
+            var debugEl = doc.getElementById('story-mobile-debug');
+            var bindings = [
+                ['.st-key-storystart_wrap button', '_storyMobileStartHandler'],
+                ['.st-key-storypause_wrap button', '_storyMobilePauseHandler'],
+                ['.st-key-storystop_wrap button', '_storyMobileStopHandler'],
+                ['.st-key-storynext_wrap button', '_storyMobileNextHandler'],
+            ];
+            var eventNames = ['click', 'touchend'];
+            var storyController = doc._storyMobileController;
+            var regularController = doc._regularAutoController;
+
+            bindings.forEach(function(binding) {
+                var element = doc.querySelector(binding[0]);
+                var handler = doc[binding[1]];
+                if (!element || !handler) return;
+                eventNames.forEach(function(eventName) {
+                    element.removeEventListener(eventName, handler, true);
+                });
+                doc[binding[1]] = null;
+            });
+
+            if (storyController) {
+                if (storyController.advanceTimer) {
+                    clearTimeout(storyController.advanceTimer);
+                    storyController.advanceTimer = null;
+                }
+                if (storyController.advanceRetryTimer) {
+                    clearInterval(storyController.advanceRetryTimer);
+                    storyController.advanceRetryTimer = null;
+                }
+                if (storyController.queueToken) {
+                    storyController.queueToken += 1;
+                }
+                storyController.running = false;
+                storyController.active = false;
+                storyController.isSpeaking = false;
+                storyController.speakingKey = null;
+                storyController.queuedNextIndex = null;
+                storyController.pendingManualSpeakIndex = null;
+                storyController.resumeTargetIndex = null;
+                storyController.pendingInitialStartDelayMs = 0;
+                storyController.awaitingServerStart = false;
+            }
+
+            if (regularController && regularController.timerIds) {
+                regularController.timerIds.forEach(function(timerId) {
+                    parentWindow.clearTimeout(timerId);
+                });
+                regularController.timerIds = [];
+            }
+            if (regularController) {
+                regularController.phaseKey = null;
+            }
+
+            doc._storyPauseRequested = null;
+            doc._storyPauseResumeState = null;
+            doc._storyPauseCaptureKey = null;
+
+            if (synth) {
+                try {
+                    synth.cancel();
+                } catch (error) {
+                }
+            }
+
+            if (debugEl) {
+                debugEl.style.display = 'block';
+                debugEl.textContent = 'DEBUG: inactive';
+            }
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
 def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_after_seconds, preferred_gender, repeat_spanish, cue_prompt, should_speak=True, cue_before_speech=False):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
@@ -8865,11 +9114,21 @@ def restart_mistakes_only():
     st.session_state["score_repeat"] = 0
     st.rerun()
 
+
+def restart_to_splash():
+    reset_study_state(reset_selected=True)
+    st.session_state.person_selector_visible = True
+    st.session_state.menu_open = False
+    st.session_state.quit_requested = False
+    st.session_state.final_exit = False
+    st.session_state.open_deck_categories = []
+
 # ========================================================================
 # FINAL EXIT
 # ========================================================================
 
 if st.session_state.final_exit:
+    render_browser_audio_cleanup()
     goodbye_data_uri = goodbye_image_data_uri()
     goodbye_image_markup = (
         f"<div class='exit-image-wrap'><img src='{goodbye_data_uri}' alt='Goodbye axolotl' class='exit-image' /></div>"
@@ -8878,19 +9137,27 @@ if st.session_state.final_exit:
     )
     st.markdown(
         "<div class='exit-screen'>"
-        "<div class='title-big exit-title'>Buen trabajo!</div>"
+        "<div class='title-big exit-title'>¡Buen trabajo!</div>"
         + goodbye_image_markup
-        + "<div class='title-big-sub exit-subtitle'>KEEP PRACTICING EVERY DAY</div>"
+        + "<div class='title-big-sub exit-subtitle'>SIGUE PRACTICANDO TODOS LOS DÍAS</div>"
         "</div>"
         "<style>"
-        ".exit-screen { text-align: center; padding: 2.2rem 0 0.8rem 0; }"
-        ".exit-title { display: block; }"
-        ".exit-image-wrap { margin: 1rem auto 1rem auto; max-width: 360px; }"
+        ".exit-screen { width: 100%; text-align: center; padding: 2.2rem 0 0.8rem 0; }"
+        ".exit-title { display: block; color: #ce1126; }"
+        ".exit-image-wrap { width: 100%; margin: 1rem auto 1rem auto; padding: 0.25rem 0 0.2rem; box-sizing: border-box; max-width: none; }"
         ".exit-image { display: block; width: 100%; height: auto; margin: 0 auto; }"
         ".exit-subtitle { display: block; margin-top: 0; }"
+        ".st-key-exit_restart_wrap { width: 100%; margin: 0.9rem 0 0 0; }"
+        ".st-key-exit_restart_wrap [data-testid='stVerticalBlockBorderWrapper'] { width: min(100%, 10rem); margin: 0 auto; padding: 0 !important; border: none !important; background: transparent !important; box-shadow: none !important; }"
+        ".st-key-exit_restart_wrap .stButton,"
+        ".st-key-exit_restart_wrap .stButton > button { width: 100%; }"
+        ".st-key-exit_restart_wrap .stButton > button { background: linear-gradient(135deg, #006847 0%, #008f5a 100%); color: #ffffff; border: 2px solid #00573b; border-radius: 0.75rem; font-weight: 700; letter-spacing: 0.08em; min-height: 2.75rem; box-shadow: 0 10px 20px rgba(0, 104, 71, 0.18); }"
+        ".st-key-exit_restart_wrap .stButton > button:hover { background: linear-gradient(135deg, #00573b 0%, #007e50 100%); border-color: #00442d; color: #ffffff; }"
         "</style>",
         unsafe_allow_html=True,
     )
+    with st.container(key="exit_restart_wrap"):
+        st.button("RESTART", key="exit_restart_btn", on_click=restart_to_splash)
     st.stop()
 
 # ========================================================================
@@ -8898,6 +9165,7 @@ if st.session_state.final_exit:
 # ========================================================================
 
 if st.session_state.selected_csv is None:
+    render_browser_audio_cleanup()
     render_header()
     render_menu()
     if st.session_state.menu_open:
@@ -8910,6 +9178,7 @@ if st.session_state.selected_csv is None:
 if (
     not is_review_deck(st.session_state.selected_csv)
     and not is_favorites_deck(st.session_state.selected_csv)
+    and not is_learned_words_challenge(st.session_state.selected_csv)
     and not is_playback_deck(st.session_state.selected_csv)
     and st.session_state.study_mode is None
 ):
@@ -8929,7 +9198,9 @@ if (
 # ========================================================================
 
 if st.session_state.loaded_csv != st.session_state.selected_csv or not st.session_state.cards:
-    if is_review_deck(st.session_state.selected_csv):
+    if is_learned_words_challenge(st.session_state.selected_csv):
+        st.session_state.cards = build_learned_words_challenge_cards(st.session_state.active_person)
+    elif is_review_deck(st.session_state.selected_csv):
         review_person = review_deck_person(st.session_state.selected_csv)
         review_items = list(st.session_state.review_data.get(review_person, {}).values())
         st.session_state.cards = [
@@ -8975,6 +9246,7 @@ if st.session_state.loaded_csv != st.session_state.selected_csv or not st.sessio
 if (
     not is_review_deck(st.session_state.selected_csv)
     and not is_favorites_deck(st.session_state.selected_csv)
+    and not is_learned_words_challenge(st.session_state.selected_csv)
     and not is_playback_deck(st.session_state.selected_csv)
     and st.session_state.study_mode == "remaining"
     and not st.session_state.cards
@@ -8982,6 +9254,10 @@ if (
     clear_deck_progress(st.session_state.active_person, st.session_state.selected_csv)
     st.session_state.study_mode = "all"
     st.session_state.selected_csv = None
+    st.rerun()
+
+if is_learned_words_challenge(st.session_state.selected_csv) and not st.session_state.cards:
+    go_back_to_deck_picker()
     st.rerun()
 
 # ========================================================================
@@ -9017,6 +9293,7 @@ if is_playback_deck(st.session_state.selected_csv):
 # ========================================================================
 
 if st.session_state.quit_requested:
+    render_browser_audio_cleanup()
     render_header(summary_mode=True)
     render_menu()
     st.markdown("<div class='summary-title'>Session Summary</div>", unsafe_allow_html=True)
@@ -9078,6 +9355,7 @@ if st.session_state.cards and st.session_state.order:
         if (
             not is_review_deck(st.session_state.selected_csv)
             and not is_favorites_deck(st.session_state.selected_csv)
+            and not is_learned_words_challenge(st.session_state.selected_csv)
             and st.session_state.study_mode == "remaining"
         ):
             clear_deck_progress(st.session_state.active_person, st.session_state.selected_csv)
