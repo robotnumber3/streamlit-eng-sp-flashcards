@@ -3599,8 +3599,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {t['menu_bg']};
     border: 1px solid {t['border']};
     border-radius: 0.75rem;
-    padding: 0.9rem 1.1rem 0.7rem 1.1rem;
+    padding: 0.9rem 1.1rem calc(1.4rem + env(safe-area-inset-bottom, 0px)) 1.1rem;
     margin-bottom: 0.7rem;
+}}
+.menu-bottom-spacer {{
+    height: calc(1.35rem + env(safe-area-inset-bottom, 0px));
+    width: 100%;
 }}
 .menu-section-label {{
     font-size: 0.68rem;
@@ -9214,6 +9218,8 @@ def render_menu():
                             on_click=clear_initialize_all_decks_confirm,
                         )
                     render_initialize_all_decks_confirm_timeout()
+
+        st.markdown('<div class="menu-bottom-spacer"></div>', unsafe_allow_html=True)
 
 
 def render_deck_strip():
