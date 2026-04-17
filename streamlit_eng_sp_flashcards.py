@@ -1495,6 +1495,18 @@ def delete_monthly_progress_history(person):
         return False
 
 
+def delete_monthly_progress_history_row(person, month_key):
+    client = get_supabase_client()
+    normalized_month_key = normalize_month_key(month_key)
+    if client is None or person not in PERSON_LABELS or normalized_month_key is None:
+        return False
+    try:
+        client.table(MONTHLY_PROGRESS_HISTORY_TABLE).delete().eq("user_id", person).eq("month_key", normalized_month_key).execute()
+        return True
+    except Exception:
+        return False
+
+
 def current_trackable_cards_count():
     trackable_total = 0
     for filename in csv_files:
@@ -1518,14 +1530,45 @@ def learned_words_completed_count_value(person):
     return total_completed
 
 
+def repair_legacy_monthly_progress_snapshot(person, today, current_learned_count):
+    current_month_key = month_key_from_date(today)
+    previous_month_key = month_key_from_date(previous_month_start(today))
+    person_history = dict(st.session_state.monthly_progress_history.get(person, {}))
+
+    if current_month_key in person_history:
+        return person_history
+    if previous_month_key not in person_history:
+        return person_history
+
+    previous_month_count = int(person_history.get(previous_month_key, 0))
+    if previous_month_count != current_learned_count:
+        return person_history
+
+    current_month_row = {
+        "user_id": person,
+        "month_key": current_month_key,
+        "learned_count": current_learned_count,
+    }
+    if not save_monthly_progress_history_rows([current_month_row]):
+        return person_history
+
+    updated_history = st.session_state.monthly_progress_history.setdefault(person, {})
+    updated_history[current_month_key] = current_learned_count
+
+    if delete_monthly_progress_history_row(person, previous_month_key):
+        updated_history.pop(previous_month_key, None)
+
+    return dict(updated_history)
+
+
 def ensure_monthly_progress_snapshot(person, today=None):
     if person not in PERSON_LABELS:
         return False
 
     today = today or date.today()
-    target_month_key = month_key_from_date(previous_month_start(today))
     current_learned_count = learned_words_completed_count_value(person)
-    person_history = dict(st.session_state.monthly_progress_history.get(person, {}))
+    target_month_key = month_key_from_date(today)
+    person_history = repair_legacy_monthly_progress_snapshot(person, today, current_learned_count)
     if target_month_key in person_history:
         existing_count = int(person_history.get(target_month_key, 0))
         if existing_count == current_learned_count:
@@ -1587,18 +1630,20 @@ def ensure_monthly_progress_snapshot(person, today=None):
 
 def progress_chart_rows(person, months=12, today=None):
     today = today or date.today()
-    previous_month = previous_month_start(today)
     live_learned_count = learned_words_completed_count_value(person)
+    current_month = date(today.year, today.month, 1)
+    start_month = add_months(current_month, -(months - 1))
+    current_month_key = month_key_from_date(today)
+    person_history = dict(st.session_state.monthly_progress_history.get(person, {}))
 
     rows = []
-    month_cursor = previous_month
     for offset in range(months):
-        month_cursor = add_months(previous_month, offset)
+        month_cursor = add_months(start_month, offset)
         month_key = month_key_from_date(month_cursor)
-        if offset == 0:
+        if month_key == current_month_key:
             learned_count = live_learned_count
         else:
-            learned_count = None
+            learned_count = person_history.get(month_key)
 
         rows.append(
             {
