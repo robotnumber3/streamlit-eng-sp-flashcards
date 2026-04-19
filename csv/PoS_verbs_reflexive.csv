@@ -1,30 +1,31 @@
-to get up,levantarse
-to go to bed,acostarse
-to wake up,despertarse
-to fall asleep,dormirse
-to get dressed,vestirse
-to take a shower,ducharse
-to bathe,bañarse
-to wash oneself,lavarse
-to brush (teeth/hair),cepillarse
-to comb one's hair,peinarse
-to sit down,sentarse
-to stand up,levantarse
-to feel (emotion/physical),sentirse
-to get angry,enojarse
-to get tired,cansarse
-to hurry,apurarse
-to stay,quedarse
-to leave/go away,irse
-to call oneself,llamarse
-to become,hacerse
-to become (sudden change),ponerse
-to become (character change),volverse
-to realize,darse cuenta
-to remember,acordarse
-to forget,olvidarse
-to complain,quejarse
-to worry,preocuparse
-to have fun,divertirse
-to meet each other,conocerse
-to kiss each other,besarse
+"id","word","answer"
+"1","to get up","levantarse"
+"2","to go to bed","acostarse"
+"3","to wake up","despertarse"
+"4","to fall asleep","dormirse"
+"5","to get dressed","vestirse"
+"6","to take a shower","ducharse"
+"7","to bathe","bañarse"
+"8","to wash oneself","lavarse"
+"9","to brush (teeth/hair)","cepillarse"
+"10","to comb one's hair","peinarse"
+"11","to sit down","sentarse"
+"12","to stand up","levantarse"
+"13","to feel (emotion/physical)","sentirse"
+"14","to get angry","enojarse"
+"15","to get tired","cansarse"
+"16","to hurry","apurarse"
+"17","to stay","quedarse"
+"18","to leave/go away","irse"
+"19","to call oneself","llamarse"
+"20","to become","hacerse"
+"21","to become (sudden change)","ponerse"
+"22","to become (character change)","volverse"
+"23","to realize","darse cuenta"
+"24","to remember","acordarse"
+"25","to forget","olvidarse"
+"26","to complain","quejarse"
+"27","to worry","preocuparse"
+"28","to have fun","divertirse"
+"29","to meet each other","conocerse"
+"30","to kiss each other","besarse"

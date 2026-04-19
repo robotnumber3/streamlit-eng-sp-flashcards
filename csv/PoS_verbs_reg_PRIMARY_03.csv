@@ -1,26 +1,26 @@
-id,word,answer
-51,to develop {-ar},desarrollar
-52,to create {-ar},crear
-53,to decide {-ir},decidir
-54,to consider {-ar},considerar
-55,to affect {-ar},afectar
-56,to accept {-ar},aceptar
-57,to claim {-ar},afirmar
-58,to add {-ar},agregar
-59,to increase {-ar},aumentar
-60,to advance {-ar},avanzar
-61,to warn {-ar},avisar
-62,to download {-ar},bajar
-63,to base {-ar},basar
-64,to cause {-ar},causar
-65,to celebrate {-ar},celebrar
-66,to quote {-ar},citar
-67,to place {-ar},colocar
-68,to comment {-ar},comentar
-69,to confirm {-ar},confirmar
-70,to consist of {-ir},consistir
-71,to answer {-ar},contestar
-72,to continue {-ar},continuar
-73,to check {-ar},controlar
-74,to run {-er},correr
-75,to correspond {-er},corresponder
+"id","word","answer"
+"51","to develop {-ar}","desarrollar"
+"52","to create {-ar}","crear"
+"53","to decide {-ir}","decidir"
+"54","to consider {-ar}","considerar"
+"55","to affect {-ar}","afectar"
+"56","to accept {-ar}","aceptar"
+"57","to claim {-ar}","afirmar"
+"58","to add {-ar}","agregar"
+"59","to increase {-ar}","aumentar"
+"60","to advance {-ar}","avanzar"
+"61","to warn {-ar}","avisar"
+"62","to download {-ar}","bajar"
+"63","to base {-ar}","basar"
+"64","to cause {-ar}","causar"
+"65","to celebrate {-ar}","celebrar"
+"66","to quote {-ar}","citar"
+"67","to place {-ar}","colocar"
+"68","to comment {-ar}","comentar"
+"69","to confirm {-ar}","confirmar"
+"70","to consist of {-ir}","consistir"
+"71","to answer {-ar}","contestar"
+"72","to continue {-ar}","continuar"
+"73","to check {-ar}","controlar"
+"74","to run {-er}","correr"
+"75","to correspond {-er}","corresponder"

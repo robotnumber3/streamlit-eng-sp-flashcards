@@ -1,26 +1,26 @@
-id,word,answer
-76,to cut {-ar},cortar
-77,to cross {-ar},cruzar
-78,to cover {-ir},cubrir
-79,to dedicate {-ar},dedicar
-80,to define {-ir},definir
-81,to leave {-ar},dejar
-82,to depend {-er},depender
-83,to describe {-ir},describir
-84,to discover {-ir},descubrir
-85,to determine {-ar},determinar
-86,to cast out of {-ar},echar
-87,to elaborate {-ar},elaborar
-88,to use {-ar},emplear
-89,to confront {-ar},enfrentar
-90,to show {-ar},enseñar
-91,to avoid {-ar},evitar
-92,to exist {-ir},existir
-93,to express {-ar},expresar
-94,to skip {-ar},faltar
-95,to post {-ar},fijar
-96,to sign {-ar},firmar
-97,to form {-ar},formar
-98,to work {-ar},funcionar
-99,to win {-ar},ganar
-100,to guarantee {-ar},garantizar
+"id","word","answer"
+"76","to cut {-ar}","cortar"
+"77","to cross {-ar}","cruzar"
+"78","to cover {-ir}","cubrir"
+"79","to dedicate {-ar}","dedicar"
+"80","to define {-ir}","definir"
+"81","to leave {-ar}","dejar"
+"82","to depend {-er}","depender"
+"83","to describe {-ir}","describir"
+"84","to discover {-ir}","descubrir"
+"85","to determine {-ar}","determinar"
+"86","to cast out of {-ar}","echar"
+"87","to elaborate {-ar}","elaborar"
+"88","to use {-ar}","emplear"
+"89","to confront {-ar}","enfrentar"
+"90","to show {-ar}","enseñar"
+"91","to avoid {-ar}","evitar"
+"92","to exist {-ir}","existir"
+"93","to express {-ar}","expresar"
+"94","to skip {-ar}","faltar"
+"95","to post {-ar}","fijar"
+"96","to sign {-ar}","firmar"
+"97","to form {-ar}","formar"
+"98","to work {-ar}","funcionar"
+"99","to win {-ar}","ganar"
+"100","to guarantee {-ar}","garantizar"

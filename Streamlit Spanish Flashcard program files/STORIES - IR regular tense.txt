@@ -1,0 +1,115 @@
+
+
+"The First Day";"El Primer Día"
+"We open the door to the new classroom.";"Abrimos la puerta del salón nuevo."
+"I admit that I feel a little nervous.";"Admito que me siento un poco nervioso."
+"They attend the orientation with us.";"Ellos asisten a la orientación con nosotros."
+"You share your notebook with a classmate.";"Compartes tu cuaderno con un compañero."
+"She covers her book with a bright folder.";"Ella cubre su libro con una carpeta brillante."
+"He turns twelve today.";"Él cumple doce años hoy."
+"We decide where to sit.";"Decidimos dónde sentarnos."
+"I describe my goals for the year.";"Describo mis metas para el año."
+"They discover a small library in the corner.";"Ellos descubren una pequeña biblioteca en la esquina."
+"Tomorrow we are going to discuss our first project.";"Mañana vamos a discutir nuestro primer proyecto."
+
+---
+
+"The Family Gathering";"La Reunión Familiar"
+"I open the window to let fresh air in.";"Abro la ventana para dejar entrar aire fresco."
+"You admit that you miss Grandma’s cooking.";"Admites que extrañas la comida de la abuela."
+"They attend the family lunch every Sunday.";"Ellos asisten al almuerzo familiar cada domingo."
+"We share stories from the week.";"Compartimos historias de la semana."
+"She covers the table with a colorful cloth.";"Ella cubre la mesa con un mantel de colores."
+"Grandpa turns eighty next month.";"El abuelo cumple ochenta el próximo mes."
+"He decides to make a special dessert.";"Él decide hacer un postre especial."
+"I describe a funny moment from work.";"Describo un momento chistoso del trabajo."
+"We discover an old photo album in a drawer.";"Descubrimos un álbum de fotos viejo en un cajón."
+"Later we are going to discuss plans for the celebration.";"Más tarde vamos a discutir los planes para la celebración."
+
+---
+
+"The Museum Visit";"La Visita al Museo"
+"They open the doors right at nine.";"Ellos abren las puertas justo a las nueve."
+"We admit that we love this museum.";"Admitimos que nos encanta este museo."
+"You attend the first tour of the day.";"Asistes al primer recorrido del día."
+"I share my map with two tourists.";"Comparto mi mapa con dos turistas."
+"He covers his head with a hat because it’s sunny.";"Él cubre su cabeza con un sombrero porque hace sol."
+"She turns fifteen this year.";"Ella cumple quince este año."
+"We decide which exhibit to see first.";"Decidimos qué exhibición ver primero."
+"They describe the paintings with excitement.";"Ellos describen las pinturas con emoción."
+"I discover a quiet room full of old letters.";"Descubro una sala tranquila llena de cartas antiguas."
+"Tomorrow I am going to discuss the visit with my class.";"Mañana voy a discutir la visita con mi clase."
+
+---
+
+"The Rainy Afternoon";"La Tarde Lluviosa"
+"I open my umbrella as the rain starts.";"Abro mi paraguas cuando empieza la lluvia."
+"She admits she forgot her jacket.";"Ella admite que olvidó su chamarra."
+"We attend a small workshop inside the library.";"Asistimos a un tallercito dentro de la biblioteca."
+"They share their pencils with us.";"Ellos comparten sus lápices con nosotros."
+"You cover your backpack with a plastic bag.";"Cubres tu mochila con una bolsa de plástico."
+"He turns sixteen today.";"Él cumple dieciséis hoy."
+"I decide to stay until the rain stops.";"Decido quedarme hasta que pare la lluvia."
+"We describe the sound of the storm.";"Describimos el sonido de la tormenta."
+"They discover a cozy reading corner.";"Ellos descubren un rincón acogedor para leer."
+"Later we are going to discuss which books to borrow.";"Más tarde vamos a discutir qué libros pedir prestados."
+
+---
+
+
+
+"The School Project";"El Proyecto Escolar"
+"We write the first part of the project together.";"Escribimos la primera parte del proyecto juntos."
+"I print the instructions for everyone.";"Imprimo las instrucciones para todos."
+"You insist on using simple examples.";"Insistes en usar ejemplos simples."
+"They omit the long introduction.";"Ellos omiten la introducción larga."
+"She departs early to buy materials.";"Ella parte temprano para comprar materiales."
+"The teacher allows us to work in groups.";"La maestra nos permite trabajar en grupos."
+"He receives the list of tasks.";"Él recibe la lista de tareas."
+"We go up to the second floor to find a table.";"Subimos al segundo piso para encontrar una mesa."
+"Two teams join to finish faster.";"Dos equipos se unen para terminar más rápido."
+"Tomorrow we are going to live a very busy day.";"Mañana vamos a vivir un día muy ocupado."
+
+
+---
+
+"The Office Morning";"La Mañana en la Oficina"
+"I write a short email to my boss.";"Escribo un correo corto a mi jefe."
+"They print the new schedule.";"Imprimen el horario nuevo."
+"You insist on checking every detail.";"Insistes en revisar cada detalle."
+"We omit the extra pages to save paper.";"Omitimos las páginas extra para ahorrar papel."
+"He departs for a quick meeting.";"Él parte a una reunión rápida."
+"The company allows flexible hours.";"La empresa permite horarios flexibles."
+"She receives an important package.";"Ella recibe un paquete importante."
+"I go up the stairs because the elevator is full.";"Subo las escaleras porque el elevador está lleno."
+"Coworkers join us for a short break.";"Compañeros de trabajo se unen a nosotros para un descanso corto."
+"Later we are going to live a calmer afternoon.";"Más tarde vamos a vivir una tarde más tranquila."
+
+---
+
+"The Family Weekend";"El Fin de Semana Familiar"
+"She writes a list of things to buy.";"Ella escribe una lista de cosas para comprar."
+"We print a map of the park.";"Imprimimos un mapa del parque."
+"They insist on leaving early.";"Ellos insisten en salir temprano."
+"I omit the heavy items from the bag.";"Omito los artículos pesados de la bolsa."
+"You depart with the kids to find a table.";"Partes con los niños para buscar una mesa."
+"The park allows pets in most areas.";"El parque permite mascotas en la mayoría de las áreas."
+"We receive a message from our cousins.";"Recibimos un mensaje de nuestros primos."
+"They go up the small hill to take photos.";"Ellos suben la colinita para tomar fotos."
+"Two families join us for lunch.";"Dos familias se unen a nosotros para el almuerzo."
+"Tonight we are going to live a quiet evening at home.";"Esta noche vamos a vivir una tarde tranquila en casa."
+
+---
+
+"The Creative Workshop";"El Taller Creativo"
+
+"We write ideas on a big sheet of paper.";"Escribimos ideas en una hoja grande de papel."
+"You print small labels for the materials.";"Imprimes etiquetas pequeñas para los materiales."
+"I insist on trying a new design.";"Insisto en probar un diseño nuevo."
+"They omit the complicated steps.";"Ellos omiten los pasos complicados."
+"She departs to buy more glue.";"Ella parte para comprar más pegamento."
+"The instructor allows us to use any color.";"El instructor nos permite usar cualquier color."
+"He receives a box full of supplies.";"Él recibe una caja llena de materiales."
+"We go up to the rooftop for better light.";"Subimos a la azotea para tener mejor luz."
+"Everyone joins the final activity.";"Todos se unen a la actividad final."
+"Tomorrow we are going to live another creative day.";"Mañana vamos a vivir otro día creativo." 

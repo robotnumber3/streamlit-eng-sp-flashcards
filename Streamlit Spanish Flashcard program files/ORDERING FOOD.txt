@@ -1,0 +1,234 @@
+# ⭐ **ARRIVING / ASKING FOR A TABLE**
+
+"A table for 2 people, please";"Una mesa para dos personas, por favor"  
+"A table for one, please";"Una mesa para uno, por favor"  
+"Good afternoon";"Buenas tardes"  
+"Good evening";"Buenas noches"  
+"How many people? (waiter)";"¿Cuántas personas?"  
+"Is there a wait?";"¿Hay que esperar?"  
+"How long is the wait?";"¿Cuánto tiempo de espera?"  
+"Can I sit over there?";"¿Puedo sentarme allá?"
+
+---
+
+# ⭐ **WHEN YOU SIT DOWN**
+
+"Could I see the menu, please?";"¿Me puede traer el menú, por favor?"  
+"Do you have a vegetarian menu? [formal]";"¿Tiene menú vegetariano?"  
+"Do you have any specials today? [formal]";"¿Tiene alguna especialidad hoy?"
+
+---
+
+# ⭐ **EXPLAINING YOUR DIET (Vegetarian + Diabetic)**  
+*(All simple, polite, and very common)*
+
+"I am vegetarian";"Soy vegetariano"  
+"I don’t eat meat, chicken, fish, or seafood";"No como carne, pollo, pescado ni mariscos"  
+"I eat eggs and cheese";"Como huevo y queso"  
+"I am diabetic";"Soy diabético"  
+"I need food with no sugar";"Necesito comida sin azúcar"  
+"Does this have sugar?";"¿Esto tiene azúcar?"  
+"Is this dish sweet?";"¿Este platillo es dulce?"  
+"Can you make it without sugar? [formal]";"¿Lo puede preparar sin azúcar?"
+
+---
+
+# ⭐ **ASKING ABOUT INGREDIENTS**
+
+"What ingredients does it have?";"¿Qué ingredientes tiene?"  
+"Does it have meat?";"¿Tiene carne?"  
+"Does it have chicken?";"¿Tiene pollo?"  
+"Does it have fish?";"¿Tiene pescado?"  
+"Does it have broth with meat?";"¿Tiene caldo de carne?"  
+"Is it spicy?";"¿Pica?"  
+"Can you make it not spicy? [formal]";"¿Lo puede hacer que no pique?"
+
+---
+
+# ⭐ **ORDERING (BEGINNER‑SAFE, POLITE, NATURAL)**
+
+"What do you want to drink/eat?";"¿Qué va a tomar/comer?"  
+"I want _____ please.";"Quiero _____ por favor."  
+"For me, _____.";"Para mí, _____."  
+"For him/her, _____.";"Para él/ella, _____."  
+"Could you bring me _____ please? [formal]";"¿Me puede traer _____ por favor?"  
+"Bring me _____ please [formal]";"¿Me trae _____ por favor?"  
+"Bring me _____ when you can.  [formal]";"¿Me trae _____ cuando pueda, por favor."  
+"Do you have _____? [formal]";"¿Tiene _____?"  
+
+---
+
+# ⭐ **MORE ORDERING PHRASES**
+
+"I’m ready to order.";"Ya estoy listo para ordenar."  
+"I’m still deciding.";"Todavía estoy decidiendo."  
+"What do you recommend?";"¿Qué me recomienda?"  
+"I’ll have the vegetable tacos.";"Voy a pedir los tacos de verduras."  
+"With panela cheese, please.";"Con queso panela, por favor."  
+"Grilled, please.";"A la plancha, por favor."  
+"Without onion, please.";"Sin cebolla, por favor."  
+"Without salsa, please.";"Sin salsa, por favor."
+"With salsa on the side, please";"Con la salsa aparte, por favor."
+
+---
+
+# ⭐ **DRINKS (SUGAR‑FREE OPTIONS)**
+
+"What would you like to drink? (waiter)";"¿Qué va a tomar?"  
+"Is the jamaica sugar‑free?";"¿La jamaica es sin azúcar?"  
+"Please bring it without sugar";"Por favor, sin azúcar"  
+"Just water, please";"Solo agua, por favor"  
+"Sparkling or still?";"¿Agua mineral o natural?"  
+"Could I have boiling water?";"¿Me puede traer agua hirviendo?"  
+"Could I have whole milk on the side?";"¿Me puede traer leche entera aparte?"
+
+---
+
+# ⭐ **DURING THE MEAL**
+
+"Everything is very good";"Todo está muy rico"  
+"Could I have more napkins?";"¿Me puede traer más servilletas?"  
+"Could I have more tortillas?";"¿Me puede traer más tortillas?"  
+"Excuse me";"Disculpe"
+
+---
+
+# ⭐ **LIKING / WANTING (BEGINNER‑SAFE)**
+
+"Do you like _____?";"¿Le gusta _____?"  
+"I like _____.";"Me gusta _____"  
+"I don't like _____.";"No me gusta _____"  
+"Would you like _____? [formal]";"¿Le gustaría _____?"  
+"Do you want _____? [formal]";"¿Quiere _____?"  
+"How many/much _____ do you want? [formal]";"¿Cuánto _____ quiere?"
+
+*(Note: I used **usted** forms — polite and perfect for restaurants.)*
+
+---
+
+# ⭐ **ASKING PRICES**
+
+"How much is it?";"¿Cuánto cuesta?"  
+"How much is this/that?";"¿Cuánto cuesta este/ese?"  
+"How much are these/those?";"¿Cuánto cuestan estos/esos?"  
+"How much does the _____ cost?";"¿Cuánto cuesta _____?"
+
+---
+
+# ⭐ **ASKING FOR THE BILL / PAYING**
+
+"The bill, please. Thank you.";""La cuenta, por favor. Gracias""  
+"Do you accept credit cards?";"¿Acepta tarjeta?"  
+"Can I pay with card?";"¿Puedo pagar con tarjeta?"  
+"Can I pay here or at the counter?";"¿Pago aquí o en la caja?"  
+"Could you split the bill? [formal]";"¿Puede dividir la cuenta?"
+
+---
+
+# ⭐ **THANKING / LEAVING**
+
+"Thank you very much";"Muchas gracias"  
+"Everything was excellent";"Todo estuvo excelente"  
+"Everything is fine, thank you."; "Todo está bien, gracias."
+"Everything is very good."; "Todo está muy rico."
+"Have a good day";"Que tenga buen día"  
+"See you next time";"Nos vemos la próxima"
+
+
+
+---
+
+# SALSA
+
+"Do you have red salsa?";"¿Tiene salsa roja?"
+"Do you have green salsa?";"¿Tiene salsa verde?"
+"Which salsas do you have?";"¿Qué salsas tiene?"
+"Can I have the red salsa on the side, please?";"¿Me puede traer la salsa roja aparte, por favor?"
+"Can I have the green salsa on the side, please?";"¿Me puede traer la salsa verde aparte, por favor?"
+"Is the salsa spicy?";"¿La salsa pica?"
+"Is the red salsa spicy?";"¿La salsa roja pica?"
+"Is the green salsa spicy?";"¿La salsa verde pica?"
+"Is it very spicy?";"¿Pica mucho?"
+"Is it mild?";"¿Es suave?"
+"Yes, it's spicy."; "Sí, pica."
+"Yes, it's a little spicy."; "Sí, pica un poco."
+"Yes, it's very spicy."; "Sí, pica bastante."
+"Yes, it's strong/spicy."; "Sí, está fuerte."
+"No, it's not spicy."; "No, no pica."
+"It's mild."; "Es suave."
+"It's very mild."; "Es muy ligera."
+"We have red and green."; "Tenemos roja y verde."
+"The red one is spicier."; "La roja pica más."
+"The green one is barely spicy."; "La verde casi no pica."
+"The red one is milder."; "La roja es más suave."
+
+
+# OMELETTES
+
+"Do you have omelettes?";"¿Tiene omeletes?"
+"Do you have omelettes with vegetables?";"¿Tiene omeletes con verduras?"
+"Can you make an omelette with spinach and mushrooms?";"¿Puede hacer un omelete con espinacas y champiñones?"
+"I want an omelette with spinach and mushrooms, please."; "Quiero un omelete con espinacas y champiñones, por favor."
+"With avocado on top, please."; "Con aguacate encima, por favor."
+"With salsa on the side, please."; "Con la salsa aparte, por favor."
+"Can you make it without onion?";"¿Lo puede hacer sin cebolla?"
+"Can you make it without raw vegetables?";"¿Lo puede hacer sin verduras crudas?"
+"Does the omelette have cheese?";"¿El omelete tiene queso?"
+"Can you add panela cheese?";"¿Puede poner queso panela?"
+"Can you make it with only cooked vegetables?";"¿Puede hacerlo solo con verduras cocidas?"
+"Does the omelette come with bread?";"¿El omelete viene con pan?"
+"Does the bread have sugar?";"¿El pan tiene azúcar?"
+"Can you bring it without bread, please?";"¿Me lo puede traer sin pan, por favor?"
+"Does the omelette come with potatoes?";"¿El omelete viene con papas?"
+"Can I substitute vegetables instead?";"¿Puedo cambiarlo por verduras?"
+"Is the salsa spicy?";"¿La salsa pica?"
+"Is the red salsa spicy?";"¿La salsa roja pica?"
+"Is the green salsa spicy?";"¿La salsa verde pica?"
+"Which salsa is milder?";"¿Cuál salsa es más suave?"
+"Can I have the mild salsa on the side, please?";"¿Me puede traer la salsa suave aparte, por favor?"
+
+
+# BEANS and RICE
+
+"Do the beans have lard?";"¿Los frijoles tienen manteca?"
+"Are the beans cooked with lard?";"¿Los frijoles están hechos con manteca?"
+"Do you have beans without lard?";"¿Tiene frijoles sin manteca?"
+"Can you bring me beans without lard, please?";"¿Me puede traer frijoles sin manteca, por favor?"
+"Are the beans vegetarian?";"¿Los frijoles son vegetarianos?"
+"Are the beans cooked only with oil?";"¿Los frijoles están hechos solo con aceite?"
+
+"Yes, they have lard."; "Sí, tienen manteca."
+"No, they don’t have lard."; "No, no tienen manteca."
+"They are made with oil."; "Están hechos con aceite."
+"They are vegetarian."; "Son vegetarianos."
+"They are not vegetarian."; "No son vegetarianos."
+
+"Do the rice have chicken broth?";"¿El arroz tiene caldo de pollo?"
+"Is the rice cooked with chicken broth?";"¿El arroz está hecho con caldo de pollo?"
+"Is the rice vegetarian?";"¿El arroz es vegetariano?"
+"Do you have rice without chicken broth?";"¿Tiene arroz sin caldo de pollo?"
+"Can you bring me rice without chicken broth, please?";"¿Me puede traer arroz sin caldo de pollo, por favor?"
+"Is the rice cooked only with water?";"¿El arroz está hecho solo con agua?"
+"Is the rice cooked only with oil?";"¿El arroz está hecho solo con aceite?"
+
+"Yes, it has chicken broth."; "Sí, tiene caldo de pollo."
+"No, it doesn’t have chicken broth."; "No, no tiene caldo de pollo."
+"It’s made with water."; "Está hecho con agua."
+"It’s made with oil."; "Está hecho con aceite."
+"It’s vegetarian."; "Es vegetariano."
+"It’s not vegetarian."; "No es vegetariano."
+
+
+# TORTILLAS
+
+"Are the tortillas corn or flour?";"¿Las tortillas son de maíz o de harina?"
+"Do you have corn tortillas?";"¿Tiene tortillas de maíz?"
+"Do you have flour tortillas?";"¿Tiene tortillas de harina?"
+"Can you bring me corn tortillas, please?";"¿Me puede traer tortillas de maíz, por favor?"
+"Can you bring me flour tortillas, please?";"¿Me puede traer tortillas de harina, por favor?"
+"Are the corn tortillas yellow or blue?";"¿Las tortillas de maíz son amarillas o azules?"
+"Do you have yellow corn tortillas?";"¿Tiene tortillas de maíz amarillas?"
+"Do you have blue corn tortillas?";"¿Tiene tortillas de maíz azules?"
+"Can you bring me yellow corn tortillas, please?";"¿Me puede traer tortillas de maíz amarillas, por favor?"
+"Can you bring me blue corn tortillas, please?";"¿Me puede traer tortillas de maíz azules, por favor?"
+

@@ -1,0 +1,175 @@
+
+
+"The Science Morning";"La Mañana de Ciencia"
+"We absorb new information in the science lab.";"Absorbemos información nueva en el laboratorio de ciencias."
+"I learn something different every day.";"Aprendo algo diferente cada día."
+"They sweep the floor after an experiment.";"Ellos barren el piso después de un experimento."
+"You drink water because the room is warm.";"Bebes agua porque el salón está calientito."
+"She eats a small snack during the break.";"Ella come un bocadillo pequeño durante el descanso."
+"He commits a small mistake but fixes it fast.";"Él comete un error pequeño pero lo arregla rápido."
+"I understand the instructions clearly.";"Comprendo las instrucciones claramente."
+"Students run to see the results on the board.";"Los estudiantes corren para ver los resultados en el pizarrón."
+"The numbers correspond to each group.";"Los números corresponden a cada grupo."
+"Tomorrow we are going to believe in our project even more.";"Mañana vamos a creer aún más en nuestro proyecto."
+
+---
+
+"The Quiet House";"La Casa Tranquila"
+"I absorb the calm of the morning.";"Absorbo la calma de la mañana."
+"You learn a new recipe from your aunt.";"Aprendes una receta nueva de tu tía."
+"We sweep the living room together.";"Barremos la sala juntos."
+"They drink coffee on the patio.";"Ellos beben café en el patio."
+"She eats fruit while she reads.";"Ella come fruta mientras lee."
+"He commits to cleaning the garage today.";"Él se compromete a limpiar el garaje hoy."
+"I understand why everyone likes this house.";"Comprendo por qué a todos les gusta esta casa."
+"Kids run around the backyard.";"Los niños corren por el patio trasero."
+"The colors of the walls correspond to the old style.";"Los colores de las paredes corresponden al estilo antiguo."
+"Later we are going to sew a small curtain for the kitchen.";"Más tarde vamos a coser una cortinita para la cocina."
+
+---
+
+"The Afternoon Class";"La Clase de la Tarde"
+"Students absorb the teacher’s explanation.";"Los estudiantes absorben la explicación de la maestra."
+"I learn slowly but steadily.";"Aprendo despacio pero seguro."
+"You sweep your desk area before leaving.";"Barres tu área del escritorio antes de irte."
+"We drink cold water after running laps.";"Bebemos agua fría después de correr vueltas."
+"They eat sandwiches during the break.";"Ellos comen sándwiches durante el descanso."
+"She commits to studying more this week.";"Ella se compromete a estudiar más esta semana."
+"He understands the math problem now.";"Él comprende el problema de matemáticas ahora."
+"We run to the bus when class ends.";"Corremos al camión cuando termina la clase."
+"The answers correspond to the examples.";"Las respuestas corresponden a los ejemplos."
+"Tomorrow I am going to believe in my progress.";"Mañana voy a creer en mi progreso."
+
+---
+
+"The Neighborhood Market";"El Mercado del Barrio"
+"We absorb the smell of fresh bread.";"Absorbemos el olor del pan fresco."
+"They learn the names of new fruits.";"Ellos aprenden los nombres de frutas nuevas."
+"Workers sweep the entrance every hour.";"Los trabajadores barren la entrada cada hora."
+"I drink a small cup of juice.";"Bebo un vasito de jugo."
+"You eat a warm tamal from a stand.";"Comes un tamal calientito de un puesto."
+"Vendors commit to fair prices.";"Los vendedores se comprometen a precios justos."
+"She understands the directions to the bakery.";"Ella comprende las indicaciones para la panadería."
+"Kids run between the aisles.";"Los niños corren entre los pasillos."
+"The prices correspond to the season.";"Los precios corresponden a la temporada."
+"Later we are going to sew a small bag for the fruit.";"Más tarde vamos a coser una bolsita para la fruta."
+
+---
+
+
+
+"The Lost Book";"El Libro Perdido"
+"I owe the library a small fine.";"Debo una multa pequeña a la biblioteca."
+"We depend on the map to find the right shelf.";"Dependemos del mapa para encontrar el estante correcto."
+"She hides the book in her backpack.";"Ella esconde el libro en su mochila."
+"He exceeds the time limit for returns.";"Él excede el tiempo límite para devoluciones."
+"They read quietly near the window.";"Ellos leen en silencio cerca de la ventana."
+"You put the card in the return box.";"Metes la tarjeta en la caja de devoluciones."
+"I don’t want to offend the librarian.";"No quiero ofender a la bibliotecaria."
+"The library possesses many old books.";"La biblioteca posee muchos libros antiguos."
+"We turn on the small reading lamp.";"Prendemos la lamparita de lectura."
+"Tomorrow we are going to proceed with the payment.";"Mañana vamos a proceder con el pago."
+
+---
+
+"The Busy Morning";"La Mañana Ocupada"
+"You owe your friend a favor.";"Debes un favor a tu amigo."
+"I depend on my notes to stay organized.";"Dependo de mis apuntes para mantenerme organizado."
+"They hide the keys under a plant.";"Ellos esconden las llaves debajo de una planta."
+"She exceeds her usual speed when she walks.";"Ella excede su velocidad normal cuando camina."
+"We read the schedule on the wall.";"Leemos el horario en la pared."
+"He puts the documents in a folder.";"Él mete los documentos en una carpeta."
+"I hope I don’t offend anyone with my comment.";"Espero no ofender a nadie con mi comentario."
+"The office possesses new computers.";"La oficina posee computadoras nuevas."
+"They turn on the lights at exactly eight.";"Ellos prenden las luces exactamente a las ocho."
+"Later we are going to promise to arrive earlier.";"Más tarde vamos a prometer llegar más temprano."
+
+---
+
+"The Family Visit";"La Visita Familiar"
+"We owe Grandma a long visit.";"Le debemos a la abuela una visita larga."
+"She depends on her glasses to read.";"Ella depende de sus lentes para leer."
+"He hides a small gift behind the couch.";"Él esconde un regalito detrás del sillón."
+"The kids exceed the noise limit quickly.";"Los niños exceden el límite de ruido rápido."
+"I read a short story to the little ones.";"Leo un cuento corto a los pequeños."
+"You put the plates in the cabinet.";"Metes los platos en el gabinete."
+"They don’t want to offend Grandpa with jokes.";"No quieren ofender al abuelo con chistes."
+"Grandma possesses old photos from her childhood.";"La abuela posee fotos antiguas de su infancia."
+"We turn on the fan because it gets warm.";"Prendemos el ventilador porque se pone caluroso."
+"Tonight I am going to proceed with the surprise.";"Esta noche voy a proceder con la sorpresa."
+
+---
+
+"The Small Workshop";"El Taller Pequeño"
+"They owe the teacher a finished project.";"Ellos le deben a la maestra un proyecto terminado."
+"We depend on good tools to work well.";"Dependemos de buenas herramientas para trabajar bien."
+"I hide the extra nails in a small box.";"Escondo los clavos extra en una cajita."
+"You exceed the time limit but keep working.";"Excedes el tiempo límite pero sigues trabajando."
+"She reads the instructions carefully.";"Ella lee las instrucciones con cuidado."
+"He puts the wood pieces in order.";"Él mete las piezas de madera en orden."
+"We don’t want to offend the instructor.";"No queremos ofender al instructor."
+"The workshop possesses many useful materials.";"El taller posee muchos materiales útiles."
+"They turn on the small radio for music.";"Ellos prenden el radiecito para poner música."
+"Tomorrow we are going to promise to finish on time.";"Mañana vamos a prometer terminar a tiempo."
+
+
+---
+
+
+
+
+"The Strange Morning";"La Mañana Extraña"
+"We protect the plants from the cold air.";"Protegemos las plantas del aire frío."
+"I respond to a message from my neighbor.";"Respondo un mensaje de mi vecino."
+"She goes back to the kitchen to check the stove.";"Ella retrocede a la cocina para revisar la estufa."
+"He breaks a small branch by accident.";"Él rompe una ramita por accidente."
+"They surprise us with warm bread.";"Ellos nos sorprenden con pan calientito."
+"Strange things happen when the weather changes fast.";"Cosas extrañas suceden cuando el clima cambia rápido."
+"You suspend your walk because it starts to rain.";"Suspendes tu caminata porque empieza a llover."
+"I fear the storm a little.";"Temo un poco a la tormenta."
+"The kids cough from the cold wind.";"Los niños tosen por el viento frío."
+"Tomorrow we are going to sell hot chocolate at the park.";"Mañana vamos a vender chocolate caliente en el parque."
+
+---
+
+"The Small Accident";"El Pequeño Accidente"
+"I protect my phone with a strong case.";"Protejo mi teléfono con una funda resistente."
+"You respond quickly when I call your name.";"Respondes rápido cuando digo tu nombre."
+"He goes back a few steps to pick up his hat.";"Él retrocede unos pasos para recoger su gorra."
+"She breaks her pencil during the test.";"Ella rompe su lápiz durante el examen."
+"We surprise the teacher with a card.";"Sorprendemos a la maestra con una tarjeta."
+"Nothing serious happens, just a small noise.";"No sucede nada grave, solo un ruidito."
+"They suspend the activity for a moment.";"Ellos suspenden la actividad por un momento."
+"I fear being late.";"Temo llegar tarde."
+"You cough because the room is dusty.";"Toses porque el salón está polvoso."
+"Later we are going to sell the extra notebooks.";"Más tarde vamos a vender los cuadernos extra."
+
+---
+
+"The Market Surprise";"La Sorpresa del Mercado"
+"Vendors protect their fruit from the sun.";"Los vendedores protegen su fruta del sol."
+"We respond when someone asks for prices.";"Respondemos cuando alguien pregunta los precios."
+"I go back to the first stand to compare.";"Retrocedo al primer puesto para comparar."
+"They break open a coconut to show the inside.";"Ellos rompen un coco para mostrar el interior."
+"You surprise me with a fresh drink.";"Me sorprendes con una bebida fresca."
+"Many things happen at the market every day.";"Muchas cosas suceden en el mercado cada día."
+"She suspends her shopping to take a call.";"Ella suspende sus compras para tomar una llamada."
+"He fears losing his wallet in the crowd.";"Él teme perder su cartera entre la gente."
+"I cough a little from the smoke of a grill.";"Toso un poco por el humo de una parrilla."
+"Tomorrow they are going to sell new handmade baskets.";"Mañana van a vender canastas hechas a mano."
+
+---
+
+"The Long Walk";"La Caminata Larga"
+"She protects her face with a hat.";"Ella protege su cara con un sombrero."
+"They respond when the guide calls them.";"Ellos responden cuando el guía los llama."
+"We go back a little because we miss a turn.";"Retrocedemos un poco porque pasamos una vuelta."
+"I break a small stick while walking.";"Rompo una ramita mientras camino."
+"You surprise everyone with extra snacks.";"Sorprendes a todos con botanas extra."
+"Strange things happen on long trails.";"Cosas raras suceden en los senderos largos."
+"He suspends the hike to rest.";"Él suspende la caminata para descansar."
+"I fear running out of water.";"Temo quedarme sin agua."
+"She coughs a little from the dry air.";"Ella tose un poco por el aire seco."
+"Later we are going to sell photos from the trip.";"Más tarde vamos a vender fotos del viaje."
+
+

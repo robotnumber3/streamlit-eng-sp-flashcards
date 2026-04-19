@@ -1,0 +1,151 @@
+# ⭐ **INSTRUCTIONS FOR CREATING BILINGUAL SPANISH LEARNING STORIES**
+
+These instructions define **exactly** how to generate the stories: structure, tense mix, tone, grammar, formatting, and narrative style.
+
+---
+
+## 🎯 **1. Overall Purpose**
+Create **very simple, beginner‑friendly bilingual stories** that help a Spanish learner practice:
+
+- Present‑tense verbs  
+- “Going to…” future (ir + a + infinitive)  
+- Everyday vocabulary  
+- Natural Mexican Spanish  
+- Clear, parallel English–Spanish structure  
+
+Stories must be **short, friendly, concrete, and easy to visualize**.
+
+---
+
+## 🧱 **2. Story Structure**
+Each story must include:
+
+1. **A title line** in this exact format:  
+   `"Title: English Title";"Spanish Title"`
+
+2. **10 sentences**, each in this exact bilingual format:  
+   `"English sentence";"Spanish sentence"`
+
+3. **Each sentence uses exactly one of the target verbs**, conjugated correctly.
+
+4. **Four stories per verb set**.
+
+---
+
+## 🔤 **3. Formatting Rules (Very Important)**
+
+- Every line must follow this exact pattern:  
+  `"English sentence";"Spanish sentence"`
+
+- No extra punctuation, no blank lines between bilingual pairs.
+
+- Titles must use **Title Case** in English and **normal capitalization** in Spanish.
+
+- Spanish must be **natural Mexican Spanish**, not Spain‑centric.
+
+- English must be **simple, clear, and beginner‑friendly**.
+
+---
+
+## ⏳ **4. Tense Requirements**
+Each story must follow this ratio:
+
+- **75% present tense**  
+- **25% “going to” future** (voy a / vas a / va a / vamos a / van a)
+
+This means:
+
+- **7–8 sentences in present tense**  
+- **2–3 sentences using “ir + a + infinitive”**
+
+The “going to” sentences should appear **near the end** of the story (not all at the end, but in the last 3–4 lines).
+
+---
+
+## 👥 **5. Mix of Persons**
+Across the 10 sentences of each story, use a **variety of grammatical persons**:
+
+- I (yo)  
+- you (tú)  
+- he / she (él / ella)  
+- we (nosotros)  
+- they (ellos)  
+
+No story should use only one or two persons — mix them naturally.
+
+---
+
+## 🧩 **6. Verb Usage Rules**
+- Use **every verb from the provided list exactly once** per story.  
+- Conjugate correctly in present tense or “ir + a + infinitive.”  
+- Do **not** add extra verbs beyond the required ones.  
+- Keep vocabulary simple and common.
+
+---
+
+## 📝 **7. English Style**
+- Short, clear sentences.  
+- Everyday situations (school, home, market, park, family, etc.).  
+- No complex grammar.  
+- No idioms that are hard to translate.  
+- Friendly, warm tone.
+
+---
+
+## 🇲🇽 **8. Spanish Style**
+- Natural Mexican Spanish.  
+- Avoid Spain‑only forms (no “vosotros,” no “vale,” no “coger”).  
+- Use everyday vocabulary.  
+- Keep sentences short and clean.  
+- Use contractions naturally (e.g., “del,” “al”).  
+- Use diminutives when they sound natural (e.g., “cafecito,” “puestecito”).
+
+---
+
+## 🎨 **9. Story Arc Guidelines**
+Each story should feel like a **tiny scene** with a sense of flow:
+
+- A setting (school, home, market, park, etc.)  
+- Small actions happening  
+- A light emotional tone (calm, friendly, curious)  
+- A natural ending (often with a “going to…” future plan)
+
+No drama, no danger, no complicated plot — just **simple, pleasant micro‑stories**.
+
+---
+
+## 📏 **10. Length and Simplicity**
+- Exactly **10 bilingual lines** per story (plus the title).  
+- Each sentence should be **10–14 words max**.  
+- No advanced grammar.  
+- No figurative language that complicates translation.
+
+---
+
+## 🧪 **11. Example of the Required Format**
+(Just an example — not tied to any verb list.)
+
+"**The Market Morning**";"**La Mañana en el Mercado**"  
+"**We walk through the busy street.**";"**Caminamos por la calle llena de gente.**"  
+"**I buy fruit from a small stand.**";"**Compro fruta de un puestecito.**"  
+"**She looks for fresh vegetables.**";"**Ella busca verduras frescas.**"  
+"**They talk with the friendly vendor.**";"**Ellos hablan con el vendedor amable.**"  
+"**You carry a big bag of apples.**";"**Llevas una bolsa grande de manzanas.**"  
+"**He pays with a small bill.**";"**Él paga con un billete pequeño.**"  
+"**We eat a warm tamal together.**";"**Comemos un tamal calientito juntos.**"  
+"**I am going to buy tortillas later.**";"**Voy a comprar tortillas más tarde.**"  
+"**They are going to visit another stand.**";"**Ellos van a visitar otro puesto.**"  
+"**We are going to return tomorrow.**";"**Vamos a regresar mañana.**"
+
+---
+
+## 🧭 **12. When You Paste These Instructions Later**
+If you paste these instructions into a future chat and give me:
+
+- A new list of verbs  
+- Or nouns  
+- Or adjectives  
+- Or any other part of speech  
+
+…I will generate **4 new stories** that follow this exact structure and style.
+

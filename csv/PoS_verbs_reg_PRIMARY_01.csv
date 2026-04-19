@@ -1,26 +1,26 @@
-id,word,answer
-1,to speak {-ar},hablar
-2,to take {-ar},tomar
-3,to work {-ar},trabajar
-4,to eat {-er},comer
-5,to live {-ir},vivir
-6,to take {-ar},llevar
-7,to arrive {-ar},llegar
-8,to call {-ar},llamar
-9,to listen to {-ar},escuchar
-10,to see {-ar},mirar
-11,to buy {-ar},comprar
-12,to search {-ar},buscar
-13,to need {-ar},necesitar
-14,to ask {-ar},preguntar
-15,to wait {-ar},esperar
-16,to change {-ar},cambiar
-17,to walk {-ar},caminar
-18,to pass by {-ar},pasar
-19,to enter {-ar},entrar
-20,to must {-er},deber
-21,to believe {-er},creer
-22,to learn {-er},aprender
-23,to write {-ir},escribir
-24,to travel {-ar},viajar
-25,to help {-ar},ayudar
+"id","word","answer"
+"1","to speak {-ar}","hablar"
+"2","to take {-ar}","tomar"
+"3","to work {-ar}","trabajar"
+"4","to eat {-er}","comer"
+"5","to live {-ir}","vivir"
+"6","to take {-ar}","llevar"
+"7","to arrive {-ar}","llegar"
+"8","to call {-ar}","llamar"
+"9","to listen to {-ar}","escuchar"
+"10","to see {-ar}","mirar"
+"11","to buy {-ar}","comprar"
+"12","to search {-ar}","buscar"
+"13","to need {-ar}","necesitar"
+"14","to ask {-ar}","preguntar"
+"15","to wait {-ar}","esperar"
+"16","to change {-ar}","cambiar"
+"17","to walk {-ar}","caminar"
+"18","to pass by {-ar}","pasar"
+"19","to enter {-ar}","entrar"
+"20","to must {-er}","deber"
+"21","to believe {-er}","creer"
+"22","to learn {-er}","aprender"
+"23","to write {-ir}","escribir"
+"24","to travel {-ar}","viajar"
+"25","to help {-ar}","ayudar"

@@ -1,0 +1,67 @@
+This .csv file contains 50 regular Spanish -ar verbs.
+
+Construct a cohesive story with beginning, middle, and end using the first 17 of these verbs. They can appear in any order.
+
+Use about equal number of persons: I you (singular, informal), you (singular, formal), he, she, we, and they (ustedes). Do not write the Spanish pronoun (yo, tú, usted, él, ella, nosotros, ustedes) unless it is necessary for context.
+
+Each of the 17 verbs should be used 3 times, each time with a different person. This will be a total of 51 lines.
+
+Of these 51 lines, there should be approximately 15 questions.
+
+Use PRESENT TENSE only OR use the 'voy a <infinitive>'
+
+The three stories should use only beginning spanish nouns and adjectives, but do NOT repeat any of them.
+
+Each sentence should be 5-10 words in length, and have a variety of lengths.
+
+
+For each of these 3 stories, make references to yourself (I), and others, using different friend names and/or place names to fit the story.
+
+The stories should be light, even funny - but not just a collection of random sentences. The story must be cohesive and interesting.
+
+Story 2 will use the 17 verbs in lines 18–34, and Story 3 uses the 16 verbs in lines 35–50.
+
+-----
+
+Write story #1 first so that I can see if it is OK. The format is:
+
+"English";"Spanish"
+
+
+
+
+
+
+-----------------
+
+
+Only 2 sentences (or question) per verb = total of 34
+
+
+
+ Choose only  10 adjectives and reuse them at least twice each to help me learn them.
+
+
+
+Use only 'voy a ...' or present tense
+
+
+
+Use shorter sentences (beginner level)
+
+
+
+Keep it common, Mexican Spanish
+
+
+
+Use at least 4 each of the 7 different persons.
+
+
+
+Still make the story an interesting arc (beg, middle, end)
+
+
+
+Add humor to them to keep them interesting and light
+
