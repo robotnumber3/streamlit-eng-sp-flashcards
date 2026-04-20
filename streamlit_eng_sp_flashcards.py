@@ -850,10 +850,12 @@ def toggle_deck_category(category_id):
     open_categories = list(st.session_state.get("open_deck_categories", []))
     if category_id in open_categories:
         open_categories = []
+        st.session_state.deck_picker_scroll_target = None
     else:
         # Keep the picker simpler on mobile by allowing only one open category
         # at a time. Tapping a different header replaces the current section.
         open_categories = [category_id]
+        st.session_state.deck_picker_scroll_target = f"category:{category_id}"
     st.session_state.open_deck_categories = open_categories
 
 
@@ -875,6 +877,9 @@ def toggle_deck_subcategory(category_id, subcategory_id):
     ]
     if target_key not in st.session_state.get("open_deck_subcategories", []):
         open_subcategories.append(target_key)
+        st.session_state.deck_picker_scroll_target = f"subcategory:{category_id}:{subcategory_id}"
+    else:
+        st.session_state.deck_picker_scroll_target = None
     st.session_state.open_deck_subcategories = open_subcategories
 
 # ------------------------------------------------------------------------
@@ -2070,6 +2075,7 @@ defaults = {
     "delete_review_confirm_key": None,
     "open_deck_categories": [],
     "open_deck_subcategories": [],
+    "deck_picker_scroll_target": None,
     "story_playback_mode": "continuous",
     "story_display_mode": "both",
     "story_audio_on": True,
@@ -2608,6 +2614,7 @@ def render_grouped_deck_picker():
     favorites_deck_values = visible_favorites_deck_values()
     grouped_files = picker_files_by_category()
     special_deck_count = 0
+    scroll_target = st.session_state.get("deck_picker_scroll_target")
 
     with st.container(key="mobile_deck_picker_wrap"):
         st.markdown(
@@ -2753,7 +2760,8 @@ def render_grouped_deck_picker():
                             activate_deck(csv_file)
                             st.rerun()
 
-        render_mobile_deck_picker_height_fix()
+        render_mobile_deck_picker_height_fix(scroll_target)
+        st.session_state.deck_picker_scroll_target = None
 
 
 def current_review_person():
@@ -5071,14 +5079,15 @@ components.html("""
 """, height=0)
 
 
-def render_mobile_deck_picker_height_fix():
-    components.html(
-        """
+def render_mobile_deck_picker_height_fix(scroll_target=None):
+    script = """
         <script>
         (function() {
             var parentWindow = window.parent;
             var doc = parentWindow.document;
             var resizeTimer = null;
+            var pendingScrollTarget = __SCROLL_TARGET__;
+            var scrollApplied = false;
 
             function firstDeckRow(wrap) {
                 return wrap.querySelector(
@@ -5126,6 +5135,38 @@ def render_mobile_deck_picker_height_fix():
             function px(value) {
                 var parsed = parseFloat(value || '0');
                 return Number.isFinite(parsed) ? parsed : 0;
+            }
+
+            function elementForScrollTarget(wrap, value) {
+                if (!value) {
+                    return null;
+                }
+                var parts = value.split(':');
+                if (parts[0] === 'category' && parts.length === 2) {
+                    return wrap.querySelector('[class*="st-key-deck_category_toggle_' + parts[1] + '_wrap"]');
+                }
+                if (parts[0] === 'subcategory' && parts.length === 3) {
+                    return wrap.querySelector(
+                        '[class*="st-key-deck_subcategory_toggle_' + parts[1] + '_' + parts[2] + '_wrap"]'
+                    );
+                }
+                return null;
+            }
+
+            function scrollTargetIntoView(wrap, target) {
+                if (scrollApplied || !pendingScrollTarget) {
+                    return;
+                }
+                var anchor = elementForScrollTarget(wrap, pendingScrollTarget);
+                if (!anchor) {
+                    scrollApplied = true;
+                    return;
+                }
+                var targetRect = target.getBoundingClientRect();
+                var anchorRect = anchor.getBoundingClientRect();
+                var nextScrollTop = target.scrollTop + (anchorRect.top - targetRect.top) - 6;
+                target.scrollTop = Math.max(0, nextScrollTop);
+                scrollApplied = true;
             }
 
             function applyHeight() {
@@ -5210,6 +5251,7 @@ def render_mobile_deck_picker_height_fix():
                 target.style.minHeight = targetHeight;
                 target.style.overflowY = 'auto';
                 target.style.marginTop = '0';
+                scrollTargetIntoView(wrap, target);
                 return true;
             }
 
@@ -5245,7 +5287,9 @@ def render_mobile_deck_picker_height_fix():
             }, 120);
         })();
         </script>
-        """,
+        """.replace("__SCROLL_TARGET__", json.dumps(scroll_target))
+    components.html(
+        script,
         height=0,
     )
 
