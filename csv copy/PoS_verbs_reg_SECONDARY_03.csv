@@ -1,101 +1,101 @@
-id,word,answer
-202,"to classify, sort, file {-ar}",clasificar
-203,to nail {-ar},clavar
-204,to charge (money) {-ar},cobrar
-205,"to collaborate, work together {-ar}",colaborar
-206,to slip in {-ar},colar
-207,"to place, position {-ar}",colocar
-208,to fight against {-ir},combatir
-209,to combine {-ar},combinar
-210,to comment on {-ar},comentar
-211,to commit {-er},cometer
-212,to compare {-ar},comparar
-213,"to compensate, make up for {-ar}",compensar
-214,"to complement, supplement {-ar}",complementar
-215,to complete {-ar},completar
-216,"to complicate, make difficult {-ar}",complicar
-217,to behave {-ar},comportar
-218,to buy {-ar},comprar
-219,to compromise {-er},comprometer
-220,to communicate {-ar},comunicar
-221,"to conceive, understand {-ir}",concebir
-222,"to grant, concede {-er}",conceder
-223,to concentrate {-ar},concentrar
-224,"to materialize, fulfill {-ar}",concretar
-225,"to coincide, concur, meet {-ir}",concurrir
-226,"to convict, condemn {-ar}",condenar
-227,"to condition, determine {-ar}",condicionar
-228,"to connect, plug in {-ar}",conectar
-229,"to make up, comprise {-ar}",configurar
-230,to confirm {-ar},confirmar
-231,to conform {-ar},conformar
-232,to confuse {-ir},confundir
-233,to freeze {-ar},congelar
-234,"to involve, bring {-ar}",conllevar
-235,"to conquer, win [over] {-ar}",conquistar
-236,"to consecrate, establish {-ar}",consagrar
-237,"to conserve, preserve {-ar}",conservar
-238,to console {-ar},consolar
-239,to consolidate {-ar},consolidar
-240,"to consist of, comprise {-ar}",constar
-241,"to prove, verify {-ar}",constatar
-242,to consult {-ar},consultar
-243,"to consume, take in {-ir}",consumir
-244,"to reach, contact {-ar}",contactar
-245,"to infect, infest {-ar}",contagiar
-246,"to contaminate, pollute {-ar}",contaminar
-247,to contemplate {-ar},contemplar
-248,"to answer, reply {-ar}",contestar
-249,to control {-ar},controlar
-250,to contrast {-ar},contrastar
-251,"to hire, contract {-ar}",contratar
-252,"to converse, talk {-ar}",conversar
-253,to coexist {-ir},convivir
-254,"to convene, summon {-ar}",convocar
-255,to coordinate {-ar},coordinar
-256,to copy {-ar},copiar
-257,"to crown, top {-ar}",coronar
-258,to run {-er},correr
-259,to correspond with {-er},corresponder
-260,to cut {-ar},cortar
-261,to sew {-er},coser
-262,"to bring up, rear {-ar}",criar
-263,to criticize {-ar},criticar
-264,"to crunch, creak {-ir}",crujir
-265,to cross {-ar},cruzar
-266,to cover {-ir},cubrir
-267,to question {-ar},cuestionar
-268,to take care of {-ar},cuidar
-269,"to culminate, accomplish {-ar}",culminar
-270,"to cultivate, produce {-ar}",cultivar
-271,to cure {-ar},curar
-272,to damage {-ar},dañar
-273,"to debate, discuss {-ir}",debatir
-274,"to weaken, debilitate {-ar}",debilitar
-275,"to declare, testify {-ar}",declarar
-276,to decorate {-ar},decorar
-277,"to dedicate, devote {-ar}",dedicar
-278,to define {-ir},definir
-279,"to claim, sue {-ar}",demandar
-280,"to delay, take time {-ar}",demorar
-281,"to call, name {-ar}",denominar
-282,to denounce {-ar},denunciar
-283,to depend on {-er},depender
-284,"to deposit, place, store {-ar}",depositar
-285,to derive {-ar},derivar
-286,"to shed, pour out {-ar}",derramar
-287,"to knock down, overthrow {-ar}",derribar
-288,"to defeat, beat {-ar}",derrotar
-289,"to knock down, demolish {-ar}",derrumbar
-290,"to defy, stand up to {-ar}",desafiar
-291,"to untie, unleash, spark off {-ar}",desatar
-292,"to overflow, spill over {-ar}",desbordar
-293,to rest {-ar},descansar
-294,"to unleash, unload {-ar}",descargar
-295,"to discard, reject, rule out {-ar}",descartar
-296,to decipher {-ar},descifrar
-297,to describe {-ir},describir
-298,to discover {-ir},descubrir
-299,to neglect {-ar},descuidar
-300,"to flow, lead into {-ar}",desembocar
-301,"to carry out, fulfill {-ar}",desempeñar
+"id","word","answer"
+"202","to classify, sort, file {-ar}","clasificar"
+"203","to nail {-ar}","clavar"
+"204","to charge (money) {-ar}","cobrar"
+"205","to collaborate, work together {-ar}","colaborar"
+"206","to slip in {-ar}","colar"
+"207","to place, position {-ar}","colocar"
+"208","to fight against {-ir}","combatir"
+"209","to combine {-ar}","combinar"
+"210","to comment on {-ar}","comentar"
+"211","to commit {-er}","cometer"
+"212","to compare {-ar}","comparar"
+"213","to compensate, make up for {-ar}","compensar"
+"214","to complement, supplement {-ar}","complementar"
+"215","to complete {-ar}","completar"
+"216","to complicate, make difficult {-ar}","complicar"
+"217","to behave {-ar}","comportar"
+"218","to buy {-ar}","comprar"
+"219","to compromise {-er}","comprometer"
+"220","to communicate {-ar}","comunicar"
+"221","to conceive, understand {-ir}","concebir"
+"222","to grant, concede {-er}","conceder"
+"223","to concentrate {-ar}","concentrar"
+"224","to materialize, fulfill {-ar}","concretar"
+"225","to coincide, concur, meet {-ir}","concurrir"
+"226","to convict, condemn {-ar}","condenar"
+"227","to condition, determine {-ar}","condicionar"
+"228","to connect, plug in {-ar}","conectar"
+"229","to make up, comprise {-ar}","configurar"
+"230","to confirm {-ar}","confirmar"
+"231","to conform {-ar}","conformar"
+"232","to confuse {-ir}","confundir"
+"233","to freeze {-ar}","congelar"
+"234","to involve, bring {-ar}","conllevar"
+"235","to conquer, win [over] {-ar}","conquistar"
+"236","to consecrate, establish {-ar}","consagrar"
+"237","to conserve, preserve {-ar}","conservar"
+"238","to console {-ar}","consolar"
+"239","to consolidate {-ar}","consolidar"
+"240","to consist of, comprise {-ar}","constar"
+"241","to prove, verify {-ar}","constatar"
+"242","to consult {-ar}","consultar"
+"243","to consume, take in {-ir}","consumir"
+"244","to reach, contact {-ar}","contactar"
+"245","to infect, infest {-ar}","contagiar"
+"246","to contaminate, pollute {-ar}","contaminar"
+"247","to contemplate {-ar}","contemplar"
+"248","to answer, reply {-ar}","contestar"
+"249","to control {-ar}","controlar"
+"250","to contrast {-ar}","contrastar"
+"251","to hire, contract {-ar}","contratar"
+"252","to converse, talk {-ar}","conversar"
+"253","to coexist {-ir}","convivir"
+"254","to convene, summon {-ar}","convocar"
+"255","to coordinate {-ar}","coordinar"
+"256","to copy {-ar}","copiar"
+"257","to crown, top {-ar}","coronar"
+"258","to run {-er}","correr"
+"259","to correspond with {-er}","corresponder"
+"260","to cut {-ar}","cortar"
+"261","to sew {-er}","coser"
+"262","to bring up, rear {-ar}","criar"
+"263","to criticize {-ar}","criticar"
+"264","to crunch, creak {-ir}","crujir"
+"265","to cross {-ar}","cruzar"
+"266","to cover {-ir}","cubrir"
+"267","to question {-ar}","cuestionar"
+"268","to take care of {-ar}","cuidar"
+"269","to culminate, accomplish {-ar}","culminar"
+"270","to cultivate, produce {-ar}","cultivar"
+"271","to cure {-ar}","curar"
+"272","to damage {-ar}","dañar"
+"273","to debate, discuss {-ir}","debatir"
+"274","to weaken, debilitate {-ar}","debilitar"
+"275","to declare, testify {-ar}","declarar"
+"276","to decorate {-ar}","decorar"
+"277","to dedicate, devote {-ar}","dedicar"
+"278","to define {-ir}","definir"
+"279","to claim, sue {-ar}","demandar"
+"280","to delay, take time {-ar}","demorar"
+"281","to call, name {-ar}","denominar"
+"282","to denounce {-ar}","denunciar"
+"283","to depend on {-er}","depender"
+"284","to deposit, place, store {-ar}","depositar"
+"285","to derive {-ar}","derivar"
+"286","to shed, pour out {-ar}","derramar"
+"287","to knock down, overthrow {-ar}","derribar"
+"288","to defeat, beat {-ar}","derrotar"
+"289","to knock down, demolish {-ar}","derrumbar"
+"290","to defy, stand up to {-ar}","desafiar"
+"291","to untie, unleash, spark off {-ar}","desatar"
+"292","to overflow, spill over {-ar}","desbordar"
+"293","to rest {-ar}","descansar"
+"294","to unleash, unload {-ar}","descargar"
+"295","to discard, reject, rule out {-ar}","descartar"
+"296","to decipher {-ar}","descifrar"
+"297","to describe {-ir}","describir"
+"298","to discover {-ir}","descubrir"
+"299","to neglect {-ar}","descuidar"
+"300","to flow, lead into {-ar}","desembocar"
+"301","to carry out, fulfill {-ar}","desempeñar"

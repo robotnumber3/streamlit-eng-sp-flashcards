@@ -1,101 +1,101 @@
-id,word,answer
-602,"to turn on, apprehend {-er}",prender
-603,to worry {-ar},preocupar
-604,"to be present at, witness {-ar}",presenciar
-605,to preserve {-ar},preservar
-606,to preside over {-ir},presidir
-607,"to press, pressure {-ar}",presionar
-608,to lend {-ar},prestar
-609,"to boast, show off, suppose {-ir}",presumir
-610,to attempt {-er},pretender
-611,to deprive (of) {-ar},privar
-612,"to proceed, start {-er}",proceder
-613,"to process, prosecute {-ar}",procesar
-614,to proclaim {-ar},proclamar
-615,"to try, seek {-ar}",procurar
-616,"to deepen, analyze in depth {-ar}",profundizar
-617,"to plan, program {-ar}",programar
-618,to progress {-ar},progresar
-619,"to extend, prolong {-ar}",prolongar
-620,to promise {-er},prometer
-621,to pronounce {-ar},pronunciar
-622,"to favor, foster, aid {-ar}",propiciar
-623,to supply {-ar},proporcionar
-624,to have the leading role in {-ar},protagonizar
-625,"to protest, object {-ar}",protestar
-626,to provide {-er},proveer
-627,"to cause, provoke {-ar}",provocar
-628,to project {-ar},proyectar
-629,to publish {-ar},publicar
-630,"to rot, decay {-ir}",pudrir
-631,"to press, beat, strike, throb {-ar}",pulsar
-632,"to scratch, scrape {-ar}",rascar
-633,to ratify {-ar},ratificar
-634,to react {-ar},reaccionar
-635,"to renew, resume {-ar}",reanudar
-636,to reject {-ar},rechazar
-637,to recite {-ar},recitar
-638,"to demand, require {-ar}",reclamar
-639,"to recover, regain {-ar}",recobrar
-640,to travel {-er},recorrer
-641,"to trim, cut off, clip {-ar}",recortar
-642,"to recuperate, recover {-ar}",recuperar
-643,to resort to {-ir},recurrir
-644,"to edit, write, compose {-ar}",redactar
-645,to replace {-ar},reemplazar
-646,to reflect {-ar},reflejar
-647,"to reflect, consider on {-ar}",reflexionar
-648,"to reform, renovate {-ar}",reformar
-649,"to take shelter, give refuge {-ar}",refugiar
-650,to give (as a gift) {-ar},regalar
-651,"to register, record {-ar}",registrar
-652,to return (to a place) {-ar},regresar
-653,"to regulate, adjust {-ar}",regular
-654,"to reign, prevail {-ar}",reinar
-655,"to reiterate, repeat {-ar}",reiterar
-656,to relax {-ar},relajar
-657,"to tell, narrate {-ar}",relatar
-658,"to finish off, finish up {-ar}",rematar
-659,"to heal, cure {-ar}",remediar
-660,to remit {-ir},remitir
-661,to go back to [time] {-ar},remontar
-662,"to give up, renounce {-ar}",renunciar
-663,"to repair, restore {-ar}",reparar
-664,"to divide, deliver, distribute {-ir}",repartir
-665,"to review, revise {-ar}",repasar
-666,to reply {-ar},replicar
-667,"to bring, report {-ar}",reportar
-668,"to rest, lie down {-ar}",reposar
-669,to represent {-ar},representar
-670,to repress {-ir},reprimir
-671,to emphasize {-ar},resaltar
-672,to slip {-ar},resbalar
-673,"to rescue, save {-ar}",rescatar
-674,"to reserve, book {-ar}",reservar
-675,"to reside, live (in) {-ir}",residir
-676,"to resign, relinquish {-ar}",resignar
-677,"to subtract, minimize {-ar}",restar
-678,"to restore, reinstate {-ar}",restaurar
-679,to resuscitate {-ar},resucitar
-680,to summarize {-ir},resumir
-681,"to take away, retire {-ar}",retirar
-682,"to retake, restart {-ar}",retomar
-683,"to return, give back {-ar}",retornar
-684,"to portray, draw {-ar}",retratar
-685,to go back {-er},retroceder
-686,"to gather, meet, collect {-ir}",reunir
-687,"to reveal, disclose {-ar}",revelar
-688,"to check, revise, inspect {-ar}",revisar
-689,to revive {-ir},revivir
-690,"to pray, recite {-ar}",rezar
-691,"to rob, steal {-ar}",robar
-692,to surround {-ar},rodear
-693,to break {-er},romper
-694,"to patrol, serenade {-ar}",rondar
-695,to touch (lightly) {-ar},rozar
-696,to sacrifice {-ar},sacrificar
-697,"to shake, jolt {-ir}",sacudir
-698,"to splash, splatter {-ar}",salpicar
-699,"to jump, leap, hop {-ar}",saltar
-700,"to greet, say hello {-ar}",saludar
-701,"to save, rescue {-ar}",salvar
+"id","word","answer"
+"602","to turn on, apprehend {-er}","prender"
+"603","to worry {-ar}","preocupar"
+"604","to be present at, witness {-ar}","presenciar"
+"605","to preserve {-ar}","preservar"
+"606","to preside over {-ir}","presidir"
+"607","to press, pressure {-ar}","presionar"
+"608","to lend {-ar}","prestar"
+"609","to boast, show off, suppose {-ir}","presumir"
+"610","to attempt {-er}","pretender"
+"611","to deprive (of) {-ar}","privar"
+"612","to proceed, start {-er}","proceder"
+"613","to process, prosecute {-ar}","procesar"
+"614","to proclaim {-ar}","proclamar"
+"615","to try, seek {-ar}","procurar"
+"616","to deepen, analyze in depth {-ar}","profundizar"
+"617","to plan, program {-ar}","programar"
+"618","to progress {-ar}","progresar"
+"619","to extend, prolong {-ar}","prolongar"
+"620","to promise {-er}","prometer"
+"621","to pronounce {-ar}","pronunciar"
+"622","to favor, foster, aid {-ar}","propiciar"
+"623","to supply {-ar}","proporcionar"
+"624","to have the leading role in {-ar}","protagonizar"
+"625","to protest, object {-ar}","protestar"
+"626","to provide {-er}","proveer"
+"627","to cause, provoke {-ar}","provocar"
+"628","to project {-ar}","proyectar"
+"629","to publish {-ar}","publicar"
+"630","to rot, decay {-ir}","pudrir"
+"631","to press, beat, strike, throb {-ar}","pulsar"
+"632","to scratch, scrape {-ar}","rascar"
+"633","to ratify {-ar}","ratificar"
+"634","to react {-ar}","reaccionar"
+"635","to renew, resume {-ar}","reanudar"
+"636","to reject {-ar}","rechazar"
+"637","to recite {-ar}","recitar"
+"638","to demand, require {-ar}","reclamar"
+"639","to recover, regain {-ar}","recobrar"
+"640","to travel {-er}","recorrer"
+"641","to trim, cut off, clip {-ar}","recortar"
+"642","to recuperate, recover {-ar}","recuperar"
+"643","to resort to {-ir}","recurrir"
+"644","to edit, write, compose {-ar}","redactar"
+"645","to replace {-ar}","reemplazar"
+"646","to reflect {-ar}","reflejar"
+"647","to reflect, consider on {-ar}","reflexionar"
+"648","to reform, renovate {-ar}","reformar"
+"649","to take shelter, give refuge {-ar}","refugiar"
+"650","to give (as a gift) {-ar}","regalar"
+"651","to register, record {-ar}","registrar"
+"652","to return (to a place) {-ar}","regresar"
+"653","to regulate, adjust {-ar}","regular"
+"654","to reign, prevail {-ar}","reinar"
+"655","to reiterate, repeat {-ar}","reiterar"
+"656","to relax {-ar}","relajar"
+"657","to tell, narrate {-ar}","relatar"
+"658","to finish off, finish up {-ar}","rematar"
+"659","to heal, cure {-ar}","remediar"
+"660","to remit {-ir}","remitir"
+"661","to go back to [time] {-ar}","remontar"
+"662","to give up, renounce {-ar}","renunciar"
+"663","to repair, restore {-ar}","reparar"
+"664","to divide, deliver, distribute {-ir}","repartir"
+"665","to review, revise {-ar}","repasar"
+"666","to reply {-ar}","replicar"
+"667","to bring, report {-ar}","reportar"
+"668","to rest, lie down {-ar}","reposar"
+"669","to represent {-ar}","representar"
+"670","to repress {-ir}","reprimir"
+"671","to emphasize {-ar}","resaltar"
+"672","to slip {-ar}","resbalar"
+"673","to rescue, save {-ar}","rescatar"
+"674","to reserve, book {-ar}","reservar"
+"675","to reside, live (in) {-ir}","residir"
+"676","to resign, relinquish {-ar}","resignar"
+"677","to subtract, minimize {-ar}","restar"
+"678","to restore, reinstate {-ar}","restaurar"
+"679","to resuscitate {-ar}","resucitar"
+"680","to summarize {-ir}","resumir"
+"681","to take away, retire {-ar}","retirar"
+"682","to retake, restart {-ar}","retomar"
+"683","to return, give back {-ar}","retornar"
+"684","to portray, draw {-ar}","retratar"
+"685","to go back {-er}","retroceder"
+"686","to gather, meet, collect {-ir}","reunir"
+"687","to reveal, disclose {-ar}","revelar"
+"688","to check, revise, inspect {-ar}","revisar"
+"689","to revive {-ir}","revivir"
+"690","to pray, recite {-ar}","rezar"
+"691","to rob, steal {-ar}","robar"
+"692","to surround {-ar}","rodear"
+"693","to break {-er}","romper"
+"694","to patrol, serenade {-ar}","rondar"
+"695","to touch (lightly) {-ar}","rozar"
+"696","to sacrifice {-ar}","sacrificar"
+"697","to shake, jolt {-ir}","sacudir"
+"698","to splash, splatter {-ar}","salpicar"
+"699","to jump, leap, hop {-ar}","saltar"
+"700","to greet, say hello {-ar}","saludar"
+"701","to save, rescue {-ar}","salvar"
