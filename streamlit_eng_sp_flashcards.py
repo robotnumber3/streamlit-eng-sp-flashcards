@@ -27,6 +27,8 @@ st.set_page_config(page_title="Spanish Flashcards", page_icon="🌿", layout="wi
 APP_BUILD_CODE = "rev57"
 PICKER_UI_BUILD_CODE = "picker-html-v1"
 PICKER_CSS_BUILD_CODE = "css-2026-04-21e"
+MOBILE_PICKER_CONTAINER_KEY = f"mobile_deck_picker_wrap_{PICKER_UI_BUILD_CODE.replace('-', '_')}"
+PICKER_HIDDEN_ACTIONS_WRAP_KEY = f"picker_hidden_toggle_actions_wrap_{PICKER_UI_BUILD_CODE.replace('-', '_')}"
 
 # --- SIMPLE LOGIN SCREEN (before splash) ---
 LOGIN_FLOW_VERSION = 3
@@ -2844,7 +2846,7 @@ def render_grouped_deck_picker():
     picker_rows = []
     hidden_toggle_actions = []
 
-    with st.container(key="mobile_deck_picker_wrap"):
+    with st.container(key=MOBILE_PICKER_CONTAINER_KEY):
         picker_rows.append(
             "<div class='deck-picker-meta'>"
             "<div class='mobile-deck-picker-label'>Available decks:</div>"
@@ -3058,7 +3060,7 @@ def render_grouped_deck_picker():
 
         st.markdown("<div class='deck-picker-shell'>" + "".join(picker_rows) + "</div>", unsafe_allow_html=True)
 
-        with st.container(key="picker_hidden_toggle_actions_wrap"):
+        with st.container(key=PICKER_HIDDEN_ACTIONS_WRAP_KEY):
             for button_key, callback, callback_args in hidden_toggle_actions:
                 st.button(
                     f"hidden-{button_key}",
@@ -4578,23 +4580,23 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 
 /* ---- Responsive deck picker ---- */
-.st-key-mobile_deck_picker_wrap {{
+.st-key-{MOBILE_PICKER_CONTAINER_KEY} {{
     display: block;
     border: 1px solid color-mix(in srgb, {t['border']} 78%, transparent 22%) !important;
     border-radius: 0.85rem !important;
     padding: 0.35rem 0.45rem !important;
     box-sizing: border-box !important;
 }}
-.st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
+.st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
     padding: 0 !important;
 }} 
-.st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] {{
+.st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlock"] {{
     gap: 0 !important;
 }}
-.st-key-mobile_deck_picker_wrap [data-testid="stElementContainer"] {{
+.st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stElementContainer"] {{
     margin: 0 !important;
 }}
 .mobile-deck-picker-gap {{
@@ -4617,6 +4619,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     gap: 0.75rem;
     margin-top: -0.04rem;
     margin-bottom: 0.62rem;
+    font-family: 'DM Sans', sans-serif !important;
 }}
 .deck-picker-build {{
     color: {t['muted']};
@@ -4625,6 +4628,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     letter-spacing: 0.03em;
     text-align: right;
     white-space: nowrap;
+    font-family: 'DM Sans', sans-serif !important;
 }}
 .deck-picker-row {{
     display: grid;
@@ -4644,6 +4648,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font: inherit;
     appearance: none;
     -webkit-appearance: none;
+    font-family: 'DM Sans', sans-serif !important;
 }}
 .deck-picker-row:visited,
 .deck-picker-row:hover,
@@ -4656,7 +4661,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 [class*="st-key-picker_hidden_toggle_category_"],
 [class*="st-key-picker_hidden_toggle_subcategory_"],
-.st-key-picker_hidden_toggle_actions_wrap {{
+.st-key-{PICKER_HIDDEN_ACTIONS_WRAP_KEY} {{
     display: none !important;
 }}
 .deck-picker-row-icon {{
@@ -4671,10 +4676,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin: 0;
     line-height: 1;
     text-align: left;
+    font-family: 'DM Sans', sans-serif !important;
 }}
 .deck-picker-row-category {{
     font-size: 1.2rem;
-    font-weight: 400;
+    font-weight: 400 !important;
     line-height: 1.1;
     min-height: 1.7rem;
     margin-top: 0.9rem;
@@ -4683,7 +4689,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .deck-picker-row-subcategory {{
     padding-left: 2rem;
     font-size: 1rem;
-    font-weight: 400;
+    font-weight: 400 !important;
     line-height: 1.05;
     min-height: 1.9rem;
     padding-top: 0.18rem;
@@ -4695,7 +4701,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .deck-picker-row-story-child {{
     font-size: 0.88rem;
     line-height: 1;
-    font-weight: 400;
+    font-weight: 400 !important;
     min-height: 1.82rem;
     padding-top: 0.16rem;
     padding-bottom: 0.16rem;
@@ -4830,7 +4836,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .mobile-deck-picker-gap {{
         height: 0.62rem !important;
     }}
-    .st-key-mobile_deck_picker_wrap {{
+    .st-key-{MOBILE_PICKER_CONTAINER_KEY} {{
         padding: 0 !important;
         margin-top: -0.35rem !important;
         border: none !important;
@@ -4838,13 +4844,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         background: transparent !important;
         border-radius: 0 !important;
     }}
-    .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
+    .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
         border: none !important;
         box-shadow: none !important;
         background: transparent !important;
         padding: 0 !important;
     }}
-    .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] > * {{
+    .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlock"] > * {{
         margin-bottom: 0 !important;
     }}
 
@@ -5119,7 +5125,7 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
             }
 
             function applyHeight() {
-                var wrap = doc.querySelector('.st-key-mobile_deck_picker_wrap');
+                var wrap = doc.querySelector('.st-key-{MOBILE_PICKER_CONTAINER_KEY}');
                 if (!wrap) {
                     return false;
                 }
