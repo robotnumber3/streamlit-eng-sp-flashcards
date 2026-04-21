@@ -878,7 +878,6 @@ def is_deck_subcategory_open(category_id, subcategory_id):
 def toggle_deck_subcategory(category_id, subcategory_id):
     target_key = deck_subcategory_state_key(category_id, subcategory_id)
     prefix = f"{category_id}:"
-    st.session_state.open_deck_categories = [category_id]
     open_subcategories = [
         key
         for key in st.session_state.get("open_deck_subcategories", [])
@@ -2121,25 +2120,6 @@ for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
 
-active_person_query_value = st.query_params.get("active_person")
-if active_person_query_value in PERSON_LABELS and st.session_state.active_person not in PERSON_LABELS:
-    st.session_state.active_person = active_person_query_value
-    st.session_state.person_selector_visible = False
-    st.session_state.person_settings = prefs["person_settings"]
-    restored_person_prefs = sanitize_person_prefs(
-        st.session_state.person_settings.get(active_person_query_value, {}),
-        default_person_prefs(),
-    )
-    st.session_state.person_settings[active_person_query_value] = restored_person_prefs
-    st.session_state.theme = restored_person_prefs["theme"]
-    st.session_state.direction_mode = restored_person_prefs["direction_mode"]
-    st.session_state.speech_speed = restored_person_prefs["speech_speed"]
-    st.session_state.show_hints = restored_person_prefs["show_hints"]
-    st.session_state.auto_speak_spanish = restored_person_prefs["auto_speak_spanish"]
-    st.session_state.story_reading_speed = restored_person_prefs["story_reading_speed"]
-    st.session_state.story_pause_amount = restored_person_prefs["story_pause_amount"]
-    st.session_state.direction = direction_for_mode(restored_person_prefs["direction_mode"])
-
 if "story_display_mode" not in st.session_state:
     legacy_prompt_on = st.session_state.get("story_prompt_on", True)
     legacy_english_on = st.session_state.get(
@@ -2691,15 +2671,6 @@ def picker_query_href(action, target=None):
     query = [f"picker_action={quote(str(action), safe='')}"]
     if target is not None:
         query.append(f"picker_target={quote(str(target), safe='')}")
-
-    handoff_token = st.query_params.get("auth_handoff") or ensure_login_handoff_token()
-    if handoff_token:
-        query.append(f"auth_handoff={quote(str(handoff_token), safe='')}")
-
-    active_person = st.session_state.get("active_person")
-    if active_person in PERSON_LABELS:
-        query.append(f"active_person={quote(str(active_person), safe='')}")
-
     return "?" + "&".join(query)
 
 
@@ -4873,7 +4844,19 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
             var scrollApplied = false;
 
             function firstDeckRow(wrap) {
-                return wrap.querySelector('.deck-picker-row');
+                return wrap.querySelector(
+                    [
+                        '.deck-picker-row',
+                        '[class*="st-key-learned_words_challenge_active_wrap"]',
+                        '[class*="st-key-review_"]',
+                        '[class*="st-key-favorites_"]',
+                        '[class*="st-key-deck_category_toggle_"]',
+                        '[class*="st-key-deck_subcategory_toggle_"]',
+                        '[class*="st-key-deck_category_file_"]',
+                        '[class*="st-key-deck_subcategory_file_"]',
+                        '[class*="st-key-deck_subcategory_story_child_file_"]'
+                    ].join(',')
+                );
             }
 
             function findScrollableAncestor(start, stopAt) {
@@ -4914,7 +4897,20 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                     return null;
                 }
                 var escapedValue = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-                return wrap.querySelector('[data-picker-anchor="' + escapedValue + '"]');
+                var directMatch = wrap.querySelector('[data-picker-anchor="' + escapedValue + '"]');
+                if (directMatch) {
+                    return directMatch;
+                }
+                var parts = value.split(':');
+                if (parts[0] === 'category' && parts.length === 2) {
+                    return wrap.querySelector('[class*="st-key-deck_category_toggle_' + parts[1] + '_wrap"]');
+                }
+                if (parts[0] === 'subcategory' && parts.length === 3) {
+                    return wrap.querySelector(
+                        '[class*="st-key-deck_subcategory_toggle_' + parts[1] + '_' + parts[2] + '_wrap"]'
+                    );
+                }
+                return null;
             }
 
             function scrollTargetIntoView(wrap, target) {
@@ -7767,7 +7763,6 @@ def inject_tap_reveal(show_answer, auto_speak_enabled=False, auto_speak_text="")
                 rate: speechRate,
                 key: 'reveal|' + speechText + '|' + speechRate,
                 cancelFirst: true,
-                    immediate: true,
             });
         }
 
@@ -8288,18 +8283,9 @@ def inject_flashcard_speech_runtime():
                 }
             }
 
-                function clearStartWatchdog() {
-                    if (doc._fcSpeechStartWatchdog) {
-                        parentWindow.clearTimeout(doc._fcSpeechStartWatchdog);
-                        doc._fcSpeechStartWatchdog = null;
-                    }
-                }
-
             function clearPendingSpeech() {
                 clearPendingTimer();
-                    clearStartWatchdog();
                 clearVoiceHandler();
-                    doc._fcSpeechPendingKey = null;
             }
 
             doc._fcSpeakSpanish = function(config) {
@@ -8311,20 +8297,18 @@ def inject_flashcard_speech_runtime():
                 var cancelFirst = config.cancelFirst !== false;
                 var preferredGender = config.preferredGender || null;
                 var randomize = config.randomize !== false;
-                var immediate = config.immediate === true;
 
                 if (!speechText) return;
-                if (speechKey && (doc._fcSpeechLastKey === speechKey || doc._fcSpeechPendingKey === speechKey)) return;
+                if (speechKey && doc._fcSpeechLastKey === speechKey) return;
 
+                doc._fcSpeechLastKey = speechKey;
                 clearPendingSpeech();
-                doc._fcSpeechPendingKey = speechKey;
 
                 function speakNow() {
                     var voice = pickVoice('es', {
                         preferredGender: preferredGender,
                         randomize: randomize,
                     });
-                    var attemptCount = 0;
 
                     if (cancelFirst) {
                         try {
@@ -8333,96 +8317,28 @@ def inject_flashcard_speech_runtime():
                         }
                     }
 
-                    function queueSpeakAttempt() {
-                        clearStartWatchdog();
-                        attemptCount += 1;
+                    doc._fcSpeechPendingTimer = parentWindow.setTimeout(function() {
+                        doc._fcSpeechPendingTimer = null;
                         try {
-                            if (typeof synth.resume === 'function') {
-                                synth.resume();
-                            }
-
                             var utterance = new UtteranceCtor(speechText);
-                            var started = false;
                             utterance.lang = voice ? voice.lang : 'es-ES';
                             utterance.rate = speechRate;
                             if (voice) utterance.voice = voice;
 
                             doc._fcSpeechActiveUtterance = utterance;
-                            utterance.onstart = function() {
-                                started = true;
-                                clearStartWatchdog();
-                                doc._fcSpeechPendingKey = null;
-                                doc._fcSpeechUnlocked = true;
-                                if (speechKey) {
-                                    doc._fcSpeechLastKey = speechKey;
-                                }
-                            };
-                            utterance.onend = function() {
+                            utterance.onend = utterance.onerror = function() {
                                 if (doc._fcSpeechActiveUtterance === utterance) {
                                     doc._fcSpeechActiveUtterance = null;
                                 }
-                                clearStartWatchdog();
-                                if (!started && speechKey && doc._fcSpeechLastKey === speechKey) {
-                                    doc._fcSpeechLastKey = null;
-                                }
-                                if (!started && doc._fcSpeechPendingKey === speechKey) {
-                                    doc._fcSpeechPendingKey = null;
-                                }
                             };
-                            utterance.onerror = function() {
-                                if (doc._fcSpeechActiveUtterance === utterance) {
-                                    doc._fcSpeechActiveUtterance = null;
-                                }
-                                clearStartWatchdog();
-                                if (!started && attemptCount < 2) {
-                                    parentWindow.setTimeout(queueSpeakAttempt, 120);
-                                    return;
-                                }
-                                if (speechKey && doc._fcSpeechLastKey === speechKey) {
-                                    doc._fcSpeechLastKey = null;
-                                }
-                                if (doc._fcSpeechPendingKey === speechKey) {
-                                    doc._fcSpeechPendingKey = null;
-                                }
-                            };
-
-                            doc._fcSpeechStartWatchdog = parentWindow.setTimeout(function() {
-                                if (started) return;
-                                if (doc._fcSpeechActiveUtterance === utterance) {
-                                    doc._fcSpeechActiveUtterance = null;
-                                }
-                                if (attemptCount < 2) {
-                                    try {
-                                        synth.cancel();
-                                    } catch (error) {
-                                    }
-                                    parentWindow.setTimeout(queueSpeakAttempt, 120);
-                                    return;
-                                }
-                                if (speechKey && doc._fcSpeechLastKey === speechKey) {
-                                    doc._fcSpeechLastKey = null;
-                                }
-                                if (doc._fcSpeechPendingKey === speechKey) {
-                                    doc._fcSpeechPendingKey = null;
-                                }
-                            }, immediate ? 900 : 1200);
 
                             synth.speak(utterance);
                         } catch (error) {
-                            clearStartWatchdog();
                             if (speechKey) {
                                 doc._fcSpeechLastKey = null;
                             }
-                            if (doc._fcSpeechPendingKey === speechKey) {
-                                doc._fcSpeechPendingKey = null;
-                            }
                         }
-                    }
-
-                    doc._fcSpeechPendingTimer = parentWindow.setTimeout(function() {
-                        doc._fcSpeechPendingTimer = null;
-                        queueSpeakAttempt();
-                    }, immediate ? 0 : (cancelFirst ? 60 : 0));
+                    }, cancelFirst ? 60 : 0);
                 }
 
                 if (synth.getVoices && synth.getVoices().length) {
@@ -8591,9 +8507,8 @@ def inject_speech_priming():
                 primeCueAudio();
             };
 
-            ['pointerdown', 'mousedown', 'touchstart', 'touchend', 'click', 'keydown'].forEach(function(eventName) {
-                doc.body.addEventListener(eventName, doc._fcSpeechPrimeHandler, true);
-            });
+            doc.body.addEventListener('click', doc._fcSpeechPrimeHandler, true);
+            doc.body.addEventListener('touchend', doc._fcSpeechPrimeHandler, true);
             doc._fcSpeechPrimingAttached = true;
         })();
         </script>
@@ -8656,7 +8571,6 @@ def render_speaker_button(text):
                     text: speechText,
                     rate: speechRate,
                     cancelFirst: true,
-                    immediate: true,
                 }});
             }}
 
