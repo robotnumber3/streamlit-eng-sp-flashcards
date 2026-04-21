@@ -368,6 +368,9 @@ DECK_PICKER_CATEGORY_TITLES = {
 }
 BOOK_PREFIX_TITLES = {
     "es_": "Easy Spanish: Step By Step",
+    "sp_": "Verbos de Poder Español",
+    "lp_": "Lonely Planet Español Mexicano",
+    "cl_": "Español latinoamericano completo",
 }
 PARTS_OF_SPEECH_SUBCATEGORIES = [
     {"id": "adj", "title": "Adjectives", "prefixes": ["pos_adj_"]},
