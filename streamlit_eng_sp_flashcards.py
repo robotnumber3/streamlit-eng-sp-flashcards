@@ -2809,13 +2809,6 @@ def inject_picker_toggle_bridge():
         (function() {
             var doc = window.parent.document;
 
-            function isMobilePickerDevice() {
-                var ua = window.parent.navigator.userAgent || '';
-                var narrow = window.parent.innerWidth <= 900;
-                var hasTouch = (window.parent.navigator.maxTouchPoints || 0) > 0;
-                return narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua));
-            }
-
             function findHiddenButton(key, label) {
                 if (key) {
                     var byClass = doc.querySelector(
@@ -2845,22 +2838,12 @@ def inject_picker_toggle_bridge():
                     button.addEventListener('click', function(event) {
                         var key = button.getAttribute('data-picker-button-key');
                         var label = button.getAttribute('data-picker-button-label');
-                        var fallbackHref = button.getAttribute('data-picker-fallback-href');
                         if (!key) return;
 
-                        if (fallbackHref && isMobilePickerDevice()) {
-                            return;
-                        }
+                        var hiddenButton = findHiddenButton(key, label);
+                        if (!hiddenButton) return;
 
                         event.preventDefault();
-
-                        var hiddenButton = findHiddenButton(key, label);
-                        if (!hiddenButton) {
-                            if (fallbackHref) {
-                                window.parent.location.href = fallbackHref;
-                            }
-                            return;
-                        }
                         hiddenButton.click();
                     });
                 });
