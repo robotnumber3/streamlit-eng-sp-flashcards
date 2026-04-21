@@ -2997,6 +2997,8 @@ def render_grouped_deck_picker():
                         status = deck_picker_status(csv_file, st.session_state.active_person)
                         row_class = "deck-picker-row-story-child" if file_entry.get("story_child_indent") else "deck-picker-row-file"
                         extra_classes = [picker_status_class(status)]
+                        if file_entry.get("story_child_indent"):
+                            extra_classes.insert(0, "deck-picker-row-nested-child")
                         if not file_entry.get("story_child_indent"):
                             extra_classes.insert(0, "deck-picker-row-subcategory-file")
                         picker_rows.append(
@@ -3053,6 +3055,8 @@ def render_grouped_deck_picker():
                         status = deck_picker_status(csv_file, st.session_state.active_person)
                         row_class = "deck-picker-row-story-child" if file_entry.get("story_child_indent") else "deck-picker-row-file"
                         extra_classes = [picker_status_class(status)]
+                        if file_entry.get("story_child_indent"):
+                            extra_classes.insert(0, "deck-picker-row-nested-child")
                         if not file_entry.get("story_child_indent"):
                             extra_classes.insert(0, "deck-picker-row-subcategory-file")
                         picker_rows.append(
@@ -5179,6 +5183,9 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                     return false;
                 }
 
+                var phoneLayout = isPhoneLayout();
+                var hasNestedChildRows = !!wrap.querySelector('.deck-picker-row-nested-child');
+
                 var row = firstDeckRow(wrap);
                 var target = row ? findScrollableAncestor(row, wrap) : null;
 
@@ -5213,7 +5220,16 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                     target = candidates[0];
                 }
 
-                var phoneLayout = isPhoneLayout();
+                if (phoneLayout && hasNestedChildRows) {
+                    target.style.height = '';
+                    target.style.maxHeight = '';
+                    target.style.minHeight = '';
+                    target.style.overflowY = 'visible';
+                    target.style.marginTop = '';
+                    scrollApplied = true;
+                    return true;
+                }
+
                 var wrapStyle = parentWindow.getComputedStyle(wrap);
                 var targetStyle = parentWindow.getComputedStyle(target);
                 var targetRect = target.getBoundingClientRect();
