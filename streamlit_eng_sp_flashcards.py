@@ -2739,6 +2739,10 @@ def picker_hidden_button_key(prefix, *parts):
     return prefix + "_" + "_".join(part for part in sanitized_parts if part)
 
 
+def picker_hidden_button_label(button_key):
+    return f"hidden-{button_key}"
+
+
 def picker_icon_for_status(status):
     return {
         "review": "★",
@@ -2773,8 +2777,9 @@ def picker_row_markup(label_html, icon_text, row_class, action, target, anchor_k
     )
 
     if button_key:
+        button_label = picker_hidden_button_label(button_key)
         return (
-            f'<button type="button" class="{' '.join(class_names)} deck-picker-action-button" data-picker-button-key="{html.escape(button_key)}"{anchor_attr}>'
+            f'<button type="button" class="{' '.join(class_names)} deck-picker-action-button" data-picker-button-key="{html.escape(button_key)}" data-picker-button-label="{html.escape(button_label)}"{anchor_attr}>'
             f'{icon_markup}'
             f'<span class="deck-picker-row-label">{label_html}</span>'
             "</button>"
@@ -2803,6 +2808,25 @@ def inject_picker_toggle_bridge():
         (function() {
             var doc = window.parent.document;
 
+            function findHiddenButton(key, label) {
+                if (key) {
+                    var byClass = doc.querySelector(
+                        '.st-key-' + key + ' button, [class*="st-key-' + key + '"] button'
+                    );
+                    if (byClass) return byClass;
+                }
+
+                if (label) {
+                    var buttons = Array.from(doc.querySelectorAll('button'));
+                    var byLabel = buttons.find(function(candidate) {
+                        return candidate.textContent && candidate.textContent.trim() === label;
+                    });
+                    if (byLabel) return byLabel;
+                }
+
+                return null;
+            }
+
             function attach() {
                 var pickerButtons = doc.querySelectorAll('.deck-picker-action-button[data-picker-button-key]');
                 if (!pickerButtons.length) return false;
@@ -2813,16 +2837,12 @@ def inject_picker_toggle_bridge():
                     button.addEventListener('click', function(event) {
                         event.preventDefault();
                         var key = button.getAttribute('data-picker-button-key');
+                        var label = button.getAttribute('data-picker-button-label');
                         if (!key) return;
-                        var hiddenButton = doc.querySelector(
-                            '.st-key-' + key + ' button, [class*="st-key-' + key + '"] button'
-                        );
+                        var hiddenButton = findHiddenButton(key, label);
                         if (!hiddenButton) return;
-                        hiddenButton.dispatchEvent(new MouseEvent('click', {
-                            view: window.parent,
-                            bubbles: true,
-                            cancelable: true
-                        }));
+                        hiddenButton.focus();
+                        hiddenButton.click();
                     });
                 });
 
@@ -3076,7 +3096,7 @@ def render_grouped_deck_picker():
         with st.container(key=PICKER_HIDDEN_ACTIONS_WRAP_KEY):
             for button_key, callback, callback_args in hidden_toggle_actions:
                 st.button(
-                    f"hidden-{button_key}",
+                    picker_hidden_button_label(button_key),
                     key=button_key,
                     on_click=callback,
                     args=callback_args,
