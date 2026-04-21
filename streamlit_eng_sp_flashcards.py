@@ -2807,7 +2807,9 @@ def inject_picker_toggle_bridge():
                         event.preventDefault();
                         var key = button.getAttribute('data-picker-button-key');
                         if (!key) return;
-                        var hiddenButton = doc.querySelector('.st-key-' + key + ' button');
+                        var hiddenButton = doc.querySelector(
+                            '.st-key-' + key + ' button, [class*="st-key-' + key + '"] button'
+                        );
                         if (!hiddenButton) return;
                         hiddenButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
                     });
@@ -4667,6 +4669,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .deck-picker-row-icon {{
     display: block;
     width: 1.15rem;
+    margin-right: 0.18rem;
     text-align: left;
     white-space: nowrap;
     line-height: 1;
