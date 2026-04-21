@@ -2818,7 +2818,11 @@ def inject_picker_toggle_bridge():
                             '.st-key-' + key + ' button, [class*="st-key-' + key + '"] button'
                         );
                         if (!hiddenButton) return;
-                        hiddenButton.click();
+                        hiddenButton.dispatchEvent(new MouseEvent('click', {
+                            view: window.parent,
+                            bubbles: true,
+                            cancelable: true
+                        }));
                     });
                 });
 
@@ -2949,6 +2953,8 @@ def render_grouped_deck_picker():
                     subcategory_label_html = picker_row_label_html(
                         f"{subcategory_title} ({len(subcategory_files)})"
                     )
+                    subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
+                    hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))
                     picker_rows.append(
                         picker_row_markup(
                             subcategory_label_html,
@@ -2957,6 +2963,7 @@ def render_grouped_deck_picker():
                             "toggle_subcategory",
                             f"{category_id}|{subcategory_id}",
                             anchor_key=f"subcategory:{category_id}:{subcategory_id}",
+                            button_key=subcategory_button_key,
                         )
                     )
 
@@ -3002,6 +3009,8 @@ def render_grouped_deck_picker():
                     subcategory_label_html = picker_row_label_html(
                         f"{PARTS_OF_SPEECH_SUBCATEGORY_TITLES[subcategory_id]} ({len(subcategory_files)})"
                     )
+                    subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
+                    hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))
                     picker_rows.append(
                         picker_row_markup(
                             subcategory_label_html,
@@ -3010,6 +3019,7 @@ def render_grouped_deck_picker():
                             "toggle_subcategory",
                             f"{category_id}|{subcategory_id}",
                             anchor_key=f"subcategory:{category_id}:{subcategory_id}",
+                            button_key=subcategory_button_key,
                         )
                     )
 
@@ -4759,9 +4769,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         word-break: break-word;
     }}
     .deck-picker-row {{
-        grid-template-columns: 1.15rem minmax(0, 1fr);
-        column-gap: 0.12rem;
+        grid-template-columns: 1.7rem minmax(0, 1fr);
+        column-gap: 0.5rem;
         padding-right: 0.35rem;
+    }}
+    .deck-picker-row-icon {{
+        width: 1.7rem;
+    }}
+    .deck-picker-row-label {{
+        padding-left: 0.12rem;
     }}
     .deck-picker-row-special {{
         min-height: 1.75rem;
