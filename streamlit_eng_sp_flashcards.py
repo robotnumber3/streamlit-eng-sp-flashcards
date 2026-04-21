@@ -4970,6 +4970,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     [class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button {{
         padding-left: 2.00rem !important;
     }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_toggle_"][data-testid="stButton"] > button,
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button {{
+        padding-left: 2.00rem !important;
+    }}
     [class*="st-key-deck_category_file_"][data-testid="stButton"] > button,
     [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
         padding-left: 1.55rem !important;
