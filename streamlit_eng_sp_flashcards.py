@@ -5066,6 +5066,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         flex: 1 1 0 !important;
     }}
 }}
+    </style>
+    /* --- GLOBAL BUTTON LEFT ALIGNMENT OVERRIDE (added for cross-browser consistency, 2026-04-21) --- */
+    <style>
+    button, [data-testid="stButton"] > button, .stButton > button {
+        text-align: left !important;
+        justify-content: flex-start !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
