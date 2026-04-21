@@ -367,10 +367,10 @@ DECK_PICKER_CATEGORY_TITLES = {
     for category in DECK_PICKER_CATEGORIES
 }
 BOOK_PREFIX_TITLES = {
-    "es_": "Easy Spanish: Step By Step",
-    "sp_": "Verbos de Poder Español",
-    "lp_": "Lonely Planet Español Mexicano",
-    "cl_": "Español latinoamericano completo",
+    "es_": "Easy Spanish",
+    "el_": "Español LatinoAmericano",
+    "lp_": "Lonely Planet Español",
+    "vp_": "Verbos de Poder Español",
 }
 PARTS_OF_SPEECH_SUBCATEGORIES = [
     {"id": "adj", "title": "Adjectives", "prefixes": ["pos_adj_"]},
@@ -399,8 +399,42 @@ LEARNED_WORDS_CHALLENGE_LABEL = "Learned Words Challenge [20]"
 LEARNED_WORDS_CHALLENGE_MIN_CARDS = 20
 LEARNED_WORDS_CHALLENGE_SESSION_SIZE = 20
 
-csv_files = [f for f in os.listdir(CSV_FOLDER) if f.endswith(".csv")]
-csv_files.sort(key=str.lower)
+
+def discover_csv_files(csv_root):
+    csv_root_path = pathlib.Path(csv_root)
+    deck_paths_by_name = {}
+    duplicate_names = {}
+
+    for csv_path in sorted(csv_root_path.rglob("*.csv"), key=lambda path: str(path).lower()):
+        deck_name = csv_path.name
+        relative_path = str(csv_path.relative_to(csv_root_path))
+        if deck_name in deck_paths_by_name:
+            duplicate_names.setdefault(deck_name, [deck_paths_by_name[deck_name]])
+            duplicate_names[deck_name].append(relative_path)
+            continue
+        deck_paths_by_name[deck_name] = relative_path
+
+    if duplicate_names:
+        duplicate_lines = []
+        for deck_name in sorted(duplicate_names, key=str.lower):
+            duplicate_lines.append(f"{deck_name}: {', '.join(duplicate_names[deck_name])}")
+        raise RuntimeError(
+            "Duplicate CSV filenames found under csv/. Filenames must stay unique when using subfolders.\n"
+            + "\n".join(duplicate_lines)
+        )
+
+    csv_names = sorted(deck_paths_by_name, key=str.lower)
+    return csv_names, deck_paths_by_name
+
+
+csv_files, csv_relative_paths = discover_csv_files(CSV_FOLDER)
+
+
+def csv_path_for(filename):
+    relative_path = csv_relative_paths.get(filename)
+    if relative_path is None:
+        raise FileNotFoundError(f"CSV file not found in index: {filename}")
+    return os.path.join(CSV_FOLDER, relative_path)
 
 
 def review_item_key(word, answer):
@@ -493,7 +527,7 @@ def story_title_row_present_in_file(filename):
     ):
         return False
 
-    csv_path = os.path.join(CSV_FOLDER, filename)
+    csv_path = csv_path_for(filename)
     try:
         with open(csv_path, "r", encoding="utf-8") as handle:
             first_line = handle.readline()
@@ -520,7 +554,7 @@ def story_title_row_present_in_file(filename):
 
 @st.cache_data(show_spinner=False)
 def csv_data_row_count(filename):
-    file_path = os.path.join(CSV_FOLDER, filename)
+    file_path = csv_path_for(filename)
     try:
         with open(file_path, encoding="utf-8", errors="ignore") as handle:
             row_count = max(sum(1 for _ in handle) - 1, 0)
@@ -602,6 +636,18 @@ def books_files_by_subcategory(files):
             continue
         grouped[subcategory_id].append(file_entry)
     return grouped
+
+
+def picker_parent_item_count(files):
+    return sum(1 for file_entry in files if not file_entry.get("story_child_indent"))
+
+
+def picker_category_item_count(category_id, files):
+    if category_id == "books":
+        return len(BOOK_PREFIX_TITLES)
+    if category_id == "parts_of_speech":
+        return len([subcategory for subcategory in PARTS_OF_SPEECH_SUBCATEGORIES if subcategory["id"] != "other"])
+    return len(files)
 
 
 def parts_of_speech_files_by_subcategory(files):
@@ -712,7 +758,7 @@ def completion_sort_key(value):
 
 
 def load_regular_deck(filename):
-    csv_path = os.path.join(CSV_FOLDER, filename)
+    csv_path = csv_path_for(filename)
     with open(csv_path, "r", encoding="utf-8") as handle:
         first_line = handle.readline()
     separator = ";" if ";" in first_line else ","
@@ -2940,7 +2986,9 @@ def render_grouped_deck_picker():
             files = grouped_files.get(category_id, [])
             is_open = is_deck_category_open(category_id)
             category_icon = "▼" if is_open else "▶"
-            category_label_html = picker_row_label_html(f"{category['title']} ({len(files)})")
+            category_label_html = picker_row_label_html(
+                f"{category['title']} ({picker_category_item_count(category_id, files)})"
+            )
             category_button_key = picker_hidden_button_key("picker_hidden_toggle_category", category_id)
             hidden_toggle_actions.append((category_button_key, toggle_deck_category, (category_id,)))
             picker_rows.append(
@@ -2973,7 +3021,7 @@ def render_grouped_deck_picker():
                     subcategory_open = is_deck_subcategory_open(category_id, subcategory_id)
                     subcategory_icon = "▼" if subcategory_open else "▶"
                     subcategory_label_html = picker_row_label_html(
-                        f"{subcategory_title} ({len(subcategory_files)})"
+                        f"{subcategory_title} ({picker_parent_item_count(subcategory_files)})"
                     )
                     subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
                     hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))
@@ -3031,7 +3079,7 @@ def render_grouped_deck_picker():
                     subcategory_open = is_deck_subcategory_open(category_id, subcategory_id)
                     subcategory_icon = "▼" if subcategory_open else "▶"
                     subcategory_label_html = picker_row_label_html(
-                        f"{PARTS_OF_SPEECH_SUBCATEGORY_TITLES[subcategory_id]} ({len(subcategory_files)})"
+                        f"{PARTS_OF_SPEECH_SUBCATEGORY_TITLES[subcategory_id]} ({picker_parent_item_count(subcategory_files)})"
                     )
                     subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
                     hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))

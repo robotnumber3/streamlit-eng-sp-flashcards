@@ -27,6 +27,8 @@ st.set_page_config(page_title="Spanish Flashcards", page_icon="🌿", layout="wi
 APP_BUILD_CODE = "rev57"
 PICKER_UI_BUILD_CODE = "picker-html-v1"
 PICKER_CSS_BUILD_CODE = "css-2026-04-21e"
+MOBILE_PICKER_CONTAINER_KEY = f"mobile_deck_picker_wrap_{PICKER_UI_BUILD_CODE.replace('-', '_')}"
+PICKER_HIDDEN_ACTIONS_WRAP_KEY = f"picker_hidden_toggle_actions_wrap_{PICKER_UI_BUILD_CODE.replace('-', '_')}"
 
 # --- SIMPLE LOGIN SCREEN (before splash) ---
 LOGIN_FLOW_VERSION = 3
@@ -344,7 +346,7 @@ def goodbye_image_data_uri():
 DECK_PICKER_CATEGORIES = [
     {"id": "miguel", "title": "Miguel", "tokens": ["mac"]},
     {"id": "david", "title": "David", "tokens": ["dsc"]},
-    {"id": "essbs", "title": "ESsbs", "tokens": ["essbs"]},
+    {"id": "books", "title": "Books", "tokens": []},
     {"id": "parts_of_speech", "title": "Parts of Speech", "tokens": ["pos"]},
     {"id": "vocab", "title": "Vocab", "tokens": ["vocab"]},
     {"id": "sentences", "title": "Sentences", "tokens": ["sentence"]},
@@ -363,6 +365,12 @@ DECK_PICKER_DESCRIPTOR_CATEGORY_IDS = {
 DECK_PICKER_CATEGORY_TITLES = {
     category["id"]: category["title"]
     for category in DECK_PICKER_CATEGORIES
+}
+BOOK_PREFIX_TITLES = {
+    "es_": "Easy Spanish: Step By Step",
+    "sp_": "Verbos de Poder Español",
+    "lp_": "Lonely Planet Español Mexicano",
+    "cl_": "Español latinoamericano completo",
 }
 PARTS_OF_SPEECH_SUBCATEGORIES = [
     {"id": "adj", "title": "Adjectives", "prefixes": ["pos_adj_"]},
@@ -466,6 +474,8 @@ def exclude_from_trackable_count(filename):
 
 def filename_matches_picker_category(filename, category):
     normalized_name = normalized_filename(filename)
+    if category["id"] == "books":
+        return any(normalized_name.startswith(prefix) for prefix in BOOK_PREFIX_TITLES)
     if category["id"] == "parts_of_speech":
         return normalized_name.startswith("pos_")
     if category["id"] == "situations":
@@ -571,6 +581,27 @@ def parts_of_speech_subcategory_for_file(filename):
         if prefixes and any(normalized_name.startswith(prefix) for prefix in prefixes):
             return subcategory["id"]
     return "other"
+
+
+def book_subcategory_for_file(filename):
+    normalized_name = normalized_filename(filename)
+    for prefix in BOOK_PREFIX_TITLES:
+        if normalized_name.startswith(prefix):
+            return prefix
+    return None
+
+
+def books_files_by_subcategory(files):
+    grouped = {
+        prefix: []
+        for prefix in BOOK_PREFIX_TITLES
+    }
+    for file_entry in files:
+        subcategory_id = book_subcategory_for_file(file_entry["filename"])
+        if subcategory_id is None:
+            continue
+        grouped[subcategory_id].append(file_entry)
+    return grouped
 
 
 def parts_of_speech_files_by_subcategory(files):
@@ -2703,6 +2734,15 @@ def picker_query_href(action, target=None):
     return "?" + "&".join(query)
 
 
+def picker_hidden_button_key(prefix, *parts):
+    sanitized_parts = [re.sub(r"[^a-zA-Z0-9_]+", "_", str(part)) for part in parts]
+    return prefix + "_" + "_".join(part for part in sanitized_parts if part)
+
+
+def picker_hidden_button_label(button_key):
+    return f"hidden-{button_key}"
+
+
 def picker_icon_for_status(status):
     return {
         "review": "★",
@@ -2723,7 +2763,7 @@ def picker_row_label_html(label_text, italicized=False):
     return escaped
 
 
-def picker_row_markup(label_html, icon_text, row_class, action, target, anchor_key=None, extra_classes=None):
+def picker_row_markup(label_html, icon_text, row_class, action, target, anchor_key=None, extra_classes=None, button_key=None):
     class_names = ["deck-picker-row", row_class]
     if extra_classes:
         class_names.extend(extra_classes)
@@ -2732,9 +2772,23 @@ def picker_row_markup(label_html, icon_text, row_class, action, target, anchor_k
     if anchor_key:
         anchor_attr = f' data-picker-anchor="{html.escape(anchor_key)}"'
 
+    icon_markup = (
+        f'<span class="deck-picker-row-icon" aria-hidden="true">{html.escape(icon_text)}&nbsp;</span>'
+    )
+
+    if button_key:
+        button_label = picker_hidden_button_label(button_key)
+        fallback_href = picker_query_href(action, target)
+        return (
+            f'<a class="{' '.join(class_names)} deck-picker-action-button" href="{fallback_href}" data-picker-button-key="{html.escape(button_key)}" data-picker-button-label="{html.escape(button_label)}" data-picker-fallback-href="{html.escape(fallback_href)}"{anchor_attr}>'
+            f'{icon_markup}'
+            f'<span class="deck-picker-row-label">{label_html}</span>'
+            "</a>"
+        )
+
     return (
         f'<a class="{' '.join(class_names)}" href="{picker_query_href(action, target)}"{anchor_attr}>'
-        f'<span class="deck-picker-row-icon" aria-hidden="true">{html.escape(icon_text)}</span>'
+        f'{icon_markup}'
         f'<span class="deck-picker-row-label">{label_html}</span>'
         "</a>"
     )
@@ -2746,6 +2800,71 @@ def picker_status_class(status):
 
 def picker_build_code_text():
     return f"{APP_BUILD_CODE} | {PICKER_UI_BUILD_CODE} | {PICKER_CSS_BUILD_CODE}"
+
+
+def inject_picker_toggle_bridge():
+    components.html(
+        """
+        <script>
+        (function() {
+            var doc = window.parent.document;
+
+            function findHiddenButton(key, label) {
+                if (key) {
+                    var byClass = doc.querySelector(
+                        '.st-key-' + key + ' button, [class*="st-key-' + key + '"] button'
+                    );
+                    if (byClass) return byClass;
+                }
+
+                if (label) {
+                    var buttons = Array.from(doc.querySelectorAll('button'));
+                    var byLabel = buttons.find(function(candidate) {
+                        return candidate.textContent && candidate.textContent.trim() === label;
+                    });
+                    if (byLabel) return byLabel;
+                }
+
+                return null;
+            }
+
+            function attach() {
+                var pickerButtons = doc.querySelectorAll('.deck-picker-action-button[data-picker-button-key]');
+                if (!pickerButtons.length) return false;
+
+                pickerButtons.forEach(function(button) {
+                    if (button.dataset.bridgeAttached === '1') return;
+                    button.dataset.bridgeAttached = '1';
+                    button.addEventListener('click', function(event) {
+                        var key = button.getAttribute('data-picker-button-key');
+                        var label = button.getAttribute('data-picker-button-label');
+                        if (!key) return;
+
+                        var hiddenButton = findHiddenButton(key, label);
+                        if (!hiddenButton) return;
+
+                        event.preventDefault();
+                        hiddenButton.click();
+                    });
+                });
+
+                return true;
+            }
+
+            if (attach()) return;
+
+            var attempts = 0;
+            var timer = window.setInterval(function() {
+                attempts += 1;
+                if (attach() || attempts > 20) {
+                    window.clearInterval(timer);
+                }
+            }, 100);
+        })();
+        </script>
+        """,
+        height=0,
+    )
 
 
 handle_picker_query_action()
@@ -2760,8 +2879,9 @@ def render_grouped_deck_picker():
     special_deck_count = 0
     scroll_target = st.session_state.get("deck_picker_scroll_target")
     picker_rows = []
+    hidden_toggle_actions = []
 
-    with st.container(key="mobile_deck_picker_wrap"):
+    with st.container(key=MOBILE_PICKER_CONTAINER_KEY):
         picker_rows.append(
             "<div class='deck-picker-meta'>"
             "<div class='mobile-deck-picker-label'>Available decks:</div>"
@@ -2821,6 +2941,8 @@ def render_grouped_deck_picker():
             is_open = is_deck_category_open(category_id)
             category_icon = "▼" if is_open else "▶"
             category_label_html = picker_row_label_html(f"{category['title']} ({len(files)})")
+            category_button_key = picker_hidden_button_key("picker_hidden_toggle_category", category_id)
+            hidden_toggle_actions.append((category_button_key, toggle_deck_category, (category_id,)))
             picker_rows.append(
                 picker_row_markup(
                     category_label_html,
@@ -2829,6 +2951,7 @@ def render_grouped_deck_picker():
                     "toggle_category",
                     category_id,
                     anchor_key=f"category:{category_id}",
+                    button_key=category_button_key,
                 )
             )
 
@@ -2837,6 +2960,63 @@ def render_grouped_deck_picker():
 
             if not files:
                 picker_rows.append("<div class='deck-category-empty'>No files in this category.</div>")
+                continue
+
+            if category_id == "books":
+                grouped_subcategories = books_files_by_subcategory(files)
+                for subcategory_id, subcategory_title in BOOK_PREFIX_TITLES.items():
+                    subcategory_files = grouped_subcategories.get(subcategory_id, [])
+                    if not subcategory_files:
+                        continue
+                    subcategory_files = grouped_parts_of_speech_subcategory_files(subcategory_id, subcategory_files)
+
+                    subcategory_open = is_deck_subcategory_open(category_id, subcategory_id)
+                    subcategory_icon = "▼" if subcategory_open else "▶"
+                    subcategory_label_html = picker_row_label_html(
+                        f"{subcategory_title} ({len(subcategory_files)})"
+                    )
+                    subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
+                    hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))
+                    picker_rows.append(
+                        picker_row_markup(
+                            subcategory_label_html,
+                            subcategory_icon,
+                            "deck-picker-row-subcategory",
+                            "toggle_subcategory",
+                            f"{category_id}|{subcategory_id}",
+                            anchor_key=f"subcategory:{category_id}:{subcategory_id}",
+                            button_key=subcategory_button_key,
+                        )
+                    )
+
+                    if not subcategory_open:
+                        continue
+
+                    for file_entry in subcategory_files:
+                        csv_file = file_entry["filename"]
+                        status = deck_picker_status(csv_file, st.session_state.active_person)
+                        row_class = "deck-picker-row-story-child" if file_entry.get("story_child_indent") else "deck-picker-row-file"
+                        extra_classes = [picker_status_class(status)]
+                        if file_entry.get("story_child_indent"):
+                            extra_classes.insert(0, "deck-picker-row-nested-child")
+                        if not file_entry.get("story_child_indent"):
+                            extra_classes.insert(0, "deck-picker-row-subcategory-file")
+                        picker_rows.append(
+                            picker_row_markup(
+                                picker_row_label_html(
+                                    deck_picker_label(
+                                        csv_file,
+                                        st.session_state.active_person,
+                                        italicized=file_entry["italicized"],
+                                    ),
+                                ),
+                                picker_icon_for_status(status),
+                                row_class,
+                                "select_deck",
+                                csv_file,
+                                extra_classes=extra_classes,
+                            )
+                        )
                 continue
 
             if category_id == "parts_of_speech":
@@ -2853,6 +3033,8 @@ def render_grouped_deck_picker():
                     subcategory_label_html = picker_row_label_html(
                         f"{PARTS_OF_SPEECH_SUBCATEGORY_TITLES[subcategory_id]} ({len(subcategory_files)})"
                     )
+                    subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
+                    hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))
                     picker_rows.append(
                         picker_row_markup(
                             subcategory_label_html,
@@ -2861,6 +3043,7 @@ def render_grouped_deck_picker():
                             "toggle_subcategory",
                             f"{category_id}|{subcategory_id}",
                             anchor_key=f"subcategory:{category_id}:{subcategory_id}",
+                            button_key=subcategory_button_key,
                         )
                     )
 
@@ -2872,6 +3055,8 @@ def render_grouped_deck_picker():
                         status = deck_picker_status(csv_file, st.session_state.active_person)
                         row_class = "deck-picker-row-story-child" if file_entry.get("story_child_indent") else "deck-picker-row-file"
                         extra_classes = [picker_status_class(status)]
+                        if file_entry.get("story_child_indent"):
+                            extra_classes.insert(0, "deck-picker-row-nested-child")
                         if not file_entry.get("story_child_indent"):
                             extra_classes.insert(0, "deck-picker-row-subcategory-file")
                         picker_rows.append(
@@ -2913,6 +3098,18 @@ def render_grouped_deck_picker():
                 )
 
         st.markdown("<div class='deck-picker-shell'>" + "".join(picker_rows) + "</div>", unsafe_allow_html=True)
+
+        with st.container(key=PICKER_HIDDEN_ACTIONS_WRAP_KEY):
+            for button_key, callback, callback_args in hidden_toggle_actions:
+                st.button(
+                    picker_hidden_button_label(button_key),
+                    key=button_key,
+                    on_click=callback,
+                    args=callback_args,
+                    use_container_width=True,
+                )
+
+        inject_picker_toggle_bridge()
         render_mobile_deck_picker_height_fix(scroll_target)
         st.session_state.deck_picker_scroll_target = None
 
@@ -4422,23 +4619,23 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 
 /* ---- Responsive deck picker ---- */
-.st-key-mobile_deck_picker_wrap {{
+.st-key-{MOBILE_PICKER_CONTAINER_KEY} {{
     display: block;
     border: 1px solid color-mix(in srgb, {t['border']} 78%, transparent 22%) !important;
     border-radius: 0.85rem !important;
     padding: 0.35rem 0.45rem !important;
     box-sizing: border-box !important;
 }}
-.st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
+.st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
     padding: 0 !important;
 }} 
-.st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] {{
+.st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlock"] {{
     gap: 0 !important;
 }}
-.st-key-mobile_deck_picker_wrap [data-testid="stElementContainer"] {{
+.st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stElementContainer"] {{
     margin: 0 !important;
 }}
 .mobile-deck-picker-gap {{
@@ -4461,6 +4658,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     gap: 0.75rem;
     margin-top: -0.04rem;
     margin-bottom: 0.62rem;
+    font-family: 'DM Sans', sans-serif !important;
 }}
 .deck-picker-build {{
     color: {t['muted']};
@@ -4469,12 +4667,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     letter-spacing: 0.03em;
     text-align: right;
     white-space: nowrap;
+    font-family: 'DM Sans', sans-serif !important;
 }}
 .deck-picker-row {{
     display: grid;
-    grid-template-columns: 1.15rem minmax(0, 1fr);
+    grid-template-columns: 1.45rem minmax(0, 1fr);
     align-items: center;
-    column-gap: 0.18rem;
+    column-gap: 0.34rem;
     margin: 0 0 0.14rem 0;
     padding: 0.03rem 0.35rem 0.03rem 0;
     border: none;
@@ -4483,6 +4682,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {t['fg']} !important;
     text-align: left;
     text-decoration: none !important;
+    width: 100%;
+    cursor: pointer;
+    font: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: 'DM Sans', sans-serif !important;
 }}
 .deck-picker-row:visited,
 .deck-picker-row:hover,
@@ -4493,9 +4698,21 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     text-decoration: none !important;
     outline: none;
 }}
+[class*="st-key-picker_hidden_toggle_category_"],
+[class*="st-key-picker_hidden_toggle_subcategory_"],
+.st-key-{PICKER_HIDDEN_ACTIONS_WRAP_KEY} {{
+    position: absolute !important;
+    left: -10000px !important;
+    top: auto !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}}
 .deck-picker-row-icon {{
     display: block;
-    width: 1.15rem;
+    width: 1.45rem;
     text-align: left;
     white-space: nowrap;
     line-height: 1;
@@ -4504,29 +4721,38 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-width: 0;
     margin: 0;
     line-height: 1;
+    padding-left: 0.08rem;
     text-align: left;
+    font-family: 'DM Sans', sans-serif !important;
 }}
 .deck-picker-row-category {{
     font-size: 1.2rem;
-    font-weight: 900;
+    font-weight: 400 !important;
     line-height: 1.1;
-    min-height: 1.38rem;
-    margin-bottom: 0;
+    min-height: 1.7rem;
+    margin-top: 0.9rem;
+    margin-bottom: 0.5rem;
 }}
 .deck-picker-row-subcategory {{
     padding-left: 2rem;
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: 400 !important;
     line-height: 1.05;
-    min-height: 1.3rem;
-    margin-bottom: 0;
+    min-height: 1.9rem;
+    padding-top: 0.18rem;
+    padding-bottom: 0.18rem;
+    margin-bottom: 0.16rem;
 }}
 .deck-picker-row-file,
 .deck-picker-row-subcategory-file,
 .deck-picker-row-story-child {{
     font-size: 0.88rem;
     line-height: 1;
-    min-height: 1.42rem;
+    font-weight: 400 !important;
+    min-height: 1.82rem;
+    padding-top: 0.16rem;
+    padding-bottom: 0.16rem;
+    margin-bottom: 0.16rem;
 }}
 .deck-picker-row-file {{
     padding-left: 1.45rem;
@@ -4576,9 +4802,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         word-break: break-word;
     }}
     .deck-picker-row {{
-        grid-template-columns: 1.15rem minmax(0, 1fr);
-        column-gap: 0.12rem;
+        grid-template-columns: 1.42rem minmax(0, 1fr);
+        column-gap: 0.22rem;
         padding-right: 0.35rem;
+    }}
+    .deck-picker-row-icon {{
+        width: 1.42rem;
+    }}
+    .deck-picker-row-label {{
+        padding-left: 0.02rem;
     }}
     .deck-picker-row-special {{
         min-height: 1.75rem;
@@ -4587,18 +4819,30 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .deck-picker-row-category {{
         font-size: 1.24rem;
-        min-height: 1.3rem;
-        padding-top: 0.02rem;
-        padding-bottom: 0.01rem;
+        font-weight: 400;
+        min-height: 1.7rem;
+        padding-top: 0.08rem;
+        padding-bottom: 0.08rem;
+        margin-top: 0.92rem;
+        margin-bottom: 0.52rem;
     }}
     .deck-picker-row-subcategory {{
         padding-left: 1.85rem;
+        font-weight: 400;
+        min-height: 1.92rem;
+        padding-top: 0.18rem;
+        padding-bottom: 0.18rem;
+        margin-bottom: 0.16rem;
     }}
     .deck-picker-row-file,
     .deck-picker-row-subcategory-file,
     .deck-picker-row-story-child {{
         font-size: 0.84rem;
-        min-height: 1.24rem;
+        font-weight: 400;
+        min-height: 1.7rem;
+        padding-top: 0.18rem;
+        padding-bottom: 0.18rem;
+        margin-bottom: 0.18rem;
     }}
     .deck-picker-row-file {{
         padding-left: 1.55rem;
@@ -4645,7 +4889,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .mobile-deck-picker-gap {{
         height: 0.62rem !important;
     }}
-    .st-key-mobile_deck_picker_wrap {{
+    .st-key-{MOBILE_PICKER_CONTAINER_KEY} {{
         padding: 0 !important;
         margin-top: -0.35rem !important;
         border: none !important;
@@ -4653,13 +4897,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         background: transparent !important;
         border-radius: 0 !important;
     }}
-    .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlockBorderWrapper"] {{
+    .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
         border: none !important;
         box-shadow: none !important;
         background: transparent !important;
         padding: 0 !important;
     }}
-    .st-key-mobile_deck_picker_wrap [data-testid="stVerticalBlock"] > * {{
+    .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlock"] > * {{
         margin-bottom: 0 !important;
     }}
 
@@ -4934,10 +5178,13 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
             }
 
             function applyHeight() {
-                var wrap = doc.querySelector('.st-key-mobile_deck_picker_wrap');
+                var wrap = doc.querySelector('.st-key-{MOBILE_PICKER_CONTAINER_KEY}');
                 if (!wrap) {
                     return false;
                 }
+
+                var phoneLayout = isPhoneLayout();
+                var hasNestedChildRows = !!wrap.querySelector('.deck-picker-row-nested-child');
 
                 var row = firstDeckRow(wrap);
                 var target = row ? findScrollableAncestor(row, wrap) : null;
@@ -4973,7 +5220,16 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                     target = candidates[0];
                 }
 
-                var phoneLayout = isPhoneLayout();
+                if (phoneLayout && hasNestedChildRows) {
+                    target.style.height = '';
+                    target.style.maxHeight = '';
+                    target.style.minHeight = '';
+                    target.style.overflowY = 'visible';
+                    target.style.marginTop = '';
+                    scrollApplied = true;
+                    return true;
+                }
+
                 var wrapStyle = parentWindow.getComputedStyle(wrap);
                 var targetStyle = parentWindow.getComputedStyle(target);
                 var targetRect = target.getBoundingClientRect();

@@ -23,8 +23,10 @@ ORIGINAL_BACKUP_FOLDER = "/Volumes/Squallywag/Python/Current Python Projects/str
 def original_backup_path(filepath):
     source_path = Path(filepath)
     backup_dir = Path(ORIGINAL_BACKUP_FOLDER)
-    backup_dir.mkdir(parents=True, exist_ok=True)
-    return backup_dir / f"{source_path.stem}_ORIG{source_path.suffix}"
+    relative_parent = source_path.relative_to(Path(CSV_FOLDER)).parent
+    target_dir = backup_dir / relative_parent
+    target_dir.mkdir(parents=True, exist_ok=True)
+    return target_dir / f"{source_path.stem}_ORIG{source_path.suffix}"
 
 def detect_delimiter(filepath):
     """Auto-detect delimiter (comma or semicolon) in CSV file."""
@@ -258,8 +260,8 @@ def main():
         print(f"Error: Folder not found: {CSV_FOLDER}")
         return
 
-    # Find all CSV files
-    csv_files = sorted(csv_path.glob('*.csv'))
+    # Find all CSV files recursively under csv/
+    csv_files = sorted(csv_path.rglob('*.csv'))
 
     if not csv_files:
         print(f"No CSV files found in {CSV_FOLDER}")
