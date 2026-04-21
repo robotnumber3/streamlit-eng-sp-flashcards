@@ -4884,30 +4884,30 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button,
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button {{
         display: grid !important;
-        grid-template-columns: 1.70rem minmax(0, 1fr) !important;
-        column-gap: 0 !important;
+        grid-template-columns: 1.15rem minmax(0, 1fr) !important;
+        column-gap: 0.12rem !important;
         align-items: center !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
-        padding-left: 1.25rem !important;
+        padding-left: 1.45rem !important;
         padding-right: 0.35rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button {{
-        padding-left: 1.35rem !important;
+        padding-left: 3.30rem !important;
         padding-right: 0.35rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button {{
-        padding-left: 2.95rem !important;
+        padding-left: 4.40rem !important;
         padding-right: 0.35rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button::before,
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button::before,
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button::before {{
-        width: 1.70rem !important;
+        width: 1.15rem !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
         justify-self: start !important;
-        padding-left: 0.02rem !important;
+        padding-left: 0 !important;
         text-align: left !important;
         white-space: nowrap !important;
     }}
@@ -4921,7 +4921,8 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button p,
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button p,
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button p {{
-        padding-left: 1.55rem !important;
+        padding-left: 0 !important;
+        margin-left: 0 !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button {{
         display: grid !important;
@@ -4967,7 +4968,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     [class*="st-key-deck_subcategory_toggle_"][data-testid="stButton"] > button,
     [class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button {{
-        padding-left: 1.20rem !important;
+        padding-left: 2.00rem !important;
     }}
     [class*="st-key-deck_category_file_"][data-testid="stButton"] > button,
     [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
