@@ -2773,9 +2773,8 @@ def picker_row_markup(label_html, icon_text, row_class, action, target, anchor_k
     )
 
     if button_key:
-        fallback_href = picker_query_href(action, target)
         return (
-            f'<button type="button" class="{' '.join(class_names)} deck-picker-action-button" data-picker-button-key="{html.escape(button_key)}" data-picker-fallback-href="{html.escape(fallback_href)}"{anchor_attr}>'
+            f'<button type="button" class="{' '.join(class_names)} deck-picker-action-button" data-picker-button-key="{html.escape(button_key)}"{anchor_attr}>'
             f'{icon_markup}'
             f'<span class="deck-picker-row-label">{label_html}</span>'
             "</button>"
@@ -2814,25 +2813,12 @@ def inject_picker_toggle_bridge():
                     button.addEventListener('click', function(event) {
                         event.preventDefault();
                         var key = button.getAttribute('data-picker-button-key');
-                        var fallbackHref = button.getAttribute('data-picker-fallback-href');
                         if (!key) return;
                         var hiddenButton = doc.querySelector(
                             '.st-key-' + key + ' button, [class*="st-key-' + key + '"] button'
                         );
-                        if (!hiddenButton) {
-                            if (fallbackHref) {
-                                window.parent.location.href = fallbackHref;
-                            }
-                            return;
-                        }
-                        hiddenButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-                        if (fallbackHref) {
-                            window.setTimeout(function() {
-                                if (!doc.contains(button)) return;
-                                window.parent.location.href = fallbackHref;
-                            }, 220);
-                        }
+                        if (!hiddenButton) return;
+                        hiddenButton.click();
                     });
                 });
 
@@ -2963,8 +2949,6 @@ def render_grouped_deck_picker():
                     subcategory_label_html = picker_row_label_html(
                         f"{subcategory_title} ({len(subcategory_files)})"
                     )
-                    subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
-                    hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))
                     picker_rows.append(
                         picker_row_markup(
                             subcategory_label_html,
@@ -2973,7 +2957,6 @@ def render_grouped_deck_picker():
                             "toggle_subcategory",
                             f"{category_id}|{subcategory_id}",
                             anchor_key=f"subcategory:{category_id}:{subcategory_id}",
-                            button_key=subcategory_button_key,
                         )
                     )
 
@@ -3019,8 +3002,6 @@ def render_grouped_deck_picker():
                     subcategory_label_html = picker_row_label_html(
                         f"{PARTS_OF_SPEECH_SUBCATEGORY_TITLES[subcategory_id]} ({len(subcategory_files)})"
                     )
-                    subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
-                    hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))
                     picker_rows.append(
                         picker_row_markup(
                             subcategory_label_html,
@@ -3029,7 +3010,6 @@ def render_grouped_deck_picker():
                             "toggle_subcategory",
                             f"{category_id}|{subcategory_id}",
                             anchor_key=f"subcategory:{category_id}:{subcategory_id}",
-                            button_key=subcategory_button_key,
                         )
                     )
 
@@ -4655,9 +4635,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .deck-picker-row {{
     display: grid;
-    grid-template-columns: 1.15rem minmax(0, 1fr);
+    grid-template-columns: 1.45rem minmax(0, 1fr);
     align-items: center;
-    column-gap: 0.18rem;
+    column-gap: 0.34rem;
     margin: 0 0 0.14rem 0;
     padding: 0.03rem 0.35rem 0.03rem 0;
     border: none;
@@ -4689,8 +4669,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .deck-picker-row-icon {{
     display: block;
-    width: 1.15rem;
-    margin-right: 0.18rem;
+    width: 1.45rem;
     text-align: left;
     white-space: nowrap;
     line-height: 1;
@@ -4699,6 +4678,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-width: 0;
     margin: 0;
     line-height: 1;
+    padding-left: 0.08rem;
     text-align: left;
     font-family: 'DM Sans', sans-serif !important;
 }}
