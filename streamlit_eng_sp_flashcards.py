@@ -4488,7 +4488,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 [class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button,
 [class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button:hover,
 [class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button:focus,
-[class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button:focus-visible,
+        padding-left: 2.00rem !important;
 [class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button:active,
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button,
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button:hover,
@@ -4897,7 +4897,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         padding-right: 0.35rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button {{
-        padding-left: 2.45rem !important;
+        padding-left: 2.95rem !important;
         padding-right: 0.35rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button::before,
@@ -4921,17 +4921,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button p,
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button p,
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button p {{
-        font-size: 0.91rem !important;
+        padding-left: 1.55rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button {{
         display: grid !important;
         grid-template-columns: 1.70rem minmax(0, 1fr) !important;
-        column-gap: 0 !important;
+        padding-left: 3.30rem !important;
         align-items: center !important;
         padding-left: 0 !important;
         padding-right: 0.45rem !important;
         font-size: 0.91rem !important;
-    }}
+        padding-left: 4.40rem !important;
     .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button::before {{
         display: block !important;
         width: 1.70rem !important;
@@ -4964,6 +4964,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         box-shadow: none !important;
         background: transparent !important;
         border-radius: 0 !important;
+    }}
+    [class*="st-key-deck_subcategory_toggle_"][data-testid="stButton"] > button,
+    [class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button {{
+        padding-left: 1.20rem !important;
     }}
     [class*="st-key-deck_category_file_"][data-testid="stButton"] > button,
     [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
