@@ -2778,8 +2778,9 @@ def picker_row_markup(label_html, icon_text, row_class, action, target, anchor_k
 
     if button_key:
         button_label = picker_hidden_button_label(button_key)
+        fallback_href = picker_query_href(action, target)
         return (
-            f'<button type="button" class="{' '.join(class_names)} deck-picker-action-button" data-picker-button-key="{html.escape(button_key)}" data-picker-button-label="{html.escape(button_label)}"{anchor_attr}>'
+            f'<button type="button" class="{' '.join(class_names)} deck-picker-action-button" data-picker-button-key="{html.escape(button_key)}" data-picker-button-label="{html.escape(button_label)}" data-picker-fallback-href="{html.escape(fallback_href)}"{anchor_attr}>'
             f'{icon_markup}'
             f'<span class="deck-picker-row-label">{label_html}</span>'
             "</button>"
@@ -2807,6 +2808,13 @@ def inject_picker_toggle_bridge():
         <script>
         (function() {
             var doc = window.parent.document;
+
+            function isMobilePickerDevice() {
+                var ua = window.parent.navigator.userAgent || '';
+                var narrow = window.parent.innerWidth <= 900;
+                var hasTouch = (window.parent.navigator.maxTouchPoints || 0) > 0;
+                return narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua));
+            }
 
             function findHiddenButton(key, label) {
                 if (key) {
@@ -2838,10 +2846,21 @@ def inject_picker_toggle_bridge():
                         event.preventDefault();
                         var key = button.getAttribute('data-picker-button-key');
                         var label = button.getAttribute('data-picker-button-label');
+                        var fallbackHref = button.getAttribute('data-picker-fallback-href');
                         if (!key) return;
+
+                        if (fallbackHref && isMobilePickerDevice()) {
+                            window.parent.location.href = fallbackHref;
+                            return;
+                        }
+
                         var hiddenButton = findHiddenButton(key, label);
-                        if (!hiddenButton) return;
-                        hiddenButton.focus();
+                        if (!hiddenButton) {
+                            if (fallbackHref) {
+                                window.parent.location.href = fallbackHref;
+                            }
+                            return;
+                        }
                         hiddenButton.click();
                     });
                 });
