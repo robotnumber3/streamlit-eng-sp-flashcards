@@ -360,6 +360,20 @@ DECK_PICKER_CATEGORY_TITLES = {
     category["id"]: category["title"]
     for category in DECK_PICKER_CATEGORIES
 }
+PARTS_OF_SPEECH_SUBCATEGORIES = [
+    {"id": "adj", "title": "Adjectives", "prefixes": ["pos_adj_"]},
+    {"id": "adv", "title": "Adverbs", "prefixes": ["pos_adv_"]},
+    {"id": "conj", "title": "Conjunctions", "prefixes": ["pos_conj_"]},
+    {"id": "nouns", "title": "Nouns", "prefixes": ["pos_nouns_"]},
+    {"id": "prep", "title": "Prepositions", "prefixes": ["pos_prep_"]},
+    {"id": "pron", "title": "Pronouns", "prefixes": ["pos_pron_"]},
+    {"id": "verbs", "title": "Verbs", "prefixes": ["pos_verbs_"]},
+    {"id": "other", "title": "Other", "prefixes": []},
+]
+PARTS_OF_SPEECH_SUBCATEGORY_TITLES = {
+    subcategory["id"]: subcategory["title"]
+    for subcategory in PARTS_OF_SPEECH_SUBCATEGORIES
+}
 
 BUTTON_COLORS = {
     "green": {"bg": "#c8f0d8", "border": "#2e8b57", "fg": "#0f4f29"},
@@ -543,6 +557,99 @@ def picker_files_by_category():
                 {"filename": filename, "italicized": True}
             )
     return grouped
+
+
+def parts_of_speech_subcategory_for_file(filename):
+    normalized_name = normalized_filename(filename)
+    for subcategory in PARTS_OF_SPEECH_SUBCATEGORIES:
+        prefixes = subcategory["prefixes"]
+        if prefixes and any(normalized_name.startswith(prefix) for prefix in prefixes):
+            return subcategory["id"]
+    return "other"
+
+
+def parts_of_speech_files_by_subcategory(files):
+    grouped = {
+        subcategory["id"]: []
+        for subcategory in PARTS_OF_SPEECH_SUBCATEGORIES
+    }
+    for file_entry in files:
+        subcategory_id = parts_of_speech_subcategory_for_file(file_entry["filename"])
+        grouped[subcategory_id].append(file_entry)
+    return grouped
+
+
+def grouped_parts_of_speech_subcategory_files(subcategory_id, files):
+    # Generalize: always group story files as children for all subcategories
+    # Match both ..._01a_story.csv and ..._story01a.csv
+    story_patterns = [
+        re.compile(r"^(?P<base>.+_\d+)(?P<suffix>[a-z])_story\.csv$"),  # ..._01a_story.csv
+        re.compile(r"^(?P<base>.+)_story(?P<num>\d+)(?P<suffix>[a-z])\.csv$"),  # ..._story01a.csv
+    ]
+    existing_filenames = {file_entry["filename"] for file_entry in files}
+    children_by_parent = {}
+    child_suffixes = {}
+
+    for file_entry in files:
+        match = None
+        for pattern in story_patterns:
+            match = pattern.match(file_entry["filename"])
+            if match:
+                break
+        if not match:
+            continue
+        # Determine parent filename for both patterns
+        if 'base' in match.groupdict() and 'suffix' in match.groupdict() and 'num' not in match.groupdict():
+            # ..._01a_story.csv
+            parent_filename = f"{match.group('base')}.csv"
+            child_suffix = match.group("suffix")
+        elif 'base' in match.groupdict() and 'num' in match.groupdict() and 'suffix' in match.groupdict():
+            # ..._story01a.csv
+            parent_filename = f"{match.group('base')}.csv"
+            child_suffix = f"{match.group('num')}{match.group('suffix')}"
+        else:
+            continue
+        if parent_filename not in existing_filenames:
+            continue
+        children_by_parent.setdefault(parent_filename, []).append(file_entry)
+        child_suffixes[file_entry["filename"]] = child_suffix
+
+    ordered_files = []
+    appended_children = set()
+
+    for file_entry in files:
+        filename = file_entry["filename"]
+        if filename in appended_children:
+            continue
+        if filename in child_suffixes:
+            continue
+
+        ordered_files.append({**file_entry, "story_child_indent": False})
+
+        child_entries = children_by_parent.get(filename, [])
+        for child_entry in sorted(
+            child_entries,
+            key=lambda entry: (child_suffixes.get(entry["filename"], ""), normalized_filename(entry["filename"]))
+        ):
+            ordered_files.append({**child_entry, "story_child_indent": True})
+            appended_children.add(child_entry["filename"])
+
+    for file_entry in files:
+        filename = file_entry["filename"]
+        if filename in appended_children or filename in child_suffixes:
+            continue
+        if any(entry["filename"] == filename for entry in ordered_files):
+            continue
+        ordered_files.append({**file_entry, "story_child_indent": False})
+
+    for file_entry in files:
+        filename = file_entry["filename"]
+        if filename in appended_children:
+            continue
+        if filename in child_suffixes and not any(entry["filename"] == filename for entry in ordered_files):
+            ordered_files.append({**file_entry, "story_child_indent": False})
+
+    return ordered_files
 
 
 def normalize_card_id(raw_value):
@@ -756,11 +863,37 @@ def toggle_deck_category(category_id):
     open_categories = list(st.session_state.get("open_deck_categories", []))
     if category_id in open_categories:
         open_categories = []
+        st.session_state.deck_picker_scroll_target = None
     else:
         # Keep the picker simpler on mobile by allowing only one open category
         # at a time. Tapping a different header replaces the current section.
         open_categories = [category_id]
+        st.session_state.deck_picker_scroll_target = f"category:{category_id}"
     st.session_state.open_deck_categories = open_categories
+
+
+def deck_subcategory_state_key(category_id, subcategory_id):
+    return f"{category_id}:{subcategory_id}"
+
+
+def is_deck_subcategory_open(category_id, subcategory_id):
+    return deck_subcategory_state_key(category_id, subcategory_id) in st.session_state.get("open_deck_subcategories", [])
+
+
+def toggle_deck_subcategory(category_id, subcategory_id):
+    target_key = deck_subcategory_state_key(category_id, subcategory_id)
+    prefix = f"{category_id}:"
+    open_subcategories = [
+        key
+        for key in st.session_state.get("open_deck_subcategories", [])
+        if not key.startswith(prefix)
+    ]
+    if target_key not in st.session_state.get("open_deck_subcategories", []):
+        open_subcategories.append(target_key)
+        st.session_state.deck_picker_scroll_target = f"subcategory:{category_id}:{subcategory_id}"
+    else:
+        st.session_state.deck_picker_scroll_target = None
+    st.session_state.open_deck_subcategories = open_subcategories
 
 # ------------------------------------------------------------------------
 # PREFS
@@ -1954,6 +2087,8 @@ defaults = {
     "initialize_all_decks_confirm": False,
     "delete_review_confirm_key": None,
     "open_deck_categories": [],
+    "open_deck_subcategories": [],
+    "deck_picker_scroll_target": None,
     "story_playback_mode": "continuous",
     "story_display_mode": "both",
     "story_audio_on": True,
@@ -2466,6 +2601,7 @@ def activate_deck(deck_value):
     reset_study_state(reset_selected=False)
     st.session_state.selected_csv = deck_value
     st.session_state.open_deck_categories = []
+    st.session_state.open_deck_subcategories = []
     if is_dialog_deck(deck_value):
         st.session_state.study_mode = "dialog"
     elif is_story_deck(deck_value):
@@ -2480,6 +2616,7 @@ def go_back_to_deck_picker():
     st.session_state.menu_open = False
     clear_menu_destructive_confirms()
     st.session_state.open_deck_categories = []
+    st.session_state.open_deck_subcategories = []
     reset_study_state(reset_selected=True)
 
 
@@ -2490,6 +2627,7 @@ def render_grouped_deck_picker():
     favorites_deck_values = visible_favorites_deck_values()
     grouped_files = picker_files_by_category()
     special_deck_count = 0
+    scroll_target = st.session_state.get("deck_picker_scroll_target")
 
     with st.container(key="mobile_deck_picker_wrap"):
         st.markdown(
@@ -2498,7 +2636,7 @@ def render_grouped_deck_picker():
             + ";'>Available decks:</div><div class='mobile-deck-picker-gap'></div>",
             unsafe_allow_html=True,
         )
-        deck_container = st.container(height=580)
+        deck_container = st.container(height=1)
         with deck_container:
             if learned_words_challenge_available(st.session_state.active_person):
                 special_deck_count += 1
@@ -2575,6 +2713,51 @@ def render_grouped_deck_picker():
                     )
                     continue
 
+                if category_id == "parts_of_speech":
+                    grouped_subcategories = parts_of_speech_files_by_subcategory(files)
+                    for subcategory in PARTS_OF_SPEECH_SUBCATEGORIES:
+                        subcategory_id = subcategory["id"]
+                        subcategory_files = grouped_subcategories.get(subcategory_id, [])
+                        if not subcategory_files:
+                            continue
+                        subcategory_files = grouped_parts_of_speech_subcategory_files(subcategory_id, subcategory_files)
+
+                        subcategory_open = is_deck_subcategory_open(category_id, subcategory_id)
+                        subcategory_caret = "▼" if subcategory_open else "▶"
+                        subcategory_label = (
+                            f"{subcategory_caret} {PARTS_OF_SPEECH_SUBCATEGORY_TITLES[subcategory_id]} "
+                            f"({len(subcategory_files)})"
+                        )
+
+                        with st.container(key=f"deck_subcategory_toggle_{category_id}_{subcategory_id}_wrap"):
+                            if st.button(
+                                subcategory_label,
+                                key=f"deck_subcategory_toggle_{category_id}_{subcategory_id}",
+                                use_container_width=True,
+                            ):
+                                toggle_deck_subcategory(category_id, subcategory_id)
+                                st.rerun()
+
+                        if not subcategory_open:
+                            continue
+
+                        for file_index, file_entry in enumerate(subcategory_files):
+                            csv_file = file_entry["filename"]
+                            file_wrap_prefix = "deck_subcategory_story_child_file" if file_entry.get("story_child_indent") else "deck_subcategory_file"
+                            with st.container(key=f"{file_wrap_prefix}_{category_id}_{subcategory_id}_{file_index}_wrap"):
+                                if st.button(
+                                    deck_picker_label(
+                                        csv_file,
+                                        st.session_state.active_person,
+                                        italicized=file_entry["italicized"],
+                                    ),
+                                    key=f"deck_btn_{category_id}_{subcategory_id}_{csv_file}",
+                                    use_container_width=True,
+                                ):
+                                    activate_deck(csv_file)
+                                    st.rerun()
+                    continue
+
                 for file_index, file_entry in enumerate(files):
                     csv_file = file_entry["filename"]
                     with st.container(key=f"deck_category_file_{category_id}_{file_index}_wrap"):
@@ -2590,7 +2773,8 @@ def render_grouped_deck_picker():
                             activate_deck(csv_file)
                             st.rerun()
 
-        render_mobile_deck_picker_height_fix()
+        render_mobile_deck_picker_height_fix(scroll_target)
+        st.session_state.deck_picker_scroll_target = None
 
 
 def current_review_person():
@@ -4213,7 +4397,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     height: 0.86rem;
 }}
 [class*="st-key-deck_category_toggle_"],
+[class*="st-key-deck_subcategory_toggle_"],
 [class*="st-key-deck_category_file_"],
+[class*="st-key-deck_subcategory_story_child_file_"],
+[class*="st-key-deck_subcategory_file_"],
 [class*="st-key-mobile_deck_entry_"] {{
     border: none !important;
     box-shadow: none !important;
@@ -4221,6 +4408,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 [class*="st-key-deck_category_toggle_"] {{
     margin-top: 0.9rem !important;
+}}
+[class*="st-key-deck_subcategory_toggle_"] {{
+    margin-top: 0.12rem !important;
 }}
 [class*="st-key-mobile_deck_entry_review_"],
 [class*="st-key-mobile_deck_entry_favorites_"],
@@ -4266,7 +4456,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     padding: 0 !important;
 }}
 [class*="st-key-deck_category_toggle_"] [data-testid="stVerticalBlockBorderWrapper"],
+[class*="st-key-deck_subcategory_toggle_"] [data-testid="stVerticalBlockBorderWrapper"],
 [class*="st-key-deck_category_file_"] [data-testid="stVerticalBlockBorderWrapper"],
+[class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stVerticalBlockBorderWrapper"],
+[class*="st-key-deck_subcategory_file_"] [data-testid="stVerticalBlockBorderWrapper"],
 [class*="st-key-mobile_deck_entry_"] [data-testid="stVerticalBlockBorderWrapper"] {{
     border: none !important;
     box-shadow: none !important;
@@ -4278,6 +4471,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button:focus,
 [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button:focus-visible,
 [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button:active,
+[class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button,
+[class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button:hover,
+[class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button:focus,
+[class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button:focus-visible,
+[class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button:active,
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button,
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button:hover,
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button:focus,
@@ -4293,6 +4491,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] {{
     margin-bottom: 0 !important;
 }}
+[class*="st-key-deck_subcategory_toggle_"][data-testid="stButton"],
+[class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] {{
+    margin-bottom: 0 !important;
+}}
 [class*="st-key-deck_category_toggle_"][data-testid="stButton"] > button,
 [class*="st-key-deck_category_toggle_"] [data-testid="stButton"] > button {{
     justify-content: flex-start !important;
@@ -4303,6 +4505,22 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-height: 1.38rem !important;
     padding-top: 0.03rem !important;
     padding-bottom: 0.02rem !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+}}
+[class*="st-key-deck_subcategory_toggle_"][data-testid="stButton"] > button,
+[class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button {{
+    justify-content: flex-start !important;
+    text-align: left !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    line-height: 1.05 !important;
+    min-height: 1.3rem !important;
+    padding-left: 2.0rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
@@ -4323,14 +4541,73 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background: transparent !important;
     border-radius: 0 !important;
 }}
+[class*="st-key-deck_subcategory_file_"][data-testid="stButton"] > button,
+[class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button {{
+    justify-content: flex-start !important;
+    text-align: left !important;
+    padding-left: 3.3rem !important;
+    font-size: 0.88rem !important;
+    line-height: 1.0 !important;
+    min-height: 1.42rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+}}
+[class*="st-key-deck_subcategory_story_child_file_"][data-testid="stButton"] > button,
+[class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button {{
+    justify-content: flex-start !important;
+    text-align: left !important;
+    padding-left: 4.4rem !important;
+    font-size: 0.88rem !important;
+    line-height: 1.0 !important;
+    min-height: 1.42rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+}}
 [class*="st-key-deck_category_file_"][data-testid="stButton"],
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] {{
+    margin-bottom: 0.14rem !important;
+}}
+[class*="st-key-deck_subcategory_story_child_file_"][data-testid="stButton"],
+[class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] {{
+    margin-bottom: 0.14rem !important;
+}}
+[class*="st-key-deck_subcategory_file_"][data-testid="stButton"],
+[class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] {{
     margin-bottom: 0.14rem !important;
 }}
 [class*="st-key-deck_category_file_"][data-testid="stButton"] > button > div,
 [class*="st-key-deck_category_file_"][data-testid="stButton"] > button p,
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button > div,
 [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button p {{
+    font-size: 0.88rem !important;
+    line-height: 1.0 !important;
+}}
+[class*="st-key-deck_subcategory_toggle_"][data-testid="stButton"] > button > div,
+[class*="st-key-deck_subcategory_toggle_"][data-testid="stButton"] > button p,
+[class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button > div,
+[class*="st-key-deck_subcategory_toggle_"] [data-testid="stButton"] > button p {{
+    font-size: 1rem !important;
+    line-height: 1.05 !important;
+}}
+[class*="st-key-deck_subcategory_file_"][data-testid="stButton"] > button > div,
+[class*="st-key-deck_subcategory_file_"][data-testid="stButton"] > button p,
+[class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button > div,
+[class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button p {{
+    font-size: 0.88rem !important;
+    line-height: 1.0 !important;
+}}
+[class*="st-key-deck_subcategory_story_child_file_"][data-testid="stButton"] > button > div,
+[class*="st-key-deck_subcategory_story_child_file_"][data-testid="stButton"] > button p,
+[class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button > div,
+[class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button p {{
     font-size: 0.88rem !important;
     line-height: 1.0 !important;
 }}
@@ -4815,13 +5092,43 @@ components.html("""
 """, height=0)
 
 
-def render_mobile_deck_picker_height_fix():
-    components.html(
-        """
+def render_mobile_deck_picker_height_fix(scroll_target=None):
+    script = """
         <script>
         (function() {
             var parentWindow = window.parent;
             var doc = parentWindow.document;
+            var resizeTimer = null;
+            var pendingScrollTarget = __SCROLL_TARGET__;
+            var scrollApplied = false;
+
+            function firstDeckRow(wrap) {
+                return wrap.querySelector(
+                    [
+                        '[class*="st-key-learned_words_challenge_active_wrap"]',
+                        '[class*="st-key-review_"]',
+                        '[class*="st-key-favorites_"]',
+                        '[class*="st-key-deck_category_toggle_"]',
+                        '[class*="st-key-deck_subcategory_toggle_"]',
+                        '[class*="st-key-deck_category_file_"]',
+                        '[class*="st-key-deck_subcategory_file_"]',
+                        '[class*="st-key-deck_subcategory_story_child_file_"]'
+                    ].join(',')
+                );
+            }
+
+            function findScrollableAncestor(start, stopAt) {
+                var node = start;
+                while (node && node !== stopAt && node !== doc.body) {
+                    var style = parentWindow.getComputedStyle(node);
+                    var overflowY = style.overflowY;
+                    if ((overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight >= node.clientHeight) {
+                        return node;
+                    }
+                    node = node.parentElement;
+                }
+                return null;
+            }
 
             function isPhoneLayout() {
                 var nav = parentWindow.navigator || window.navigator;
@@ -4831,35 +5138,103 @@ def render_mobile_deck_picker_height_fix():
                 return narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua));
             }
 
+            function viewportHeight() {
+                if (parentWindow.visualViewport && parentWindow.visualViewport.height) {
+                    return parentWindow.visualViewport.height;
+                }
+                return parentWindow.innerHeight || doc.documentElement.clientHeight || 0;
+            }
+
+            function px(value) {
+                var parsed = parseFloat(value || '0');
+                return Number.isFinite(parsed) ? parsed : 0;
+            }
+
+            function elementForScrollTarget(wrap, value) {
+                if (!value) {
+                    return null;
+                }
+                var parts = value.split(':');
+                if (parts[0] === 'category' && parts.length === 2) {
+                    return wrap.querySelector('[class*="st-key-deck_category_toggle_' + parts[1] + '_wrap"]');
+                }
+                if (parts[0] === 'subcategory' && parts.length === 3) {
+                    return wrap.querySelector(
+                        '[class*="st-key-deck_subcategory_toggle_' + parts[1] + '_' + parts[2] + '_wrap"]'
+                    );
+                }
+                return null;
+            }
+
+            function scrollTargetIntoView(wrap, target) {
+                if (scrollApplied || !pendingScrollTarget) {
+                    return;
+                }
+                var anchor = elementForScrollTarget(wrap, pendingScrollTarget);
+                if (!anchor) {
+                    scrollApplied = true;
+                    return;
+                }
+                var targetRect = target.getBoundingClientRect();
+                var anchorRect = anchor.getBoundingClientRect();
+                var nextScrollTop = target.scrollTop + (anchorRect.top - targetRect.top) - 6;
+                target.scrollTop = Math.max(0, nextScrollTop);
+                scrollApplied = true;
+            }
+
             function applyHeight() {
                 var wrap = doc.querySelector('.st-key-mobile_deck_picker_wrap');
                 if (!wrap) {
                     return false;
                 }
 
-                var candidates = Array.from(wrap.querySelectorAll('div')).filter(function(el) {
-                    var style = parentWindow.getComputedStyle(el);
-                    var overflowY = style.overflowY;
-                    return (overflowY === 'auto' || overflowY === 'scroll' || el.scrollHeight > el.clientHeight + 8)
-                        && !el.querySelector('.mobile-deck-picker-label')
-                        && el.clientHeight >= 180;
-                });
+                var row = firstDeckRow(wrap);
+                var target = row ? findScrollableAncestor(row, wrap) : null;
 
-                if (!candidates.length) {
-                    return false;
+                if (!target) {
+                    var candidates = Array.from(wrap.querySelectorAll('div')).filter(function(el) {
+                        var style = parentWindow.getComputedStyle(el);
+                        var overflowY = style.overflowY;
+                        return (overflowY === 'auto' || overflowY === 'scroll')
+                            && !el.querySelector('.mobile-deck-picker-label');
+                    });
+
+                    if (!candidates.length) {
+                        candidates = Array.from(wrap.querySelectorAll('div')).filter(function(el) {
+                            var style = parentWindow.getComputedStyle(el);
+                            var overflowY = style.overflowY;
+                            return (overflowY === 'auto' || overflowY === 'scroll' || el.scrollHeight > el.clientHeight + 8)
+                                && !el.querySelector('.mobile-deck-picker-label');
+                        });
+                    }
+
+                    if (!candidates.length) {
+                        return false;
+                    }
+
+                    candidates.sort(function(a, b) {
+                        if (a.clientHeight !== b.clientHeight) {
+                            return a.clientHeight - b.clientHeight;
+                        }
+                        return a.querySelectorAll('div').length - b.querySelectorAll('div').length;
+                    });
+
+                    target = candidates[0];
                 }
 
-                candidates.sort(function(a, b) {
-                    if (a.clientHeight !== b.clientHeight) {
-                        return a.clientHeight - b.clientHeight;
-                    }
-                    return a.querySelectorAll('div').length - b.querySelectorAll('div').length;
-                });
-
-                var target = candidates[0];
                 var phoneLayout = isPhoneLayout();
                 var wrapStyle = parentWindow.getComputedStyle(wrap);
-                var targetHeight = isPhoneLayout() ? '70svh' : '75svh';
+                var targetStyle = parentWindow.getComputedStyle(target);
+                var targetRect = target.getBoundingClientRect();
+                var wrapRect = wrap.getBoundingClientRect();
+                var viewport = viewportHeight();
+                var bottomGap = phoneLayout ? 48 : 54;
+                var wrapBottomRemainder = Math.max(0, wrapRect.bottom - targetRect.bottom);
+                var targetOuterBottom = px(targetStyle.marginBottom);
+                var availableHeight = Math.floor(
+                    viewport - targetRect.top - bottomGap - wrapBottomRemainder - targetOuterBottom
+                );
+                var targetHeight = Math.max(availableHeight, 1) + 'px';
 
                 if (phoneLayout) {
                     wrap.style.border = '';
@@ -4888,11 +5263,25 @@ def render_mobile_deck_picker_height_fix():
                 target.style.maxHeight = targetHeight;
                 target.style.minHeight = targetHeight;
                 target.style.overflowY = 'auto';
-                target.style.marginTop = '0.38rem';
+                target.style.marginTop = '0';
+                scrollTargetIntoView(wrap, target);
                 return true;
             }
 
+            function scheduleApplyHeight() {
+                if (resizeTimer) {
+                    parentWindow.clearTimeout(resizeTimer);
+                }
+                resizeTimer = parentWindow.setTimeout(function() {
+                    applyHeight();
+                }, 60);
+            }
+
             if (applyHeight()) {
+                parentWindow.addEventListener('resize', scheduleApplyHeight);
+                if (parentWindow.visualViewport) {
+                    parentWindow.visualViewport.addEventListener('resize', scheduleApplyHeight);
+                }
                 return;
             }
 
@@ -4900,12 +5289,20 @@ def render_mobile_deck_picker_height_fix():
             var timer = parentWindow.setInterval(function() {
                 attempts += 1;
                 if (applyHeight() || attempts >= 20) {
+                    if (attempts < 20) {
+                        parentWindow.addEventListener('resize', scheduleApplyHeight);
+                        if (parentWindow.visualViewport) {
+                            parentWindow.visualViewport.addEventListener('resize', scheduleApplyHeight);
+                        }
+                    }
                     parentWindow.clearInterval(timer);
                 }
             }, 120);
         })();
         </script>
-        """,
+        """.replace("__SCROLL_TARGET__", json.dumps(scroll_target))
+    components.html(
+        script,
         height=0,
     )
 
@@ -9469,6 +9866,7 @@ def restart_to_splash():
     st.session_state.final_exit = False
     st.session_state.progress_screen_open = False
     st.session_state.open_deck_categories = []
+    st.session_state.open_deck_subcategories = []
 
 
 def render_progress_screen():

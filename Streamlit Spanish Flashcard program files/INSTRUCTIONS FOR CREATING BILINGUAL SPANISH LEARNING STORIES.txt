@@ -23,12 +23,18 @@ Each story must include:
 1. **A title line** in this exact format:  
    `"Title: English Title";"Spanish Title"`
 
-2. **10 sentences**, each in this exact bilingual format:  
+Note: the actual word 'Title: ' with a colon space must be placed only before the actual English title.
+
+2. Each sentence is in this exact bilingual format:  
    `"English sentence";"Spanish sentence"`
 
-3. **Each sentence uses exactly one of the target verbs**, conjugated correctly.
+3. Each sentence uses one of the words from the attached word list (it may be adjectives, adverbs, nouns, verbs, pronouns, etc.).
 
-4. **Four stories per verb set**.
+NOTE: Ask the user two questions:
+
+(A) Should I use ALL the words in the attached list per story? If not, how many words from the list. (Suppose the list has 50 words, but the user wants to use only 20 at a time; Then the first SET (one or more sets, see below) will contain words 1-20; the next set would contain 21-40; and the final set 41-50).
+
+(B) How many stories per SET? (Suppose the user says 3 sets, and 20 words at a time. Then Set 1 contains 20 sentences in the story using words 1-20. Set 2 also contains 20 sentences using the SAME WORDS 1-20. Ditto for Set 3.)
 
 ---
 
@@ -45,20 +51,17 @@ Each story must include:
 
 - English must be **simple, clear, and beginner‑friendly**.
 
+- Sentences must end with either period or ?
+
 ---
 
 ## ⏳ **4. Tense Requirements**
 Each story must follow this ratio:
 
 - **75% present tense**  
-- **25% “going to” future** (voy a / vas a / va a / vamos a / van a)
+- **25% “going to” future** (voy a / vas a / va a / vamos a / van a) (ir + a + infinitive)_
 
-This means:
-
-- **7–8 sentences in present tense**  
-- **2–3 sentences using “ir + a + infinitive”**
-
-The “going to” sentences should appear **near the end** of the story (not all at the end, but in the last 3–4 lines).
+Note: the "going to" sentences should be interspersed approximately equally between the present tense sentences.
 
 ---
 
@@ -66,24 +69,22 @@ The “going to” sentences should appear **near the end** of the story (not al
 Across the 10 sentences of each story, use a **variety of grammatical persons**:
 
 - I (yo)  
-- you (tú)  
-- he / she (él / ella)  
-- we (nosotros)  
-- they (ellos)  
+- you (tú)
+- you (usted) 
+- he (él)
+- she (ella)  
+- we (nosotros)
+- they (ellos or ellas)
+- you (ustedes)
 
-No story should use only one or two persons — mix them naturally.
+NOTE: If the 'you' form was used (tú, usted, ustedes), put the following immediately after the English sentence: ' [sing, inf]', ' [sing, formal], '[pl]' respectively
 
----
-
-## 🧩 **6. Verb Usage Rules**
-- Use **every verb from the provided list exactly once** per story.  
-- Conjugate correctly in present tense or “ir + a + infinitive.”  
-- Do **not** add extra verbs beyond the required ones.  
-- Keep vocabulary simple and common.
+Do NOT put the Spanish person unless necessary for context! (That is, no need to write yo, tú, él, etc.)
 
 ---
 
-## 📝 **7. English Style**
+
+## 📝 **6. English Style**
 - Short, clear sentences.  
 - Everyday situations (school, home, market, park, family, etc.).  
 - No complex grammar.  
@@ -92,7 +93,7 @@ No story should use only one or two persons — mix them naturally.
 
 ---
 
-## 🇲🇽 **8. Spanish Style**
+## 🇲🇽 **7. Spanish Style**
 - Natural Mexican Spanish.  
 - Avoid Spain‑only forms (no “vosotros,” no “vale,” no “coger”).  
 - Use everyday vocabulary.  
@@ -102,50 +103,25 @@ No story should use only one or two persons — mix them naturally.
 
 ---
 
-## 🎨 **9. Story Arc Guidelines**
+## 🎨 **8. Story Arc Guidelines**
 Each story should feel like a **tiny scene** with a sense of flow:
 
 - A setting (school, home, market, park, etc.)  
 - Small actions happening  
-- A light emotional tone (calm, friendly, curious)  
+- A light emotional tone (calm, friendly, curious)
+- A beginning, middle, and end. 
 - A natural ending (often with a “going to…” future plan)
 
-No drama, no danger, no complicated plot — just **simple, pleasant micro‑stories**.
+No drama, no danger, no complicated plot — just **simple, pleasant micro‑stories** using easy-to-understand Spanish.
 
 ---
 
-## 📏 **10. Length and Simplicity**
-- Exactly **10 bilingual lines** per story (plus the title).  
-- Each sentence should be **10–14 words max**.  
+## 📏 **9. Length and Simplicity**
+- Each sentence should be **6-8 words in length**.  
 - No advanced grammar.  
 - No figurative language that complicates translation.
 
 ---
 
-## 🧪 **11. Example of the Required Format**
-(Just an example — not tied to any verb list.)
 
-"**The Market Morning**";"**La Mañana en el Mercado**"  
-"**We walk through the busy street.**";"**Caminamos por la calle llena de gente.**"  
-"**I buy fruit from a small stand.**";"**Compro fruta de un puestecito.**"  
-"**She looks for fresh vegetables.**";"**Ella busca verduras frescas.**"  
-"**They talk with the friendly vendor.**";"**Ellos hablan con el vendedor amable.**"  
-"**You carry a big bag of apples.**";"**Llevas una bolsa grande de manzanas.**"  
-"**He pays with a small bill.**";"**Él paga con un billete pequeño.**"  
-"**We eat a warm tamal together.**";"**Comemos un tamal calientito juntos.**"  
-"**I am going to buy tortillas later.**";"**Voy a comprar tortillas más tarde.**"  
-"**They are going to visit another stand.**";"**Ellos van a visitar otro puesto.**"  
-"**We are going to return tomorrow.**";"**Vamos a regresar mañana.**"
-
----
-
-## 🧭 **12. When You Paste These Instructions Later**
-If you paste these instructions into a future chat and give me:
-
-- A new list of verbs  
-- Or nouns  
-- Or adjectives  
-- Or any other part of speech  
-
-…I will generate **4 new stories** that follow this exact structure and style.
-
+First, write a single story so that I can check it!

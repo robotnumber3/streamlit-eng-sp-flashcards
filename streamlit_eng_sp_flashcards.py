@@ -580,26 +580,39 @@ def parts_of_speech_files_by_subcategory(files):
 
 
 def grouped_parts_of_speech_subcategory_files(subcategory_id, files):
-    if subcategory_id != "verbs":
-        return [
-            {**file_entry, "story_child_indent": False}
-            for file_entry in files
-        ]
-
-    story_pattern = re.compile(r"^(?P<base>.+_\d+)(?P<suffix>[a-z])_story\.csv$")
+    # Generalize: always group story files as children for all subcategories
+    # Match both ..._01a_story.csv and ..._story01a.csv
+    story_patterns = [
+        re.compile(r"^(?P<base>.+_\d+)(?P<suffix>[a-z])_story\.csv$"),  # ..._01a_story.csv
+        re.compile(r"^(?P<base>.+)_story(?P<num>\d+)(?P<suffix>[a-z])\.csv$"),  # ..._story01a.csv
+    ]
     existing_filenames = {file_entry["filename"] for file_entry in files}
     children_by_parent = {}
     child_suffixes = {}
 
     for file_entry in files:
-        match = story_pattern.match(file_entry["filename"])
+        match = None
+        for pattern in story_patterns:
+            match = pattern.match(file_entry["filename"])
+            if match:
+                break
         if not match:
             continue
-        parent_filename = f"{match.group('base')}.csv"
+        # Determine parent filename for both patterns
+        if 'base' in match.groupdict() and 'suffix' in match.groupdict() and 'num' not in match.groupdict():
+            # ..._01a_story.csv
+            parent_filename = f"{match.group('base')}.csv"
+            child_suffix = match.group("suffix")
+        elif 'base' in match.groupdict() and 'num' in match.groupdict() and 'suffix' in match.groupdict():
+            # ..._story01a.csv
+            parent_filename = f"{match.group('base')}.csv"
+            child_suffix = f"{match.group('num')}{match.group('suffix')}"
+        else:
+            continue
         if parent_filename not in existing_filenames:
             continue
         children_by_parent.setdefault(parent_filename, []).append(file_entry)
-        child_suffixes[file_entry["filename"]] = match.group("suffix")
+        child_suffixes[file_entry["filename"]] = child_suffix
 
     ordered_files = []
     appended_children = set()
@@ -616,7 +629,7 @@ def grouped_parts_of_speech_subcategory_files(subcategory_id, files):
         child_entries = children_by_parent.get(filename, [])
         for child_entry in sorted(
             child_entries,
-            key=lambda entry: (child_suffixes.get(entry["filename"], ""), normalized_filename(entry["filename"])),
+            key=lambda entry: (child_suffixes.get(entry["filename"], ""), normalized_filename(entry["filename"]))
         ):
             ordered_files.append({**child_entry, "story_child_indent": True})
             appended_children.add(child_entry["filename"])
