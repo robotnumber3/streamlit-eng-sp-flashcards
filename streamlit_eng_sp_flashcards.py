@@ -504,6 +504,7 @@ def story_title_row_present_in_file(filename):
         return False
 
 
+@st.cache_data(show_spinner=False)
 def csv_data_row_count(filename):
     file_path = os.path.join(CSV_FOLDER, filename)
     try:
@@ -823,20 +824,10 @@ def deck_picker_status(filename, person):
 
 
 def deck_picker_label(filename, person, italicized=False):
-    symbol_map = {
-        "review": "⭐",
-        "favorites": "♥︎",
-        "dialog": "💬",
-        "story": "📖",
-        "untouched": "•",
-        "in_progress": "🟡",
-        "complete": "✓",
-    }
-    status = deck_picker_status(filename, person)
     deck_name = picker_display_deck_name(filename, person)
     if italicized:
         deck_name = f"*{deck_name}*"
-    return f"{symbol_map[status]} {deck_name}"
+    return deck_name
 
 
 def is_forced_en_es_deck(filename):
@@ -1168,6 +1159,15 @@ def save_progress_data_local(progress_data):
         pass
 
 
+def clear_runtime_caches():
+    csv_data_row_count.clear()
+    load_prefs.clear()
+    load_review_data.clear()
+    load_favorites_data.clear()
+    load_progress_data.clear()
+    load_monthly_progress_history.clear()
+
+
 def prefs_are_default(pref_data):
     normalized = normalize_prefs(pref_data)
     return normalized["person_settings"] == normalize_prefs({})["person_settings"]
@@ -1436,6 +1436,7 @@ def save_progress_data_supabase(progress_data):
         return False
 
 
+@st.cache_data(show_spinner=False, ttl=15)
 def load_prefs():
     local_pref_data = load_prefs_local()
     if not cloud_sync_enabled():
@@ -1454,8 +1455,10 @@ def save_prefs(pref_data):
     normalized = normalize_prefs(pref_data)
     save_prefs_local(normalized)
     save_prefs_supabase(normalized)
+    clear_runtime_caches()
 
 
+@st.cache_data(show_spinner=False, ttl=15)
 def load_review_data():
     local_review_data = load_review_data_local()
     if not cloud_sync_enabled():
@@ -1473,8 +1476,10 @@ def load_review_data():
 def save_review_data(review_data):
     save_review_data_local(review_data)
     save_review_data_supabase(review_data)
+    clear_runtime_caches()
 
 
+@st.cache_data(show_spinner=False, ttl=15)
 def load_favorites_data():
     local_favorites_data = load_favorites_data_local()
     if not cloud_sync_enabled():
@@ -1492,8 +1497,10 @@ def load_favorites_data():
 def save_favorites_data(favorites_data):
     save_favorites_data_local(favorites_data)
     save_favorites_data_supabase(favorites_data)
+    clear_runtime_caches()
 
 
+@st.cache_data(show_spinner=False, ttl=15)
 def load_progress_data():
     local_progress_data = load_progress_data_local()
     if not cloud_sync_enabled():
@@ -1511,6 +1518,7 @@ def load_progress_data():
 def save_progress_data(progress_data):
     save_progress_data_local(progress_data)
     save_progress_data_supabase(progress_data)
+    clear_runtime_caches()
 
 
 def empty_monthly_progress_history():
@@ -1570,6 +1578,7 @@ def month_keys_between(start_month_key, end_month_key):
     return month_keys
 
 
+@st.cache_data(show_spinner=False, ttl=15)
 def load_monthly_progress_history():
     empty = empty_monthly_progress_history()
     client = get_supabase_client()
@@ -1628,6 +1637,7 @@ def save_monthly_progress_history_rows(rows):
 
     try:
         client.table(MONTHLY_PROGRESS_HISTORY_TABLE).upsert(normalized_rows).execute()
+        clear_runtime_caches()
         return True
     except Exception:
         return False
@@ -1639,6 +1649,7 @@ def delete_monthly_progress_history(person):
         return False
     try:
         client.table(MONTHLY_PROGRESS_HISTORY_TABLE).delete().eq("user_id", person).execute()
+        clear_runtime_caches()
         return True
     except Exception:
         return False
@@ -1651,6 +1662,7 @@ def delete_monthly_progress_history_row(person, month_key):
         return False
     try:
         client.table(MONTHLY_PROGRESS_HISTORY_TABLE).delete().eq("user_id", person).eq("month_key", normalized_month_key).execute()
+        clear_runtime_caches()
         return True
     except Exception:
         return False
@@ -2744,7 +2756,8 @@ def render_grouped_deck_picker():
                         for file_index, file_entry in enumerate(subcategory_files):
                             csv_file = file_entry["filename"]
                             file_wrap_prefix = "deck_subcategory_story_child_file" if file_entry.get("story_child_indent") else "deck_subcategory_file"
-                            with st.container(key=f"{file_wrap_prefix}_{category_id}_{subcategory_id}_{file_index}_wrap"):
+                            status = deck_picker_status(csv_file, st.session_state.active_person)
+                            with st.container(key=f"{file_wrap_prefix}_{status}_{category_id}_{subcategory_id}_{file_index}_wrap"):
                                 if st.button(
                                     deck_picker_label(
                                         csv_file,
@@ -2760,7 +2773,8 @@ def render_grouped_deck_picker():
 
                 for file_index, file_entry in enumerate(files):
                     csv_file = file_entry["filename"]
-                    with st.container(key=f"deck_category_file_{category_id}_{file_index}_wrap"):
+                    status = deck_picker_status(csv_file, st.session_state.active_person)
+                    with st.container(key=f"deck_category_file_{status}_{category_id}_{file_index}_wrap"):
                         if st.button(
                             deck_picker_label(
                                 csv_file,
@@ -4616,6 +4630,57 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 0.88rem;
     padding: 0.1rem 0 0.2rem 1.45rem;
 }}
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button,
+[class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button,
+[class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button {{
+    display: grid !important;
+    grid-template-columns: 1.25rem minmax(0, 1fr) !important;
+    align-items: center !important;
+    column-gap: 0.18rem !important;
+}}
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button > div,
+[class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button > div,
+[class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button > div {{
+    width: auto !important;
+    min-width: 0 !important;
+}}
+[class*="st-key-deck_category_file_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button::before {{
+    display: block !important;
+    width: 1.25rem !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+}}
+[class*="st-key-deck_category_file_untouched_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_file_untouched_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_story_child_file_untouched_"] [data-testid="stButton"] > button::before {{
+    content: '•';
+    color: #8d98a3 !important;
+}}
+[class*="st-key-deck_category_file_in_progress_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_file_in_progress_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_story_child_file_in_progress_"] [data-testid="stButton"] > button::before {{
+    content: '🟡';
+}}
+[class*="st-key-deck_category_file_complete_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_file_complete_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_story_child_file_complete_"] [data-testid="stButton"] > button::before {{
+    content: '✓';
+    color: {t['accent']} !important;
+    font-weight: 700 !important;
+}}
+[class*="st-key-deck_category_file_story_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_file_story_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_story_child_file_story_"] [data-testid="stButton"] > button::before {{
+    content: '📖';
+}}
+[class*="st-key-deck_category_file_dialog_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_file_dialog_"] [data-testid="stButton"] > button::before,
+[class*="st-key-deck_subcategory_story_child_file_dialog_"] [data-testid="stButton"] > button::before {{
+    content: '💬';
+}}
 .st-key-mobile_deck_picker_wrap .st-key-review_miguel_active_wrap div[data-testid="stButton"] > button::before,
 .st-key-mobile_deck_picker_wrap .st-key-review_david_active_wrap div[data-testid="stButton"] > button::before,
 .st-key-mobile_deck_picker_wrap .st-key-review_miguel_inactive_wrap div[data-testid="stButton"] > button::before,
@@ -4814,6 +4879,37 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         margin: 0 !important;
         text-align: left !important;
         justify-content: flex-start !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button,
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button,
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button {{
+        display: grid !important;
+        grid-template-columns: 1.70rem minmax(0, 1fr) !important;
+        column-gap: 0 !important;
+        align-items: center !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button::before,
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button::before,
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button::before {{
+        width: 1.70rem !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        justify-self: start !important;
+        padding-left: 0.02rem !important;
+        text-align: left !important;
+        white-space: nowrap !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button > div,
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button > div,
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button > div {{
+        width: auto !important;
+        min-width: 0 !important;
+        margin-left: 0 !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button p,
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button p,
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button p {{
+        font-size: 0.91rem !important;
     }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-mobile_deck_entry_"] [data-testid="stButton"] > button {{
         display: grid !important;
@@ -5066,13 +5162,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         flex: 1 1 0 !important;
     }}
 }}
-    </style>
     /* --- GLOBAL BUTTON LEFT ALIGNMENT OVERRIDE (added for cross-browser consistency, 2026-04-21) --- */
-    <style>
-    button, [data-testid="stButton"] > button, .stButton > button {
+    button, [data-testid="stButton"] > button, .stButton > button {{
         text-align: left !important;
         justify-content: flex-start !important;
-    }
+    }}
 </style>
 """, unsafe_allow_html=True)
 
