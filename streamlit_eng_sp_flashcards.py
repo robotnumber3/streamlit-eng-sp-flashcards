@@ -4675,7 +4675,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 [class*="st-key-picker_hidden_toggle_category_"],
 [class*="st-key-picker_hidden_toggle_subcategory_"],
 .st-key-{PICKER_HIDDEN_ACTIONS_WRAP_KEY} {{
-    display: none !important;
+    position: absolute !important;
+    left: -10000px !important;
+    top: auto !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }}
 .deck-picker-row-icon {{
     display: block;
@@ -4769,15 +4776,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         word-break: break-word;
     }}
     .deck-picker-row {{
-        grid-template-columns: 1.7rem minmax(0, 1fr);
-        column-gap: 0.5rem;
+        grid-template-columns: 1.42rem minmax(0, 1fr);
+        column-gap: 0.22rem;
         padding-right: 0.35rem;
     }}
     .deck-picker-row-icon {{
-        width: 1.7rem;
+        width: 1.42rem;
     }}
     .deck-picker-row-label {{
-        padding-left: 0.12rem;
+        padding-left: 0.02rem;
     }}
     .deck-picker-row-special {{
         min-height: 1.75rem;
