@@ -2768,17 +2768,22 @@ def picker_row_markup(label_html, icon_text, row_class, action, target, anchor_k
     if anchor_key:
         anchor_attr = f' data-picker-anchor="{html.escape(anchor_key)}"'
 
+    icon_markup = (
+        f'<span class="deck-picker-row-icon" aria-hidden="true">{html.escape(icon_text)}&nbsp;</span>'
+    )
+
     if button_key:
+        fallback_href = picker_query_href(action, target)
         return (
-            f'<button type="button" class="{' '.join(class_names)} deck-picker-action-button" data-picker-button-key="{html.escape(button_key)}"{anchor_attr}>'
-            f'<span class="deck-picker-row-icon" aria-hidden="true">{html.escape(icon_text)}</span>'
+            f'<button type="button" class="{' '.join(class_names)} deck-picker-action-button" data-picker-button-key="{html.escape(button_key)}" data-picker-fallback-href="{html.escape(fallback_href)}"{anchor_attr}>'
+            f'{icon_markup}'
             f'<span class="deck-picker-row-label">{label_html}</span>'
             "</button>"
         )
 
     return (
         f'<a class="{' '.join(class_names)}" href="{picker_query_href(action, target)}"{anchor_attr}>'
-        f'<span class="deck-picker-row-icon" aria-hidden="true">{html.escape(icon_text)}</span>'
+        f'{icon_markup}'
         f'<span class="deck-picker-row-label">{label_html}</span>'
         "</a>"
     )
@@ -2809,12 +2814,25 @@ def inject_picker_toggle_bridge():
                     button.addEventListener('click', function(event) {
                         event.preventDefault();
                         var key = button.getAttribute('data-picker-button-key');
+                        var fallbackHref = button.getAttribute('data-picker-fallback-href');
                         if (!key) return;
                         var hiddenButton = doc.querySelector(
                             '.st-key-' + key + ' button, [class*="st-key-' + key + '"] button'
                         );
-                        if (!hiddenButton) return;
+                        if (!hiddenButton) {
+                            if (fallbackHref) {
+                                window.parent.location.href = fallbackHref;
+                            }
+                            return;
+                        }
                         hiddenButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+                        if (fallbackHref) {
+                            window.setTimeout(function() {
+                                if (!doc.contains(button)) return;
+                                window.parent.location.href = fallbackHref;
+                            }, 220);
+                        }
                     });
                 });
 
