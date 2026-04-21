@@ -4888,6 +4888,18 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         column-gap: 0 !important;
         align-items: center !important;
     }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button {{
+        padding-left: 1.55rem !important;
+        padding-right: 0.35rem !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button {{
+        padding-left: 3.30rem !important;
+        padding-right: 0.35rem !important;
+    }}
+    .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button {{
+        padding-left: 4.40rem !important;
+        padding-right: 0.35rem !important;
+    }}
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_category_file_"] [data-testid="stButton"] > button::before,
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_file_"] [data-testid="stButton"] > button::before,
     .st-key-mobile_deck_picker_wrap [class*="st-key-deck_subcategory_story_child_file_"] [data-testid="stButton"] > button::before {{
