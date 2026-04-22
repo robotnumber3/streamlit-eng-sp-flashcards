@@ -4627,6 +4627,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-radius: 0.85rem !important;
     padding: 0.35rem 0.45rem !important;
     box-sizing: border-box !important;
+    overflow: hidden !important;
 }}
 .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
     border: none !important;
@@ -4652,6 +4653,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     display: flex;
     flex-direction: column;
     gap: 0;
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }}
 .deck-picker-meta {{
     display: flex;
@@ -4992,12 +4999,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         height: 0.62rem !important;
     }}
     .st-key-{MOBILE_PICKER_CONTAINER_KEY} {{
-        padding: 0 !important;
+        padding: 0.18rem 0.2rem !important;
         margin-top: -0.35rem !important;
-        border: none !important;
+        border: 1px solid color-mix(in srgb, {t['border']} 78%, transparent 22%) !important;
         box-shadow: none !important;
         background: transparent !important;
-        border-radius: 0 !important;
+        border-radius: 0.85rem !important;
+        overflow: hidden !important;
     }}
     .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
         border: none !important;
@@ -5218,41 +5226,6 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
             var pendingScrollTarget = __SCROLL_TARGET__;
             var scrollApplied = false;
 
-            function firstDeckRow(wrap) {
-                return wrap.querySelector('.deck-picker-row');
-            }
-
-            function findScrollableAncestor(start, stopAt) {
-                var node = start;
-                while (node && node !== stopAt && node !== doc.body) {
-                    var style = parentWindow.getComputedStyle(node);
-                    var overflowY = style.overflowY;
-                    if ((overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight >= node.clientHeight) {
-                        return node;
-                    }
-                    node = node.parentElement;
-                }
-                return null;
-            }
-
-            function isPhoneLayout() {
-                var nav = parentWindow.navigator || window.navigator;
-                var ua = nav && nav.userAgent ? nav.userAgent : '';
-                var hasTouch = !!(('ontouchstart' in parentWindow) || (nav && nav.maxTouchPoints > 0));
-                var narrow = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 767px)').matches);
-                return narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua));
-            }
-
-            function isTabletLayout() {
-                var nav = parentWindow.navigator || window.navigator;
-                var ua = nav && nav.userAgent ? nav.userAgent : '';
-                var maxTouchPoints = nav && nav.maxTouchPoints ? nav.maxTouchPoints : 0;
-                var hasTouch = !!(('ontouchstart' in parentWindow) || maxTouchPoints > 0);
-                var width = parentWindow.innerWidth || doc.documentElement.clientWidth || 0;
-                var isiPadLike = /iPad|Tablet/i.test(ua) || (/Macintosh/i.test(ua) && maxTouchPoints > 1);
-                return !isPhoneLayout() && hasTouch && (isiPadLike || (width >= 768 && width <= 1366));
-            }
-
             function viewportHeight() {
                 if (parentWindow.visualViewport && parentWindow.visualViewport.height) {
                     return parentWindow.visualViewport.height;
@@ -5265,27 +5238,27 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 return Number.isFinite(parsed) ? parsed : 0;
             }
 
-            function elementForScrollTarget(wrap, value) {
+            function elementForScrollTarget(shell, value) {
                 if (!value) {
                     return null;
                 }
                 var escapedValue = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-                return wrap.querySelector('[data-picker-anchor="' + escapedValue + '"]');
+                return shell.querySelector('[data-picker-anchor="' + escapedValue + '"]');
             }
 
-            function scrollTargetIntoView(wrap, target) {
+            function scrollTargetIntoView(shell) {
                 if (scrollApplied || !pendingScrollTarget) {
                     return;
                 }
-                var anchor = elementForScrollTarget(wrap, pendingScrollTarget);
+                var anchor = elementForScrollTarget(shell, pendingScrollTarget);
                 if (!anchor) {
                     scrollApplied = true;
                     return;
                 }
-                var targetRect = target.getBoundingClientRect();
+                var targetRect = shell.getBoundingClientRect();
                 var anchorRect = anchor.getBoundingClientRect();
-                var nextScrollTop = target.scrollTop + (anchorRect.top - targetRect.top) - 6;
-                target.scrollTop = Math.max(0, nextScrollTop);
+                var nextScrollTop = shell.scrollTop + (anchorRect.top - targetRect.top) - 6;
+                shell.scrollTop = Math.max(0, nextScrollTop);
                 scrollApplied = true;
             }
 
@@ -5294,111 +5267,32 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 if (!wrap) {
                     return false;
                 }
-
-                var phoneLayout = isPhoneLayout();
-                var tabletLayout = isTabletLayout();
-                var hasNestedChildRows = !!wrap.querySelector('.deck-picker-row-nested-child');
-
-                var row = firstDeckRow(wrap);
-                var target = row ? findScrollableAncestor(row, wrap) : null;
-
-                if (!target) {
-                    var candidates = Array.from(wrap.querySelectorAll('div')).filter(function(el) {
-                        var style = parentWindow.getComputedStyle(el);
-                        var overflowY = style.overflowY;
-                        return (overflowY === 'auto' || overflowY === 'scroll')
-                            && !el.querySelector('.mobile-deck-picker-label');
-                    });
-
-                    if (!candidates.length) {
-                        candidates = Array.from(wrap.querySelectorAll('div')).filter(function(el) {
-                            var style = parentWindow.getComputedStyle(el);
-                            var overflowY = style.overflowY;
-                            return (overflowY === 'auto' || overflowY === 'scroll' || el.scrollHeight > el.clientHeight + 8)
-                                && !el.querySelector('.mobile-deck-picker-label');
-                        });
-                    }
-
-                    if (!candidates.length) {
-                        return false;
-                    }
-
-                    candidates.sort(function(a, b) {
-                        if (a.clientHeight !== b.clientHeight) {
-                            return a.clientHeight - b.clientHeight;
-                        }
-                        return a.querySelectorAll('div').length - b.querySelectorAll('div').length;
-                    });
-
-                    target = candidates[0];
+                var shell = wrap.querySelector('.deck-picker-shell');
+                if (!shell) {
+                    return false;
                 }
 
-                if (phoneLayout && hasNestedChildRows) {
-                    target.style.height = '';
-                    target.style.maxHeight = '';
-                    target.style.minHeight = '';
-                    target.style.overflowY = 'visible';
-                    target.style.marginTop = '';
-                    scrollApplied = true;
-                    return true;
-                }
-
-                var wrapStyle = parentWindow.getComputedStyle(wrap);
-                var targetStyle = parentWindow.getComputedStyle(target);
-                var targetRect = target.getBoundingClientRect();
                 var wrapRect = wrap.getBoundingClientRect();
                 var viewport = viewportHeight();
-                var bottomGap = phoneLayout ? 48 : (tabletLayout ? 42 : 54);
-                var wrapBottomRemainder = Math.max(0, wrapRect.bottom - targetRect.bottom);
-                var targetOuterBottom = px(targetStyle.marginBottom);
-                var availableHeight = Math.floor(
-                    viewport - targetRect.top - bottomGap - wrapBottomRemainder - targetOuterBottom
-                );
-                var tabletDesiredHeight = Math.floor(viewport * 0.75);
-                var resolvedHeight = tabletLayout
-                    ? Math.max(Math.min(tabletDesiredHeight, availableHeight), 1)
-                    : Math.max(availableHeight, 1);
+                var bottomGap = 36;
+                var availableHeight = Math.floor(viewport - wrapRect.top - bottomGap);
+                var desiredHeight = Math.floor(viewport * 0.75);
+                var resolvedHeight = Math.max(Math.min(desiredHeight, availableHeight), 1);
                 var targetHeight = resolvedHeight + 'px';
 
-                if (phoneLayout) {
-                    wrap.style.border = '';
-                    wrap.style.boxShadow = '';
-                    wrap.style.background = '';
-                    wrap.style.borderRadius = '';
-                    wrap.style.padding = '';
-                    target.style.border = '';
-                    target.style.boxShadow = '';
-                    target.style.background = '';
-                    target.style.borderRadius = '';
-                    target.style.padding = '';
-                } else {
-                    wrap.style.border = 'none';
-                    wrap.style.boxShadow = 'none';
-                    wrap.style.background = 'transparent';
-                    target.style.border = wrapStyle.border;
-                    target.style.boxShadow = 'none';
-                    target.style.background = 'transparent';
-                    target.style.borderRadius = wrapStyle.borderRadius;
-                    target.style.padding = wrapStyle.padding;
-                    target.style.boxSizing = 'border-box';
-                }
+                wrap.style.height = targetHeight;
+                wrap.style.maxHeight = targetHeight;
+                wrap.style.minHeight = targetHeight;
+                wrap.style.boxSizing = 'border-box';
 
-                if (tabletLayout) {
-                    wrap.style.minHeight = targetHeight;
-                    wrap.style.height = targetHeight;
-                    wrap.style.maxHeight = targetHeight;
-                } else {
-                    wrap.style.minHeight = '';
-                    wrap.style.height = '';
-                    wrap.style.maxHeight = '';
-                }
+                shell.style.height = '100%';
+                shell.style.maxHeight = '100%';
+                shell.style.minHeight = '100%';
+                shell.style.overflowY = 'auto';
+                shell.style.overflowX = 'hidden';
+                shell.style.marginTop = '0';
 
-                target.style.height = targetHeight;
-                target.style.maxHeight = targetHeight;
-                target.style.minHeight = targetHeight;
-                target.style.overflowY = 'auto';
-                target.style.marginTop = '0';
-                scrollTargetIntoView(wrap, target);
+                scrollTargetIntoView(shell);
                 return true;
             }
 
