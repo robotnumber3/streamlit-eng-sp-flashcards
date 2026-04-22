@@ -4633,7 +4633,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-height: 75dvh !important;
     max-height: 75vh !important;
     max-height: 75dvh !important;
-    overflow: hidden !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
 }}
 .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
     border: none !important;
@@ -4666,14 +4670,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .deck-picker-shell {{
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
     gap: 0;
     min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
+    overflow: visible;
     pointer-events: auto;
 }}
 .deck-picker-meta {{
@@ -5270,67 +5269,67 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 return Number.isFinite(parsed) ? parsed : 0;
             }
 
-            function elementForScrollTarget(shell, value) {
+            function elementForScrollTarget(container, value) {
                 if (!value) {
                     return null;
                 }
                 var escapedValue = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-                return shell.querySelector('[data-picker-anchor="' + escapedValue + '"]');
+                return container.querySelector('[data-picker-anchor="' + escapedValue + '"]');
             }
 
-            function scrollTargetIntoView(shell) {
+            function scrollTargetIntoView(container) {
                 if (scrollApplied || !pendingScrollTarget) {
                     return;
                 }
-                var anchor = elementForScrollTarget(shell, pendingScrollTarget);
+                var anchor = elementForScrollTarget(container, pendingScrollTarget);
                 if (!anchor) {
                     scrollApplied = true;
                     return;
                 }
-                var targetRect = shell.getBoundingClientRect();
+                var targetRect = container.getBoundingClientRect();
                 var anchorRect = anchor.getBoundingClientRect();
-                var nextScrollTop = shell.scrollTop + (anchorRect.top - targetRect.top) - 6;
-                shell.scrollTop = Math.max(0, nextScrollTop);
+                var nextScrollTop = container.scrollTop + (anchorRect.top - targetRect.top) - 6;
+                container.scrollTop = Math.max(0, nextScrollTop);
                 scrollApplied = true;
             }
 
-            function attachTouchScroll(shell) {
-                if (!shell || shell.dataset.touchScrollAttached === '1') {
+            function attachTouchScroll(container) {
+                if (!container || container.dataset.touchScrollAttached === '1') {
                     return;
                 }
 
-                shell.dataset.touchScrollAttached = '1';
+                container.dataset.touchScrollAttached = '1';
 
                 var startY = 0;
                 var startScrollTop = 0;
                 var tracking = false;
 
-                shell.addEventListener('touchstart', function(event) {
+                container.addEventListener('touchstart', function(event) {
                     if (!event.touches || event.touches.length !== 1) {
                         tracking = false;
                         return;
                     }
                     tracking = true;
                     startY = event.touches[0].clientY;
-                    startScrollTop = shell.scrollTop;
+                    startScrollTop = container.scrollTop;
                 }, { passive: true });
 
-                shell.addEventListener('touchmove', function(event) {
+                container.addEventListener('touchmove', function(event) {
                     if (!tracking || !event.touches || event.touches.length !== 1) {
                         return;
                     }
 
-                    if (shell.scrollHeight <= shell.clientHeight + 1) {
+                    if (container.scrollHeight <= container.clientHeight + 1) {
                         return;
                     }
 
                     var currentY = event.touches[0].clientY;
                     var deltaY = currentY - startY;
-                    var maxScrollTop = Math.max(shell.scrollHeight - shell.clientHeight, 0);
+                    var maxScrollTop = Math.max(container.scrollHeight - container.clientHeight, 0);
                     var nextScrollTop = Math.max(0, Math.min(maxScrollTop, startScrollTop - deltaY));
 
-                    if (nextScrollTop !== shell.scrollTop) {
-                        shell.scrollTop = nextScrollTop;
+                    if (nextScrollTop !== container.scrollTop) {
+                        container.scrollTop = nextScrollTop;
                         event.preventDefault();
                     }
                 }, { passive: false });
@@ -5339,8 +5338,8 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                     tracking = false;
                 }
 
-                shell.addEventListener('touchend', stopTracking, { passive: true });
-                shell.addEventListener('touchcancel', stopTracking, { passive: true });
+                container.addEventListener('touchend', stopTracking, { passive: true });
+                container.addEventListener('touchcancel', stopTracking, { passive: true });
             }
 
             function applyHeight() {
@@ -5370,18 +5369,19 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 wrap.style.maxHeight = targetHeight;
                 wrap.style.minHeight = targetHeight;
                 wrap.style.boxSizing = 'border-box';
+                wrap.style.overflowY = 'auto';
+                wrap.style.overflowX = 'hidden';
+                wrap.style.webkitOverflowScrolling = 'touch';
+                wrap.style.touchAction = 'pan-y';
 
-                shell.style.height = shellHeight;
-                shell.style.maxHeight = shellHeight;
-                shell.style.minHeight = shellHeight;
-                shell.style.overflowY = 'auto';
-                shell.style.overflowX = 'hidden';
+                shell.style.height = 'auto';
+                shell.style.maxHeight = 'none';
+                shell.style.minHeight = '0';
+                shell.style.overflow = 'visible';
                 shell.style.marginTop = '0';
-                shell.style.webkitOverflowScrolling = 'touch';
-                shell.style.touchAction = 'pan-y';
-                attachTouchScroll(shell);
+                attachTouchScroll(wrap);
 
-                scrollTargetIntoView(shell);
+                scrollTargetIntoView(wrap);
                 return true;
             }
 
