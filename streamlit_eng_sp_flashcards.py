@@ -910,11 +910,13 @@ def toggle_deck_category(category_id):
     open_categories = list(st.session_state.get("open_deck_categories", []))
     if category_id in open_categories:
         open_categories = []
+        st.session_state.open_deck_subcategories = []
         st.session_state.deck_picker_scroll_target = None
     else:
         # Keep the picker simpler on mobile by allowing only one open category
         # at a time. Tapping a different header replaces the current section.
         open_categories = [category_id]
+        st.session_state.open_deck_subcategories = []
         st.session_state.deck_picker_scroll_target = f"category:{category_id}"
     st.session_state.open_deck_categories = open_categories
 
@@ -930,16 +932,11 @@ def is_deck_subcategory_open(category_id, subcategory_id):
 def toggle_deck_subcategory(category_id, subcategory_id):
     target_key = deck_subcategory_state_key(category_id, subcategory_id)
     st.session_state.open_deck_categories = [category_id]
-    descendant_prefix = target_key + "/"
-    open_subcategories = [
-        key
-        for key in st.session_state.get("open_deck_subcategories", [])
-        if key != target_key and not key.startswith(descendant_prefix)
-    ]
     if target_key not in st.session_state.get("open_deck_subcategories", []):
-        open_subcategories.append(target_key)
+        open_subcategories = [target_key]
         st.session_state.deck_picker_scroll_target = f"folder:{subcategory_id}"
     else:
+        open_subcategories = []
         st.session_state.deck_picker_scroll_target = None
     st.session_state.open_deck_subcategories = open_subcategories
 
@@ -4013,6 +4010,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     letter-spacing: 0.08em;
     text-transform: uppercase;
     margin-top: 0.18rem;
+    margin-bottom: 0.65rem;
     white-space: nowrap;
 }}
 
@@ -4982,6 +4980,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .title-sub {{
         margin-top: 0.08rem !important;
+        margin-bottom: 0.72rem !important;
     }}
     .st-key-person_radio_wrap {{
         margin-top: -0.08rem !important;
@@ -5026,7 +5025,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         min-height: 75dvh !important;
         max-height: 75vh !important;
         max-height: 75dvh !important;
-        overflow: hidden !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        overscroll-behavior: contain !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-y !important;
     }}
     .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
         border: none !important;
