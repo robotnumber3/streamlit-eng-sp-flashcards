@@ -6000,7 +6000,8 @@ def render_story_start_unlock_handler(
                 var ua = nav && nav.userAgent ? nav.userAgent : '';
                 var hasTouch = !!(('ontouchstart' in parentWindow) || (nav && nav.maxTouchPoints > 0));
                 var compactTouchLayout = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 1024px)').matches);
-                return hasTouch && (compactTouchLayout || /iPhone|Android|Mobile|iPad|iPod|Tablet/i.test(ua));
+                var iPadDesktopMode = !!(nav && nav.platform === 'MacIntel' && nav.maxTouchPoints > 1);
+                return hasTouch && (compactTouchLayout || iPadDesktopMode || /iPhone|Android|Mobile|iPad|iPod|Tablet/i.test(ua));
             }}
 
             if (!doc || !synth || !isPhoneStoryMode()) return;
@@ -7333,7 +7334,8 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
             var ua = nav && nav.userAgent ? nav.userAgent : '';
             var hasTouch = !!(('ontouchstart' in parentWindow) || (nav && nav.maxTouchPoints > 0));
             var compactTouchLayout = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 1024px)').matches);
-            if (hasTouch && (compactTouchLayout || /iPhone|Android|Mobile|iPad|iPod|Tablet/i.test(ua))) return;
+            var iPadDesktopMode = !!(nav && nav.platform === 'MacIntel' && nav.maxTouchPoints > 1);
+            if (hasTouch && (compactTouchLayout || iPadDesktopMode || /iPhone|Android|Mobile|iPad|iPod|Tablet/i.test(ua))) return;
 
             var speechText = {json.dumps(speech_text)};
             var speechRate = {speech_rate};
