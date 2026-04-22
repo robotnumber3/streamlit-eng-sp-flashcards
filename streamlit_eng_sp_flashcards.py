@@ -925,6 +925,22 @@ def deck_subcategory_state_key(_category_id, subcategory_id):
     return subcategory_id
 
 
+def deck_subcategory_open_chain(category_id, subcategory_id):
+    chain = []
+    relative_path = subcategory_id
+    prefix = category_id + "/"
+    if relative_path.startswith(prefix):
+        relative_path = relative_path[len(prefix):]
+
+    current_parts = []
+    for part in relative_path.split("/"):
+        if not part:
+            continue
+        current_parts.append(part)
+        chain.append(prefix + "/".join(current_parts))
+    return chain
+
+
 def is_deck_subcategory_open(category_id, subcategory_id):
     return deck_subcategory_state_key(category_id, subcategory_id) in st.session_state.get("open_deck_subcategories", [])
 
@@ -932,11 +948,16 @@ def is_deck_subcategory_open(category_id, subcategory_id):
 def toggle_deck_subcategory(category_id, subcategory_id):
     target_key = deck_subcategory_state_key(category_id, subcategory_id)
     st.session_state.open_deck_categories = [category_id]
-    if target_key not in st.session_state.get("open_deck_subcategories", []):
-        open_subcategories = [target_key]
+    current_open_subcategories = list(st.session_state.get("open_deck_subcategories", []))
+    if target_key not in current_open_subcategories:
+        open_subcategories = deck_subcategory_open_chain(category_id, target_key)
         st.session_state.deck_picker_scroll_target = f"folder:{subcategory_id}"
     else:
-        open_subcategories = []
+        open_subcategories = [
+            key
+            for key in current_open_subcategories
+            if target_key.startswith(key + "/")
+        ]
         st.session_state.deck_picker_scroll_target = None
     st.session_state.open_deck_subcategories = open_subcategories
 
