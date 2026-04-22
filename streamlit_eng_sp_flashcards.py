@@ -4668,13 +4668,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-direction: column;
     flex: 1 1 auto;
     gap: 0;
-    height: 100%;
     min-height: 0;
-    max-height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
 }}
 .deck-picker-meta {{
     display: flex;
@@ -5311,18 +5310,25 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 var desiredHeight = Math.floor(viewport * 0.75);
                 var resolvedHeight = Math.max(Math.min(desiredHeight, availableHeight), 1);
                 var targetHeight = resolvedHeight + 'px';
+                var wrapStyle = parentWindow.getComputedStyle(wrap);
+                var shellHeight = Math.max(
+                    wrap.clientHeight - px(wrapStyle.paddingTop) - px(wrapStyle.paddingBottom),
+                    1
+                ) + 'px';
 
                 wrap.style.height = targetHeight;
                 wrap.style.maxHeight = targetHeight;
                 wrap.style.minHeight = targetHeight;
                 wrap.style.boxSizing = 'border-box';
 
-                shell.style.height = '100%';
-                shell.style.maxHeight = '100%';
-                shell.style.minHeight = '100%';
+                shell.style.height = shellHeight;
+                shell.style.maxHeight = shellHeight;
+                shell.style.minHeight = shellHeight;
                 shell.style.overflowY = 'auto';
                 shell.style.overflowX = 'hidden';
                 shell.style.marginTop = '0';
+                shell.style.webkitOverflowScrolling = 'touch';
+                shell.style.touchAction = 'pan-y';
 
                 scrollTargetIntoView(shell);
                 return true;
