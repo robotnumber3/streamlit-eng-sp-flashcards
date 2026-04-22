@@ -160,6 +160,24 @@ def login_screen():
             border-color: #00442d;
             color: #ffffff;
         }
+        @media (min-width: 768px) {
+            .stApp,
+            [data-testid="stAppViewContainer"],
+            [data-testid="stMain"],
+            [data-testid="stMainBlockContainer"] {
+                background: #000000 !important;
+            }
+            .st-key-login_password_wrap [data-testid="stWidgetLabel"] p {
+                color: #f3f3f3 !important;
+            }
+            .st-key-login_password_wrap input {
+                color: #ffffff !important;
+            }
+            .st-key-login_password_wrap [data-baseweb="base-input"] {
+                background: #111111 !important;
+                border-color: #2a2a2a !important;
+            }
+        }
         @media (max-width: 767px) {
             .st-key-login_title_wrap {
                 margin-top: 5rem;
@@ -638,6 +656,18 @@ def books_files_by_subcategory(files):
     return grouped
 
 
+def picker_parent_item_count(files):
+    return sum(1 for file_entry in files if not file_entry.get("story_child_indent"))
+
+
+def picker_category_item_count(category_id, files):
+    if category_id == "books":
+        return len(BOOK_PREFIX_TITLES)
+    if category_id == "parts_of_speech":
+        return len([subcategory for subcategory in PARTS_OF_SPEECH_SUBCATEGORIES if subcategory["id"] != "other"])
+    return len(files)
+
+
 def parts_of_speech_files_by_subcategory(files):
     grouped = {
         subcategory["id"]: []
@@ -892,11 +922,8 @@ def deck_picker_status(filename, person):
     return "in_progress"
 
 
-def deck_picker_label(filename, person, italicized=False):
-    deck_name = picker_display_deck_name(filename, person)
-    if italicized:
-        deck_name = f"*{deck_name}*"
-    return deck_name
+def deck_picker_label(filename, person):
+    return picker_display_deck_name(filename, person)
 
 
 def is_forced_en_es_deck(filename):
@@ -2974,7 +3001,9 @@ def render_grouped_deck_picker():
             files = grouped_files.get(category_id, [])
             is_open = is_deck_category_open(category_id)
             category_icon = "▼" if is_open else "▶"
-            category_label_html = picker_row_label_html(f"{category['title']} ({len(files)})")
+            category_label_html = picker_row_label_html(
+                f"{category['title']} ({picker_category_item_count(category_id, files)})"
+            )
             category_button_key = picker_hidden_button_key("picker_hidden_toggle_category", category_id)
             hidden_toggle_actions.append((category_button_key, toggle_deck_category, (category_id,)))
             picker_rows.append(
@@ -3007,7 +3036,7 @@ def render_grouped_deck_picker():
                     subcategory_open = is_deck_subcategory_open(category_id, subcategory_id)
                     subcategory_icon = "▼" if subcategory_open else "▶"
                     subcategory_label_html = picker_row_label_html(
-                        f"{subcategory_title} ({len(subcategory_files)})"
+                        f"{subcategory_title} ({picker_parent_item_count(subcategory_files)})"
                     )
                     subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
                     hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))
@@ -3041,8 +3070,8 @@ def render_grouped_deck_picker():
                                     deck_picker_label(
                                         csv_file,
                                         st.session_state.active_person,
-                                        italicized=file_entry["italicized"],
                                     ),
+                                    italicized=file_entry["italicized"],
                                 ),
                                 picker_icon_for_status(status),
                                 row_class,
@@ -3065,7 +3094,7 @@ def render_grouped_deck_picker():
                     subcategory_open = is_deck_subcategory_open(category_id, subcategory_id)
                     subcategory_icon = "▼" if subcategory_open else "▶"
                     subcategory_label_html = picker_row_label_html(
-                        f"{PARTS_OF_SPEECH_SUBCATEGORY_TITLES[subcategory_id]} ({len(subcategory_files)})"
+                        f"{PARTS_OF_SPEECH_SUBCATEGORY_TITLES[subcategory_id]} ({picker_parent_item_count(subcategory_files)})"
                     )
                     subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
                     hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))
@@ -3099,8 +3128,8 @@ def render_grouped_deck_picker():
                                     deck_picker_label(
                                         csv_file,
                                         st.session_state.active_person,
-                                        italicized=file_entry["italicized"],
                                     ),
+                                    italicized=file_entry["italicized"],
                                 ),
                                 picker_icon_for_status(status),
                                 row_class,
@@ -3120,8 +3149,8 @@ def render_grouped_deck_picker():
                             deck_picker_label(
                                 csv_file,
                                 st.session_state.active_person,
-                                italicized=file_entry["italicized"],
-                            )
+                            ),
+                            italicized=file_entry["italicized"],
                         ),
                         picker_icon_for_status(status),
                         "deck-picker-row-file",
