@@ -4627,6 +4627,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-radius: 0.85rem !important;
     padding: 0.35rem 0.45rem !important;
     box-sizing: border-box !important;
+    height: 75vh !important;
+    height: 75dvh !important;
+    min-height: 75vh !important;
+    min-height: 75dvh !important;
+    max-height: 75vh !important;
+    max-height: 75dvh !important;
     overflow: hidden !important;
 }}
 .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -4634,9 +4640,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     box-shadow: none !important;
     background: transparent !important;
     padding: 0 !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
 }} 
 .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlock"] {{
     gap: 0 !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
 }}
 .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stElementContainer"] {{
     margin: 0 !important;
@@ -4652,9 +4666,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .deck-picker-shell {{
     display: flex;
     flex-direction: column;
+    flex: 1 1 auto;
     gap: 0;
     height: 100%;
     min-height: 0;
+    max-height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     overscroll-behavior: contain;
@@ -5005,6 +5021,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         box-shadow: none !important;
         background: transparent !important;
         border-radius: 0.85rem !important;
+        height: 75vh !important;
+        height: 75dvh !important;
+        min-height: 75vh !important;
+        min-height: 75dvh !important;
+        max-height: 75vh !important;
+        max-height: 75dvh !important;
         overflow: hidden !important;
     }}
     .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
@@ -5012,6 +5034,16 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         box-shadow: none !important;
         background: transparent !important;
         padding: 0 !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: 100% !important;
+        overflow: hidden !important;
+    }}
+    .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlock"] {{
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: 100% !important;
+        overflow: hidden !important;
     }}
     .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlock"] > * {{
         margin-bottom: 0 !important;
