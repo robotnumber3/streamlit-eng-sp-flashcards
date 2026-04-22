@@ -4674,6 +4674,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
+    pointer-events: auto;
 }}
 .deck-picker-meta {{
     display: flex;
@@ -5293,6 +5294,55 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 scrollApplied = true;
             }
 
+            function attachTouchScroll(shell) {
+                if (!shell || shell.dataset.touchScrollAttached === '1') {
+                    return;
+                }
+
+                shell.dataset.touchScrollAttached = '1';
+
+                var startY = 0;
+                var startScrollTop = 0;
+                var tracking = false;
+
+                shell.addEventListener('touchstart', function(event) {
+                    if (!event.touches || event.touches.length !== 1) {
+                        tracking = false;
+                        return;
+                    }
+                    tracking = true;
+                    startY = event.touches[0].clientY;
+                    startScrollTop = shell.scrollTop;
+                }, { passive: true });
+
+                shell.addEventListener('touchmove', function(event) {
+                    if (!tracking || !event.touches || event.touches.length !== 1) {
+                        return;
+                    }
+
+                    if (shell.scrollHeight <= shell.clientHeight + 1) {
+                        return;
+                    }
+
+                    var currentY = event.touches[0].clientY;
+                    var deltaY = currentY - startY;
+                    var maxScrollTop = Math.max(shell.scrollHeight - shell.clientHeight, 0);
+                    var nextScrollTop = Math.max(0, Math.min(maxScrollTop, startScrollTop - deltaY));
+
+                    if (nextScrollTop !== shell.scrollTop) {
+                        shell.scrollTop = nextScrollTop;
+                        event.preventDefault();
+                    }
+                }, { passive: false });
+
+                function stopTracking() {
+                    tracking = false;
+                }
+
+                shell.addEventListener('touchend', stopTracking, { passive: true });
+                shell.addEventListener('touchcancel', stopTracking, { passive: true });
+            }
+
             function applyHeight() {
                 var wrap = doc.querySelector('.st-key-{MOBILE_PICKER_CONTAINER_KEY}');
                 if (!wrap) {
@@ -5329,6 +5379,7 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 shell.style.marginTop = '0';
                 shell.style.webkitOverflowScrolling = 'touch';
                 shell.style.touchAction = 'pan-y';
+                attachTouchScroll(shell);
 
                 scrollTargetIntoView(shell);
                 return true;
