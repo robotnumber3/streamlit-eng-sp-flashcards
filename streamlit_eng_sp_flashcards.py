@@ -2802,14 +2802,14 @@ def picker_row_markup(label_html, icon_text, row_class, action, target, anchor_k
         button_label = picker_hidden_button_label(button_key)
         fallback_href = picker_query_href(action, target)
         return (
-            f'<a class="{' '.join(class_names)} deck-picker-action-button" href="{fallback_href}" data-picker-button-key="{html.escape(button_key)}" data-picker-button-label="{html.escape(button_label)}" data-picker-fallback-href="{html.escape(fallback_href)}"{anchor_attr}>'
+            f'<a class="{' '.join(class_names)} deck-picker-action-button" href="{fallback_href}" target="_self" data-picker-button-key="{html.escape(button_key)}" data-picker-button-label="{html.escape(button_label)}" data-picker-fallback-href="{html.escape(fallback_href)}"{anchor_attr}>'
             f'{icon_markup}'
             f'<span class="deck-picker-row-label">{label_html}</span>'
             "</a>"
         )
 
     return (
-        f'<a class="{' '.join(class_names)}" href="{picker_query_href(action, target)}"{anchor_attr}>'
+        f'<a class="{' '.join(class_names)}" href="{picker_query_href(action, target)}" target="_self"{anchor_attr}>'
         f'{icon_markup}'
         f'<span class="deck-picker-row-label">{label_html}</span>'
         "</a>"
@@ -5243,6 +5243,16 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 return narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua));
             }
 
+            function isTabletLayout() {
+                var nav = parentWindow.navigator || window.navigator;
+                var ua = nav && nav.userAgent ? nav.userAgent : '';
+                var maxTouchPoints = nav && nav.maxTouchPoints ? nav.maxTouchPoints : 0;
+                var hasTouch = !!(('ontouchstart' in parentWindow) || maxTouchPoints > 0);
+                var width = parentWindow.innerWidth || doc.documentElement.clientWidth || 0;
+                var isiPadLike = /iPad|Tablet/i.test(ua) || (/Macintosh/i.test(ua) && maxTouchPoints > 1);
+                return !isPhoneLayout() && hasTouch && (isiPadLike || (width >= 768 && width <= 1366));
+            }
+
             function viewportHeight() {
                 if (parentWindow.visualViewport && parentWindow.visualViewport.height) {
                     return parentWindow.visualViewport.height;
@@ -5286,6 +5296,7 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 }
 
                 var phoneLayout = isPhoneLayout();
+                var tabletLayout = isTabletLayout();
                 var hasNestedChildRows = !!wrap.querySelector('.deck-picker-row-nested-child');
 
                 var row = firstDeckRow(wrap);
@@ -5337,13 +5348,17 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 var targetRect = target.getBoundingClientRect();
                 var wrapRect = wrap.getBoundingClientRect();
                 var viewport = viewportHeight();
-                var bottomGap = phoneLayout ? 48 : 54;
+                var bottomGap = phoneLayout ? 48 : (tabletLayout ? 42 : 54);
                 var wrapBottomRemainder = Math.max(0, wrapRect.bottom - targetRect.bottom);
                 var targetOuterBottom = px(targetStyle.marginBottom);
                 var availableHeight = Math.floor(
                     viewport - targetRect.top - bottomGap - wrapBottomRemainder - targetOuterBottom
                 );
-                var targetHeight = Math.max(availableHeight, 1) + 'px';
+                var tabletDesiredHeight = Math.floor(viewport * 0.75);
+                var resolvedHeight = tabletLayout
+                    ? Math.max(Math.min(tabletDesiredHeight, availableHeight), 1)
+                    : Math.max(availableHeight, 1);
+                var targetHeight = resolvedHeight + 'px';
 
                 if (phoneLayout) {
                     wrap.style.border = '';
@@ -5366,6 +5381,16 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                     target.style.borderRadius = wrapStyle.borderRadius;
                     target.style.padding = wrapStyle.padding;
                     target.style.boxSizing = 'border-box';
+                }
+
+                if (tabletLayout) {
+                    wrap.style.minHeight = targetHeight;
+                    wrap.style.height = targetHeight;
+                    wrap.style.maxHeight = targetHeight;
+                } else {
+                    wrap.style.minHeight = '';
+                    wrap.style.height = '';
+                    wrap.style.maxHeight = '';
                 }
 
                 target.style.height = targetHeight;
