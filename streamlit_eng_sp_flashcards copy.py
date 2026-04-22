@@ -160,6 +160,24 @@ def login_screen():
             border-color: #00442d;
             color: #ffffff;
         }
+        @media (min-width: 768px) {
+            .stApp,
+            [data-testid="stAppViewContainer"],
+            [data-testid="stMain"],
+            [data-testid="stMainBlockContainer"] {
+                background: #000000 !important;
+            }
+            .st-key-login_password_wrap [data-testid="stWidgetLabel"] p {
+                color: #f3f3f3 !important;
+            }
+            .st-key-login_password_wrap input {
+                color: #ffffff !important;
+            }
+            .st-key-login_password_wrap [data-baseweb="base-input"] {
+                background: #111111 !important;
+                border-color: #2a2a2a !important;
+            }
+        }
         @media (max-width: 767px) {
             .st-key-login_title_wrap {
                 margin-top: 5rem;
@@ -328,63 +346,37 @@ def goodbye_image_data_uri():
 # ------------------------------------------------------------------------
 # DECK PICKER GROUPING
 # ------------------------------------------------------------------------
-# These category rules control where CSV files appear in the file chooser.
+# The picker mirrors the actual folder tree under csv/.
 #
-# Important: grouping is separate from playback mode detection.
-# Example: a file named "DSC_dialog_greetings.csv" belongs in the David
-# category for the picker, but it still opens in Dialog mode because the
-# filename also contains "dialog".
+# Top-level folders become the main categories.
+# Nested folders become nested submenus.
+# CSV files appear only in the folder where they physically live.
 #
-# Files are assigned to exactly one category. The first matching category wins,
-# so changing the order of this list changes both the picker order and the
-# category precedence.
+# Playback behavior is also folder-driven for the top-level mode folders:
+# - Dialogs -> dialog mode
+# - Stories -> story mode
+# - Sentence Practice -> sentence mode
 #
-# To change the picker later:
-# - reorder items in DECK_PICKER_CATEGORIES
-# - edit the token lists for each category
-# - add or remove category dictionaries as needed
-DECK_PICKER_CATEGORIES = [
-    {"id": "miguel", "title": "Miguel", "tokens": ["mac"]},
-    {"id": "david", "title": "David", "tokens": ["dsc"]},
-    {"id": "books", "title": "Books", "tokens": []},
-    {"id": "parts_of_speech", "title": "Parts of Speech", "tokens": ["pos"]},
-    {"id": "vocab", "title": "Vocab", "tokens": ["vocab"]},
-    {"id": "sentences", "title": "Sentences", "tokens": ["sentence"]},
-    {"id": "situations", "title": "Situations", "tokens": ["situations"]},
-    {"id": "dialogs", "title": "Dialogs", "tokens": ["dialog"]},
-    {"id": "stories", "title": "Stories", "tokens": ["story"]},
+# David and Miguel are kept as the visible folder names everywhere.
+TOP_LEVEL_PICKER_ORDER = [
+    "Miguel",
+    "David",
+    "Books",
+    "Parts of Speech",
+    "Vocabulary",
+    "Sentence Practice",
+    "Situations",
+    "Dialogs",
+    "Stories",
 ]
-DECK_PICKER_DESCRIPTOR_CATEGORY_IDS = {
-    "parts_of_speech",
-    "vocab",
-    "sentences",
-    "situations",
-    "dialogs",
-    "stories",
+TOP_LEVEL_PICKER_ORDER_LOOKUP = {
+    folder_name.casefold(): index
+    for index, folder_name in enumerate(TOP_LEVEL_PICKER_ORDER)
 }
-DECK_PICKER_CATEGORY_TITLES = {
-    category["id"]: category["title"]
-    for category in DECK_PICKER_CATEGORIES
-}
-BOOK_PREFIX_TITLES = {
-    "es_": "Easy Spanish: Step By Step",
-    "sp_": "Verbos de Poder Español",
-    "lp_": "Lonely Planet Español Mexicano",
-    "cl_": "Español latinoamericano completo",
-}
-PARTS_OF_SPEECH_SUBCATEGORIES = [
-    {"id": "adj", "title": "Adjectives", "prefixes": ["pos_adj_"]},
-    {"id": "adv", "title": "Adverbs", "prefixes": ["pos_adv_"]},
-    {"id": "conj", "title": "Conjunctions", "prefixes": ["pos_conj_"]},
-    {"id": "nouns", "title": "Nouns", "prefixes": ["pos_nouns_"]},
-    {"id": "prep", "title": "Prepositions", "prefixes": ["pos_prep_"]},
-    {"id": "pron", "title": "Pronouns", "prefixes": ["pos_pron_"]},
-    {"id": "verbs", "title": "Verbs", "prefixes": ["pos_verbs_"]},
-    {"id": "other", "title": "Other", "prefixes": []},
-]
-PARTS_OF_SPEECH_SUBCATEGORY_TITLES = {
-    subcategory["id"]: subcategory["title"]
-    for subcategory in PARTS_OF_SPEECH_SUBCATEGORIES
+DECK_MODE_TOP_LEVEL_FOLDERS = {
+    "dialogs": "dialog",
+    "stories": "story",
+    "sentence practice": "sentence",
 }
 
 BUTTON_COLORS = {
@@ -399,8 +391,53 @@ LEARNED_WORDS_CHALLENGE_LABEL = "Learned Words Challenge [20]"
 LEARNED_WORDS_CHALLENGE_MIN_CARDS = 20
 LEARNED_WORDS_CHALLENGE_SESSION_SIZE = 20
 
-csv_files = [f for f in os.listdir(CSV_FOLDER) if f.endswith(".csv")]
-csv_files.sort(key=str.lower)
+
+def discover_csv_files(csv_root):
+    csv_root_path = pathlib.Path(csv_root)
+    deck_paths_by_name = {}
+    duplicate_names = {}
+
+    for csv_path in sorted(csv_root_path.rglob("*.csv"), key=lambda path: str(path).lower()):
+        deck_name = csv_path.name
+        relative_path = str(csv_path.relative_to(csv_root_path))
+        if deck_name in deck_paths_by_name:
+            duplicate_names.setdefault(deck_name, [deck_paths_by_name[deck_name]])
+            duplicate_names[deck_name].append(relative_path)
+            continue
+        deck_paths_by_name[deck_name] = relative_path
+
+    if duplicate_names:
+        duplicate_lines = []
+        for deck_name in sorted(duplicate_names, key=str.lower):
+            duplicate_lines.append(f"{deck_name}: {', '.join(duplicate_names[deck_name])}")
+        raise RuntimeError(
+            "Duplicate CSV filenames found under csv/. Filenames must stay unique when using subfolders.\n"
+            + "\n".join(duplicate_lines)
+        )
+
+    csv_names = sorted(deck_paths_by_name, key=str.lower)
+    return csv_names, deck_paths_by_name
+
+
+csv_files, csv_relative_paths = discover_csv_files(CSV_FOLDER)
+
+
+def csv_path_for(filename):
+    relative_path = csv_relative_paths.get(filename)
+    if relative_path is None:
+        raise FileNotFoundError(f"CSV file not found in index: {filename}")
+    return os.path.join(CSV_FOLDER, relative_path)
+
+
+def csv_relative_path_for(filename):
+    relative_path = csv_relative_paths.get(filename)
+    if relative_path is None:
+        raise FileNotFoundError(f"CSV file not found in index: {filename}")
+    return relative_path
+
+
+def csv_relative_parts_for(filename):
+    return pathlib.Path(csv_relative_path_for(filename)).parts
 
 
 def review_item_key(word, answer):
@@ -469,18 +506,96 @@ def filename_contains_any(value, tokens):
 
 
 def exclude_from_trackable_count(filename):
+    top_level_folder = deck_top_level_folder(filename)
+    if top_level_folder and top_level_folder.casefold() in {"dialogs", "stories", "sentence practice", "situations"}:
+        return True
     return filename_contains_any(filename, TRACKABLE_COUNT_EXCLUDED_FILENAME_TOKENS)
 
 
-def filename_matches_picker_category(filename, category):
-    normalized_name = normalized_filename(filename)
-    if category["id"] == "books":
-        return any(normalized_name.startswith(prefix) for prefix in BOOK_PREFIX_TITLES)
-    if category["id"] == "parts_of_speech":
-        return normalized_name.startswith("pos_")
-    if category["id"] == "situations":
-        return normalized_name.startswith("situations")
-    return filename_contains_any(normalized_name, category["tokens"])
+def deck_top_level_folder(filename):
+    parts = csv_relative_parts_for(filename)
+    if not parts:
+        return None
+    return parts[0]
+
+
+def deck_mode_for_file(filename):
+    if not filename or is_review_deck(filename) or is_favorites_deck(filename):
+        return None
+
+    top_level_folder = deck_top_level_folder(filename)
+    if top_level_folder:
+        folder_mode = DECK_MODE_TOP_LEVEL_FOLDERS.get(top_level_folder.casefold())
+        if folder_mode:
+            return folder_mode
+
+    if filename_contains_any(filename, ["dialog"]):
+        return "dialog"
+    if filename_contains_any(filename, ["story"]):
+        return "story"
+    if filename_contains_any(filename, ["sentence"]):
+        return "sentence"
+    return None
+
+
+def picker_visible_directory_entries(folder_path):
+    entries = []
+    for child_path in folder_path.iterdir():
+        if child_path.name.startswith("."):
+            continue
+        if child_path.is_dir() or (child_path.is_file() and child_path.suffix.lower() == ".csv"):
+            entries.append(child_path)
+    return entries
+
+
+def picker_top_level_sort_key(folder_name):
+    return (
+        TOP_LEVEL_PICKER_ORDER_LOOKUP.get(folder_name.casefold(), len(TOP_LEVEL_PICKER_ORDER)),
+        folder_name.casefold(),
+    )
+
+
+def build_picker_folder_node(folder_path, relative_parts):
+    folder_nodes = []
+    file_entries = []
+
+    for child_path in picker_visible_directory_entries(folder_path):
+        if child_path.is_dir():
+            folder_nodes.append(build_picker_folder_node(child_path, relative_parts + (child_path.name,)))
+            continue
+
+        file_entries.append({"filename": child_path.name, "italicized": False})
+
+    folder_nodes.sort(key=lambda node: node["name"].casefold())
+    file_entries.sort(key=lambda entry: normalized_filename(entry["filename"]))
+
+    return {
+        "key": "/".join(relative_parts),
+        "name": relative_parts[-1],
+        "folders": folder_nodes,
+        "files": file_entries,
+    }
+
+
+def picker_root_files():
+    root_files = []
+    for filename in csv_files:
+        if len(csv_relative_parts_for(filename)) == 1:
+            root_files.append({"filename": filename, "italicized": False})
+    return sorted(root_files, key=lambda entry: normalized_filename(entry["filename"]))
+
+
+def picker_root_folder_nodes():
+    csv_root_path = pathlib.Path(CSV_FOLDER)
+    root_nodes = []
+
+    for child_path in picker_visible_directory_entries(csv_root_path):
+        if not child_path.is_dir():
+            continue
+        root_nodes.append(build_picker_folder_node(child_path, (child_path.name,)))
+
+    root_nodes.sort(key=lambda node: picker_top_level_sort_key(node["name"]))
+    return root_nodes
 
 
 def story_title_row_present_in_file(filename):
@@ -488,12 +603,12 @@ def story_title_row_present_in_file(filename):
         not filename
         or is_review_deck(filename)
         or is_favorites_deck(filename)
-        or filename_contains_any(filename, ["dialog"])
-        or not filename_contains_any(filename, ["story"])
+        or is_dialog_deck(filename)
+        or not is_story_deck(filename)
     ):
         return False
 
-    csv_path = os.path.join(CSV_FOLDER, filename)
+    csv_path = csv_path_for(filename)
     try:
         with open(csv_path, "r", encoding="utf-8") as handle:
             first_line = handle.readline()
@@ -520,7 +635,7 @@ def story_title_row_present_in_file(filename):
 
 @st.cache_data(show_spinner=False)
 def csv_data_row_count(filename):
-    file_path = os.path.join(CSV_FOLDER, filename)
+    file_path = csv_path_for(filename)
     try:
         with open(file_path, encoding="utf-8", errors="ignore") as handle:
             row_count = max(sum(1 for _ in handle) - 1, 0)
@@ -534,90 +649,12 @@ def csv_data_row_count(filename):
 csv_row_counts = {filename: csv_data_row_count(filename) for filename in csv_files}
 
 
-def picker_category_for_file(filename):
-    # First matching category wins. This keeps each file in exactly one bucket.
-    for category in DECK_PICKER_CATEGORIES:
-        if filename_matches_picker_category(filename, category):
-            return category["id"]
-    return None
+def picker_folder_item_count(folder_node):
+    return len(folder_node["folders"]) + len(folder_node["files"])
 
 
-def picker_secondary_categories_for_file(filename, primary_category_id):
-    secondary_category_ids = []
-    for category in DECK_PICKER_CATEGORIES:
-        category_id = category["id"]
-        if category_id == primary_category_id:
-            continue
-        if category_id not in DECK_PICKER_DESCRIPTOR_CATEGORY_IDS:
-            continue
-        if filename_matches_picker_category(filename, category):
-            secondary_category_ids.append(category_id)
-    return secondary_category_ids
-
-
-def picker_files_by_category():
-    grouped = {
-        category["id"]: []
-        for category in DECK_PICKER_CATEGORIES
-    }
-    for filename in csv_files:
-        category_id = picker_category_for_file(filename)
-        if category_id is None:
-            continue
-        grouped[category_id].append(
-            {"filename": filename, "italicized": False}
-        )
-        for secondary_category_id in picker_secondary_categories_for_file(filename, category_id):
-            grouped[secondary_category_id].append(
-                {"filename": filename, "italicized": True}
-            )
-    return grouped
-
-
-def parts_of_speech_subcategory_for_file(filename):
-    normalized_name = normalized_filename(filename)
-    for subcategory in PARTS_OF_SPEECH_SUBCATEGORIES:
-        prefixes = subcategory["prefixes"]
-        if prefixes and any(normalized_name.startswith(prefix) for prefix in prefixes):
-            return subcategory["id"]
-    return "other"
-
-
-def book_subcategory_for_file(filename):
-    normalized_name = normalized_filename(filename)
-    for prefix in BOOK_PREFIX_TITLES:
-        if normalized_name.startswith(prefix):
-            return prefix
-    return None
-
-
-def books_files_by_subcategory(files):
-    grouped = {
-        prefix: []
-        for prefix in BOOK_PREFIX_TITLES
-    }
-    for file_entry in files:
-        subcategory_id = book_subcategory_for_file(file_entry["filename"])
-        if subcategory_id is None:
-            continue
-        grouped[subcategory_id].append(file_entry)
-    return grouped
-
-
-def parts_of_speech_files_by_subcategory(files):
-    grouped = {
-        subcategory["id"]: []
-        for subcategory in PARTS_OF_SPEECH_SUBCATEGORIES
-    }
-    for file_entry in files:
-        subcategory_id = parts_of_speech_subcategory_for_file(file_entry["filename"])
-        grouped[subcategory_id].append(file_entry)
-    return grouped
-
-
-def grouped_parts_of_speech_subcategory_files(subcategory_id, files):
-    # Generalize: always group story files as children for all subcategories
-    # Match both ..._01a_story.csv and ..._story01a.csv
+def grouped_story_child_files(files):
+    # Match both ..._01a_story.csv and ..._story01a.csv.
     story_patterns = [
         re.compile(r"^(?P<base>.+_\d+)(?P<suffix>[a-z])_story\.csv$"),  # ..._01a_story.csv
         re.compile(r"^(?P<base>.+)_story(?P<num>\d+)(?P<suffix>[a-z])\.csv$"),  # ..._story01a.csv
@@ -712,7 +749,7 @@ def completion_sort_key(value):
 
 
 def load_regular_deck(filename):
-    csv_path = os.path.join(CSV_FOLDER, filename)
+    csv_path = csv_path_for(filename)
     with open(csv_path, "r", encoding="utf-8") as handle:
         first_line = handle.readline()
     separator = ";" if ";" in first_line else ","
@@ -786,32 +823,19 @@ def picker_display_deck_name(filename, person):
     if extension.lower() != ".csv":
         return base_name
 
-    total_cards = csv_row_counts.get(filename, 0)
-    progress_stats = deck_progress_stats(filename, person)
-    completed_cards = progress_stats.get("completed", 0)
-
-    if completed_cards > 0:
-        return f"{base_name} [{progress_stats['remaining']}/{progress_stats['total']}]"
-
-    return f"{base_name} [{total_cards}]"
+    return base_name
 
 
 def is_dialog_deck(filename):
-    return bool(filename) and not is_review_deck(filename) and not is_favorites_deck(filename) and filename_contains_any(filename, ["dialog"])
+    return deck_mode_for_file(filename) == "dialog"
 
 
 def is_story_deck(filename):
-    return (
-        bool(filename)
-        and not is_review_deck(filename)
-        and not is_favorites_deck(filename)
-        and not is_dialog_deck(filename)
-        and filename_contains_any(filename, ["story"])
-    )
+    return deck_mode_for_file(filename) == "story"
 
 
 def is_sentence_deck(filename):
-    return bool(filename) and not is_review_deck(filename) and not is_favorites_deck(filename) and filename_contains_any(filename, ["sentence"])
+    return deck_mode_for_file(filename) == "sentence"
 
 
 def is_playback_deck(filename):
@@ -858,11 +882,8 @@ def deck_picker_status(filename, person):
     return "in_progress"
 
 
-def deck_picker_label(filename, person, italicized=False):
-    deck_name = picker_display_deck_name(filename, person)
-    if italicized:
-        deck_name = f"*{deck_name}*"
-    return deck_name
+def deck_picker_label(filename, person):
+    return picker_display_deck_name(filename, person)
 
 
 def is_forced_en_es_deck(filename):
@@ -889,17 +910,35 @@ def toggle_deck_category(category_id):
     open_categories = list(st.session_state.get("open_deck_categories", []))
     if category_id in open_categories:
         open_categories = []
+        st.session_state.open_deck_subcategories = []
         st.session_state.deck_picker_scroll_target = None
     else:
         # Keep the picker simpler on mobile by allowing only one open category
         # at a time. Tapping a different header replaces the current section.
         open_categories = [category_id]
+        st.session_state.open_deck_subcategories = []
         st.session_state.deck_picker_scroll_target = f"category:{category_id}"
     st.session_state.open_deck_categories = open_categories
 
 
-def deck_subcategory_state_key(category_id, subcategory_id):
-    return f"{category_id}:{subcategory_id}"
+def deck_subcategory_state_key(_category_id, subcategory_id):
+    return subcategory_id
+
+
+def deck_subcategory_open_chain(category_id, subcategory_id):
+    chain = []
+    relative_path = subcategory_id
+    prefix = category_id + "/"
+    if relative_path.startswith(prefix):
+        relative_path = relative_path[len(prefix):]
+
+    current_parts = []
+    for part in relative_path.split("/"):
+        if not part:
+            continue
+        current_parts.append(part)
+        chain.append(prefix + "/".join(current_parts))
+    return chain
 
 
 def is_deck_subcategory_open(category_id, subcategory_id):
@@ -908,17 +947,17 @@ def is_deck_subcategory_open(category_id, subcategory_id):
 
 def toggle_deck_subcategory(category_id, subcategory_id):
     target_key = deck_subcategory_state_key(category_id, subcategory_id)
-    prefix = f"{category_id}:"
     st.session_state.open_deck_categories = [category_id]
-    open_subcategories = [
-        key
-        for key in st.session_state.get("open_deck_subcategories", [])
-        if not key.startswith(prefix)
-    ]
-    if target_key not in st.session_state.get("open_deck_subcategories", []):
-        open_subcategories.append(target_key)
-        st.session_state.deck_picker_scroll_target = f"subcategory:{category_id}:{subcategory_id}"
+    current_open_subcategories = list(st.session_state.get("open_deck_subcategories", []))
+    if target_key not in current_open_subcategories:
+        open_subcategories = deck_subcategory_open_chain(category_id, target_key)
+        st.session_state.deck_picker_scroll_target = f"folder:{subcategory_id}"
     else:
+        open_subcategories = [
+            key
+            for key in current_open_subcategories
+            if target_key.startswith(key + "/")
+        ]
         st.session_state.deck_picker_scroll_target = None
     st.session_state.open_deck_subcategories = open_subcategories
 
@@ -2707,8 +2746,9 @@ def handle_picker_query_action():
         st.rerun()
         return
 
-    if action == "toggle_subcategory" and target and "|" in target:
-        category_id, subcategory_id = target.split("|", 1)
+    if action == "toggle_subcategory" and target:
+        category_id = target.split("/", 1)[0]
+        subcategory_id = target
         toggle_deck_subcategory(category_id, subcategory_id)
         st.rerun()
         return
@@ -2780,14 +2820,14 @@ def picker_row_markup(label_html, icon_text, row_class, action, target, anchor_k
         button_label = picker_hidden_button_label(button_key)
         fallback_href = picker_query_href(action, target)
         return (
-            f'<a class="{' '.join(class_names)} deck-picker-action-button" href="{fallback_href}" data-picker-button-key="{html.escape(button_key)}" data-picker-button-label="{html.escape(button_label)}" data-picker-fallback-href="{html.escape(fallback_href)}"{anchor_attr}>'
+            f'<a class="{' '.join(class_names)} deck-picker-action-button" href="{fallback_href}" target="_self" data-picker-button-key="{html.escape(button_key)}" data-picker-button-label="{html.escape(button_label)}" data-picker-fallback-href="{html.escape(fallback_href)}"{anchor_attr}>'
             f'{icon_markup}'
             f'<span class="deck-picker-row-label">{label_html}</span>'
             "</a>"
         )
 
     return (
-        f'<a class="{' '.join(class_names)}" href="{picker_query_href(action, target)}"{anchor_attr}>'
+        f'<a class="{' '.join(class_names)}" href="{picker_query_href(action, target)}" target="_self"{anchor_attr}>'
         f'{icon_markup}'
         f'<span class="deck-picker-row-label">{label_html}</span>'
         "</a>"
@@ -2796,6 +2836,97 @@ def picker_row_markup(label_html, icon_text, row_class, action, target, anchor_k
 
 def picker_status_class(status):
     return f"deck-picker-status-{status}"
+
+
+def picker_folder_depth(folder_key):
+    if not folder_key:
+        return 0
+    return max(len(pathlib.PurePosixPath(folder_key).parts) - 1, 0)
+
+
+def picker_folder_depth_class(depth):
+    return f"deck-picker-row-folder-depth-{min(depth, 5)}"
+
+
+def picker_file_depth_class(depth):
+    return f"deck-picker-row-file-depth-{min(depth, 5)}"
+
+
+def picker_story_child_depth_class(depth):
+    return f"deck-picker-row-story-child-depth-{min(depth, 5)}"
+
+
+def append_picker_file_rows(file_entries, folder_depth, picker_rows, active_person):
+    for file_entry in grouped_story_child_files(file_entries):
+        csv_file = file_entry["filename"]
+        status = deck_picker_status(csv_file, active_person)
+
+        if file_entry.get("story_child_indent"):
+            row_class = "deck-picker-row-story-child"
+            extra_classes = [
+                "deck-picker-row-nested-child",
+                picker_story_child_depth_class(folder_depth),
+                picker_status_class(status),
+            ]
+        else:
+            row_class = "deck-picker-row-file" if folder_depth == 0 else "deck-picker-row-subcategory-file"
+            extra_classes = [
+                picker_file_depth_class(folder_depth),
+                picker_status_class(status),
+            ]
+
+        picker_rows.append(
+            picker_row_markup(
+                picker_row_label_html(
+                    deck_picker_label(
+                        csv_file,
+                        active_person,
+                    ),
+                    italicized=file_entry["italicized"],
+                ),
+                picker_icon_for_status(status),
+                row_class,
+                "select_deck",
+                csv_file,
+                extra_classes=extra_classes,
+            )
+        )
+
+
+def render_picker_folder_contents(folder_node, top_level_category_id, picker_rows, hidden_toggle_actions, active_person):
+    for child_folder in folder_node["folders"]:
+        child_folder_key = child_folder["key"]
+        child_folder_depth = picker_folder_depth(child_folder_key)
+        child_folder_open = is_deck_subcategory_open(top_level_category_id, child_folder_key)
+        child_folder_icon = "▼" if child_folder_open else "▶"
+        child_folder_label_html = picker_row_label_html(
+            f"{child_folder['name']} ({picker_folder_item_count(child_folder)})"
+        )
+        child_folder_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", child_folder_key)
+        hidden_toggle_actions.append((child_folder_button_key, toggle_deck_subcategory, (top_level_category_id, child_folder_key)))
+        picker_rows.append(
+            picker_row_markup(
+                child_folder_label_html,
+                child_folder_icon,
+                "deck-picker-row-subcategory",
+                "toggle_subcategory",
+                child_folder_key,
+                anchor_key=f"folder:{child_folder_key}",
+                extra_classes=[picker_folder_depth_class(child_folder_depth)],
+                button_key=child_folder_button_key,
+            )
+        )
+
+        if child_folder_open:
+            render_picker_folder_contents(
+                child_folder,
+                top_level_category_id,
+                picker_rows,
+                hidden_toggle_actions,
+                active_person,
+            )
+
+    append_picker_file_rows(folder_node["files"], picker_folder_depth(folder_node["key"]), picker_rows, active_person)
 
 
 def picker_build_code_text():
@@ -2808,6 +2939,12 @@ def inject_picker_toggle_bridge():
         <script>
         (function() {
             var doc = window.parent.document;
+            var bridgeKey = '__deckPickerToggleBridge_v2';
+
+            if (window.parent[bridgeKey]) {
+                return;
+            }
+            window.parent[bridgeKey] = true;
 
             function findHiddenButton(key, label) {
                 if (key) {
@@ -2828,38 +2965,46 @@ def inject_picker_toggle_bridge():
                 return null;
             }
 
-            function attach() {
-                var pickerButtons = doc.querySelectorAll('.deck-picker-action-button[data-picker-button-key]');
-                if (!pickerButtons.length) return false;
-
-                pickerButtons.forEach(function(button) {
-                    if (button.dataset.bridgeAttached === '1') return;
-                    button.dataset.bridgeAttached = '1';
-                    button.addEventListener('click', function(event) {
-                        var key = button.getAttribute('data-picker-button-key');
-                        var label = button.getAttribute('data-picker-button-label');
-                        if (!key) return;
-
-                        var hiddenButton = findHiddenButton(key, label);
-                        if (!hiddenButton) return;
-
-                        event.preventDefault();
-                        hiddenButton.click();
-                    });
-                });
-
-                return true;
-            }
-
-            if (attach()) return;
-
-            var attempts = 0;
-            var timer = window.setInterval(function() {
-                attempts += 1;
-                if (attach() || attempts > 20) {
-                    window.clearInterval(timer);
+            doc.addEventListener('click', function(event) {
+                var button = event.target && event.target.closest
+                    ? event.target.closest('.deck-picker-action-button[data-picker-button-key]')
+                    : null;
+                if (!button) {
+                    return;
                 }
-            }, 100);
+
+                var key = button.getAttribute('data-picker-button-key');
+                var label = button.getAttribute('data-picker-button-label');
+                var fallbackHref = button.getAttribute('data-picker-fallback-href') || button.getAttribute('href');
+                if (!key) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                var attempts = 0;
+                var maxAttempts = 8;
+
+                function clickHiddenOrFallback() {
+                    var hiddenButton = findHiddenButton(key, label);
+                    if (hiddenButton) {
+                        hiddenButton.click();
+                        return;
+                    }
+
+                    attempts += 1;
+                    if (attempts >= maxAttempts) {
+                        if (fallbackHref) {
+                            window.parent.location.href = fallbackHref;
+                        }
+                        return;
+                    }
+
+                    window.setTimeout(clickHiddenOrFallback, 35);
+                }
+
+                clickHiddenOrFallback();
+            }, true);
         })();
         </script>
         """,
@@ -2871,11 +3016,10 @@ handle_picker_query_action()
 
 
 def render_grouped_deck_picker():
-    # Category titles come from DECK_PICKER_CATEGORIES near the top of the file.
-    # That block is the single place to change the category order or matching.
     review_deck_values = visible_review_deck_values()
     favorites_deck_values = visible_favorites_deck_values()
-    grouped_files = picker_files_by_category()
+    root_files = picker_root_files()
+    root_folder_nodes = picker_root_folder_nodes()
     special_deck_count = 0
     scroll_target = st.session_state.get("deck_picker_scroll_target")
     picker_rows = []
@@ -2935,12 +3079,15 @@ def render_grouped_deck_picker():
             picker_rows.append("<div class='special-deck-separator'></div>")
             picker_rows.append("<div class='special-deck-after-gap'></div>")
 
-        for category in DECK_PICKER_CATEGORIES:
-            category_id = category["id"]
-            files = grouped_files.get(category_id, [])
+        append_picker_file_rows(root_files, 0, picker_rows, st.session_state.active_person)
+
+        for category_node in root_folder_nodes:
+            category_id = category_node["key"]
             is_open = is_deck_category_open(category_id)
             category_icon = "▼" if is_open else "▶"
-            category_label_html = picker_row_label_html(f"{category['title']} ({len(files)})")
+            category_label_html = picker_row_label_html(
+                f"{category_node['name']} ({picker_folder_item_count(category_node)})"
+            )
             category_button_key = picker_hidden_button_key("picker_hidden_toggle_category", category_id)
             hidden_toggle_actions.append((category_button_key, toggle_deck_category, (category_id,)))
             picker_rows.append(
@@ -2958,144 +3105,17 @@ def render_grouped_deck_picker():
             if not is_open:
                 continue
 
-            if not files:
+            if not category_node["folders"] and not category_node["files"]:
                 picker_rows.append("<div class='deck-category-empty'>No files in this category.</div>")
                 continue
 
-            if category_id == "books":
-                grouped_subcategories = books_files_by_subcategory(files)
-                for subcategory_id, subcategory_title in BOOK_PREFIX_TITLES.items():
-                    subcategory_files = grouped_subcategories.get(subcategory_id, [])
-                    if not subcategory_files:
-                        continue
-                    subcategory_files = grouped_parts_of_speech_subcategory_files(subcategory_id, subcategory_files)
-
-                    subcategory_open = is_deck_subcategory_open(category_id, subcategory_id)
-                    subcategory_icon = "▼" if subcategory_open else "▶"
-                    subcategory_label_html = picker_row_label_html(
-                        f"{subcategory_title} ({len(subcategory_files)})"
-                    )
-                    subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
-                    hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))
-                    picker_rows.append(
-                        picker_row_markup(
-                            subcategory_label_html,
-                            subcategory_icon,
-                            "deck-picker-row-subcategory",
-                            "toggle_subcategory",
-                            f"{category_id}|{subcategory_id}",
-                            anchor_key=f"subcategory:{category_id}:{subcategory_id}",
-                            button_key=subcategory_button_key,
-                        )
-                    )
-
-                    if not subcategory_open:
-                        continue
-
-                    for file_entry in subcategory_files:
-                        csv_file = file_entry["filename"]
-                        status = deck_picker_status(csv_file, st.session_state.active_person)
-                        row_class = "deck-picker-row-story-child" if file_entry.get("story_child_indent") else "deck-picker-row-file"
-                        extra_classes = [picker_status_class(status)]
-                        if file_entry.get("story_child_indent"):
-                            extra_classes.insert(0, "deck-picker-row-nested-child")
-                        if not file_entry.get("story_child_indent"):
-                            extra_classes.insert(0, "deck-picker-row-subcategory-file")
-                        picker_rows.append(
-                            picker_row_markup(
-                                picker_row_label_html(
-                                    deck_picker_label(
-                                        csv_file,
-                                        st.session_state.active_person,
-                                        italicized=file_entry["italicized"],
-                                    ),
-                                ),
-                                picker_icon_for_status(status),
-                                row_class,
-                                "select_deck",
-                                csv_file,
-                                extra_classes=extra_classes,
-                            )
-                        )
-                continue
-
-            if category_id == "parts_of_speech":
-                grouped_subcategories = parts_of_speech_files_by_subcategory(files)
-                for subcategory in PARTS_OF_SPEECH_SUBCATEGORIES:
-                    subcategory_id = subcategory["id"]
-                    subcategory_files = grouped_subcategories.get(subcategory_id, [])
-                    if not subcategory_files:
-                        continue
-                    subcategory_files = grouped_parts_of_speech_subcategory_files(subcategory_id, subcategory_files)
-
-                    subcategory_open = is_deck_subcategory_open(category_id, subcategory_id)
-                    subcategory_icon = "▼" if subcategory_open else "▶"
-                    subcategory_label_html = picker_row_label_html(
-                        f"{PARTS_OF_SPEECH_SUBCATEGORY_TITLES[subcategory_id]} ({len(subcategory_files)})"
-                    )
-                    subcategory_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", category_id, subcategory_id)
-                    hidden_toggle_actions.append((subcategory_button_key, toggle_deck_subcategory, (category_id, subcategory_id)))
-                    picker_rows.append(
-                        picker_row_markup(
-                            subcategory_label_html,
-                            subcategory_icon,
-                            "deck-picker-row-subcategory",
-                            "toggle_subcategory",
-                            f"{category_id}|{subcategory_id}",
-                            anchor_key=f"subcategory:{category_id}:{subcategory_id}",
-                            button_key=subcategory_button_key,
-                        )
-                    )
-
-                    if not subcategory_open:
-                        continue
-
-                    for file_entry in subcategory_files:
-                        csv_file = file_entry["filename"]
-                        status = deck_picker_status(csv_file, st.session_state.active_person)
-                        row_class = "deck-picker-row-story-child" if file_entry.get("story_child_indent") else "deck-picker-row-file"
-                        extra_classes = [picker_status_class(status)]
-                        if file_entry.get("story_child_indent"):
-                            extra_classes.insert(0, "deck-picker-row-nested-child")
-                        if not file_entry.get("story_child_indent"):
-                            extra_classes.insert(0, "deck-picker-row-subcategory-file")
-                        picker_rows.append(
-                            picker_row_markup(
-                                picker_row_label_html(
-                                    deck_picker_label(
-                                        csv_file,
-                                        st.session_state.active_person,
-                                        italicized=file_entry["italicized"],
-                                    ),
-                                ),
-                                picker_icon_for_status(status),
-                                row_class,
-                                "select_deck",
-                                csv_file,
-                                extra_classes=extra_classes,
-                            )
-                        )
-                continue
-
-            for file_entry in files:
-                csv_file = file_entry["filename"]
-                status = deck_picker_status(csv_file, st.session_state.active_person)
-                picker_rows.append(
-                    picker_row_markup(
-                        picker_row_label_html(
-                            deck_picker_label(
-                                csv_file,
-                                st.session_state.active_person,
-                                italicized=file_entry["italicized"],
-                            )
-                        ),
-                        picker_icon_for_status(status),
-                        "deck-picker-row-file",
-                        "select_deck",
-                        csv_file,
-                        extra_classes=[picker_status_class(status)],
-                    )
-                )
+            render_picker_folder_contents(
+                category_node,
+                category_id,
+                picker_rows,
+                hidden_toggle_actions,
+                st.session_state.active_person,
+            )
 
         st.markdown("<div class='deck-picker-shell'>" + "".join(picker_rows) + "</div>", unsafe_allow_html=True)
 
@@ -4011,6 +4031,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     letter-spacing: 0.08em;
     text-transform: uppercase;
     margin-top: 0.18rem;
+    margin-bottom: 0.65rem;
     white-space: nowrap;
 }}
 
@@ -4625,15 +4646,34 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-radius: 0.85rem !important;
     padding: 0.35rem 0.45rem !important;
     box-sizing: border-box !important;
+    height: 75vh !important;
+    height: 75dvh !important;
+    min-height: 75vh !important;
+    min-height: 75dvh !important;
+    max-height: 75vh !important;
+    max-height: 75dvh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
 }}
 .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
     padding: 0 !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
 }} 
 .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlock"] {{
     gap: 0 !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
 }}
 .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stElementContainer"] {{
     margin: 0 !important;
@@ -4650,6 +4690,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     display: flex;
     flex-direction: column;
     gap: 0;
+    min-height: 0;
+    overflow: visible;
+    pointer-events: auto;
 }}
 .deck-picker-meta {{
     display: flex;
@@ -4734,7 +4777,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin-bottom: 0.5rem;
 }}
 .deck-picker-row-subcategory {{
-    padding-left: 2rem;
     font-size: 1rem;
     font-weight: 400 !important;
     line-height: 1.05;
@@ -4755,13 +4797,64 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin-bottom: 0.16rem;
 }}
 .deck-picker-row-file {{
-    padding-left: 1.45rem;
 }}
 .deck-picker-row-subcategory-file {{
-    padding-left: 3.3rem;
 }}
 .deck-picker-row-story-child {{
+}}
+.deck-picker-row-folder-depth-0 {{
+    padding-left: 2rem;
+}}
+.deck-picker-row-folder-depth-1 {{
+    padding-left: 2rem;
+}}
+.deck-picker-row-folder-depth-2 {{
+    padding-left: 3.15rem;
+}}
+.deck-picker-row-folder-depth-3 {{
+    padding-left: 4.3rem;
+}}
+.deck-picker-row-folder-depth-4 {{
+    padding-left: 5.45rem;
+}}
+.deck-picker-row-folder-depth-5 {{
+    padding-left: 6.6rem;
+}}
+.deck-picker-row-file-depth-0 {{
+    padding-left: 1.45rem;
+}}
+.deck-picker-row-file-depth-1 {{
+    padding-left: 3.3rem;
+}}
+.deck-picker-row-file-depth-2 {{
+    padding-left: 4.45rem;
+}}
+.deck-picker-row-file-depth-3 {{
+    padding-left: 5.6rem;
+}}
+.deck-picker-row-file-depth-4 {{
+    padding-left: 6.75rem;
+}}
+.deck-picker-row-file-depth-5 {{
+    padding-left: 7.9rem;
+}}
+.deck-picker-row-story-child-depth-0 {{
+    padding-left: 2.55rem;
+}}
+.deck-picker-row-story-child-depth-1 {{
     padding-left: 4.4rem;
+}}
+.deck-picker-row-story-child-depth-2 {{
+    padding-left: 5.55rem;
+}}
+.deck-picker-row-story-child-depth-3 {{
+    padding-left: 6.7rem;
+}}
+.deck-picker-row-story-child-depth-4 {{
+    padding-left: 7.85rem;
+}}
+.deck-picker-row-story-child-depth-5 {{
+    padding-left: 9rem;
 }}
 .deck-picker-row-special {{
     font-size: 0.88rem;
@@ -4827,7 +4920,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         margin-bottom: 0.52rem;
     }}
     .deck-picker-row-subcategory {{
-        padding-left: 1.85rem;
         font-weight: 400;
         min-height: 1.92rem;
         padding-top: 0.18rem;
@@ -4845,19 +4937,71 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         margin-bottom: 0.18rem;
     }}
     .deck-picker-row-file {{
-        padding-left: 1.55rem;
     }}
     .deck-picker-row-subcategory-file {{
-        padding-left: 3.1rem;
     }}
     .deck-picker-row-story-child {{
+    }}
+    .deck-picker-row-folder-depth-0 {{
+        padding-left: 1.85rem;
+    }}
+    .deck-picker-row-folder-depth-1 {{
+        padding-left: 1.85rem;
+    }}
+    .deck-picker-row-folder-depth-2 {{
+        padding-left: 2.9rem;
+    }}
+    .deck-picker-row-folder-depth-3 {{
+        padding-left: 3.95rem;
+    }}
+    .deck-picker-row-folder-depth-4 {{
+        padding-left: 5rem;
+    }}
+    .deck-picker-row-folder-depth-5 {{
+        padding-left: 6.05rem;
+    }}
+    .deck-picker-row-file-depth-0 {{
+        padding-left: 1.55rem;
+    }}
+    .deck-picker-row-file-depth-1 {{
+        padding-left: 3.1rem;
+    }}
+    .deck-picker-row-file-depth-2 {{
+        padding-left: 4.15rem;
+    }}
+    .deck-picker-row-file-depth-3 {{
+        padding-left: 5.2rem;
+    }}
+    .deck-picker-row-file-depth-4 {{
+        padding-left: 6.25rem;
+    }}
+    .deck-picker-row-file-depth-5 {{
+        padding-left: 7.3rem;
+    }}
+    .deck-picker-row-story-child-depth-0 {{
+        padding-left: 2.45rem;
+    }}
+    .deck-picker-row-story-child-depth-1 {{
         padding-left: 4.4rem;
+    }}
+    .deck-picker-row-story-child-depth-2 {{
+        padding-left: 5.45rem;
+    }}
+    .deck-picker-row-story-child-depth-3 {{
+        padding-left: 6.5rem;
+    }}
+    .deck-picker-row-story-child-depth-4 {{
+        padding-left: 7.55rem;
+    }}
+    .deck-picker-row-story-child-depth-5 {{
+        padding-left: 8.6rem;
     }}
     .title-main {{
         line-height: 0.96 !important;
     }}
     .title-sub {{
         margin-top: 0.08rem !important;
+        margin-bottom: 0.72rem !important;
     }}
     .st-key-person_radio_wrap {{
         margin-top: -0.08rem !important;
@@ -4890,18 +5034,39 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         height: 0.62rem !important;
     }}
     .st-key-{MOBILE_PICKER_CONTAINER_KEY} {{
-        padding: 0 !important;
+        padding: 0.18rem 0.2rem !important;
         margin-top: -0.35rem !important;
-        border: none !important;
+        border: 1px solid color-mix(in srgb, {t['border']} 78%, transparent 22%) !important;
         box-shadow: none !important;
         background: transparent !important;
-        border-radius: 0 !important;
+        border-radius: 0.85rem !important;
+        height: 75vh !important;
+        height: 75dvh !important;
+        min-height: 75vh !important;
+        min-height: 75dvh !important;
+        max-height: 75vh !important;
+        max-height: 75dvh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        overscroll-behavior: contain !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-y !important;
     }}
     .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlockBorderWrapper"] {{
         border: none !important;
         box-shadow: none !important;
         background: transparent !important;
         padding: 0 !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: 100% !important;
+        overflow: hidden !important;
+    }}
+    .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlock"] {{
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: 100% !important;
+        overflow: hidden !important;
     }}
     .st-key-{MOBILE_PICKER_CONTAINER_KEY} [data-testid="stVerticalBlock"] > * {{
         margin-bottom: 0 !important;
@@ -5116,31 +5281,6 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
             var pendingScrollTarget = __SCROLL_TARGET__;
             var scrollApplied = false;
 
-            function firstDeckRow(wrap) {
-                return wrap.querySelector('.deck-picker-row');
-            }
-
-            function findScrollableAncestor(start, stopAt) {
-                var node = start;
-                while (node && node !== stopAt && node !== doc.body) {
-                    var style = parentWindow.getComputedStyle(node);
-                    var overflowY = style.overflowY;
-                    if ((overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight >= node.clientHeight) {
-                        return node;
-                    }
-                    node = node.parentElement;
-                }
-                return null;
-            }
-
-            function isPhoneLayout() {
-                var nav = parentWindow.navigator || window.navigator;
-                var ua = nav && nav.userAgent ? nav.userAgent : '';
-                var hasTouch = !!(('ontouchstart' in parentWindow) || (nav && nav.maxTouchPoints > 0));
-                var narrow = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 767px)').matches);
-                return narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua));
-            }
-
             function viewportHeight() {
                 if (parentWindow.visualViewport && parentWindow.visualViewport.height) {
                     return parentWindow.visualViewport.height;
@@ -5153,28 +5293,77 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 return Number.isFinite(parsed) ? parsed : 0;
             }
 
-            function elementForScrollTarget(wrap, value) {
+            function elementForScrollTarget(container, value) {
                 if (!value) {
                     return null;
                 }
                 var escapedValue = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-                return wrap.querySelector('[data-picker-anchor="' + escapedValue + '"]');
+                return container.querySelector('[data-picker-anchor="' + escapedValue + '"]');
             }
 
-            function scrollTargetIntoView(wrap, target) {
+            function scrollTargetIntoView(container) {
                 if (scrollApplied || !pendingScrollTarget) {
                     return;
                 }
-                var anchor = elementForScrollTarget(wrap, pendingScrollTarget);
+                var anchor = elementForScrollTarget(container, pendingScrollTarget);
                 if (!anchor) {
                     scrollApplied = true;
                     return;
                 }
-                var targetRect = target.getBoundingClientRect();
+                var targetRect = container.getBoundingClientRect();
                 var anchorRect = anchor.getBoundingClientRect();
-                var nextScrollTop = target.scrollTop + (anchorRect.top - targetRect.top) - 6;
-                target.scrollTop = Math.max(0, nextScrollTop);
+                var nextScrollTop = container.scrollTop + (anchorRect.top - targetRect.top) - 6;
+                container.scrollTop = Math.max(0, nextScrollTop);
                 scrollApplied = true;
+            }
+
+            function attachTouchScroll(container) {
+                if (!container || container.dataset.touchScrollAttached === '1') {
+                    return;
+                }
+
+                container.dataset.touchScrollAttached = '1';
+
+                var startY = 0;
+                var startScrollTop = 0;
+                var tracking = false;
+
+                container.addEventListener('touchstart', function(event) {
+                    if (!event.touches || event.touches.length !== 1) {
+                        tracking = false;
+                        return;
+                    }
+                    tracking = true;
+                    startY = event.touches[0].clientY;
+                    startScrollTop = container.scrollTop;
+                }, { passive: true });
+
+                container.addEventListener('touchmove', function(event) {
+                    if (!tracking || !event.touches || event.touches.length !== 1) {
+                        return;
+                    }
+
+                    if (container.scrollHeight <= container.clientHeight + 1) {
+                        return;
+                    }
+
+                    var currentY = event.touches[0].clientY;
+                    var deltaY = currentY - startY;
+                    var maxScrollTop = Math.max(container.scrollHeight - container.clientHeight, 0);
+                    var nextScrollTop = Math.max(0, Math.min(maxScrollTop, startScrollTop - deltaY));
+
+                    if (nextScrollTop !== container.scrollTop) {
+                        container.scrollTop = nextScrollTop;
+                        event.preventDefault();
+                    }
+                }, { passive: false });
+
+                function stopTracking() {
+                    tracking = false;
+                }
+
+                container.addEventListener('touchend', stopTracking, { passive: true });
+                container.addEventListener('touchcancel', stopTracking, { passive: true });
             }
 
             function applyHeight() {
@@ -5182,96 +5371,41 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
                 if (!wrap) {
                     return false;
                 }
-
-                var phoneLayout = isPhoneLayout();
-                var hasNestedChildRows = !!wrap.querySelector('.deck-picker-row-nested-child');
-
-                var row = firstDeckRow(wrap);
-                var target = row ? findScrollableAncestor(row, wrap) : null;
-
-                if (!target) {
-                    var candidates = Array.from(wrap.querySelectorAll('div')).filter(function(el) {
-                        var style = parentWindow.getComputedStyle(el);
-                        var overflowY = style.overflowY;
-                        return (overflowY === 'auto' || overflowY === 'scroll')
-                            && !el.querySelector('.mobile-deck-picker-label');
-                    });
-
-                    if (!candidates.length) {
-                        candidates = Array.from(wrap.querySelectorAll('div')).filter(function(el) {
-                            var style = parentWindow.getComputedStyle(el);
-                            var overflowY = style.overflowY;
-                            return (overflowY === 'auto' || overflowY === 'scroll' || el.scrollHeight > el.clientHeight + 8)
-                                && !el.querySelector('.mobile-deck-picker-label');
-                        });
-                    }
-
-                    if (!candidates.length) {
-                        return false;
-                    }
-
-                    candidates.sort(function(a, b) {
-                        if (a.clientHeight !== b.clientHeight) {
-                            return a.clientHeight - b.clientHeight;
-                        }
-                        return a.querySelectorAll('div').length - b.querySelectorAll('div').length;
-                    });
-
-                    target = candidates[0];
+                var shell = wrap.querySelector('.deck-picker-shell');
+                if (!shell) {
+                    return false;
                 }
 
-                if (phoneLayout && hasNestedChildRows) {
-                    target.style.height = '';
-                    target.style.maxHeight = '';
-                    target.style.minHeight = '';
-                    target.style.overflowY = 'visible';
-                    target.style.marginTop = '';
-                    scrollApplied = true;
-                    return true;
-                }
-
-                var wrapStyle = parentWindow.getComputedStyle(wrap);
-                var targetStyle = parentWindow.getComputedStyle(target);
-                var targetRect = target.getBoundingClientRect();
                 var wrapRect = wrap.getBoundingClientRect();
                 var viewport = viewportHeight();
-                var bottomGap = phoneLayout ? 48 : 54;
-                var wrapBottomRemainder = Math.max(0, wrapRect.bottom - targetRect.bottom);
-                var targetOuterBottom = px(targetStyle.marginBottom);
-                var availableHeight = Math.floor(
-                    viewport - targetRect.top - bottomGap - wrapBottomRemainder - targetOuterBottom
-                );
-                var targetHeight = Math.max(availableHeight, 1) + 'px';
+                var bottomGap = 36;
+                var availableHeight = Math.floor(viewport - wrapRect.top - bottomGap);
+                var desiredHeight = Math.floor(viewport * 0.75);
+                var resolvedHeight = Math.max(Math.min(desiredHeight, availableHeight), 1);
+                var targetHeight = resolvedHeight + 'px';
+                var wrapStyle = parentWindow.getComputedStyle(wrap);
+                var shellHeight = Math.max(
+                    wrap.clientHeight - px(wrapStyle.paddingTop) - px(wrapStyle.paddingBottom),
+                    1
+                ) + 'px';
 
-                if (phoneLayout) {
-                    wrap.style.border = '';
-                    wrap.style.boxShadow = '';
-                    wrap.style.background = '';
-                    wrap.style.borderRadius = '';
-                    wrap.style.padding = '';
-                    target.style.border = '';
-                    target.style.boxShadow = '';
-                    target.style.background = '';
-                    target.style.borderRadius = '';
-                    target.style.padding = '';
-                } else {
-                    wrap.style.border = 'none';
-                    wrap.style.boxShadow = 'none';
-                    wrap.style.background = 'transparent';
-                    target.style.border = wrapStyle.border;
-                    target.style.boxShadow = 'none';
-                    target.style.background = 'transparent';
-                    target.style.borderRadius = wrapStyle.borderRadius;
-                    target.style.padding = wrapStyle.padding;
-                    target.style.boxSizing = 'border-box';
-                }
+                wrap.style.height = targetHeight;
+                wrap.style.maxHeight = targetHeight;
+                wrap.style.minHeight = targetHeight;
+                wrap.style.boxSizing = 'border-box';
+                wrap.style.overflowY = 'auto';
+                wrap.style.overflowX = 'hidden';
+                wrap.style.webkitOverflowScrolling = 'touch';
+                wrap.style.touchAction = 'pan-y';
 
-                target.style.height = targetHeight;
-                target.style.maxHeight = targetHeight;
-                target.style.minHeight = targetHeight;
-                target.style.overflowY = 'auto';
-                target.style.marginTop = '0';
-                scrollTargetIntoView(wrap, target);
+                shell.style.height = 'auto';
+                shell.style.maxHeight = 'none';
+                shell.style.minHeight = '0';
+                shell.style.overflow = 'visible';
+                shell.style.marginTop = '0';
+                attachTouchScroll(wrap);
+
+                scrollTargetIntoView(wrap);
                 return true;
             }
 
