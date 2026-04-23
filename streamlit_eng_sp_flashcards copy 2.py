@@ -1,4 +1,23 @@
 
+"""Streamlit Spanish flashcards application.
+
+This app now treats folder placement as the primary source of deck meaning.
+In practice, that means folders such as Stories, Dialogs, Sentences, and
+Conjugations drive picker grouping and deck behavior before filename keywords do.
+
+Current naming summary:
+- Put each CSV in the correct folder first.
+- Keep CSV filenames short, readable, and unique across the full csv tree.
+- Use grouped picker suffixes such as _p and _c1, _c2 only when a guaranteed
+    parent/child picker order is needed.
+- Keep EN_ES in the filename only for the legacy forced English-to-Spanish
+    exception.
+
+For the full project naming rules and active examples, see:
+- NAMING_CONVENTIONS.md
+- VERBS_ORGANIZATION.md
+"""
+
 # --- ALL IMPORTS AT TOP ---
 import pathlib
 import streamlit as st
@@ -263,7 +282,7 @@ MONTHLY_PROGRESS_HISTORY_TABLE = "monthly_progress_history"
 SPLASH_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "axolotl_david_miguel.png")
 GOODBYE_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "axolotl_waving_goodbye.png")
 SPLASH_IMAGE_DIMENSION = 1600
-TRACKABLE_COUNT_EXCLUDED_FILENAME_TOKENS = [
+TRACKABLE_COUNT_EXCLUDED_LEGACY_FILENAME_TOKENS = [
     "text",
     "sentence",
     "sentences",
@@ -378,6 +397,28 @@ DECK_MODE_TOP_LEVEL_FOLDERS = {
     "stories": "story",
     "sentence practice": "sentence",
 }
+DECK_MODE_FOLDER_LABELS = {
+    "dialogs": "dialog",
+    "dialog": "dialog",
+    "stories": "story",
+    "story": "story",
+    "sentence practice": "sentence",
+    "sentences": "sentence",
+    "sentence": "sentence",
+}
+TRACKABLE_COUNT_EXCLUDED_FOLDER_LABELS = {
+    "conjugations",
+    "conjugation",
+    "dialogs",
+    "dialog",
+    "sentence practice",
+    "sentences",
+    "sentence",
+    "situations",
+    "situation",
+    "stories",
+    "story",
+}
 
 BUTTON_COLORS = {
     "green": {"bg": "#c8f0d8", "border": "#2e8b57", "fg": "#0f4f29"},
@@ -440,6 +481,10 @@ def csv_relative_parts_for(filename):
     return pathlib.Path(csv_relative_path_for(filename)).parts
 
 
+def csv_relative_folder_parts_for(filename):
+    return csv_relative_parts_for(filename)[:-1]
+
+
 def review_item_key(word, answer):
     return json.dumps([word, answer], ensure_ascii=False, separators=(",", ":"))
 
@@ -496,8 +541,186 @@ def learned_words_challenge_label():
     return LEARNED_WORDS_CHALLENGE_LABEL
 
 
+# Standard picker naming spec:
+# - Parent file/folder: BaseName_p(.csv)
+# - Child file/folder: BaseName_childLabel_c1(.csv), BaseName_childLabel_c2(.csv), ...
+# - The picker strips _p and _cN from the visible label.
+# - Child ordering is driven by the numeric c-suffix.
+#
+# Legacy suffix matching below is fallback-only for existing decks that do not
+# use the standard _p / _cN markers yet.
+PICKER_STANDARD_PARENT_SUFFIX = "_p"
+PICKER_STANDARD_CHILD_SUFFIX_PATTERN = "_c<number>"
+PICKER_ROLE_SUFFIX_PATTERN = re.compile(r"^(?P<base>.+?)_(?P<role>p|c(?P<child_index>\d+))$")
+PICKER_BACKCOMPAT_CHILD_SUFFIX_ORDER = (
+    ("stories", 10),
+    ("story", 11),
+    ("dialogs", 20),
+    ("dialog", 21),
+    ("sentence_practice", 30),
+    ("practice", 40),
+    ("exercises", 41),
+    ("exercise", 42),
+    ("review", 43),
+    ("quiz", 44),
+    ("sentences", 50),
+    ("sentence", 51),
+    ("situations", 60),
+    ("situation", 61),
+)
+
+
 def normalized_filename(value):
     return os.path.basename(value or "").lower()
+
+
+def normalized_folder_label(value):
+    label = re.sub(r"^\d+\s+", "", str(value or "").strip())
+    return re.sub(r"\s+", " ", label).casefold()
+
+
+def picker_display_label(value):
+    label = re.sub(r"^\d+\s+", "", str(value or "").strip())
+    return re.sub(r"\s+", " ", label)
+
+
+def picker_entry_name_parts(raw_name, is_folder=False):
+    if is_folder:
+        return raw_name, ""
+    return os.path.splitext(raw_name)
+
+
+def picker_entry_metadata(raw_name, is_folder=False):
+    stem, _ = picker_entry_name_parts(raw_name, is_folder=is_folder)
+    match = PICKER_ROLE_SUFFIX_PATTERN.fullmatch(stem)
+
+    role = None
+    child_index = None
+    visible_stem = stem
+
+    if match:
+        visible_stem = match.group("base")
+        role_token = match.group("role")
+        if role_token == "p":
+            role = "parent"
+        else:
+            role = "child"
+            child_index = int(match.group("child_index"))
+
+    legacy_child_order = None
+    if role is None:
+        visible_stem_lower = visible_stem.casefold()
+        for suffix, suffix_order in PICKER_BACKCOMPAT_CHILD_SUFFIX_ORDER:
+            marker = f"_{suffix}"
+            if visible_stem_lower.endswith(marker) and len(visible_stem_lower) > len(marker):
+                legacy_child_order = suffix_order
+                break
+
+    return {
+        "raw_name": raw_name,
+        "visible_name": visible_stem,
+        "display_name": picker_display_label(visible_stem),
+        "role": role,
+        "child_index": child_index,
+        "legacy_child_order": legacy_child_order,
+    }
+
+
+def build_picker_file_entry(filename):
+    return {
+        "entry_type": "file",
+        "filename": filename,
+        "italicized": False,
+        **picker_entry_metadata(filename, is_folder=False),
+    }
+
+
+def picker_entry_is_child(entry):
+    return entry.get("role") == "child" or entry.get("legacy_child_order") is not None
+
+
+def picker_entry_sort_key(entry):
+    return (
+        entry["visible_name"].casefold(),
+        0 if entry["entry_type"] == "file" else 1,
+        entry["raw_name"].casefold(),
+    )
+
+
+def picker_child_entry_sort_key(entry):
+    return (
+        0 if entry.get("role") == "child" else 1,
+        entry.get("child_index") if entry.get("role") == "child" else entry.get("legacy_child_order", 10_000),
+        picker_entry_sort_key(entry),
+    )
+
+
+def picker_find_parent_entry(child_entry, parent_entries):
+    child_name = child_entry["visible_name"].casefold()
+    matches = []
+
+    for parent_entry in parent_entries:
+        parent_name = parent_entry["visible_name"].casefold()
+        if not parent_name or child_name == parent_name:
+            continue
+        if not child_name.startswith(parent_name):
+            continue
+
+        remainder = child_name[len(parent_name):]
+        if not remainder.startswith("_"):
+            continue
+
+        matches.append(parent_entry)
+
+    if not matches:
+        return None
+
+    return max(matches, key=lambda entry: len(entry["visible_name"]))
+
+
+def picker_order_entries(entries):
+    sorted_entries = sorted(entries, key=picker_entry_sort_key)
+    parent_entries = [entry for entry in sorted_entries if not picker_entry_is_child(entry)]
+    children_by_parent = {}
+    attached_child_names = set()
+
+    for entry in sorted_entries:
+        if not picker_entry_is_child(entry):
+            continue
+
+        parent_entry = picker_find_parent_entry(entry, parent_entries)
+        if parent_entry is None:
+            continue
+
+        children_by_parent.setdefault(parent_entry["raw_name"], []).append(entry)
+        attached_child_names.add(entry["raw_name"])
+
+    ordered_entries = []
+    appended_entry_names = set()
+
+    for entry in sorted_entries:
+        raw_name = entry["raw_name"]
+        if raw_name in appended_entry_names or raw_name in attached_child_names:
+            continue
+
+        ordered_entries.append(entry)
+        appended_entry_names.add(raw_name)
+
+        for child_entry in sorted(children_by_parent.get(raw_name, []), key=picker_child_entry_sort_key):
+            child_raw_name = child_entry["raw_name"]
+            if child_raw_name in appended_entry_names:
+                continue
+            ordered_entries.append({**child_entry, "is_picker_child": True})
+            appended_entry_names.add(child_raw_name)
+
+    for entry in sorted_entries:
+        raw_name = entry["raw_name"]
+        if raw_name in appended_entry_names:
+            continue
+        ordered_entries.append(entry)
+        appended_entry_names.add(raw_name)
+
+    return ordered_entries
 
 
 def filename_contains_any(value, tokens):
@@ -505,11 +728,14 @@ def filename_contains_any(value, tokens):
     return any(token.lower() in filename for token in tokens)
 
 
+def deck_folder_labels(filename):
+    return [normalized_folder_label(part) for part in csv_relative_folder_parts_for(filename)]
+
+
 def exclude_from_trackable_count(filename):
-    top_level_folder = deck_top_level_folder(filename)
-    if top_level_folder and top_level_folder.casefold() in {"dialogs", "stories", "sentence practice", "situations"}:
+    if set(deck_folder_labels(filename)) & TRACKABLE_COUNT_EXCLUDED_FOLDER_LABELS:
         return True
-    return filename_contains_any(filename, TRACKABLE_COUNT_EXCLUDED_FILENAME_TOKENS)
+    return filename_contains_any(filename, TRACKABLE_COUNT_EXCLUDED_LEGACY_FILENAME_TOKENS)
 
 
 def deck_top_level_folder(filename):
@@ -522,6 +748,11 @@ def deck_top_level_folder(filename):
 def deck_mode_for_file(filename):
     if not filename or is_review_deck(filename) or is_favorites_deck(filename):
         return None
+
+    for folder_label in reversed(deck_folder_labels(filename)):
+        folder_mode = DECK_MODE_FOLDER_LABELS.get(folder_label)
+        if folder_mode:
+            return folder_mode
 
     top_level_folder = deck_top_level_folder(filename)
     if top_level_folder:
@@ -556,24 +787,23 @@ def picker_top_level_sort_key(folder_name):
 
 
 def build_picker_folder_node(folder_path, relative_parts):
-    folder_nodes = []
-    file_entries = []
+    child_entries = []
+    folder_metadata = picker_entry_metadata(relative_parts[-1], is_folder=True)
 
     for child_path in picker_visible_directory_entries(folder_path):
         if child_path.is_dir():
-            folder_nodes.append(build_picker_folder_node(child_path, relative_parts + (child_path.name,)))
+            child_entries.append(build_picker_folder_node(child_path, relative_parts + (child_path.name,)))
             continue
 
-        file_entries.append({"filename": child_path.name, "italicized": False})
-
-    folder_nodes.sort(key=lambda node: node["name"].casefold())
-    file_entries.sort(key=lambda entry: normalized_filename(entry["filename"]))
+        child_entries.append(build_picker_file_entry(child_path.name))
 
     return {
         "key": "/".join(relative_parts),
         "name": relative_parts[-1],
-        "folders": folder_nodes,
-        "files": file_entries,
+        "display_name": folder_metadata["display_name"],
+        **folder_metadata,
+        "entry_type": "folder",
+        "entries": picker_order_entries(child_entries),
     }
 
 
@@ -581,8 +811,8 @@ def picker_root_files():
     root_files = []
     for filename in csv_files:
         if len(csv_relative_parts_for(filename)) == 1:
-            root_files.append({"filename": filename, "italicized": False})
-    return sorted(root_files, key=lambda entry: normalized_filename(entry["filename"]))
+            root_files.append(build_picker_file_entry(filename))
+    return picker_order_entries(root_files)
 
 
 def picker_root_folder_nodes():
@@ -594,7 +824,7 @@ def picker_root_folder_nodes():
             continue
         root_nodes.append(build_picker_folder_node(child_path, (child_path.name,)))
 
-    root_nodes.sort(key=lambda node: picker_top_level_sort_key(node["name"]))
+    root_nodes.sort(key=lambda node: picker_top_level_sort_key(node["visible_name"]))
     return root_nodes
 
 
@@ -650,79 +880,7 @@ csv_row_counts = {filename: csv_data_row_count(filename) for filename in csv_fil
 
 
 def picker_folder_item_count(folder_node):
-    return len(folder_node["folders"]) + len(folder_node["files"])
-
-
-def grouped_story_child_files(files):
-    # Match both ..._01a_story.csv and ..._story01a.csv.
-    story_patterns = [
-        re.compile(r"^(?P<base>.+_\d+)(?P<suffix>[a-z])_story\.csv$"),  # ..._01a_story.csv
-        re.compile(r"^(?P<base>.+)_story(?P<num>\d+)(?P<suffix>[a-z])\.csv$"),  # ..._story01a.csv
-    ]
-    existing_filenames = {file_entry["filename"] for file_entry in files}
-    children_by_parent = {}
-    child_suffixes = {}
-
-    for file_entry in files:
-        match = None
-        for pattern in story_patterns:
-            match = pattern.match(file_entry["filename"])
-            if match:
-                break
-        if not match:
-            continue
-        # Determine parent filename for both patterns
-        if 'base' in match.groupdict() and 'suffix' in match.groupdict() and 'num' not in match.groupdict():
-            # ..._01a_story.csv
-            parent_filename = f"{match.group('base')}.csv"
-            child_suffix = match.group("suffix")
-        elif 'base' in match.groupdict() and 'num' in match.groupdict() and 'suffix' in match.groupdict():
-            # ..._story01a.csv
-            parent_filename = f"{match.group('base')}.csv"
-            child_suffix = f"{match.group('num')}{match.group('suffix')}"
-        else:
-            continue
-        if parent_filename not in existing_filenames:
-            continue
-        children_by_parent.setdefault(parent_filename, []).append(file_entry)
-        child_suffixes[file_entry["filename"]] = child_suffix
-
-    ordered_files = []
-    appended_children = set()
-
-    for file_entry in files:
-        filename = file_entry["filename"]
-        if filename in appended_children:
-            continue
-        if filename in child_suffixes:
-            continue
-
-        ordered_files.append({**file_entry, "story_child_indent": False})
-
-        child_entries = children_by_parent.get(filename, [])
-        for child_entry in sorted(
-            child_entries,
-            key=lambda entry: (child_suffixes.get(entry["filename"], ""), normalized_filename(entry["filename"]))
-        ):
-            ordered_files.append({**child_entry, "story_child_indent": True})
-            appended_children.add(child_entry["filename"])
-
-    for file_entry in files:
-        filename = file_entry["filename"]
-        if filename in appended_children or filename in child_suffixes:
-            continue
-        if any(entry["filename"] == filename for entry in ordered_files):
-            continue
-        ordered_files.append({**file_entry, "story_child_indent": False})
-
-    for file_entry in files:
-        filename = file_entry["filename"]
-        if filename in appended_children:
-            continue
-        if filename in child_suffixes and not any(entry["filename"] == filename for entry in ordered_files):
-            ordered_files.append({**file_entry, "story_child_indent": False})
-
-    return ordered_files
+    return len(folder_node["entries"])
 
 
 def normalize_card_id(raw_value):
@@ -807,7 +965,8 @@ def display_deck_name(filename):
         return favorites_deck_label(favorites_deck_person(filename), include_count=True)
     base_name, extension = os.path.splitext(filename)
     if extension.lower() == ".csv":
-        return f"{base_name} [{csv_row_counts.get(filename, 0)}]"
+        display_name = picker_entry_metadata(filename, is_folder=False)["display_name"]
+        return f"{display_name} [{csv_row_counts.get(filename, 0)}]"
     return base_name
 
 
@@ -823,7 +982,7 @@ def picker_display_deck_name(filename, person):
     if extension.lower() != ".csv":
         return base_name
 
-    return base_name
+    return picker_entry_metadata(filename, is_folder=False)["display_name"]
 
 
 def is_dialog_deck(filename):
@@ -887,6 +1046,8 @@ def deck_picker_label(filename, person):
 
 
 def is_forced_en_es_deck(filename):
+    # Keep filename matching as a fallback for legacy one-way decks that are
+    # intentionally forced to EN->ES regardless of folder placement.
     return bool(filename) and not is_review_deck(filename) and not is_favorites_deck(filename) and "EN_ES" in os.path.basename(filename)
 
 
@@ -2856,54 +3017,82 @@ def picker_story_child_depth_class(depth):
     return f"deck-picker-row-story-child-depth-{min(depth, 5)}"
 
 
-def append_picker_file_rows(file_entries, folder_depth, picker_rows, active_person):
-    for file_entry in grouped_story_child_files(file_entries):
-        csv_file = file_entry["filename"]
-        status = deck_picker_status(csv_file, active_person)
+def append_picker_file_row(file_entry, folder_depth, picker_rows, active_person, child_folder_context=False):
+    csv_file = file_entry["filename"]
+    status = deck_picker_status(csv_file, active_person)
 
-        if file_entry.get("story_child_indent"):
-            row_class = "deck-picker-row-story-child"
-            extra_classes = [
-                "deck-picker-row-nested-child",
-                picker_story_child_depth_class(folder_depth),
-                picker_status_class(status),
-            ]
-        else:
-            row_class = "deck-picker-row-file" if folder_depth == 0 else "deck-picker-row-subcategory-file"
-            extra_classes = [
-                picker_file_depth_class(folder_depth),
-                picker_status_class(status),
-            ]
+    if file_entry.get("is_picker_child") or child_folder_context:
+        row_class = "deck-picker-row-story-child"
+        extra_classes = [
+            "deck-picker-row-nested-child",
+            picker_story_child_depth_class(folder_depth),
+            picker_status_class(status),
+        ]
+    else:
+        row_class = "deck-picker-row-file" if folder_depth == 0 else "deck-picker-row-subcategory-file"
+        extra_classes = [
+            picker_file_depth_class(folder_depth),
+            picker_status_class(status),
+        ]
 
-        picker_rows.append(
-            picker_row_markup(
-                picker_row_label_html(
-                    deck_picker_label(
-                        csv_file,
-                        active_person,
-                    ),
-                    italicized=file_entry["italicized"],
+    picker_rows.append(
+        picker_row_markup(
+            picker_row_label_html(
+                deck_picker_label(
+                    csv_file,
+                    active_person,
                 ),
-                picker_icon_for_status(status),
-                row_class,
-                "select_deck",
-                csv_file,
-                extra_classes=extra_classes,
-            )
+                italicized=file_entry["italicized"],
+            ),
+            picker_icon_for_status(status),
+            row_class,
+            "select_deck",
+            csv_file,
+            extra_classes=extra_classes,
+        )
+    )
+
+
+def append_picker_file_rows(file_entries, folder_depth, picker_rows, active_person, child_folder_context=False):
+    for file_entry in file_entries:
+        append_picker_file_row(
+            file_entry,
+            folder_depth,
+            picker_rows,
+            active_person,
+            child_folder_context=child_folder_context,
         )
 
 
-def render_picker_folder_contents(folder_node, top_level_category_id, picker_rows, hidden_toggle_actions, active_person):
-    for child_folder in folder_node["folders"]:
-        child_folder_key = child_folder["key"]
+def render_picker_folder_contents(folder_node, top_level_category_id, picker_rows, hidden_toggle_actions, active_person, child_folder_context=False):
+    for child_entry in folder_node["entries"]:
+        if child_entry["entry_type"] == "file":
+            append_picker_file_row(
+                child_entry,
+                picker_folder_depth(folder_node["key"]),
+                picker_rows,
+                active_person,
+                child_folder_context=child_folder_context,
+            )
+            continue
+
+        child_folder_key = child_entry["key"]
         child_folder_depth = picker_folder_depth(child_folder_key)
         child_folder_open = is_deck_subcategory_open(top_level_category_id, child_folder_key)
         child_folder_icon = "▼" if child_folder_open else "▶"
         child_folder_label_html = picker_row_label_html(
-            f"{child_folder['name']} ({picker_folder_item_count(child_folder)})"
+            f"{child_entry['display_name']} ({picker_folder_item_count(child_entry)})"
         )
         child_folder_button_key = picker_hidden_button_key("picker_hidden_toggle_subcategory", child_folder_key)
         hidden_toggle_actions.append((child_folder_button_key, toggle_deck_subcategory, (top_level_category_id, child_folder_key)))
+
+        extra_classes = [picker_folder_depth_class(child_folder_depth)]
+        if child_entry.get("is_picker_child") or child_folder_context:
+            extra_classes.extend([
+                "deck-picker-row-nested-child",
+                picker_story_child_depth_class(child_folder_depth),
+            ])
+
         picker_rows.append(
             picker_row_markup(
                 child_folder_label_html,
@@ -2912,21 +3101,20 @@ def render_picker_folder_contents(folder_node, top_level_category_id, picker_row
                 "toggle_subcategory",
                 child_folder_key,
                 anchor_key=f"folder:{child_folder_key}",
-                extra_classes=[picker_folder_depth_class(child_folder_depth)],
+                extra_classes=extra_classes,
                 button_key=child_folder_button_key,
             )
         )
 
         if child_folder_open:
             render_picker_folder_contents(
-                child_folder,
+                child_entry,
                 top_level_category_id,
                 picker_rows,
                 hidden_toggle_actions,
                 active_person,
+                child_folder_context=(child_folder_context or child_entry.get("is_picker_child", False)),
             )
-
-    append_picker_file_rows(folder_node["files"], picker_folder_depth(folder_node["key"]), picker_rows, active_person)
 
 
 def picker_build_code_text():
@@ -3086,7 +3274,7 @@ def render_grouped_deck_picker():
             is_open = is_deck_category_open(category_id)
             category_icon = "▼" if is_open else "▶"
             category_label_html = picker_row_label_html(
-                f"{category_node['name']} ({picker_folder_item_count(category_node)})"
+                f"{category_node['display_name']} ({picker_folder_item_count(category_node)})"
             )
             category_button_key = picker_hidden_button_key("picker_hidden_toggle_category", category_id)
             hidden_toggle_actions.append((category_button_key, toggle_deck_category, (category_id,)))
@@ -3105,7 +3293,7 @@ def render_grouped_deck_picker():
             if not is_open:
                 continue
 
-            if not category_node["folders"] and not category_node["files"]:
+            if not category_node["entries"]:
                 picker_rows.append("<div class='deck-category-empty'>No files in this category.</div>")
                 continue
 
