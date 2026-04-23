@@ -3029,7 +3029,7 @@ def render_grouped_deck_picker():
         picker_rows.append(
             "<div class='deck-picker-meta'>"
             "<div class='mobile-deck-picker-label'>Available decks:</div>"
-            f"<div class='deck-picker-build'>{html.escape(picker_build_code_text())}</div>"
+            # f"<div class='deck-picker-build'>{html.escape(picker_build_code_text())}</div>"
             "</div>"
         )
 
@@ -5999,8 +5999,9 @@ def render_story_start_unlock_handler(
                 var nav = parentWindow.navigator || window.navigator;
                 var ua = nav && nav.userAgent ? nav.userAgent : '';
                 var hasTouch = !!(('ontouchstart' in parentWindow) || (nav && nav.maxTouchPoints > 0));
-                var narrow = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 767px)').matches);
-                return narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua));
+                var compactTouchLayout = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 1024px)').matches);
+                var iPadDesktopMode = !!(nav && nav.platform === 'MacIntel' && nav.maxTouchPoints > 1);
+                return hasTouch && (compactTouchLayout || iPadDesktopMode || /iPhone|Android|Mobile|iPad|iPod|Tablet/i.test(ua));
             }}
 
             if (!doc || !synth || !isPhoneStoryMode()) return;
@@ -7332,8 +7333,9 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
             var nav = parentWindow.navigator || window.navigator;
             var ua = nav && nav.userAgent ? nav.userAgent : '';
             var hasTouch = !!(('ontouchstart' in parentWindow) || (nav && nav.maxTouchPoints > 0));
-            var narrow = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 767px)').matches);
-            if (narrow && (hasTouch || /iPhone|Android|Mobile|iPad|iPod/i.test(ua))) return;
+            var compactTouchLayout = !!(parentWindow.matchMedia && parentWindow.matchMedia('(max-width: 1024px)').matches);
+            var iPadDesktopMode = !!(nav && nav.platform === 'MacIntel' && nav.maxTouchPoints > 1);
+            if (hasTouch && (compactTouchLayout || iPadDesktopMode || /iPhone|Android|Mobile|iPad|iPod|Tablet/i.test(ua))) return;
 
             var speechText = {json.dumps(speech_text)};
             var speechRate = {speech_rate};

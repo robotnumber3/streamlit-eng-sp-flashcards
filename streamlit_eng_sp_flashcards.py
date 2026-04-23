@@ -3029,7 +3029,7 @@ def render_grouped_deck_picker():
         picker_rows.append(
             "<div class='deck-picker-meta'>"
             "<div class='mobile-deck-picker-label'>Available decks:</div>"
-            f"<div class='deck-picker-build'>{html.escape(picker_build_code_text())}</div>"
+            # f"<div class='deck-picker-build'>{html.escape(picker_build_code_text())}</div>"
             "</div>"
         )
 
