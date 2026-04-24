@@ -5667,7 +5667,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 @media (max-width: 767px) {{
     .st-key-icon_btn_row_wrap .st-key-action_right_group_wrap .st-key-speaker_wrap iframe {{
-        margin-top: 0.22rem !important;
+        margin-top: 0.34rem !important;
     }}
     .st-key-answer_action_row_desktop_wrap {{
         display: none !important;
@@ -10425,11 +10425,30 @@ def render_speaker_button(text, icon_font_size="1.15rem"):
             var parentWindow = window.parent;
             var doc = parentWindow.document;
             var button = document.getElementById('speak-btn');
+            var suppressClickUntil = 0;
 
             if (!button || !doc || !speechText) return;
 
             function speakFromTap(event) {{
-                if (event) event.preventDefault();
+                var now = Date.now();
+                if (event) {{
+                    if (event.type === 'click' && now < suppressClickUntil) {{
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (typeof event.stopImmediatePropagation === 'function') {{
+                            event.stopImmediatePropagation();
+                        }}
+                        return;
+                    }}
+                    if (event.type === 'touchend') {{
+                        suppressClickUntil = now + 700;
+                    }}
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (typeof event.stopImmediatePropagation === 'function') {{
+                        event.stopImmediatePropagation();
+                    }}
+                }}
                 if (typeof doc._fcSpeakSpanish !== 'function') return;
                 doc._fcSpeakSpanish({{
                     text: speechText,
