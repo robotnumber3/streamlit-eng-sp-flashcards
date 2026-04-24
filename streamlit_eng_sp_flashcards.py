@@ -5827,7 +5827,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         max-width: 3.6rem !important;
         height: 3.2rem !important;
         min-height: 3.2rem !important;
-        margin: 0.14rem 0 0 0 !important;
+        margin: 0 !important;
         display: block !important;
     }}
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button {{
@@ -10360,6 +10360,12 @@ def render_speaker_button(text, icon_font_size="1.15rem"):
     components.html(
         f"""
         <style>
+        html, body {{
+            width: 100%;
+            height: 3.2rem;
+            min-height: 3.2rem;
+            overflow: hidden;
+        }}
         body {{
             margin: 0;
             background: transparent;
@@ -10368,13 +10374,14 @@ def render_speaker_button(text, icon_font_size="1.15rem"):
             align-items: center;
             width: 100%;
             min-width: 0;
-            min-height: 100%;
+            min-height: 3.2rem;
             box-sizing: border-box;
         }}
         #speak-btn {{
             width: 100%;
+            height: 3.2rem;
             min-width: 0;
-            min-height: 100%;
+            min-height: 3.2rem;
             font-size: {icon_font_size};
             font-weight: 600;
             border-radius: 0.75rem;
@@ -10383,7 +10390,13 @@ def render_speaker_button(text, icon_font_size="1.15rem"):
             color: {t['info']};
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
-            margin-top: 0.24rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }}
         </style>
         <button id="speak-btn" type="button">🔊</button>
@@ -10413,7 +10426,7 @@ def render_speaker_button(text, icon_font_size="1.15rem"):
         }})();
         </script>
         """,
-        height=60,
+        height=64,
     )
 
 
@@ -10498,17 +10511,24 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
     components.html(
         f"""
         <style>
+        html, body {{
+            width: 100%;
+            height: 3.2rem;
+            min-height: 3.2rem;
+            overflow: hidden;
+        }}
         body {{
             margin: 0;
             background: transparent;
             width: 100%;
             min-width: 0;
             max-width: none;
-            min-height: 100%;
+            min-height: 3.2rem;
             box-sizing: border-box;
         }}
         .ai-action-row {{
             width: 100%;
+            height: 3.2rem;
             min-width: 0;
             max-width: none;
             display: grid;
@@ -10519,11 +10539,18 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
         }}
         .ai-action-btn {{
             width: 100%;
+            height: 3.2rem;
             min-width: 0;
-            min-height: 100%;
+            min-height: 3.2rem;
             border-radius: 0.75rem;
             font-family: 'DM Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }}
         #ai-cycle-btn {{
             font-size: 1.55rem;
@@ -10533,7 +10560,6 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
             color: {BUTTON_COLORS['blue']['fg']};
             cursor: {cycle_cursor};
             opacity: {cycle_opacity};
-            transform: translateY(0.11rem);
         }}
         #ai-reload-btn {{
             font-size: 2.3rem;
@@ -10543,7 +10569,6 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
             color: {reload_fg};
             cursor: {reload_cursor};
             opacity: {reload_opacity};
-            transform: translateY(0.11rem);
         }}
         </style>
         <div class="ai-action-row">
@@ -10591,7 +10616,7 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
         }})();
         </script>
         """,
-        height=60,
+        height=64,
     )
 
 
@@ -11557,7 +11582,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     if spanish_visible_before_answer:
                         with right_group_columns[0]:
                             with st.container(key="speaker_wrap"):
-                                render_speaker_button(spanish_audio_text, icon_font_size="2.26rem")
+                                render_speaker_button(spanish_audio_text, icon_font_size="1.9rem")
                         with right_group_columns[1]:
                             with st.container(key="quitbefore_wrap"):
                                 if st.button("🛑", key="quitbefore_btn"):
@@ -11773,7 +11798,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_loading_row_columns = st.columns([1, 1, 2.08, 1.15], gap="small")
                         with phone_loading_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="2.28rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.9rem")
                         with phone_loading_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11793,7 +11818,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_actions_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_actions_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="2.28rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.9rem")
                         with phone_actions_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11819,7 +11844,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_single_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="2.28rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.9rem")
                         with phone_single_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11838,7 +11863,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
                     with phone_single_row_columns[0]:
                         with st.container(key="speaker_phone_wrap"):
-                            render_speaker_button(spanish_audio_text, icon_font_size="2.28rem")
+                            render_speaker_button(spanish_audio_text, icon_font_size="1.9rem")
                     with phone_single_row_columns[1]:
                         with st.container(key=auto_speak_phone_key):
                             st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
