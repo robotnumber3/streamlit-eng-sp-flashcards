@@ -5720,8 +5720,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         background-color: #d8b5ea !important;
         border-color: #8a4aa6 !important;
         color: #d04ac5 !important;
-        font-size: 1.18rem !important;
+        font-size: 1.02rem !important;
         line-height: 1 !important;
+        justify-content: center !important;
+        text-align: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }}
     .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
     .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
@@ -5731,8 +5735,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
     .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
     .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
-        font-size: 1.18rem !important;
+        font-size: 1.02rem !important;
         line-height: 1 !important;
+        white-space: nowrap !important;
+        width: 100% !important;
+        text-align: center !important;
     }}
     .st-key-action_phone_top_row_wrap [data-testid="stHorizontalBlock"] {{
         display: flex !important;
@@ -11727,7 +11734,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_loading_row_columns = st.columns([1, 1, 2.08, 1.15], gap="small")
                         with phone_loading_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="1.45rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.75rem")
                         with phone_loading_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11747,7 +11754,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_actions_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_actions_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="1.45rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.75rem")
                         with phone_actions_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11773,7 +11780,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_single_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="1.45rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.75rem")
                         with phone_single_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11792,7 +11799,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
                     with phone_single_row_columns[0]:
                         with st.container(key="speaker_phone_wrap"):
-                            render_speaker_button(spanish_audio_text, icon_font_size="1.45rem")
+                            render_speaker_button(spanish_audio_text, icon_font_size="1.75rem")
                     with phone_single_row_columns[1]:
                         with st.container(key=auto_speak_phone_key):
                             st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
