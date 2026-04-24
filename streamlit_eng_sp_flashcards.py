@@ -3692,6 +3692,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     border-color: {BUTTON_COLORS['yellow']['border']} !important;
     color: {BUTTON_COLORS['yellow']['fg']} !important;
 }}
+.st-key-nextunscored_wrap div[data-testid="stButton"] > button {{
+    background-color: #cbb7f3 !important;
+    border-color: #7a4ac7 !important;
+    color: #5a338f !important;
+}}
 .st-key-favorite_wrap div[data-testid="stButton"] > button {{
     background-color: color-mix(in srgb, {BUTTON_COLORS['blue']['bg']} 68%, {t['bg']} 32%) !important;
     border-color: {BUTTON_COLORS['blue']['border']} !important;
@@ -3969,6 +3974,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-answer_action_row_wrap .st-key-correct_wrap div[data-testid="stButton"],
 .st-key-answer_action_row_wrap .st-key-repeat_wrap div[data-testid="stButton"],
+.st-key-answer_action_row_wrap .st-key-nextunscored_wrap div[data-testid="stButton"],
 .st-key-answer_action_row_wrap .st-key-favorite_wrap div[data-testid="stButton"],
 .st-key-answer_action_row_wrap .st-key-favorite_active_wrap div[data-testid="stButton"] {{
     display: flex !important;
@@ -5682,6 +5688,11 @@ def mark_repeat():
     card["repeat_score"] = 5 if is_review_deck(st.session_state.selected_csv) else 2
     card["error_flag"] = 1
     advance_card()
+
+
+def advance_unscored():
+    st.session_state.delete_review_confirm_key = None
+    advance_card(schedule_current=False)
 
 
 def delete_current_review_card():
@@ -10185,7 +10196,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
         left_col, right_col = st.columns(2, gap="small")
         with left_col:
             with st.container(key="action_left_group_wrap"):
-                left_group_columns = st.columns(2 if (review_mode or favorites_mode) else 3, gap="small")
+                left_group_columns = st.columns(2 if (review_mode or favorites_mode) else 4, gap="small")
                 with left_group_columns[0]:
                     with st.container(key="correct_wrap"):
                         st.button("✓", key="correct_btn", on_click=mark_correct)
@@ -10201,6 +10212,9 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                             st.button("?", key="repeat_btn", on_click=mark_repeat)
                 if not review_mode and not favorites_mode:
                     with left_group_columns[2]:
+                        with st.container(key="nextunscored_wrap"):
+                            st.button("➜", key="nextunscored_btn", on_click=advance_unscored)
+                    with left_group_columns[3]:
                         if current_card_is_favorite:
                             st.empty()
                         else:
