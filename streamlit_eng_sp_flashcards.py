@@ -5720,7 +5720,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         background-color: #d8b5ea !important;
         border-color: #8a4aa6 !important;
         color: #d04ac5 !important;
-        font-size: 1.42rem !important;
+        font-size: 1.56rem !important;
         line-height: 1 !important;
         justify-content: center !important;
         text-align: center !important;
@@ -5735,7 +5735,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
     .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
     .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
-        font-size: 1.42rem !important;
+        font-size: 1.56rem !important;
         line-height: 1 !important;
         white-space: nowrap !important;
         width: 100% !important;
@@ -5769,7 +5769,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button,
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button {{
-        font-size: 0.98rem !important;
+        font-size: 1.28rem !important;
     }}
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
@@ -5779,7 +5779,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
-        font-size: 0.98rem !important;
+        font-size: 1.28rem !important;
     }}
     .st-key-action_phone_checkbox_row_wrap {{
         margin-top: 0.08rem !important;
@@ -5827,7 +5827,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         max-width: 3.6rem !important;
         height: 3.2rem !important;
         min-height: 3.2rem !important;
-        margin: 0.08rem 0 0 0 !important;
+        margin: 0.14rem 0 0 0 !important;
         display: block !important;
     }}
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button {{
@@ -5885,7 +5885,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         height: 3.2rem !important;
         min-height: 3.2rem !important;
         display: block !important;
-        margin-top: 0.08rem !important;
+        margin-top: 0 !important;
     }}
     .st-key-phone_ai_status_wrap .ai-status-label {{
         font-size: 0.82rem !important;
@@ -5903,17 +5903,21 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] label {{
         display: flex !important;
         align-items: center !important;
-        gap: 0.18rem !important;
+        gap: 0.03rem !important;
         white-space: nowrap !important;
     }}
     .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] label > div:first-child {{
-        transform: scale(1.14) !important;
+        transform: scale(1.3) translateY(0.06rem) !important;
         transform-origin: left center !important;
     }}
+    .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] label > div:last-child {{
+        margin-left: -0.06rem !important;
+    }}
     .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] p {{
-        font-size: 1rem !important;
+        font-size: 1.08rem !important;
         line-height: 1 !important;
         white-space: nowrap !important;
+        margin-top: 0.18rem !important;
     }}
     .title-row {{
         padding: 0.15rem 0 0.08rem 0 !important;
@@ -6931,7 +6935,7 @@ def process_pending_ai_examples_action():
     return True
 
 
-def build_ai_examples_prompt(card):
+def build_ai_examples_prompt(card, action=None, previous_sentences=None):
     filename = st.session_state.selected_csv
     spanish_term = ai_prompt_text(card.get("answer", ""))
     english_gloss = ai_prompt_text(card.get("word", ""))
@@ -6945,6 +6949,19 @@ def build_ai_examples_prompt(card):
     if english_gloss:
         meaning_clause = f' con el sentido de "{english_gloss}"'
 
+    avoid_repeat_clause = ""
+    if action == "reload" and previous_sentences:
+        prior_examples_text = " | ".join(
+            ai_prompt_text(sentence)
+            for sentence in previous_sentences
+            if ai_prompt_text(sentence)
+        )
+        if prior_examples_text:
+            avoid_repeat_clause = (
+                " No repitas ni reformules de cerca estas oraciones anteriores: "
+                f"{prior_examples_text}."
+            )
+
     if folder_labels and folder_labels[0] == "vocabulary":
         return (
             f"Escribe {AI_EXAMPLES_PER_BATCH} oraciones distintas y naturales en español mexicano, "
@@ -6953,7 +6970,7 @@ def build_ai_examples_prompt(card):
             "Si la palabra funciona como adjetivo o color, haz que concuerde naturalmente con el sustantivo. "
             f"{level_prompt}. "
             f"Usa solo estas formas verbales para cualquier verbo que aparezca: {tense_names}. "
-            "Varía el contexto y la redacción. "
+            f"Varía el contexto y la redacción.{avoid_repeat_clause} "
             f"Devuelve solo las {AI_EXAMPLES_PER_BATCH} oraciones, una por línea."
         )
 
@@ -6963,7 +6980,7 @@ def build_ai_examples_prompt(card):
         f"usando {spanish_term}{meaning_clause}. "
         f"{level_prompt}. "
         f"Usa solo estas formas verbales para cualquier verbo: {tense_names}. "
-        "Varía el contexto y la redacción. "
+        f"Varía el contexto y la redacción.{avoid_repeat_clause} "
         f"Devuelve solo las {AI_EXAMPLES_PER_BATCH} oraciones, una por línea."
     )
 
@@ -7005,9 +7022,11 @@ def fetch_ai_examples_for_current_card():
         return False
     api_key = configured_setting("OPENAI_API_KEY")
     card = st.session_state.cards[current_card_index()]
+    pending_action = st.session_state.ai_examples_pending_action
+    previous_sentences = list(st.session_state.ai_examples_sentences)
     payload = {
         "model": AI_EXAMPLES_MODEL,
-        "input": build_ai_examples_prompt(card),
+        "input": build_ai_examples_prompt(card, action=pending_action, previous_sentences=previous_sentences),
         "temperature": 0.9,
     }
     request = urllib.request.Request(
@@ -10514,6 +10533,7 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
             color: {BUTTON_COLORS['blue']['fg']};
             cursor: {cycle_cursor};
             opacity: {cycle_opacity};
+            transform: translateY(0.11rem);
         }}
         #ai-reload-btn {{
             font-size: 2.3rem;
@@ -10523,7 +10543,7 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
             color: {reload_fg};
             cursor: {reload_cursor};
             opacity: {reload_opacity};
-            transform: translateY(-0.06rem);
+            transform: translateY(0.11rem);
         }}
         </style>
         <div class="ai-action-row">
@@ -11537,7 +11557,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     if spanish_visible_before_answer:
                         with right_group_columns[0]:
                             with st.container(key="speaker_wrap"):
-                                render_speaker_button(spanish_audio_text, icon_font_size="1.95rem")
+                                render_speaker_button(spanish_audio_text, icon_font_size="2.26rem")
                         with right_group_columns[1]:
                             with st.container(key="quitbefore_wrap"):
                                 if st.button("🛑", key="quitbefore_btn"):
@@ -11753,7 +11773,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_loading_row_columns = st.columns([1, 1, 2.08, 1.15], gap="small")
                         with phone_loading_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="1.95rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="2.28rem")
                         with phone_loading_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11773,7 +11793,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_actions_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_actions_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="1.95rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="2.28rem")
                         with phone_actions_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11799,7 +11819,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_single_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="1.95rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="2.28rem")
                         with phone_single_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11818,7 +11838,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
                     with phone_single_row_columns[0]:
                         with st.container(key="speaker_phone_wrap"):
-                            render_speaker_button(spanish_audio_text, icon_font_size="1.95rem")
+                            render_speaker_button(spanish_audio_text, icon_font_size="2.28rem")
                     with phone_single_row_columns[1]:
                         with st.container(key=auto_speak_phone_key):
                             st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
