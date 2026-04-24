@@ -5830,6 +5830,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         margin: 0 !important;
         display: block !important;
     }}
+    .st-key-action_phone_bottom_single_row_wrap .st-key-speaker_phone_wrap iframe {{
+        margin-top: 0.1rem !important;
+    }}
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-speaker_phone_wrap iframe,
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-phone_ai_actions_wrap iframe {{
+        margin-top: 0.08rem !important;
+    }}
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button {{
         width: 7.46rem !important;
         min-width: 7.46rem !important;
