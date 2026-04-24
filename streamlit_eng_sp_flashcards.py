@@ -5720,7 +5720,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         background-color: #d8b5ea !important;
         border-color: #8a4aa6 !important;
         color: #d04ac5 !important;
-        font-size: 1.34rem !important;
+        font-size: 1.42rem !important;
         line-height: 1 !important;
         justify-content: center !important;
         text-align: center !important;
@@ -5735,7 +5735,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
     .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
     .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
-        font-size: 1.34rem !important;
+        font-size: 1.42rem !important;
         line-height: 1 !important;
         white-space: nowrap !important;
         width: 100% !important;
@@ -5769,7 +5769,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button,
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button {{
-        font-size: 0.78rem !important;
+        font-size: 0.98rem !important;
     }}
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
@@ -5779,7 +5779,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
-        font-size: 0.78rem !important;
+        font-size: 0.98rem !important;
     }}
     .st-key-action_phone_checkbox_row_wrap {{
         margin-top: 0.08rem !important;
@@ -5827,7 +5827,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         max-width: 3.6rem !important;
         height: 3.2rem !important;
         min-height: 3.2rem !important;
-        margin: 0 !important;
+        margin: 0.08rem 0 0 0 !important;
         display: block !important;
     }}
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button {{
@@ -5885,6 +5885,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         height: 3.2rem !important;
         min-height: 3.2rem !important;
         display: block !important;
+        margin-top: 0.08rem !important;
     }}
     .st-key-phone_ai_status_wrap .ai-status-label {{
         font-size: 0.82rem !important;
@@ -5902,11 +5903,15 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] label {{
         display: flex !important;
         align-items: center !important;
-        gap: 0.32rem !important;
+        gap: 0.18rem !important;
         white-space: nowrap !important;
     }}
+    .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] label > div:first-child {{
+        transform: scale(1.14) !important;
+        transform-origin: left center !important;
+    }}
     .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] p {{
-        font-size: 0.92rem !important;
+        font-size: 1rem !important;
         line-height: 1 !important;
         white-space: nowrap !important;
     }}
@@ -11532,7 +11537,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     if spanish_visible_before_answer:
                         with right_group_columns[0]:
                             with st.container(key="speaker_wrap"):
-                                render_speaker_button(spanish_audio_text, icon_font_size="2.35rem")
+                                render_speaker_button(spanish_audio_text, icon_font_size="1.95rem")
                         with right_group_columns[1]:
                             with st.container(key="quitbefore_wrap"):
                                 if st.button("🛑", key="quitbefore_btn"):
@@ -11748,7 +11753,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_loading_row_columns = st.columns([1, 1, 2.08, 1.15], gap="small")
                         with phone_loading_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="2.35rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.95rem")
                         with phone_loading_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11768,7 +11773,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_actions_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_actions_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="2.35rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.95rem")
                         with phone_actions_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11794,7 +11799,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_single_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text, icon_font_size="2.35rem")
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.95rem")
                         with phone_single_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11813,7 +11818,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
                     with phone_single_row_columns[0]:
                         with st.container(key="speaker_phone_wrap"):
-                            render_speaker_button(spanish_audio_text, icon_font_size="2.35rem")
+                            render_speaker_button(spanish_audio_text, icon_font_size="1.95rem")
                     with phone_single_row_columns[1]:
                         with st.container(key=auto_speak_phone_key):
                             st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
