@@ -11904,6 +11904,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                         new_ai_auto_play_examples = st.checkbox(
                                             "Auto speak sentences",
                                             value=st.session_state.ai_auto_play_examples,
+                                            key="ai_auto_play_examples_desktop_checkbox",
                                         )
                     else:
                         right_group_columns = st.columns(3 if review_mode else 2, gap="small")
