@@ -5671,63 +5671,105 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-answer_action_row_phone_wrap {{
         display: block !important;
-        margin-top: 0.24rem !important;
+        margin-top: 0.04rem !important;
     }}
     .st-key-answer_action_row_phone_wrap [data-testid="stVerticalBlock"] {{
-        gap: 0.2rem !important;
+        gap: 0.16rem !important;
     }}
     .st-key-answer_action_row_phone_wrap [data-testid="stElementContainer"] {{
         margin: 0 !important;
     }}
     .st-key-answer_action_row_phone_wrap div[data-testid="stButton"] > button {{
-        width: 2.88rem !important;
-        min-width: 2.88rem !important;
-        max-width: 2.88rem !important;
-        min-height: 2.56rem !important;
-        font-size: 1.24rem !important;
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
+        min-height: 3.2rem !important;
+        font-size: 1.55rem !important;
         font-weight: 700 !important;
     }}
     .st-key-answer_action_row_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
     .st-key-answer_action_row_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
     .st-key-answer_action_row_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
     .st-key-answer_action_row_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
-        font-size: 1.24rem !important;
+        font-size: 1.55rem !important;
         font-weight: 700 !important;
         line-height: 1 !important;
+    }}
+    .st-key-correct_phone_wrap div[data-testid="stButton"] > button {{
+        background-color: {BUTTON_COLORS['green']['bg']} !important;
+        border-color: {BUTTON_COLORS['green']['border']} !important;
+        color: {BUTTON_COLORS['green']['fg']} !important;
+    }}
+    .st-key-repeat_phone_wrap div[data-testid="stButton"] > button {{
+        background-color: {BUTTON_COLORS['yellow']['bg']} !important;
+        border-color: {BUTTON_COLORS['yellow']['border']} !important;
+        color: {BUTTON_COLORS['yellow']['fg']} !important;
+    }}
+    .st-key-nextunscored_phone_wrap div[data-testid="stButton"] > button {{
+        background-color: #beb0f1 !important;
+        border-color: #6940c6 !important;
+        color: #49258b !important;
+    }}
+    .st-key-favorite_phone_wrap div[data-testid="stButton"] > button {{
+        background-color: {t['info_light']} !important;
+        border-color: {t['info']} !important;
+        color: #1f7cff !important;
+    }}
+    .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button,
+    .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button {{
+        background-color: #d8b5ea !important;
+        border-color: #8a4aa6 !important;
+        color: #d04ac5 !important;
     }}
     .st-key-action_phone_top_row_wrap [data-testid="stHorizontalBlock"] {{
         display: flex !important;
         flex-wrap: nowrap !important;
         justify-content: flex-start !important;
-        gap: 0.2rem !important;
+        gap: 0.26rem !important;
         width: fit-content !important;
         margin: 0 !important;
     }}
     .st-key-action_phone_top_row_wrap [data-testid="stColumn"] {{
-        flex: 0 0 2.88rem !important;
-        width: 2.88rem !important;
-        min-width: 2.88rem !important;
-        max-width: 2.88rem !important;
+        flex: 0 0 3.6rem !important;
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
         padding: 0 !important;
     }}
-    .st-key-action_phone_bottom_row_wrap [data-testid="stHorizontalBlock"] {{
+    .st-key-action_phone_bottom_single_row_wrap [data-testid="stHorizontalBlock"],
+    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stHorizontalBlock"],
+    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stHorizontalBlock"] {{
         display: flex !important;
         flex-wrap: nowrap !important;
-        align-items: flex-start !important;
+        align-items: center !important;
         justify-content: flex-start !important;
-        gap: 0.2rem !important;
+        gap: 0.26rem !important;
         width: 100% !important;
         margin: 0 !important;
     }}
-    .st-key-action_phone_bottom_row_wrap [data-testid="stColumn"]:nth-child(1),
-    .st-key-action_phone_bottom_row_wrap [data-testid="stColumn"]:nth-child(2) {{
-        flex: 0 0 2.88rem !important;
-        width: 2.88rem !important;
-        min-width: 2.88rem !important;
-        max-width: 2.88rem !important;
+    .st-key-action_phone_bottom_single_row_wrap [data-testid="stColumn"]:nth-child(1),
+    .st-key-action_phone_bottom_single_row_wrap [data-testid="stColumn"]:nth-child(2),
+    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(1),
+    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(2),
+    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(1),
+    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(2) {{
+        flex: 0 0 3.6rem !important;
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
         padding: 0 !important;
     }}
-    .st-key-action_phone_bottom_row_wrap [data-testid="stColumn"]:nth-child(3) {{
+    .st-key-action_phone_bottom_single_row_wrap [data-testid="stColumn"]:nth-child(3),
+    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(3),
+    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(3) {{
+        flex: 0 0 7.46rem !important;
+        width: 7.46rem !important;
+        min-width: 7.46rem !important;
+        max-width: 7.46rem !important;
+        padding: 0 !important;
+    }}
+    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(4),
+    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(4) {{
         flex: 1 1 auto !important;
         min-width: 0 !important;
         padding: 0 !important;
@@ -5735,31 +5777,34 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap,
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap > div,
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap [data-testid="stElementContainer"] {{
-        width: 2.88rem !important;
-        min-width: 2.88rem !important;
-        max-width: 2.88rem !important;
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
     }}
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap iframe {{
-        width: 2.88rem !important;
-        min-width: 2.88rem !important;
-        max-width: 2.88rem !important;
-        height: 2.56rem !important;
-        min-height: 2.56rem !important;
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
+        height: 3.2rem !important;
+        min-height: 3.2rem !important;
         margin: 0 !important;
         display: block !important;
     }}
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button {{
-        width: 5.96rem !important;
-        min-width: 5.96rem !important;
-        max-width: 5.96rem !important;
-        min-height: 2.56rem !important;
-        font-size: 0.74rem !important;
+        width: 7.46rem !important;
+        min-width: 7.46rem !important;
+        max-width: 7.46rem !important;
+        min-height: 3.2rem !important;
+        font-size: 0.82rem !important;
+        background: {BUTTON_COLORS['blue']['bg']} !important;
+        border-color: {BUTTON_COLORS['blue']['border']} !important;
+        color: {BUTTON_COLORS['blue']['fg']} !important;
     }}
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
-        font-size: 0.74rem !important;
+        font-size: 0.82rem !important;
         font-weight: 600 !important;
         letter-spacing: 0.08em !important;
         text-transform: uppercase !important;
@@ -5792,13 +5837,13 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-phone_ai_actions_wrap,
     .st-key-phone_ai_actions_wrap [data-testid="stElementContainer"],
     .st-key-phone_ai_actions_wrap iframe {{
-        width: 5.96rem !important;
-        min-width: 5.96rem !important;
-        max-width: 5.96rem !important;
+        width: 7.46rem !important;
+        min-width: 7.46rem !important;
+        max-width: 7.46rem !important;
     }}
     .st-key-phone_ai_actions_wrap iframe {{
-        height: 2.56rem !important;
-        min-height: 2.56rem !important;
+        height: 3.2rem !important;
+        min-height: 3.2rem !important;
         display: block !important;
     }}
     .st-key-phone_ai_status_wrap .ai-status-label {{
@@ -5818,11 +5863,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         display: flex !important;
         align-items: center !important;
         gap: 0.32rem !important;
-        white-space: normal !important;
+        white-space: nowrap !important;
     }}
     .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] p {{
-        font-size: 0.72rem !important;
-        line-height: 1.08 !important;
+        font-size: 0.68rem !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
     }}
     .title-row {{
         padding: 0.15rem 0 0.08rem 0 !important;
@@ -11655,52 +11701,64 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     else:
                         with st.container(key="favorite_phone_wrap"):
                             st.button("♥︎", key="favorite_phone_btn", on_click=add_current_card_to_favorites)
-            with st.container(key="action_phone_bottom_row_wrap"):
-                phone_bottom_columns = st.columns([1, 1, 2.2], gap="small")
-                with phone_bottom_columns[0]:
-                    with st.container(key="speaker_phone_wrap"):
-                        render_speaker_button(speaker_audio_text if ai_examples_supported else spanish_audio_text)
-                with phone_bottom_columns[1]:
-                    with st.container(key=auto_speak_phone_key):
-                        st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
-                with phone_bottom_columns[2]:
-                    if ai_examples_supported:
-                        if ai_examples_loading and not ai_has_sentences:
-                            loading_button_label = "Retry" if ai_error_message else "Examples"
-                            with st.container(key="phone_ai_fetch_status_row_wrap"):
-                                phone_loading_columns = st.columns([1, 0.95], gap="small")
-                                with phone_loading_columns[0]:
-                                    with st.container(key="phone_ai_single_wrap"):
-                                        st.button(
-                                            loading_button_label,
-                                            key="ai_fetch_phone_btn",
-                                            disabled=True,
-                                            help=ai_disabled_reason,
-                                        )
-                                with phone_loading_columns[1]:
-                                    with st.container(key="phone_ai_status_wrap"):
-                                        st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
-                        elif ai_has_sentences:
-                            with st.container(key="phone_ai_actions_row_wrap"):
-                                phone_actions_columns = st.columns([1, 1.15], gap="small")
-                                with phone_actions_columns[0]:
-                                    with st.container(key="phone_ai_actions_wrap"):
-                                        render_ai_action_buttons(
-                                            cycle_disabled=ai_examples_loading,
-                                            reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading,
-                                        )
-                                with phone_actions_columns[1]:
-                                    if show_ai_autoplay_toggle:
-                                        with st.container(key="phone_ai_checkbox_wrap"):
-                                            new_ai_auto_play_examples_phone = st.checkbox(
-                                                "Auto speak sentences",
-                                                value=st.session_state.ai_auto_play_examples,
-                                                key="ai_auto_play_examples_phone_checkbox",
-                                            )
-                        else:
-                            button_label = ai_disabled_label
-                            if ai_examples_available:
-                                button_label = "Retry" if ai_error_message else "Examples"
+            if ai_examples_supported:
+                if ai_examples_loading and not ai_has_sentences:
+                    loading_button_label = "Retry" if ai_error_message else "Examples"
+                    with st.container(key="action_phone_bottom_loading_row_wrap"):
+                        phone_loading_row_columns = st.columns([1, 1, 2.08, 1.15], gap="small")
+                        with phone_loading_row_columns[0]:
+                            with st.container(key="speaker_phone_wrap"):
+                                render_speaker_button(speaker_audio_text)
+                        with phone_loading_row_columns[1]:
+                            with st.container(key=auto_speak_phone_key):
+                                st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
+                        with phone_loading_row_columns[2]:
+                            with st.container(key="phone_ai_single_wrap"):
+                                st.button(
+                                    loading_button_label,
+                                    key="ai_fetch_phone_btn",
+                                    disabled=True,
+                                    help=ai_disabled_reason,
+                                )
+                        with phone_loading_row_columns[3]:
+                            with st.container(key="phone_ai_status_wrap"):
+                                st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
+                elif ai_has_sentences:
+                    with st.container(key="action_phone_bottom_actions_row_wrap"):
+                        phone_actions_row_columns = st.columns([1, 1, 2.08, 1.5], gap="small")
+                        with phone_actions_row_columns[0]:
+                            with st.container(key="speaker_phone_wrap"):
+                                render_speaker_button(speaker_audio_text)
+                        with phone_actions_row_columns[1]:
+                            with st.container(key=auto_speak_phone_key):
+                                st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
+                        with phone_actions_row_columns[2]:
+                            with st.container(key="phone_ai_actions_wrap"):
+                                render_ai_action_buttons(
+                                    cycle_disabled=ai_examples_loading,
+                                    reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading,
+                                )
+                        with phone_actions_row_columns[3]:
+                            if show_ai_autoplay_toggle:
+                                with st.container(key="phone_ai_checkbox_wrap"):
+                                    new_ai_auto_play_examples_phone = st.checkbox(
+                                        "Auto speak sentences",
+                                        value=st.session_state.ai_auto_play_examples,
+                                        key="ai_auto_play_examples_phone_checkbox",
+                                    )
+                else:
+                    button_label = ai_disabled_label
+                    if ai_examples_available:
+                        button_label = "Retry" if ai_error_message else "Examples"
+                    with st.container(key="action_phone_bottom_single_row_wrap"):
+                        phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
+                        with phone_single_row_columns[0]:
+                            with st.container(key="speaker_phone_wrap"):
+                                render_speaker_button(speaker_audio_text)
+                        with phone_single_row_columns[1]:
+                            with st.container(key=auto_speak_phone_key):
+                                st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
+                        with phone_single_row_columns[2]:
                             with st.container(key="phone_ai_single_wrap"):
                                 if st.button(
                                     button_label,
@@ -11710,7 +11768,16 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                 ):
                                     begin_ai_examples_action("fetch")
                                     st.rerun()
-                    else:
+            else:
+                with st.container(key="action_phone_bottom_single_row_wrap"):
+                    phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
+                    with phone_single_row_columns[0]:
+                        with st.container(key="speaker_phone_wrap"):
+                            render_speaker_button(spanish_audio_text)
+                    with phone_single_row_columns[1]:
+                        with st.container(key=auto_speak_phone_key):
+                            st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
+                    with phone_single_row_columns[2]:
                         st.empty()
         if new_ai_auto_play_examples_phone != st.session_state.ai_auto_play_examples:
             st.session_state.ai_auto_play_examples = new_ai_auto_play_examples_phone
