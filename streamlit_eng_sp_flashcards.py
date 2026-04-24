@@ -11467,10 +11467,7 @@ def render_menu():
             clear_menu_destructive_confirms()
             st.rerun()
         st.markdown('<div class="menu-field-label">Word count</div>', unsafe_allow_html=True)
-        if st.session_state.get("menu_ai_word_range") != (
-            st.session_state.ai_examples_min_words,
-            st.session_state.ai_examples_max_words,
-        ):
+        if "menu_ai_word_range" not in st.session_state:
             st.session_state.menu_ai_word_range = (
                 st.session_state.ai_examples_min_words,
                 st.session_state.ai_examples_max_words,
@@ -11489,9 +11486,12 @@ def render_menu():
             new_ai_word_range[1],
             (st.session_state.ai_examples_min_words, st.session_state.ai_examples_max_words),
         )
-        if sanitized_ai_word_range != (
-            st.session_state.ai_examples_min_words,
-            st.session_state.ai_examples_max_words,
+        if (
+            sanitized_ai_word_range != new_ai_word_range
+            or sanitized_ai_word_range != (
+                st.session_state.ai_examples_min_words,
+                st.session_state.ai_examples_max_words,
+            )
         ):
             st.session_state.ai_examples_min_words = sanitized_ai_word_range[0]
             st.session_state.ai_examples_max_words = sanitized_ai_word_range[1]
