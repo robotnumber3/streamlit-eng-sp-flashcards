@@ -2593,7 +2593,7 @@ t = THEMES[st.session_state.theme]
 
 
 def sync_menu_widget_state():
-    st.session_state.menu_ai_word_range = (
+    st.session_state.menu_ai_word_range_pending_value = (
         st.session_state.ai_examples_min_words,
         st.session_state.ai_examples_max_words,
     )
@@ -11467,7 +11467,10 @@ def render_menu():
             clear_menu_destructive_confirms()
             st.rerun()
         st.markdown('<div class="menu-field-label">Word count</div>', unsafe_allow_html=True)
-        if "menu_ai_word_range" not in st.session_state:
+        pending_ai_word_range = st.session_state.pop("menu_ai_word_range_pending_value", None)
+        if pending_ai_word_range is not None:
+            st.session_state.menu_ai_word_range = pending_ai_word_range
+        elif "menu_ai_word_range" not in st.session_state:
             st.session_state.menu_ai_word_range = (
                 st.session_state.ai_examples_min_words,
                 st.session_state.ai_examples_max_words,
@@ -11495,7 +11498,7 @@ def render_menu():
         ):
             st.session_state.ai_examples_min_words = sanitized_ai_word_range[0]
             st.session_state.ai_examples_max_words = sanitized_ai_word_range[1]
-            st.session_state.menu_ai_word_range = sanitized_ai_word_range
+            st.session_state.menu_ai_word_range_pending_value = sanitized_ai_word_range
             store_active_person_prefs()
             sync_menu_widget_state()
             save_prefs(current_prefs())
