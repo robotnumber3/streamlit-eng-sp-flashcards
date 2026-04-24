@@ -5761,7 +5761,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-action_phone_bottom_actions_row_wrap [data-testid="stHorizontalBlock"] {{
         display: flex !important;
         flex-wrap: nowrap !important;
-        align-items: center !important;
+        align-items: stretch !important;
         justify-content: flex-start !important;
         gap: 0.26rem !important;
         width: 100% !important;
@@ -5814,6 +5814,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         min-width: 0 !important;
         padding: 0 !important;
     }}
+    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"] {{
+        align-self: stretch !important;
+    }}
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap,
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap > div,
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap [data-testid="stElementContainer"] {{
@@ -5835,7 +5838,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-action_phone_bottom_actions_row_wrap .st-key-speaker_phone_wrap iframe,
     .st-key-action_phone_bottom_actions_row_wrap .st-key-phone_ai_actions_wrap iframe {{
-        margin-top: 0.08rem !important;
+        margin-top: 0 !important;
     }}
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button {{
         width: 7.46rem !important;
@@ -10402,7 +10405,7 @@ def render_speaker_button(text, icon_font_size="1.15rem"):
             justify-content: center;
             line-height: 1;
             margin: 0;
-            padding: 0;
+            padding: 0.22rem 0 0 0;
             box-sizing: border-box;
         }}
         </style>
@@ -10556,7 +10559,7 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
             justify-content: center;
             line-height: 1;
             margin: 0;
-            padding: 0;
+            padding: 0.18rem 0 0 0;
             box-sizing: border-box;
         }}
         #ai-cycle-btn {{
