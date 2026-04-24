@@ -350,7 +350,7 @@ DEFAULT_AI_SENTENCE_TENSES = {
     "preterite": True,
     "imperfect": False,
     "conditional": False,
-    "subjunctive": False, 
+    "subjunctive": False,
 }
 DEFAULT_AI_SENTENCE_LEVEL = "beginner"
 AI_EXAMPLES_PER_BATCH = 3
@@ -4550,21 +4550,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {t['fg']};
     margin: 0.35rem 0 0.2rem 0;
     line-height: 1.2;
-}}
-[class*="st-key-menu_divider_wrap_"] {{
-    margin: 0.8rem 0 0.75rem 0 !important;
-}}
-[class*="st-key-menu_divider_wrap_"] [data-testid="stElementContainer"],
-[class*="st-key-menu_divider_wrap_"] [data-testid="stMarkdownContainer"] {{
-    width: calc(100% - 1.1rem) !important;
-    max-width: calc(100% - 1.1rem) !important;
-    margin-right: auto !important;
-    box-sizing: border-box !important;
-}}
-.menu-divider {{
-    width: 100%;
-    height: 0.5px;
-    background: color-mix(in srgb, {t['divider']} 82%, {t['menu_bg']} 18%);
 }}
 .st-key-erase_review_wrap,
 .st-key-erase_review_confirm_wrap,
@@ -10929,11 +10914,6 @@ def render_menu():
     active_favorites_count = favorites_count_for(st.session_state.active_person)
     has_regular_progress = person_has_regular_deck_progress(st.session_state.active_person)
     active_person_label = PERSON_LABELS[st.session_state.active_person]
-
-    def render_menu_divider(divider_key):
-        with st.container(key=divider_key):
-            st.markdown('<div class="menu-divider" aria-hidden="true"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="menu-backdrop"></div>', unsafe_allow_html=True)
     render_menu_backdrop_close_handler()
     with st.container(key="menu_modal_wrap"):
@@ -10954,7 +10934,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_1")
         st.markdown('<div class="menu-section-label">Theme</div>', unsafe_allow_html=True)
         new_theme = st.radio("Theme", options=["light", "dark", "aqua", "amber"],
                              index=["light","dark","aqua", "amber"].index(st.session_state.theme),
@@ -10966,7 +10945,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_2")
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Direction</div>',
                     unsafe_allow_html=True)
         dir_options = ["Random 50/50", "EN → ES only", "ES → EN only"]
@@ -10982,7 +10960,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_3")
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Speech Speed</div>',
                     unsafe_allow_html=True)
         speed_options = [1, 2, 3, 4, 5]
@@ -11008,7 +10985,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_4")
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">AI Examples</div>', unsafe_allow_html=True)
         st.markdown('<div class="menu-field-label">Allowed tenses/forms</div>', unsafe_allow_html=True)
         new_ai_tenses = dict(st.session_state.ai_sentence_tenses)
@@ -11053,7 +11029,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_5")
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">STORY &amp; DIALOG MODES &ndash; PAUSES BETWEEN SENTENCES</div>',
                     unsafe_allow_html=True)
         story_timing_options = [5, 4, 3, 2, 1]

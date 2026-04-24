@@ -324,33 +324,23 @@ PERSON_LABELS = {
 
 AI_TENSE_OPTIONS = [
     ("present", "Pres", "presente"),
-    ("ir_a", "Voy A", "ir a + infinitivo"),
-    ("preterite", "Pret", "pretérito"),
-    ("imperfect", "Imperf", "imperfecto"),
-    ("conditional", "Cond", "condicional"),
-    ("subjunctive", "Subj", "subjuntivo"),
+    ("past", "Past", "pasado"),
+    ("future", "Fut", "futuro"),
 ]
 AI_LEVEL_OPTIONS = [
     (
         "beginner",
         "Beg",
-        "nivel de principiante absoluto: escribe para un estudiante en sus primeras semanas de español; "
-        "usa solo vocabulario A1 muy común y cotidiano, palabras cortas y de alta frecuencia, "
-        "una sola idea y una sola cláusula principal, orden sintáctico simple y claro, "
-        "y la forma verbal permitida más sencilla disponible. "
-        "Evita expresiones idiomáticas, dobles sentidos, lenguaje figurado, conectores complejos, "
-        "pronombres difíciles, vocabulario raro, temas abstractos y cualquier redacción que no sea inmediata y literal",
+        "nivel de principiante absoluto: usa solo vocabulario muy básico y de alta frecuencia, "
+        "gramática muy simple y clara, sin expresiones idiomáticas, sin palabras raras, sin cláusulas complejas, "
+        "y que la oración sea fácil para un estudiante en sus primeras semanas de español",
     ),
     ("intermediate", "Int", "nivel intermedio, vocabulario cotidiano y natural"),
     ("advanced", "Adv", "nivel avanzado, vocabulario rico pero natural"),
 ]
 DEFAULT_AI_SENTENCE_TENSES = {
-    "present": True,
-    "ir_a": True,
-    "preterite": True,
-    "imperfect": False,
-    "conditional": False,
-    "subjunctive": False, 
+    tense_key: True
+    for tense_key, _, _ in AI_TENSE_OPTIONS
 }
 DEFAULT_AI_SENTENCE_LEVEL = "beginner"
 AI_EXAMPLES_PER_BATCH = 3
@@ -2521,18 +2511,6 @@ if "ai_auto_play_examples_default_off_migrated" not in st.session_state:
     st.session_state["ai_auto_play_examples_default_off_migrated"] = True
     save_prefs(current_prefs())
 
-if "ai_tense_forms_v2_migrated" not in st.session_state:
-    for person in PERSON_LABELS:
-        migrated_person_prefs = sanitize_person_prefs(
-            st.session_state.person_settings.get(person, {}),
-            default_person_prefs(),
-        )
-        migrated_person_prefs["ai_sentence_tenses"] = default_ai_sentence_tenses()
-        st.session_state.person_settings[person] = migrated_person_prefs
-    st.session_state.ai_sentence_tenses = default_ai_sentence_tenses()
-    st.session_state["ai_tense_forms_v2_migrated"] = True
-    save_prefs(current_prefs())
-
 if "story_display_mode" not in st.session_state:
     legacy_prompt_on = st.session_state.get("story_prompt_on", True)
     legacy_english_on = st.session_state.get(
@@ -4550,21 +4528,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {t['fg']};
     margin: 0.35rem 0 0.2rem 0;
     line-height: 1.2;
-}}
-[class*="st-key-menu_divider_wrap_"] {{
-    margin: 0.8rem 0 0.75rem 0 !important;
-}}
-[class*="st-key-menu_divider_wrap_"] [data-testid="stElementContainer"],
-[class*="st-key-menu_divider_wrap_"] [data-testid="stMarkdownContainer"] {{
-    width: calc(100% - 1.1rem) !important;
-    max-width: calc(100% - 1.1rem) !important;
-    margin-right: auto !important;
-    box-sizing: border-box !important;
-}}
-.menu-divider {{
-    width: 100%;
-    height: 0.5px;
-    background: color-mix(in srgb, {t['divider']} 82%, {t['menu_bg']} 18%);
 }}
 .st-key-erase_review_wrap,
 .st-key-erase_review_confirm_wrap,
@@ -6700,7 +6663,7 @@ def build_ai_examples_prompt(card):
             f"donde aparezca {spanish_term}{meaning_clause} de forma natural en contexto. "
             "Si la palabra funciona como adjetivo o color, haz que concuerde naturalmente con el sustantivo. "
             f"{level_prompt}. "
-            f"Usa solo estas formas verbales para cualquier verbo que aparezca: {tense_names}. "
+            f"Usa solo estos tiempos verbales para cualquier verbo que aparezca: {tense_names}. "
             "Varía el contexto y la redacción. "
             f"Devuelve solo las {AI_EXAMPLES_PER_BATCH} oraciones, una por línea."
         )
@@ -6710,7 +6673,7 @@ def build_ai_examples_prompt(card):
         f"con registro adulto, de {AI_EXAMPLES_MIN_WORDS} a {AI_EXAMPLES_MAX_WORDS} palabras cada una, "
         f"usando {spanish_term}{meaning_clause}. "
         f"{level_prompt}. "
-        f"Usa solo estas formas verbales para cualquier verbo: {tense_names}. "
+        f"Usa solo estos tiempos verbales para cualquier verbo: {tense_names}. "
         "Varía el contexto y la redacción. "
         f"Devuelve solo las {AI_EXAMPLES_PER_BATCH} oraciones, una por línea."
     )
@@ -10929,11 +10892,6 @@ def render_menu():
     active_favorites_count = favorites_count_for(st.session_state.active_person)
     has_regular_progress = person_has_regular_deck_progress(st.session_state.active_person)
     active_person_label = PERSON_LABELS[st.session_state.active_person]
-
-    def render_menu_divider(divider_key):
-        with st.container(key=divider_key):
-            st.markdown('<div class="menu-divider" aria-hidden="true"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="menu-backdrop"></div>', unsafe_allow_html=True)
     render_menu_backdrop_close_handler()
     with st.container(key="menu_modal_wrap"):
@@ -10954,7 +10912,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_1")
         st.markdown('<div class="menu-section-label">Theme</div>', unsafe_allow_html=True)
         new_theme = st.radio("Theme", options=["light", "dark", "aqua", "amber"],
                              index=["light","dark","aqua", "amber"].index(st.session_state.theme),
@@ -10966,7 +10923,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_2")
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Direction</div>',
                     unsafe_allow_html=True)
         dir_options = ["Random 50/50", "EN → ES only", "ES → EN only"]
@@ -10982,7 +10938,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_3")
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Speech Speed</div>',
                     unsafe_allow_html=True)
         speed_options = [1, 2, 3, 4, 5]
@@ -11008,22 +10963,17 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_4")
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">AI Examples</div>', unsafe_allow_html=True)
-        st.markdown('<div class="menu-field-label">Allowed tenses/forms</div>', unsafe_allow_html=True)
+        st.markdown('<div class="menu-field-label">Allowed tenses</div>', unsafe_allow_html=True)
         new_ai_tenses = dict(st.session_state.ai_sentence_tenses)
         with st.container(key="menu_ai_tenses_wrap"):
-            for tense_group in (AI_TENSE_OPTIONS[:3], AI_TENSE_OPTIONS[3:]):
-                tense_columns = st.columns(3, gap="small")
-                for column, (tense_key, short_label, _) in zip(tense_columns, tense_group):
-                    with column:
-                        new_ai_tenses[tense_key] = st.checkbox(
-                            short_label,
-                            value=st.session_state.ai_sentence_tenses.get(
-                                tense_key,
-                                DEFAULT_AI_SENTENCE_TENSES.get(tense_key, False),
-                            ),
-                        )
+            tense_columns = st.columns(len(AI_TENSE_OPTIONS), gap="small")
+            for column, (tense_key, short_label, _) in zip(tense_columns, AI_TENSE_OPTIONS):
+                with column:
+                    new_ai_tenses[tense_key] = st.checkbox(
+                        short_label,
+                        value=st.session_state.ai_sentence_tenses.get(tense_key, True),
+                    )
         sanitized_new_ai_tenses = sanitize_ai_sentence_tenses(
             new_ai_tenses,
             st.session_state.ai_sentence_tenses,
@@ -11053,7 +11003,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_5")
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">STORY &amp; DIALOG MODES &ndash; PAUSES BETWEEN SENTENCES</div>',
                     unsafe_allow_html=True)
         story_timing_options = [5, 4, 3, 2, 1]

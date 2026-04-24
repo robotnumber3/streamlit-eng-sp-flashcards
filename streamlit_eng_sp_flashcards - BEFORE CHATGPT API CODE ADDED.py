@@ -31,9 +31,6 @@ import base64
 import html
 import math
 import re
-import socket
-import urllib.error
-import urllib.request
 from urllib.parse import quote
 from datetime import date, datetime
 import matplotlib.pyplot as plt
@@ -46,7 +43,7 @@ st.set_page_config(page_title="Spanish Flashcards", page_icon="🌿", layout="wi
 
 
 # streamlit_eng_sp_flashcards.py
-APP_BUILD_CODE = "rev58"
+APP_BUILD_CODE = "rev57"
 PICKER_UI_BUILD_CODE = "picker-html-v1"
 PICKER_CSS_BUILD_CODE = "css-2026-04-21e"
 MOBILE_PICKER_CONTAINER_KEY = f"mobile_deck_picker_wrap_{PICKER_UI_BUILD_CODE.replace('-', '_')}"
@@ -321,108 +318,6 @@ PERSON_LABELS = {
     "miguel": "Miguel",
     "david": "David",
 }
-
-AI_TENSE_OPTIONS = [
-    ("present", "Pres", "presente"),
-    ("ir_a", "Voy A", "ir a + infinitivo"),
-    ("preterite", "Pret", "pretérito"),
-    ("imperfect", "Imperf", "imperfecto"),
-    ("conditional", "Cond", "condicional"),
-    ("subjunctive", "Subj", "subjuntivo"),
-]
-AI_LEVEL_OPTIONS = [
-    (
-        "beginner",
-        "Beg",
-        "nivel de principiante absoluto: escribe para un estudiante en sus primeras semanas de español; "
-        "usa solo vocabulario A1 muy común y cotidiano, palabras cortas y de alta frecuencia, "
-        "una sola idea y una sola cláusula principal, orden sintáctico simple y claro, "
-        "y la forma verbal permitida más sencilla disponible. "
-        "Evita expresiones idiomáticas, dobles sentidos, lenguaje figurado, conectores complejos, "
-        "pronombres difíciles, vocabulario raro, temas abstractos y cualquier redacción que no sea inmediata y literal",
-    ),
-    ("intermediate", "Int", "nivel intermedio, vocabulario cotidiano y natural"),
-    ("advanced", "Adv", "nivel avanzado, vocabulario rico pero natural"),
-]
-DEFAULT_AI_SENTENCE_TENSES = {
-    "present": True,
-    "ir_a": True,
-    "preterite": True,
-    "imperfect": False,
-    "conditional": False,
-    "subjunctive": False, 
-}
-DEFAULT_AI_SENTENCE_LEVEL = "beginner"
-AI_EXAMPLES_PER_BATCH = 3
-AI_EXAMPLES_MIN_WORDS = 8
-AI_EXAMPLES_MAX_WORDS = 12
-AI_EXAMPLES_MODEL = configured_setting("OPENAI_EXAMPLES_MODEL") or "gpt-5.4-mini"
-AI_EXAMPLES_STATUS_TTL_SECONDS = 30
-AI_EXAMPLES_STATUS_TIMEOUT_SECONDS = 2
-AI_EXAMPLES_REQUEST_TIMEOUT_SECONDS = 8
-AI_EXAMPLES_ALLOWED_POS_FOLDERS = {
-    "adjectives",
-    "adverbs",
-    "conjunctions",
-    "nouns",
-    "prepositions",
-    "pronouns",
-}
-AI_EXAMPLES_ALLOWED_VERB_FOLDER = "00 infinitives"
-AI_EXAMPLES_ALLOWED_TOP_LEVEL_FOLDERS = {
-    "vocabulary",
-}
-
-
-def default_ai_sentence_tenses():
-    return dict(DEFAULT_AI_SENTENCE_TENSES)
-
-
-def sanitize_ai_sentence_tenses(raw_value, fallback=None):
-    fallback = dict(fallback or default_ai_sentence_tenses())
-    raw_value = raw_value if isinstance(raw_value, dict) else {}
-    sanitized = {}
-    for tense_key, _, _ in AI_TENSE_OPTIONS:
-        value = raw_value.get(tense_key, fallback.get(tense_key, True))
-        sanitized[tense_key] = bool(value)
-    if not any(sanitized.values()):
-        sanitized = dict(fallback)
-    if not any(sanitized.values()):
-        sanitized = default_ai_sentence_tenses()
-    return sanitized
-
-
-def allowed_ai_tense_keys(tense_settings):
-    sanitized = sanitize_ai_sentence_tenses(tense_settings)
-    return [
-        tense_key
-        for tense_key, _, _ in AI_TENSE_OPTIONS
-        if sanitized.get(tense_key)
-    ]
-
-
-def ai_level_prompt_text(level_key):
-    for option_key, _, prompt_text in AI_LEVEL_OPTIONS:
-        if option_key == level_key:
-            return prompt_text
-    return AI_LEVEL_OPTIONS[0][2]
-
-
-def ai_level_short_label(level_key):
-    for option_key, short_label, _ in AI_LEVEL_OPTIONS:
-        if option_key == level_key:
-            return short_label
-    return AI_LEVEL_OPTIONS[0][1]
-
-
-def ai_tense_names_text(tense_settings):
-    allowed_keys = set(allowed_ai_tense_keys(tense_settings))
-    allowed_names = [
-        tense_name
-        for tense_key, _, tense_name in AI_TENSE_OPTIONS
-        if tense_key in allowed_keys
-    ]
-    return ", ".join(allowed_names)
 REVIEW_DECK_VALUES = {
     person: f"__review_{person}__"
     for person in PERSON_LABELS
@@ -1276,9 +1171,6 @@ def default_person_prefs():
         "auto_speak_spanish": DEFAULT_AUTO_SPEAK_SPANISH,
         "story_reading_speed": DEFAULT_STORY_READING_SPEED,
         "story_pause_amount": DEFAULT_STORY_PAUSE_AMOUNT,
-        "ai_sentence_tenses": default_ai_sentence_tenses(),
-        "ai_sentence_level": DEFAULT_AI_SENTENCE_LEVEL,
-        "ai_auto_play_examples": False,
     }
 
 
@@ -1306,16 +1198,6 @@ def sanitize_person_prefs(pref_data, fallback=None):
     story_pause_amount = pref_data.get("story_pause_amount", legacy_story_pause)
     if story_pause_amount not in {1, 2, 3, 4, 5}:
         story_pause_amount = fallback["story_pause_amount"]
-    ai_sentence_tenses = sanitize_ai_sentence_tenses(
-        pref_data.get("ai_sentence_tenses", fallback["ai_sentence_tenses"]),
-        fallback["ai_sentence_tenses"],
-    )
-    ai_sentence_level = pref_data.get("ai_sentence_level", fallback["ai_sentence_level"])
-    if ai_sentence_level not in {option_key for option_key, _, _ in AI_LEVEL_OPTIONS}:
-        ai_sentence_level = fallback["ai_sentence_level"]
-    ai_auto_play_examples = pref_data.get("ai_auto_play_examples", fallback["ai_auto_play_examples"])
-    if not isinstance(ai_auto_play_examples, bool):
-        ai_auto_play_examples = fallback["ai_auto_play_examples"]
     return {
         "theme": theme,
         "direction_mode": direction_mode,
@@ -1324,9 +1206,6 @@ def sanitize_person_prefs(pref_data, fallback=None):
         "auto_speak_spanish": auto_speak_spanish,
         "story_reading_speed": story_reading_speed,
         "story_pause_amount": story_pause_amount,
-        "ai_sentence_tenses": ai_sentence_tenses,
-        "ai_sentence_level": ai_sentence_level,
-        "ai_auto_play_examples": ai_auto_play_examples,
     }
 
 
@@ -2277,9 +2156,6 @@ def current_prefs():
             "auto_speak_spanish": st.session_state.auto_speak_spanish,
             "story_reading_speed": st.session_state.story_reading_speed,
             "story_pause_amount": st.session_state.story_pause_amount,
-            "ai_sentence_tenses": sanitize_ai_sentence_tenses(st.session_state.ai_sentence_tenses),
-            "ai_sentence_level": st.session_state.ai_sentence_level,
-            "ai_auto_play_examples": st.session_state.ai_auto_play_examples,
         }
     return {
         "active_person": saved_active_person,
@@ -2423,9 +2299,6 @@ defaults = {
     "auto_speak_spanish_generation": 0,
     "story_reading_speed": active_person_prefs["story_reading_speed"],
     "story_pause_amount": active_person_prefs["story_pause_amount"],
-    "ai_sentence_tenses": sanitize_ai_sentence_tenses(active_person_prefs["ai_sentence_tenses"]),
-    "ai_sentence_level": active_person_prefs["ai_sentence_level"],
-    "ai_auto_play_examples": active_person_prefs["ai_auto_play_examples"],
     "active_person":  None,
     "person_radio":   None,
     "person_selector_visible": True,
@@ -2474,14 +2347,6 @@ defaults = {
     "story_finished": False,
     "story_run_token": 0,
     "story_resume_next": False,
-    "ai_examples_signature": None,
-    "ai_examples_sentences": [],
-    "ai_examples_index": 0,
-    "ai_examples_error": None,
-    "ai_examples_reload_unlocked": False,
-    "ai_examples_loading": False,
-    "ai_examples_pending_action": None,
-    "ai_examples_autoplay_generation": 0,
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -2504,34 +2369,7 @@ if active_person_query_value in PERSON_LABELS and st.session_state.active_person
     st.session_state.auto_speak_spanish = restored_person_prefs["auto_speak_spanish"]
     st.session_state.story_reading_speed = restored_person_prefs["story_reading_speed"]
     st.session_state.story_pause_amount = restored_person_prefs["story_pause_amount"]
-    st.session_state.ai_sentence_tenses = sanitize_ai_sentence_tenses(restored_person_prefs["ai_sentence_tenses"])
-    st.session_state.ai_sentence_level = restored_person_prefs["ai_sentence_level"]
-    st.session_state.ai_auto_play_examples = restored_person_prefs["ai_auto_play_examples"]
     st.session_state.direction = direction_for_mode(restored_person_prefs["direction_mode"])
-
-if "ai_auto_play_examples_default_off_migrated" not in st.session_state:
-    for person in PERSON_LABELS:
-        migrated_person_prefs = sanitize_person_prefs(
-            st.session_state.person_settings.get(person, {}),
-            default_person_prefs(),
-        )
-        migrated_person_prefs["ai_auto_play_examples"] = False
-        st.session_state.person_settings[person] = migrated_person_prefs
-    st.session_state.ai_auto_play_examples = False
-    st.session_state["ai_auto_play_examples_default_off_migrated"] = True
-    save_prefs(current_prefs())
-
-if "ai_tense_forms_v2_migrated" not in st.session_state:
-    for person in PERSON_LABELS:
-        migrated_person_prefs = sanitize_person_prefs(
-            st.session_state.person_settings.get(person, {}),
-            default_person_prefs(),
-        )
-        migrated_person_prefs["ai_sentence_tenses"] = default_ai_sentence_tenses()
-        st.session_state.person_settings[person] = migrated_person_prefs
-    st.session_state.ai_sentence_tenses = default_ai_sentence_tenses()
-    st.session_state["ai_tense_forms_v2_migrated"] = True
-    save_prefs(current_prefs())
 
 if "story_display_mode" not in st.session_state:
     legacy_prompt_on = st.session_state.get("story_prompt_on", True)
@@ -2566,9 +2404,6 @@ def store_active_person_prefs():
         "auto_speak_spanish": st.session_state.auto_speak_spanish,
         "story_reading_speed": st.session_state.story_reading_speed,
         "story_pause_amount": st.session_state.story_pause_amount,
-        "ai_sentence_tenses": sanitize_ai_sentence_tenses(st.session_state.ai_sentence_tenses),
-        "ai_sentence_level": st.session_state.ai_sentence_level,
-        "ai_auto_play_examples": st.session_state.ai_auto_play_examples,
     }
 
 
@@ -2617,79 +2452,13 @@ def handle_splash_action():
         st.rerun()
 
 
-def handle_splash_selection(action):
-    if action in PERSON_LABELS:
-        if st.session_state.selected_csv is None and st.session_state.person_selector_visible:
-            activate_person(action)
-        return
-
-    if action == "quit" and st.session_state.selected_csv is None and st.session_state.person_selector_visible:
-        st.session_state.menu_open = False
-        st.session_state.final_exit = True
-
-
 def polygon_points_attribute(points):
     return " ".join(f"{x},{y}" for x, y in points)
 
 
-def inject_splash_action_bridge():
-    components.html(
-        """
-        <script>
-        (function() {
-            var doc = window.parent.document;
-            var bridgeKey = '__splashActionBridge_v1';
-
-            if (window.parent[bridgeKey]) {
-                return;
-            }
-            window.parent[bridgeKey] = true;
-
-            function findHiddenButton(key, label) {
-                if (key) {
-                    var byClass = doc.querySelector(
-                        '.st-key-' + key + ' button, [class*="st-key-' + key + '"] button'
-                    );
-                    if (byClass) return byClass;
-                }
-
-                if (label) {
-                    var buttons = Array.from(doc.querySelectorAll('button'));
-                    var byLabel = buttons.find(function(candidate) {
-                        return candidate.textContent && candidate.textContent.trim() === label;
-                    });
-                    if (byLabel) return byLabel;
-                }
-
-                return null;
-            }
-
-            doc.addEventListener('click', function(event) {
-                var button = event.target && event.target.closest
-                    ? event.target.closest('.splash-action-button[data-splash-button-key]')
-                    : null;
-                if (!button) {
-                    return;
-                }
-
-                event.preventDefault();
-
-                var key = button.getAttribute('data-splash-button-key');
-                var label = button.getAttribute('data-splash-button-label');
-                var hiddenButton = findHiddenButton(key, label);
-                if (hiddenButton) {
-                    hiddenButton.click();
-                }
-            }, true);
-        })();
-        </script>
-        """,
-        height=0,
-    )
-
-
 def render_splash_selector():
     splash_data_uri = splash_image_data_uri()
+    handoff_token = ensure_login_handoff_token()
     if not splash_data_uri:
         with st.container(key="person_radio_wrap"):
             selected_person = st.radio(
@@ -2705,12 +2474,15 @@ def render_splash_selector():
                 st.rerun()
         return
 
+    handoff_query = ""
+    if handoff_token:
+        handoff_query = "&auth_handoff=" + html.escape(handoff_token)
+
     polygon_markup = "".join(
-        "<a href='#' class='splash-link splash-action-button' data-splash-button-key='"
-        + html.escape(f"splash_hidden_action_{action}")
-        + "' data-splash-button-label='"
-        + html.escape(f"hidden-splash_hidden_action_{action}")
-        + "' aria-label='"
+        "<a href='?splash_action="
+        + html.escape(action)
+        + handoff_query
+        + "' target='_self' class='splash-link' aria-label='"
         + html.escape(action.title())
         + "'><polygon class='splash-hotspot' points='"
         + polygon_points_attribute(points)
@@ -2772,15 +2544,6 @@ def render_splash_selector():
     """
 
     st.markdown(splash_html, unsafe_allow_html=True)
-    for action in SPLASH_ACTIONS:
-        st.button(
-            f"hidden-splash_hidden_action_{action}",
-            key=f"splash_hidden_action_{action}",
-            on_click=handle_splash_selection,
-            args=(action,),
-            use_container_width=True,
-        )
-    inject_splash_action_bridge()
 
 def render_menu_backdrop_close_handler():
     components.html(
@@ -2825,9 +2588,6 @@ def apply_person_prefs(person):
     st.session_state.auto_speak_spanish = person_prefs["auto_speak_spanish"]
     st.session_state.story_reading_speed = person_prefs["story_reading_speed"]
     st.session_state.story_pause_amount = person_prefs["story_pause_amount"]
-    st.session_state.ai_sentence_tenses = sanitize_ai_sentence_tenses(person_prefs["ai_sentence_tenses"])
-    st.session_state.ai_sentence_level = person_prefs["ai_sentence_level"]
-    st.session_state.ai_auto_play_examples = person_prefs["ai_auto_play_examples"]
     st.session_state.direction = direction_for_mode(person_prefs["direction_mode"])
     sync_menu_widget_state()
 
@@ -3219,8 +2979,9 @@ def picker_row_markup(label_html, icon_text, row_class, action, target, anchor_k
 
     if button_key:
         button_label = picker_hidden_button_label(button_key)
+        fallback_href = picker_query_href(action, target)
         return (
-            f'<a class="{' '.join(class_names)} deck-picker-action-button" href="#" data-picker-button-key="{html.escape(button_key)}" data-picker-button-label="{html.escape(button_label)}"{anchor_attr}>'
+            f'<a class="{' '.join(class_names)} deck-picker-action-button" href="{fallback_href}" target="_self" data-picker-button-key="{html.escape(button_key)}" data-picker-button-label="{html.escape(button_label)}" data-picker-fallback-href="{html.escape(fallback_href)}"{anchor_attr}>'
             f'{icon_markup}'
             f'<span class="deck-picker-row-label">{label_html}</span>'
             "</a>"
@@ -3256,11 +3017,9 @@ def picker_story_child_depth_class(depth):
     return f"deck-picker-row-story-child-depth-{min(depth, 5)}"
 
 
-def append_picker_file_row(file_entry, folder_depth, picker_rows, hidden_toggle_actions, active_person, child_folder_context=False):
+def append_picker_file_row(file_entry, folder_depth, picker_rows, active_person, child_folder_context=False):
     csv_file = file_entry["filename"]
     status = deck_picker_status(csv_file, active_person)
-    button_key = picker_hidden_button_key("picker_hidden_select_deck", csv_file)
-    hidden_toggle_actions.append((button_key, activate_deck, (csv_file,)))
 
     if file_entry.get("is_picker_child") or child_folder_context:
         row_class = "deck-picker-row-story-child"
@@ -3290,18 +3049,16 @@ def append_picker_file_row(file_entry, folder_depth, picker_rows, hidden_toggle_
             "select_deck",
             csv_file,
             extra_classes=extra_classes,
-            button_key=button_key,
         )
     )
 
 
-def append_picker_file_rows(file_entries, folder_depth, picker_rows, hidden_toggle_actions, active_person, child_folder_context=False):
+def append_picker_file_rows(file_entries, folder_depth, picker_rows, active_person, child_folder_context=False):
     for file_entry in file_entries:
         append_picker_file_row(
             file_entry,
             folder_depth,
             picker_rows,
-            hidden_toggle_actions,
             active_person,
             child_folder_context=child_folder_context,
         )
@@ -3314,7 +3071,6 @@ def render_picker_folder_contents(folder_node, top_level_category_id, picker_row
                 child_entry,
                 picker_folder_depth(folder_node["key"]),
                 picker_rows,
-                hidden_toggle_actions,
                 active_person,
                 child_folder_context=child_folder_context,
             )
@@ -3407,6 +3163,7 @@ def inject_picker_toggle_bridge():
 
                 var key = button.getAttribute('data-picker-button-key');
                 var label = button.getAttribute('data-picker-button-label');
+                var fallbackHref = button.getAttribute('data-picker-fallback-href') || button.getAttribute('href');
                 if (!key) {
                     return;
                 }
@@ -3425,6 +3182,9 @@ def inject_picker_toggle_bridge():
 
                     attempts += 1;
                     if (attempts >= maxAttempts) {
+                        if (fallbackHref) {
+                            window.parent.location.href = fallbackHref;
+                        }
                         return;
                     }
 
@@ -3463,8 +3223,6 @@ def render_grouped_deck_picker():
 
         if learned_words_challenge_available(st.session_state.active_person):
             special_deck_count += 1
-            challenge_button_key = picker_hidden_button_key("picker_hidden_select_deck", LEARNED_WORDS_CHALLENGE_VALUE)
-            hidden_toggle_actions.append((challenge_button_key, activate_deck, (LEARNED_WORDS_CHALLENGE_VALUE,)))
             picker_rows.append(
                 picker_row_markup(
                     picker_row_label_html(learned_words_challenge_label()),
@@ -3472,7 +3230,6 @@ def render_grouped_deck_picker():
                     "deck-picker-row-special deck-picker-status-challenge",
                     "select_deck",
                     LEARNED_WORDS_CHALLENGE_VALUE,
-                    button_key=challenge_button_key,
                 )
             )
 
@@ -3481,8 +3238,6 @@ def render_grouped_deck_picker():
             if review_value not in review_deck_values:
                 continue
             special_deck_count += 1
-            review_button_key = picker_hidden_button_key("picker_hidden_select_deck", review_value)
-            hidden_toggle_actions.append((review_button_key, activate_deck, (review_value,)))
             picker_rows.append(
                 picker_row_markup(
                     picker_row_label_html(review_deck_label(person, include_count=True)),
@@ -3490,7 +3245,6 @@ def render_grouped_deck_picker():
                     "deck-picker-row-special deck-picker-status-review",
                     "select_deck",
                     review_value,
-                    button_key=review_button_key,
                 )
             )
 
@@ -3499,8 +3253,6 @@ def render_grouped_deck_picker():
             if favorites_value not in favorites_deck_values:
                 continue
             special_deck_count += 1
-            favorites_button_key = picker_hidden_button_key("picker_hidden_select_deck", favorites_value)
-            hidden_toggle_actions.append((favorites_button_key, activate_deck, (favorites_value,)))
             picker_rows.append(
                 picker_row_markup(
                     picker_row_label_html(favorites_deck_label(person, include_count=True)),
@@ -3508,7 +3260,6 @@ def render_grouped_deck_picker():
                     "deck-picker-row-special deck-picker-status-favorites",
                     "select_deck",
                     favorites_value,
-                    button_key=favorites_button_key,
                 )
             )
 
@@ -3516,7 +3267,7 @@ def render_grouped_deck_picker():
             picker_rows.append("<div class='special-deck-separator'></div>")
             picker_rows.append("<div class='special-deck-after-gap'></div>")
 
-        append_picker_file_rows(root_files, 0, picker_rows, hidden_toggle_actions, st.session_state.active_person)
+        append_picker_file_rows(root_files, 0, picker_rows, st.session_state.active_person)
 
         for category_node in root_folder_nodes:
             category_id = category_node["key"]
@@ -3942,32 +3693,26 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {BUTTON_COLORS['yellow']['fg']} !important;
 }}
 .st-key-nextunscored_wrap div[data-testid="stButton"] > button {{
-    background-color: #beb0f1 !important;
-    border-color: #6940c6 !important;
-    color: #49258b !important;
+    background-color: #cbb7f3 !important;
+    border-color: #7a4ac7 !important;
+    color: #5a338f !important;
 }}
 .st-key-favorite_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['info_light']} !important;
-    border-color: {t['info']} !important;
-    color: #1f7cff !important;
-    border-radius: 0.75rem !important;
-    border-width: 2px !important;
+    background-color: color-mix(in srgb, {BUTTON_COLORS['blue']['bg']} 68%, {t['bg']} 32%) !important;
+    border-color: {BUTTON_COLORS['blue']['border']} !important;
+    color: {BUTTON_COLORS['blue']['fg']} !important;
 }}
 .st-key-favorite_active_wrap div[data-testid="stButton"] > button,
 .st-key-storyfavorite_active_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['info_light']} !important;
-    border-color: {t['info']} !important;
-    color: #1f7cff !important;
-    border-radius: 0.75rem !important;
-    border-width: 2px !important;
+    background-color: color-mix(in srgb, {BUTTON_COLORS['blue']['bg']} 44%, {t['bg']} 56%) !important;
+    border-color: color-mix(in srgb, {BUTTON_COLORS['blue']['border']} 52%, {t['border']} 48%) !important;
+    color: color-mix(in srgb, {BUTTON_COLORS['blue']['fg']} 35%, white 65%) !important;
     opacity: 1 !important;
 }}
 .st-key-storyfavorite_wrap div[data-testid="stButton"] > button {{
-    background-color: {t['info_light']} !important;
-    border-color: {t['info']} !important;
-    color: #1f7cff !important;
-    border-radius: 0.75rem !important;
-    border-width: 2px !important;
+    background-color: color-mix(in srgb, {BUTTON_COLORS['blue']['bg']} 68%, {t['bg']} 32%) !important;
+    border-color: {BUTTON_COLORS['blue']['border']} !important;
+    color: {BUTTON_COLORS['blue']['fg']} !important;
 }}
 .st-key-favorite_active_wrap div[data-testid="stButton"] > button:disabled,
 .st-key-storyfavorite_active_wrap div[data-testid="stButton"] > button:disabled {{
@@ -4013,9 +3758,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     background-color: {BUTTON_COLORS['red']['bg']} !important;
     border-color: {BUTTON_COLORS['red']['border']} !important;
     color: {BUTTON_COLORS['red']['fg']} !important;
-    width: 3.6rem !important;
-    min-width: 3.6rem !important;
-    max-width: 3.6rem !important;
 }}
 /* ---- Quit ---- */
 .st-key-quitnow_wrap div[data-testid="stButton"] > button {{
@@ -4041,14 +3783,14 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {BUTTON_COLORS['blue']['fg']} !important;
 }}
 .st-key-autospeak_on_wrap div[data-testid="stButton"] > button {{
-    background-color: #d8b5ea !important;
-    border-color: #8a4aa6 !important;
-    color: #d04ac5 !important;
+    background-color: #cbb7f3 !important;
+    border-color: #5a338f !important;
+    color: #8f39ff !important;
 }}
 .st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
-    background-color: #d8b5ea !important;
-    border-color: #8a4aa6 !important;
-    color: #d04ac5 !important;
+    background-color: #cbb7f3 !important;
+    border-color: #5a338f !important;
+    color: #8f39ff !important;
 }}
 .st-key-autospeak_on_wrap div[data-testid="stButton"] > button,
 .st-key-autospeak_off_wrap div[data-testid="stButton"] > button {{
@@ -4217,7 +3959,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     justify-content: space-between !important;
-    align-items: flex-start !important;
+    align-items: center !important;
     gap: 0 !important;
     width: 100% !important;
     margin: 0 !important;
@@ -4258,8 +4000,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     max-width: 100% !important;
     display: block !important;
     margin: 0.16rem 0 0 0 !important;
-    position: relative !important;
-    z-index: 1 !important;
 }}
 .st-key-icon_btn_row_wrap .st-key-speaker_wrap iframe {{
     width: 100% !important;
@@ -4296,10 +4036,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     width: fit-content !important;
     margin-left: auto !important;
     margin-right: 0 !important;
-}}
-.st-key-action_right_group_wrap [data-testid="stVerticalBlock"] {{
-    gap: 0.26rem !important;
-    align-items: flex-end !important;
 }}
 .st-key-action_right_group_wrap [data-testid="stColumn"] {{
     flex: 0 0 3.6rem !important;
@@ -4407,28 +4143,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     pointer-events: none !important;
 }}
 .st-key-regularautoadvance_hidden_wrap {{
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    clip-path: inset(50%) !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}}
-.st-key-aicycle_hidden_wrap {{
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    clip-path: inset(50%) !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}}
-.st-key-aireload_hidden_wrap {{
     position: absolute !important;
     width: 1px !important;
     height: 1px !important;
@@ -4550,21 +4264,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: {t['fg']};
     margin: 0.35rem 0 0.2rem 0;
     line-height: 1.2;
-}}
-[class*="st-key-menu_divider_wrap_"] {{
-    margin: 0.8rem 0 0.75rem 0 !important;
-}}
-[class*="st-key-menu_divider_wrap_"] [data-testid="stElementContainer"],
-[class*="st-key-menu_divider_wrap_"] [data-testid="stMarkdownContainer"] {{
-    width: calc(100% - 1.1rem) !important;
-    max-width: calc(100% - 1.1rem) !important;
-    margin-right: auto !important;
-    box-sizing: border-box !important;
-}}
-.menu-divider {{
-    width: 100%;
-    height: 0.5px;
-    background: color-mix(in srgb, {t['divider']} 82%, {t['menu_bg']} 18%);
 }}
 .st-key-erase_review_wrap,
 .st-key-erase_review_confirm_wrap,
@@ -4798,268 +4497,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-size: 1.0rem; font-weight: 400;
     color: {t['muted']}; margin-top: 0.2rem; line-height: 1.3;
 }}
-.fc-ai-example-wrap {{
-    margin-top: 0.7rem;
-    padding-top: 0.55rem;
-    border-top: 1px solid color-mix(in srgb, {t['border']} 80%, {t['bg']} 20%);
-}}
-.fc-ai-example-label {{
-    font-size: 0.66rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: {t['muted']};
-    margin-bottom: 0.2rem;
-}}
-.fc-ai-example {{
-    font-size: 1.02rem;
-    line-height: 1.42;
-    color: {t['fg']};
-}}
-.fc-ai-example-count {{
-    font-size: 0.76rem;
-    color: {t['muted']};
-    white-space: nowrap;
-}}
-.fc-ai-error {{
-    margin-top: 0.65rem;
-    font-size: 0.83rem;
-    line-height: 1.35;
-    color: color-mix(in srgb, {t['fg']} 78%, #b84d4d 22%);
-}}
-.st-key-menu_ai_tenses_wrap [data-testid="stCheckbox"] {{
-    margin-bottom: 0.1rem;
-}}
-.st-key-menu_ai_tenses_wrap [data-testid="stCheckbox"] label {{
-    gap: 0.32rem;
-}}
-.st-key-menu_ai_tenses_wrap [data-testid="stCheckbox"] p {{
-    font-size: 0.82rem;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_single_wrap div[data-testid="stButton"],
-.st-key-answer_action_row_wrap .st-key-ai_fetch_wrap div[data-testid="stButton"],
-.st-key-answer_action_row_wrap .st-key-ai_reload_wrap div[data-testid="stButton"],
-.st-key-answer_action_row_wrap .st-key-ai_cycle_wrap div[data-testid="stButton"] {{
-    display: flex !important;
-    justify-content: flex-end !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_status_wrap,
-.st-key-answer_action_row_wrap .st-key-ai_counter_wrap {{
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    min-height: 3.2rem !important;
-}}
-.st-key-answer_action_row_wrap .ai-status-label,
-.st-key-answer_action_row_wrap .ai-counter-label {{
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: {t['muted']};
-    line-height: 1;
-    white-space: nowrap;
-    margin: 0 !important;
-    transform: translateY(-0.16rem);
-}}
-.st-key-answer_action_row_wrap .st-key-ai_status_wrap [data-testid="stMarkdownContainer"],
-.st-key-answer_action_row_wrap .st-key-ai_status_wrap [data-testid="stMarkdownContainer"] p,
-.st-key-answer_action_row_wrap .st-key-ai_status_wrap [data-testid="stMarkdownContainer"] span,
-.st-key-answer_action_row_wrap .st-key-ai_status_wrap [data-testid="stMarkdownContainer"] div {{
-    margin: 0 !important;
-    line-height: 1 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_single_wrap div[data-testid="stButton"] > button {{
-    width: 7.46rem !important;
-    min-width: 7.46rem !important;
-    min-height: 3.2rem !important;
-    border-radius: 1rem !important;
-    background: {BUTTON_COLORS['blue']['bg']} !important;
-    border-color: {BUTTON_COLORS['blue']['border']} !important;
-    color: {BUTTON_COLORS['blue']['fg']} !important;
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.08em !important;
-    text-transform: uppercase !important;
-    line-height: 1 !important;
-    justify-content: center !important;
-    text-align: center !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
-.st-key-answer_action_row_wrap .st-key-ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
-.st-key-answer_action_row_wrap .st-key-ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
-.st-key-answer_action_row_wrap .st-key-ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.08em !important;
-    text-transform: uppercase !important;
-    line-height: 1 !important;
-    text-align: center !important;
-    width: 100% !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_fetch_wrap button,
-.st-key-answer_action_row_wrap .st-key-ai_cycle_wrap button {{
-    background: {BUTTON_COLORS['blue']['bg']} !important;
-    border-color: {BUTTON_COLORS['blue']['border']} !important;
-    color: {BUTTON_COLORS['blue']['fg']} !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_reload_wrap button {{
-    background: color-mix(in srgb, {t['card_bg']} 80%, {t['bg']} 20%) !important;
-    border-color: {t['border']} !important;
-    color: transparent !important;
-    position: relative !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_reload_wrap button [data-testid="stMarkdownContainer"],
-.st-key-answer_action_row_wrap .st-key-ai_reload_wrap button [data-testid="stMarkdownContainer"] p,
-.st-key-answer_action_row_wrap .st-key-ai_reload_wrap button [data-testid="stMarkdownContainer"] span,
-.st-key-answer_action_row_wrap .st-key-ai_reload_wrap button [data-testid="stMarkdownContainer"] div {{
-    font-size: 0 !important;
-    line-height: 0 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_reload_wrap button::before {{
-    content: "⟳";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -56%);
-    font-size: 3.55rem !important;
-    font-weight: 400 !important;
-    line-height: 1 !important;
-    color: {t['fg']} !important;
-    pointer-events: none;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_reload_wrap button:disabled,
-.st-key-answer_action_row_wrap .st-key-ai_cycle_wrap button:disabled,
-.st-key-answer_action_row_wrap .st-key-ai_single_wrap button:disabled {{
-    opacity: 0.42 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_top_wrap {{
-    margin-top: -0.08rem !important;
-    margin-bottom: 0.16rem !important;
-    position: relative !important;
-    z-index: 5 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_bottom_wrap {{
-    margin-top: 0 !important;
-    margin-bottom: 0.16rem !important;
-    position: relative !important;
-    z-index: 1 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_top_wrap [data-testid="stHorizontalBlock"],
-.st-key-answer_action_row_wrap .st-key-ai_bottom_wrap [data-testid="stHorizontalBlock"] {{
-    gap: 0.26rem !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    width: fit-content !important;
-    margin-left: auto !important;
-    margin-right: 0 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_top_wrap,
-.st-key-answer_action_row_wrap .st-key-ai_bottom_wrap {{
-    width: fit-content !important;
-    margin-left: auto !important;
-    margin-right: 0 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_actions_wrap {{
-    width: 7.46rem !important;
-    display: flex !important;
-    justify-content: flex-end !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_actions_wrap [data-testid="stElementContainer"] {{
-    width: fit-content !important;
-    min-width: 7.46rem !important;
-    margin-left: auto !important;
-    margin-right: 0 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_actions_wrap iframe {{
-    width: 7.46rem !important;
-    max-width: 7.46rem !important;
-    display: block !important;
-    margin-left: auto !important;
-    margin-right: 0 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_reload_loading_wrap [data-testid="stHorizontalBlock"] {{
-    justify-content: flex-end !important;
-    gap: 0.26rem !important;
-    width: fit-content !important;
-    margin-left: auto !important;
-    margin-right: 0 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_reload_loading_wrap [data-testid="stColumn"]:first-child {{
-    flex: 0 0 auto !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_reload_loading_wrap [data-testid="stColumn"]:last-child {{
-    flex: 0 0 7.46rem !important;
-    width: 7.46rem !important;
-    min-width: 7.46rem !important;
-    max-width: 7.46rem !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_autoplay_row_wrap [data-testid="stHorizontalBlock"] {{
-    justify-content: flex-end !important;
-    gap: 0.45rem !important;
-    width: fit-content !important;
-    margin-left: auto !important;
-    margin-right: 0 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_autoplay_row_wrap [data-testid="stColumn"]:first-child {{
-    flex: 0 0 auto !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_autoplay_row_wrap [data-testid="stColumn"]:last-child {{
-    flex: 0 0 7.46rem !important;
-    width: 7.46rem !important;
-    min-width: 7.46rem !important;
-    max-width: 7.46rem !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_top_wrap [data-testid="stColumn"],
-.st-key-answer_action_row_wrap .st-key-ai_bottom_wrap [data-testid="stColumn"] {{
-    min-width: 0 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_top_wrap [data-testid="stColumn"],
-.st-key-answer_action_row_wrap .st-key-ai_bottom_wrap [data-testid="stColumn"]:first-child,
-.st-key-answer_action_row_wrap .st-key-ai_bottom_wrap [data-testid="stColumn"]:last-child {{
-    flex: 0 0 3.6rem !important;
-    width: 3.6rem !important;
-    min-width: 3.6rem !important;
-    max-width: 3.6rem !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_single_row_wrap [data-testid="stHorizontalBlock"] {{
-    justify-content: flex-end !important;
-    gap: 0 !important;
-    width: fit-content !important;
-    margin-left: auto !important;
-    margin-right: 0 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_single_row_wrap [data-testid="stColumn"] {{
-    flex: 0 0 7.46rem !important;
-    width: 7.46rem !important;
-    min-width: 7.46rem !important;
-    max-width: 7.46rem !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_loading_row_wrap [data-testid="stHorizontalBlock"] {{
-    justify-content: flex-end !important;
-    gap: 0.45rem !important;
-    width: fit-content !important;
-    margin-left: auto !important;
-    margin-right: 0 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_loading_row_wrap [data-testid="stColumn"]:first-child {{
-    flex: 0 0 auto !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_loading_row_wrap [data-testid="stColumn"]:last-child {{
-    flex: 0 0 7.46rem !important;
-    width: 7.46rem !important;
-    min-width: 7.46rem !important;
-    max-width: 7.46rem !important;
-}}
 
 /* ---- Summary ---- */
 .summary-title {{
@@ -5188,32 +4625,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-storyplayback_row_wrap [data-testid="stColumn"]:last-child {{
     flex: 1 1 auto !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_autoplay_wrap {{
-    width: 7.46rem !important;
-    min-width: 7.46rem !important;
-    max-width: 7.46rem !important;
-    margin: 0.1rem 0 0 auto !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_autoplay_wrap [data-testid="stCheckbox"] {{
-    width: 7.46rem !important;
-    display: flex !important;
-    justify-content: flex-end !important;
-    margin: 0 !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_autoplay_wrap [data-testid="stCheckbox"] label {{
-    width: fit-content !important;
-    margin-left: auto !important;
-    display: flex !important;
-    align-items: flex-start !important;
-    gap: 0.42rem !important;
-    transform: translateX(0.14rem) !important;
-}}
-.st-key-answer_action_row_wrap .st-key-ai_autoplay_wrap [data-testid="stCheckbox"] p {{
-    font-size: 0.84rem !important;
-    line-height: 1.15 !important;
-    color: {t['muted']} !important;
-    margin-top: 0.03rem !important;
 }}
 .st-key-storyplayback_row_wrap .story-option-row {{
     white-space: nowrap !important;
@@ -5526,7 +4937,6 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 [class*="st-key-picker_hidden_toggle_category_"],
 [class*="st-key-picker_hidden_toggle_subcategory_"],
-[class*="st-key-splash_hidden_action_"],
 .st-key-{PICKER_HIDDEN_ACTIONS_WRAP_KEY} {{
     position: absolute !important;
     left: -10000px !important;
@@ -6513,311 +5923,7 @@ def advance_card(schedule_current=True):
     st.session_state.index      += 1
     st.session_state.show_answer = False
     st.session_state.delete_review_confirm_key = None
-    st.session_state.ai_examples_signature = None
-    st.session_state.ai_examples_sentences = []
-    st.session_state.ai_examples_index = 0
-    st.session_state.ai_examples_error = None
-    st.session_state.ai_examples_reload_unlocked = False
-    st.session_state.ai_examples_loading = False
-    st.session_state.ai_examples_pending_action = None
     st.session_state.direction = effective_direction()
-
-
-def current_card_supports_ai_examples():
-    if not st.session_state.cards or st.session_state.selected_csv is None:
-        return False
-    if st.session_state.regular_auto_mode:
-        return False
-    filename = st.session_state.selected_csv
-    if (
-        is_review_deck(filename)
-        or is_favorites_deck(filename)
-        or is_learned_words_challenge(filename)
-        or filename not in csv_relative_paths
-    ):
-        return False
-    if (
-        is_playback_deck(filename)
-        or is_sentence_deck(filename)
-        or is_story_deck(filename)
-        or is_dialog_deck(filename)
-    ):
-        return False
-
-    folder_labels = [
-        normalized_folder_label(part)
-        for part in csv_relative_folder_parts_for(filename)
-    ]
-    if not folder_labels:
-        return False
-
-    if folder_labels[0] in AI_EXAMPLES_ALLOWED_TOP_LEVEL_FOLDERS:
-        return True
-
-    if len(folder_labels) < 2 or folder_labels[0] != "parts of speech":
-        return False
-
-    category_label = folder_labels[1]
-    if category_label in AI_EXAMPLES_ALLOWED_POS_FOLDERS:
-        return True
-
-    return (
-        category_label == "verbs"
-        and len(folder_labels) >= 3
-        and folder_labels[2] == AI_EXAMPLES_ALLOWED_VERB_FOLDER
-    )
-
-
-@st.cache_data(show_spinner=False, ttl=AI_EXAMPLES_STATUS_TTL_SECONDS)
-def ai_examples_service_reachable():
-    request = urllib.request.Request("https://api.openai.com/v1", method="HEAD")
-    try:
-        with urllib.request.urlopen(request, timeout=AI_EXAMPLES_STATUS_TIMEOUT_SECONDS):
-            return True
-    except urllib.error.HTTPError as error:
-        return error.code in {401, 403, 404, 405}
-    except (urllib.error.URLError, TimeoutError, socket.timeout, OSError):
-        return False
-
-
-def current_ai_examples_availability():
-    if not current_card_supports_ai_examples():
-        return {
-            "eligible": False,
-            "available": False,
-            "button_label": "Examples",
-            "reason": None,
-        }
-
-    api_key = configured_setting("OPENAI_API_KEY")
-    if not api_key:
-        return {
-            "eligible": True,
-            "available": False,
-            "button_label": "No Key",
-            "reason": "Add OPENAI_API_KEY to your environment or Streamlit secrets.",
-        }
-
-    if not ai_examples_service_reachable():
-        return {
-            "eligible": True,
-            "available": False,
-            "button_label": "Offline",
-            "reason": "AI examples are unavailable right now. Check the connection and try again.",
-        }
-
-    return {
-        "eligible": True,
-        "available": True,
-        "button_label": "Examples",
-        "reason": None,
-    }
-
-
-def ai_examples_request_error_message(error):
-    if isinstance(error, urllib.error.HTTPError):
-        error_message = f"OpenAI error {error.code}"
-        try:
-            error_body = json.loads(error.read().decode("utf-8"))
-            return error_body.get("error", {}).get("message") or error_message
-        except Exception:
-            return error_message
-
-    if isinstance(error, (TimeoutError, socket.timeout)):
-        return "AI examples timed out. Try again."
-
-    if isinstance(error, urllib.error.URLError):
-        if isinstance(error.reason, (TimeoutError, socket.timeout)):
-            return "AI examples timed out. Try again."
-        return "AI examples are unavailable right now. Check the connection and try again."
-
-    return str(error)
-
-
-def ai_prompt_text(text):
-    cleaned = strip_spoken_text(text or "")
-    cleaned = re.sub(r'\s+', ' ', cleaned)
-    return cleaned.strip()
-
-
-def current_ai_examples_signature():
-    if not current_card_supports_ai_examples():
-        return None
-    card = st.session_state.cards[current_card_index()]
-    return (
-        st.session_state.selected_csv,
-        current_card_index(),
-        card.get("id"),
-        ai_prompt_text(card.get("answer", "")),
-        ai_prompt_text(card.get("word", "")),
-        tuple(allowed_ai_tense_keys(st.session_state.ai_sentence_tenses)),
-        st.session_state.ai_sentence_level,
-    )
-
-
-def sync_ai_examples_state():
-    signature = current_ai_examples_signature()
-    if st.session_state.ai_examples_signature == signature:
-        return
-    st.session_state.ai_examples_signature = signature
-    st.session_state.ai_examples_sentences = []
-    st.session_state.ai_examples_index = 0
-    st.session_state.ai_examples_error = None
-    st.session_state.ai_examples_reload_unlocked = False
-    st.session_state.ai_examples_loading = False
-    st.session_state.ai_examples_pending_action = None
-
-
-def begin_ai_examples_action(action):
-    if action not in {"fetch", "reload"}:
-        return
-    st.session_state.ai_examples_loading = True
-    st.session_state.ai_examples_pending_action = action
-
-
-def process_pending_ai_examples_action():
-    return True
-
-
-def build_ai_examples_prompt(card):
-    filename = st.session_state.selected_csv
-    spanish_term = ai_prompt_text(card.get("answer", ""))
-    english_gloss = ai_prompt_text(card.get("word", ""))
-    level_prompt = ai_level_prompt_text(st.session_state.ai_sentence_level)
-    tense_names = ai_tense_names_text(st.session_state.ai_sentence_tenses)
-    folder_labels = [
-        normalized_folder_label(part)
-        for part in csv_relative_folder_parts_for(filename)
-    ] if filename else []
-    meaning_clause = ""
-    if english_gloss:
-        meaning_clause = f' con el sentido de "{english_gloss}"'
-
-    if folder_labels and folder_labels[0] == "vocabulary":
-        return (
-            f"Escribe {AI_EXAMPLES_PER_BATCH} oraciones distintas y naturales en español mexicano, "
-            f"con registro adulto, de {AI_EXAMPLES_MIN_WORDS} a {AI_EXAMPLES_MAX_WORDS} palabras cada una, "
-            f"donde aparezca {spanish_term}{meaning_clause} de forma natural en contexto. "
-            "Si la palabra funciona como adjetivo o color, haz que concuerde naturalmente con el sustantivo. "
-            f"{level_prompt}. "
-            f"Usa solo estas formas verbales para cualquier verbo que aparezca: {tense_names}. "
-            "Varía el contexto y la redacción. "
-            f"Devuelve solo las {AI_EXAMPLES_PER_BATCH} oraciones, una por línea."
-        )
-
-    return (
-        f"Escribe {AI_EXAMPLES_PER_BATCH} oraciones distintas y naturales en español mexicano, "
-        f"con registro adulto, de {AI_EXAMPLES_MIN_WORDS} a {AI_EXAMPLES_MAX_WORDS} palabras cada una, "
-        f"usando {spanish_term}{meaning_clause}. "
-        f"{level_prompt}. "
-        f"Usa solo estas formas verbales para cualquier verbo: {tense_names}. "
-        "Varía el contexto y la redacción. "
-        f"Devuelve solo las {AI_EXAMPLES_PER_BATCH} oraciones, una por línea."
-    )
-
-
-def parse_ai_examples_text(text):
-    lines = []
-    for raw_line in (text or "").splitlines():
-        cleaned = re.sub(r'^\s*(?:\d+[\).:-]?\s*|[-*]\s*)', '', raw_line).strip()
-        if cleaned:
-            lines.append(cleaned)
-    if len(lines) < AI_EXAMPLES_PER_BATCH:
-        fallback_parts = [
-            part.strip()
-            for part in re.split(r'(?<=[.!?])\s+', text or "")
-            if part.strip()
-        ]
-        lines = []
-        for part in fallback_parts:
-            cleaned = re.sub(r'^\s*(?:\d+[\).:-]?\s*|[-*]\s*)', '', part).strip()
-            if cleaned:
-                lines.append(cleaned)
-    return lines[:AI_EXAMPLES_PER_BATCH]
-
-
-def fetch_ai_examples_for_current_card():
-    sync_ai_examples_state()
-    st.session_state.ai_examples_error = None
-    availability = current_ai_examples_availability()
-    if not availability["eligible"]:
-        st.session_state.ai_examples_sentences = []
-        st.session_state.ai_examples_loading = False
-        st.session_state.ai_examples_pending_action = None
-        return False
-    if not availability["available"]:
-        st.session_state.ai_examples_sentences = []
-        st.session_state.ai_examples_error = availability["reason"]
-        st.session_state.ai_examples_loading = False
-        st.session_state.ai_examples_pending_action = None
-        return False
-    api_key = configured_setting("OPENAI_API_KEY")
-    card = st.session_state.cards[current_card_index()]
-    payload = {
-        "model": AI_EXAMPLES_MODEL,
-        "input": build_ai_examples_prompt(card),
-        "temperature": 0.9,
-    }
-    request = urllib.request.Request(
-        "https://api.openai.com/v1/responses",
-        data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        },
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=AI_EXAMPLES_REQUEST_TIMEOUT_SECONDS) as response:
-            result = json.loads(response.read().decode("utf-8"))
-    except Exception as error:
-        st.session_state.ai_examples_sentences = []
-        st.session_state.ai_examples_error = ai_examples_request_error_message(error)
-        st.session_state.ai_examples_loading = False
-        st.session_state.ai_examples_pending_action = None
-        return False
-
-    output_text = ""
-    for item in result.get("output", []):
-        for content in item.get("content", []):
-            if content.get("type") == "output_text":
-                output_text = content.get("text", "")
-                break
-        if output_text:
-            break
-
-    sentences = parse_ai_examples_text(output_text)
-    if len(sentences) != AI_EXAMPLES_PER_BATCH:
-        st.session_state.ai_examples_sentences = []
-        st.session_state.ai_examples_error = "Could not parse three examples from the response."
-        st.session_state.ai_examples_loading = False
-        st.session_state.ai_examples_pending_action = None
-        return False
-
-    st.session_state.ai_examples_sentences = sentences
-    st.session_state.ai_examples_index = 0
-    st.session_state.ai_examples_error = None
-    st.session_state.ai_examples_reload_unlocked = False
-    st.session_state.ai_examples_loading = False
-    st.session_state.ai_examples_pending_action = None
-    if st.session_state.ai_auto_play_examples:
-        st.session_state.ai_examples_autoplay_generation += 1
-    return True
-
-
-def cycle_ai_example():
-    if not st.session_state.ai_examples_sentences:
-        return
-    total = len(st.session_state.ai_examples_sentences)
-    st.session_state.ai_examples_index = (st.session_state.ai_examples_index + 1) % total
-    if st.session_state.ai_auto_play_examples:
-        st.session_state.ai_examples_autoplay_generation += 1
-    if st.session_state.ai_examples_index == total - 1:
-        st.session_state.ai_examples_reload_unlocked = True
-
-
-def render_ai_example_footer(show_answer):
-    return
 
 
 def story_pause_seconds_for_text(text):
@@ -9225,43 +8331,36 @@ def render_flashcard(prompt, solution, show_answer):
     st.markdown(q_html, unsafe_allow_html=True)
     if show_answer:
         a_inner = format_word(solution, 'fc-answer', 'fc-answer-note')
-        ai_extra_html = ''
-        if current_card_supports_ai_examples():
-            sync_ai_examples_state()
-            if st.session_state.ai_examples_sentences:
-                current_example = st.session_state.ai_examples_sentences[st.session_state.ai_examples_index]
-                current_position = st.session_state.ai_examples_index + 1
-                total_examples = len(st.session_state.ai_examples_sentences)
-                ai_extra_html = (
-                    '<div class="fc-ai-example-wrap">'
-                    '<div class="fc-ai-example-label">Example</div>'
-                    '<div class="fc-ai-example">'
-                    + html.escape(current_example)
-                    + ' <span class="fc-ai-example-count">['
-                    + f'{current_position}/{total_examples}'
-                    + ']</span></div>'
-                    '</div>'
-                )
-            elif st.session_state.ai_examples_error:
-                ai_extra_html = (
-                    '<div class="fc-ai-error">'
-                    + html.escape(st.session_state.ai_examples_error)
-                    + '</div>'
-                )
-        a_html  = '<div class="fc-block"><div class="fc-section-label">Answer</div>' + a_inner + ai_extra_html + '</div>'
+        a_html  = '<div class="fc-block"><div class="fc-section-label">Answer</div>' + a_inner + '</div>'
     else:
         a_html  = '<div class="fc-block fc-block-empty"><div class="fc-section-label">Answer</div><div class="fc-word-placeholder">&nbsp;</div></div>'
     st.markdown(a_html, unsafe_allow_html=True)
 
 
-def inject_tap_reveal(show_answer):
+def inject_tap_reveal(show_answer, auto_speak_enabled=False, auto_speak_text=""):
     show_str = "true" if show_answer else "false"
+    auto_speak_str = "true" if auto_speak_enabled else "false"
+    speech_rate = speech_rate_value()
     components.html("""
     <script>
     (function() {
         var parentWindow = window.parent;
         var doc = parentWindow.document;
         var showAnswer = """ + show_str + """;
+        var autoSpeakEnabled = """ + auto_speak_str + """;
+        var speechText = """ + json.dumps(strip_spoken_text(auto_speak_text)) + """;
+        var speechRate = """ + json.dumps(speech_rate) + """;
+
+        function speakSpanishNow() {
+            if (!autoSpeakEnabled || !speechText || !doc || typeof doc._fcSpeakSpanish !== 'function') return;
+            doc._fcSpeakSpanish({
+                text: speechText,
+                rate: speechRate,
+                key: 'reveal|' + speechText + '|' + speechRate,
+                cancelFirst: true,
+                    immediate: true,
+            });
+        }
 
         function clickShowAnswerButton() {
             var showBtn = doc.querySelector('.st-key-showanswer_wrap button');
@@ -9286,13 +8385,32 @@ def inject_tap_reveal(show_answer):
             var cards = doc.querySelectorAll('.fc-block');
             if (!cards.length) return false;
             if (doc._fcHandler) doc.body.removeEventListener('click', doc._fcHandler);
+            if (doc._showAnswerAutoSpeakHandler) {
+                var existingShowBtn = doc.querySelector('.st-key-showanswer_wrap button');
+                if (existingShowBtn) {
+                    existingShowBtn.removeEventListener('click', doc._showAnswerAutoSpeakHandler, true);
+                    existingShowBtn.removeEventListener('touchend', doc._showAnswerAutoSpeakHandler, true);
+                }
+            }
             doc._fcHandler = function(e) {
                 if (!e.target.closest('.fc-block')) return;
                 if (!showAnswer) {
+                    speakSpanishNow();
                     clickShowAnswerButton();
                 }
             };
             doc.body.addEventListener('click', doc._fcHandler);
+
+            var showBtn = doc.querySelector('.st-key-showanswer_wrap button');
+            if (showBtn) {
+                doc._showAnswerAutoSpeakHandler = function() {
+                    if (!showAnswer) {
+                        speakSpanishNow();
+                    }
+                };
+                showBtn.addEventListener('click', doc._showAnswerAutoSpeakHandler, true);
+                showBtn.addEventListener('touchend', doc._showAnswerAutoSpeakHandler, true);
+            }
             return true;
         }
         var n = 0;
@@ -10142,182 +9260,6 @@ def render_speaker_button(text):
     )
 
 
-def render_ai_cycle_button(disabled=False):
-    disabled_attr = "disabled" if disabled else ""
-    cursor_value = "default" if disabled else "pointer"
-    opacity_value = "0.42" if disabled else "1"
-    components.html(
-        f"""
-        <style>
-        body {{
-            margin: 0;
-            background: transparent;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            min-height: 3.2rem;
-            width: 100%;
-            padding-left: 0.34rem;
-            box-sizing: border-box;
-        }}
-        #ai-cycle-btn {{
-            width: 3.6rem;
-            min-height: 3.2rem;
-            font-size: 1.55rem;
-            font-weight: 700;
-            border-radius: 0.75rem;
-            border: 2px solid {BUTTON_COLORS['blue']['border']};
-            background: {BUTTON_COLORS['blue']['bg']};
-            color: {BUTTON_COLORS['blue']['fg']};
-            cursor: {cursor_value};
-            font-family: 'DM Sans', sans-serif;
-            opacity: {opacity_value};
-            margin: 0;
-        }}
-        </style>
-        <button id="ai-cycle-btn" type="button" {disabled_attr}>→</button>
-        <script>
-        (function() {{
-            var parentWindow = window.parent;
-            var doc = parentWindow.document;
-            var button = document.getElementById('ai-cycle-btn');
-            if (!button || !doc || button.disabled) return;
-
-            function triggerCycle(event) {{
-                if (event) {{
-                    event.preventDefault();
-                    event.stopPropagation();
-                    if (typeof event.stopImmediatePropagation === 'function') {{
-                        event.stopImmediatePropagation();
-                    }}
-                }}
-                var hiddenButton = doc.querySelector('.st-key-aicycle_hidden_wrap button');
-                if (!hiddenButton) return;
-                hiddenButton.click();
-            }}
-
-            button.addEventListener('click', triggerCycle);
-            button.addEventListener('touchend', triggerCycle);
-        }})();
-        </script>
-        """,
-        height=60,
-    )
-
-
-def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
-    cycle_disabled_attr = "disabled" if cycle_disabled else ""
-    reload_disabled_attr = "disabled" if reload_disabled else ""
-    cycle_cursor = "default" if cycle_disabled else "pointer"
-    reload_cursor = "default" if reload_disabled else "pointer"
-    cycle_opacity = "0.42" if cycle_disabled else "1"
-    reload_opacity = "0.42" if reload_disabled else "1"
-    if reload_disabled:
-        reload_border = "color-mix(in srgb, " + t['border'] + " 60%, " + t['card_bg'] + " 40%)"
-        reload_bg = "color-mix(in srgb, " + t['card_bg'] + " 88%, " + t['bg'] + " 12%)"
-        reload_fg = "color-mix(in srgb, " + t['fg'] + " 55%, " + t['card_bg'] + " 45%)"
-    else:
-        reload_border = BUTTON_COLORS['green']['border']
-        reload_bg = "color-mix(in srgb, " + BUTTON_COLORS['green']['bg'] + " 68%, " + t['card_bg'] + " 32%)"
-        reload_fg = BUTTON_COLORS['green']['border']
-    components.html(
-        f"""
-        <style>
-        body {{
-            margin: 0;
-            background: transparent;
-            width: 7.46rem;
-            min-width: 7.46rem;
-            max-width: 7.46rem;
-            min-height: 3.2rem;
-            box-sizing: border-box;
-        }}
-        .ai-action-row {{
-            width: 7.46rem;
-            min-width: 7.46rem;
-            max-width: 7.46rem;
-            display: grid;
-            grid-template-columns: 3.6rem 3.6rem;
-            column-gap: 0.26rem;
-            align-items: center;
-            justify-items: stretch;
-        }}
-        .ai-action-btn {{
-            width: 3.6rem;
-            min-height: 3.2rem;
-            border-radius: 0.75rem;
-            font-family: 'DM Sans', sans-serif;
-            margin: 0;
-        }}
-        #ai-cycle-btn {{
-            font-size: 1.55rem;
-            font-weight: 700;
-            border: 2px solid {BUTTON_COLORS['blue']['border']};
-            background: {BUTTON_COLORS['blue']['bg']};
-            color: {BUTTON_COLORS['blue']['fg']};
-            cursor: {cycle_cursor};
-            opacity: {cycle_opacity};
-        }}
-        #ai-reload-btn {{
-            font-size: 2.3rem;
-            font-weight: 400;
-            border: 2px solid {reload_border};
-            background: {reload_bg};
-            color: {reload_fg};
-            cursor: {reload_cursor};
-            opacity: {reload_opacity};
-            transform: translateY(-0.06rem);
-        }}
-        </style>
-        <div class="ai-action-row">
-            <button id="ai-cycle-btn" class="ai-action-btn" type="button" {cycle_disabled_attr}>→</button>
-            <button id="ai-reload-btn" class="ai-action-btn" type="button" {reload_disabled_attr}>⟳</button>
-        </div>
-        <script>
-        (function() {{
-            var parentWindow = window.parent;
-            var doc = parentWindow.document;
-            var cycleButton = document.getElementById('ai-cycle-btn');
-            var reloadButton = document.getElementById('ai-reload-btn');
-            if (!doc) return;
-
-            function triggerHidden(selector, event) {{
-                if (event) {{
-                    event.preventDefault();
-                    event.stopPropagation();
-                    if (typeof event.stopImmediatePropagation === 'function') {{
-                        event.stopImmediatePropagation();
-                    }}
-                }}
-                var hiddenButton = doc.querySelector(selector);
-                if (!hiddenButton) return;
-                hiddenButton.click();
-            }}
-
-            if (cycleButton && !cycleButton.disabled) {{
-                cycleButton.addEventListener('click', function(event) {{
-                    triggerHidden('.st-key-aicycle_hidden_wrap button', event);
-                }});
-                cycleButton.addEventListener('touchend', function(event) {{
-                    triggerHidden('.st-key-aicycle_hidden_wrap button', event);
-                }});
-            }}
-
-            if (reloadButton && !reloadButton.disabled) {{
-                reloadButton.addEventListener('click', function(event) {{
-                    triggerHidden('.st-key-aireload_hidden_wrap button', event);
-                }});
-                reloadButton.addEventListener('touchend', function(event) {{
-                    triggerHidden('.st-key-aireload_hidden_wrap button', event);
-                }});
-            }}
-        }})();
-        </script>
-        """,
-        height=60,
-    )
-
-
 def render_auto_speak_spanish(text, speech_key):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
@@ -10929,11 +9871,6 @@ def render_menu():
     active_favorites_count = favorites_count_for(st.session_state.active_person)
     has_regular_progress = person_has_regular_deck_progress(st.session_state.active_person)
     active_person_label = PERSON_LABELS[st.session_state.active_person]
-
-    def render_menu_divider(divider_key):
-        with st.container(key=divider_key):
-            st.markdown('<div class="menu-divider" aria-hidden="true"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="menu-backdrop"></div>', unsafe_allow_html=True)
     render_menu_backdrop_close_handler()
     with st.container(key="menu_modal_wrap"):
@@ -10954,7 +9891,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_1")
         st.markdown('<div class="menu-section-label">Theme</div>', unsafe_allow_html=True)
         new_theme = st.radio("Theme", options=["light", "dark", "aqua", "amber"],
                              index=["light","dark","aqua", "amber"].index(st.session_state.theme),
@@ -10966,7 +9902,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_2")
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Direction</div>',
                     unsafe_allow_html=True)
         dir_options = ["Random 50/50", "EN → ES only", "ES → EN only"]
@@ -10982,7 +9917,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_3")
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">Speech Speed</div>',
                     unsafe_allow_html=True)
         speed_options = [1, 2, 3, 4, 5]
@@ -11008,52 +9942,6 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        render_menu_divider("menu_divider_wrap_4")
-        st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">AI Examples</div>', unsafe_allow_html=True)
-        st.markdown('<div class="menu-field-label">Allowed tenses/forms</div>', unsafe_allow_html=True)
-        new_ai_tenses = dict(st.session_state.ai_sentence_tenses)
-        with st.container(key="menu_ai_tenses_wrap"):
-            for tense_group in (AI_TENSE_OPTIONS[:3], AI_TENSE_OPTIONS[3:]):
-                tense_columns = st.columns(3, gap="small")
-                for column, (tense_key, short_label, _) in zip(tense_columns, tense_group):
-                    with column:
-                        new_ai_tenses[tense_key] = st.checkbox(
-                            short_label,
-                            value=st.session_state.ai_sentence_tenses.get(
-                                tense_key,
-                                DEFAULT_AI_SENTENCE_TENSES.get(tense_key, False),
-                            ),
-                        )
-        sanitized_new_ai_tenses = sanitize_ai_sentence_tenses(
-            new_ai_tenses,
-            st.session_state.ai_sentence_tenses,
-        )
-        if sanitized_new_ai_tenses != st.session_state.ai_sentence_tenses:
-            st.session_state.ai_sentence_tenses = sanitized_new_ai_tenses
-            store_active_person_prefs()
-            sync_menu_widget_state()
-            save_prefs(current_prefs())
-            clear_menu_destructive_confirms()
-            st.rerun()
-        st.markdown('<div class="menu-field-label">Complexity</div>', unsafe_allow_html=True)
-        ai_level_labels = [short_label for _, short_label, _ in AI_LEVEL_OPTIONS]
-        ai_level_keys = [option_key for option_key, _, _ in AI_LEVEL_OPTIONS]
-        new_ai_level_label = st.radio(
-            "Complexity",
-            options=ai_level_labels,
-            index=ai_level_keys.index(st.session_state.ai_sentence_level),
-            horizontal=True,
-            label_visibility="collapsed",
-        )
-        new_ai_level = ai_level_keys[ai_level_labels.index(new_ai_level_label)]
-        if new_ai_level != st.session_state.ai_sentence_level:
-            st.session_state.ai_sentence_level = new_ai_level
-            store_active_person_prefs()
-            sync_menu_widget_state()
-            save_prefs(current_prefs())
-            clear_menu_destructive_confirms()
-            st.rerun()
-        render_menu_divider("menu_divider_wrap_5")
         st.markdown('<div class="menu-section-label" style="margin-top:0.9rem;">STORY &amp; DIALOG MODES &ndash; PAUSES BETWEEN SENTENCES</div>',
                     unsafe_allow_html=True)
         story_timing_options = [5, 4, 3, 2, 1]
@@ -11304,25 +10192,6 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
         source_deck=current_card.get("source_deck"),
         source_index=current_card.get("source_index"),
     ) if favorites_mode else False
-    ai_examples_supported = (
-        show_answer
-        and not review_mode
-        and not favorites_mode
-        and current_card_supports_ai_examples()
-    )
-    sync_ai_examples_state()
-    ai_availability = current_ai_examples_availability() if ai_examples_supported else None
-    ai_examples_available = bool(ai_availability and ai_availability["available"])
-    ai_disabled_label = ai_availability["button_label"] if ai_availability else "Examples"
-    ai_disabled_reason = ai_availability["reason"] if ai_availability else None
-    ai_has_sentences = bool(st.session_state.ai_examples_sentences)
-    ai_reload_unlocked = bool(st.session_state.ai_examples_reload_unlocked)
-    ai_error_message = st.session_state.ai_examples_error
-    ai_examples_loading = bool(st.session_state.ai_examples_loading)
-    ai_pending_action = st.session_state.ai_examples_pending_action
-    speaker_audio_text = spanish_audio_text
-    if ai_examples_supported and ai_has_sentences:
-        speaker_audio_text = st.session_state.ai_examples_sentences[st.session_state.ai_examples_index]
     with st.container(key="answer_action_row_wrap"):
         left_col, right_col = st.columns(2, gap="small")
         with left_col:
@@ -11344,7 +10213,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                 if not review_mode and not favorites_mode:
                     with left_group_columns[2]:
                         with st.container(key="nextunscored_wrap"):
-                            st.button("↓", key="nextunscored_btn", on_click=advance_unscored)
+                            st.button("➜", key="nextunscored_btn", on_click=advance_unscored)
                     with left_group_columns[3]:
                         if current_card_is_favorite:
                             st.empty()
@@ -11357,102 +10226,15 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                 )
         with right_col:
             with st.container(key="action_right_group_wrap"):
-                new_ai_auto_play_examples = st.session_state.ai_auto_play_examples
-                if ai_examples_supported:
-                    show_ai_autoplay_toggle = bool(
-                        ai_examples_loading
-                        or ai_has_sentences
-                        or ai_error_message
-                        or ai_pending_action in {"fetch", "reload"}
-                    )
-                    with st.container(key="ai_bottom_wrap"):
-                        bottom_columns = st.columns(2, gap="small")
-                        with bottom_columns[0]:
-                            with st.container(key="speaker_wrap"):
-                                render_speaker_button(speaker_audio_text)
-                        with bottom_columns[1]:
-                            auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
-                            auto_speak_label = "☒∞" if st.session_state.auto_speak_spanish else "☐∞"
-                            with st.container(key=auto_speak_key):
-                                st.button(auto_speak_label, key="autospeak_btn", on_click=toggle_auto_speak_spanish)
-                    if ai_examples_loading and not ai_has_sentences:
-                        loading_button_label = "Retry" if ai_error_message else "Examples"
-                        with st.container(key="ai_loading_row_wrap"):
-                            loading_columns = st.columns([1, 7.46], gap="small")
-                            with loading_columns[0]:
-                                with st.container(key="ai_status_wrap"):
-                                    st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
-                            with loading_columns[1]:
-                                with st.container(key="ai_single_wrap"):
-                                    st.button(
-                                        loading_button_label,
-                                        key="ai_fetch_btn",
-                                        disabled=True,
-                                        help=ai_disabled_reason,
-                                    )
-                    elif ai_has_sentences:
-                        if ai_examples_loading:
-                            with st.container(key="ai_reload_loading_wrap"):
-                                reload_loading_columns = st.columns([1, 7.46], gap="small")
-                                with reload_loading_columns[0]:
-                                    with st.container(key="ai_status_wrap"):
-                                        st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
-                                with reload_loading_columns[1]:
-                                    with st.container(key="ai_actions_wrap"):
-                                        render_ai_action_buttons(
-                                            cycle_disabled=True,
-                                            reload_disabled=True,
-                                        )
-                        else:
-                            with st.container(key="ai_top_wrap"):
-                                with st.container(key="ai_actions_wrap"):
-                                    render_ai_action_buttons(
-                                        cycle_disabled=ai_examples_loading,
-                                        reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading,
-                                    )
-                    else:
-                        button_label = ai_disabled_label
-                        if ai_examples_available:
-                            button_label = "Retry" if ai_error_message else "Examples"
-                        with st.container(key="ai_single_row_wrap"):
-                            ai_single_columns = st.columns(1, gap="small")
-                            with ai_single_columns[0]:
-                                with st.container(key="ai_single_wrap"):
-                                    if st.button(
-                                        button_label,
-                                        key="ai_fetch_btn",
-                                        disabled=not ai_examples_available,
-                                        help=ai_disabled_reason,
-                                    ):
-                                        begin_ai_examples_action("fetch")
-                                        st.rerun()
-                    if show_ai_autoplay_toggle:
-                        with st.container(key="ai_autoplay_row_wrap"):
-                            autoplay_columns = st.columns([1, 7.46], gap="small")
-                            with autoplay_columns[1]:
-                                with st.container(key="ai_autoplay_wrap"):
-                                    new_ai_auto_play_examples = st.checkbox(
-                                        "Auto speak sentences",
-                                        value=st.session_state.ai_auto_play_examples,
-                                    )
-                else:
-                    right_group_columns = st.columns(3 if review_mode else 2, gap="small")
-                    with right_group_columns[0]:
-                        with st.container(key="speaker_wrap"):
-                            render_speaker_button(spanish_audio_text)
-                    with right_group_columns[1]:
-                        auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
-                        auto_speak_label = "☒∞" if st.session_state.auto_speak_spanish else "☐∞"
-                        with st.container(key=auto_speak_key):
-                            st.button(auto_speak_label, key="autospeak_btn", on_click=toggle_auto_speak_spanish)
-                if new_ai_auto_play_examples != st.session_state.ai_auto_play_examples:
-                    st.session_state.ai_auto_play_examples = new_ai_auto_play_examples
-                    store_active_person_prefs()
-                    save_prefs(current_prefs())
-                    st.rerun()
-        if ai_examples_supported and ai_examples_loading and ai_pending_action in {"fetch", "reload"}:
-            fetch_ai_examples_for_current_card()
-            st.rerun()
+                right_group_columns = st.columns(3 if review_mode else 2, gap="small")
+                with right_group_columns[0]:
+                    with st.container(key="speaker_wrap"):
+                        render_speaker_button(spanish_audio_text)
+                with right_group_columns[1]:
+                    auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
+                    auto_speak_label = "☒∞" if st.session_state.auto_speak_spanish else "☐∞"
+                    with st.container(key=auto_speak_key):
+                        st.button(auto_speak_label, key="autospeak_btn", on_click=toggle_auto_speak_spanish)
         if review_mode:
             delete_armed = st.session_state.delete_review_confirm_key == current_review_card_key(current_card)
             with right_group_columns[2]:
@@ -11462,28 +10244,6 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                 with st.container(key="clear_delete_confirm_wrap"):
                     st.button("__clear_delete_confirm__", key="clear_delete_confirm_btn", on_click=clear_delete_review_confirm)
                 render_delete_confirm_timeout()
-    if ai_examples_supported:
-        if ai_has_sentences and st.session_state.ai_auto_play_examples:
-            ai_autoplay_key = "|".join(
-                [
-                    st.session_state.selected_csv or "",
-                    str(current_card_index()),
-                    "ai-example-autoplay",
-                    str(st.session_state.ai_examples_autoplay_generation),
-                ]
-            )
-            render_auto_speak_spanish(
-                st.session_state.ai_examples_sentences[st.session_state.ai_examples_index],
-                ai_autoplay_key,
-            )
-        with st.container(key="aicycle_hidden_wrap"):
-            if st.button("__ai_cycle_hidden__", key="ai_cycle_hidden_btn"):
-                cycle_ai_example()
-                st.rerun()
-        with st.container(key="aireload_hidden_wrap"):
-            if st.button("__ai_reload_hidden__", key="ai_reload_hidden_btn"):
-                begin_ai_examples_action("reload")
-                st.rerun()
 
 
 def restart_mistakes_only():
@@ -11913,8 +10673,6 @@ if st.session_state.cards and st.session_state.order:
 if not st.session_state.order:
     st.stop()
 
-process_pending_ai_examples_action()
-
 # ========================================================================
 # CURRENT CARD
 # ========================================================================
@@ -11990,8 +10748,12 @@ if st.session_state["regular_auto_mode"]:
     )
 else:
     render_regular_auto_mode_cleanup()
-    inject_tap_reveal(st.session_state.show_answer)
-if not st.session_state["regular_auto_mode"] and st.session_state.auto_speak_spanish and spanish_visible_phase:
+    inject_tap_reveal(
+        st.session_state.show_answer,
+        auto_speak_enabled=st.session_state.auto_speak_spanish and current_direction == "EN_TO_ES",
+        auto_speak_text=card["answer"],
+    )
+if not st.session_state["regular_auto_mode"] and st.session_state.auto_speak_spanish and current_direction == "ES_TO_EN" and spanish_visible_phase:
     auto_speak_event_key = "|".join(
         [
             st.session_state.selected_csv or "",
