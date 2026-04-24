@@ -4315,6 +4315,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     font-weight: 700 !important;
     line-height: 1 !important;
 }}
+.st-key-answer_action_row_phone_wrap {{
+    display: none;
+}}
 
 /* ---- Centered summary button row ---- */
 .st-key-summary_btn_row_wrap [data-testid="stHorizontalBlock"] {{
@@ -5663,6 +5666,164 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: inherit;
 }}
 @media (max-width: 767px) {{
+    .st-key-answer_action_row_desktop_wrap {{
+        display: none !important;
+    }}
+    .st-key-answer_action_row_phone_wrap {{
+        display: block !important;
+        margin-top: 0.24rem !important;
+    }}
+    .st-key-answer_action_row_phone_wrap [data-testid="stVerticalBlock"] {{
+        gap: 0.2rem !important;
+    }}
+    .st-key-answer_action_row_phone_wrap [data-testid="stElementContainer"] {{
+        margin: 0 !important;
+    }}
+    .st-key-answer_action_row_phone_wrap div[data-testid="stButton"] > button {{
+        width: 2.88rem !important;
+        min-width: 2.88rem !important;
+        max-width: 2.88rem !important;
+        min-height: 2.56rem !important;
+        font-size: 1.24rem !important;
+        font-weight: 700 !important;
+    }}
+    .st-key-answer_action_row_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+    .st-key-answer_action_row_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
+    .st-key-answer_action_row_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
+    .st-key-answer_action_row_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
+        font-size: 1.24rem !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+    }}
+    .st-key-action_phone_top_row_wrap [data-testid="stHorizontalBlock"] {{
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        gap: 0.2rem !important;
+        width: fit-content !important;
+        margin: 0 !important;
+    }}
+    .st-key-action_phone_top_row_wrap [data-testid="stColumn"] {{
+        flex: 0 0 2.88rem !important;
+        width: 2.88rem !important;
+        min-width: 2.88rem !important;
+        max-width: 2.88rem !important;
+        padding: 0 !important;
+    }}
+    .st-key-action_phone_bottom_row_wrap [data-testid="stHorizontalBlock"] {{
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        gap: 0.2rem !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }}
+    .st-key-action_phone_bottom_row_wrap [data-testid="stColumn"]:nth-child(1),
+    .st-key-action_phone_bottom_row_wrap [data-testid="stColumn"]:nth-child(2) {{
+        flex: 0 0 2.88rem !important;
+        width: 2.88rem !important;
+        min-width: 2.88rem !important;
+        max-width: 2.88rem !important;
+        padding: 0 !important;
+    }}
+    .st-key-action_phone_bottom_row_wrap [data-testid="stColumn"]:nth-child(3) {{
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+    }}
+    .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap,
+    .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap > div,
+    .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap [data-testid="stElementContainer"] {{
+        width: 2.88rem !important;
+        min-width: 2.88rem !important;
+        max-width: 2.88rem !important;
+    }}
+    .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap iframe {{
+        width: 2.88rem !important;
+        min-width: 2.88rem !important;
+        max-width: 2.88rem !important;
+        height: 2.56rem !important;
+        min-height: 2.56rem !important;
+        margin: 0 !important;
+        display: block !important;
+    }}
+    .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button {{
+        width: 5.96rem !important;
+        min-width: 5.96rem !important;
+        max-width: 5.96rem !important;
+        min-height: 2.56rem !important;
+        font-size: 0.74rem !important;
+    }}
+    .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+    .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
+    .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
+    .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
+        font-size: 0.74rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        line-height: 1 !important;
+    }}
+    .st-key-phone_ai_fetch_status_row_wrap [data-testid="stHorizontalBlock"],
+    .st-key-phone_ai_actions_row_wrap [data-testid="stHorizontalBlock"] {{
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 0.35rem !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }}
+    .st-key-phone_ai_fetch_status_row_wrap [data-testid="stColumn"]:first-child,
+    .st-key-phone_ai_actions_row_wrap [data-testid="stColumn"]:first-child {{
+        flex: 0 0 5.96rem !important;
+        width: 5.96rem !important;
+        min-width: 5.96rem !important;
+        max-width: 5.96rem !important;
+        padding: 0 !important;
+    }}
+    .st-key-phone_ai_fetch_status_row_wrap [data-testid="stColumn"]:last-child,
+    .st-key-phone_ai_actions_row_wrap [data-testid="stColumn"]:last-child {{
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+    }}
+    .st-key-phone_ai_actions_wrap,
+    .st-key-phone_ai_actions_wrap [data-testid="stElementContainer"],
+    .st-key-phone_ai_actions_wrap iframe {{
+        width: 5.96rem !important;
+        min-width: 5.96rem !important;
+        max-width: 5.96rem !important;
+    }}
+    .st-key-phone_ai_actions_wrap iframe {{
+        height: 2.56rem !important;
+        min-height: 2.56rem !important;
+        display: block !important;
+    }}
+    .st-key-phone_ai_status_wrap .ai-status-label {{
+        font-size: 0.82rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.06em !important;
+        text-transform: uppercase !important;
+        color: {t['muted']} !important;
+        white-space: nowrap !important;
+        line-height: 1 !important;
+        margin: 0 !important;
+    }}
+    .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] {{
+        margin: 0 !important;
+    }}
+    .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] label {{
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.32rem !important;
+        white-space: normal !important;
+    }}
+    .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] p {{
+        font-size: 0.72rem !important;
+        line-height: 1.08 !important;
+    }}
     .title-row {{
         padding: 0.15rem 0 0.08rem 0 !important;
     }}
@@ -10095,11 +10256,15 @@ def render_speaker_button(text):
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 3.2rem;
+            width: 100%;
+            min-width: 0;
+            min-height: 100%;
+            box-sizing: border-box;
         }}
         #speak-btn {{
-            width: 3.6rem;
-            min-height: 3.2rem;
+            width: 100%;
+            min-width: 0;
+            min-height: 100%;
             font-size: 1.15rem;
             font-weight: 600;
             border-radius: 0.75rem;
@@ -10226,25 +10391,26 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
         body {{
             margin: 0;
             background: transparent;
-            width: 7.46rem;
-            min-width: 7.46rem;
-            max-width: 7.46rem;
-            min-height: 3.2rem;
+            width: 100%;
+            min-width: 0;
+            max-width: none;
+            min-height: 100%;
             box-sizing: border-box;
         }}
         .ai-action-row {{
-            width: 7.46rem;
-            min-width: 7.46rem;
-            max-width: 7.46rem;
+            width: 100%;
+            min-width: 0;
+            max-width: none;
             display: grid;
-            grid-template-columns: 3.6rem 3.6rem;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             column-gap: 0.26rem;
             align-items: center;
             justify-items: stretch;
         }}
         .ai-action-btn {{
-            width: 3.6rem;
-            min-height: 3.2rem;
+            width: 100%;
+            min-width: 0;
+            min-height: 100%;
             border-radius: 0.75rem;
             font-family: 'DM Sans', sans-serif;
             margin: 0;
@@ -11320,148 +11486,237 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
     ai_error_message = st.session_state.ai_examples_error
     ai_examples_loading = bool(st.session_state.ai_examples_loading)
     ai_pending_action = st.session_state.ai_examples_pending_action
+    show_ai_autoplay_toggle = bool(
+        ai_examples_supported
+        and (
+            ai_examples_loading
+            or ai_has_sentences
+            or ai_error_message
+            or ai_pending_action in {"fetch", "reload"}
+        )
+    )
     speaker_audio_text = spanish_audio_text
     if ai_examples_supported and ai_has_sentences:
         speaker_audio_text = st.session_state.ai_examples_sentences[st.session_state.ai_examples_index]
-    with st.container(key="answer_action_row_wrap"):
-        left_col, right_col = st.columns(2, gap="small")
-        with left_col:
-            with st.container(key="action_left_group_wrap"):
-                left_group_columns = st.columns(2 if (review_mode or favorites_mode) else 4, gap="small")
-                with left_group_columns[0]:
-                    with st.container(key="correct_wrap"):
-                        st.button("✓", key="correct_btn", on_click=mark_correct)
-                with left_group_columns[1]:
-                    if favorites_mode:
-                        if current_favorites_entry_exists:
-                            with st.container(key="del_active_wrap"):
-                                st.button("🗑", key="del_btn", on_click=delete_current_favorite_card)
+    desktop_action_container = st.container(key="answer_action_row_desktop_wrap") if (not review_mode and not favorites_mode) else st.container()
+    with desktop_action_container:
+        with st.container(key="answer_action_row_wrap"):
+            left_col, right_col = st.columns(2, gap="small")
+            with left_col:
+                with st.container(key="action_left_group_wrap"):
+                    left_group_columns = st.columns(2 if (review_mode or favorites_mode) else 4, gap="small")
+                    with left_group_columns[0]:
+                        with st.container(key="correct_wrap"):
+                            st.button("✓", key="correct_btn", on_click=mark_correct)
+                    with left_group_columns[1]:
+                        if favorites_mode:
+                            if current_favorites_entry_exists:
+                                with st.container(key="del_active_wrap"):
+                                    st.button("🗑", key="del_btn", on_click=delete_current_favorite_card)
+                            else:
+                                st.empty()
                         else:
-                            st.empty()
+                            with st.container(key="repeat_wrap"):
+                                st.button("?", key="repeat_btn", on_click=mark_repeat)
+                    if not review_mode and not favorites_mode:
+                        with left_group_columns[2]:
+                            with st.container(key="nextunscored_wrap"):
+                                st.button("↓", key="nextunscored_btn", on_click=advance_unscored)
+                        with left_group_columns[3]:
+                            if current_card_is_favorite:
+                                st.empty()
+                            else:
+                                with st.container(key="favorite_wrap"):
+                                    st.button(
+                                        "♥︎",
+                                        key="favorite_btn",
+                                        on_click=add_current_card_to_favorites,
+                                    )
+            with right_col:
+                with st.container(key="action_right_group_wrap"):
+                    new_ai_auto_play_examples = st.session_state.ai_auto_play_examples
+                    if ai_examples_supported:
+                        with st.container(key="ai_bottom_wrap"):
+                            bottom_columns = st.columns(2, gap="small")
+                            with bottom_columns[0]:
+                                with st.container(key="speaker_wrap"):
+                                    render_speaker_button(speaker_audio_text)
+                            with bottom_columns[1]:
+                                auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
+                                auto_speak_label = "☒∞" if st.session_state.auto_speak_spanish else "☐∞"
+                                with st.container(key=auto_speak_key):
+                                    st.button(auto_speak_label, key="autospeak_btn", on_click=toggle_auto_speak_spanish)
+                        if ai_examples_loading and not ai_has_sentences:
+                            loading_button_label = "Retry" if ai_error_message else "Examples"
+                            with st.container(key="ai_loading_row_wrap"):
+                                loading_columns = st.columns([1, 7.46], gap="small")
+                                with loading_columns[0]:
+                                    with st.container(key="ai_status_wrap"):
+                                        st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
+                                with loading_columns[1]:
+                                    with st.container(key="ai_single_wrap"):
+                                        st.button(
+                                            loading_button_label,
+                                            key="ai_fetch_btn",
+                                            disabled=True,
+                                            help=ai_disabled_reason,
+                                        )
+                        elif ai_has_sentences:
+                            if ai_examples_loading:
+                                with st.container(key="ai_reload_loading_wrap"):
+                                    reload_loading_columns = st.columns([1, 7.46], gap="small")
+                                    with reload_loading_columns[0]:
+                                        with st.container(key="ai_status_wrap"):
+                                            st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
+                                    with reload_loading_columns[1]:
+                                        with st.container(key="ai_actions_wrap"):
+                                            render_ai_action_buttons(
+                                                cycle_disabled=True,
+                                                reload_disabled=True,
+                                            )
+                            else:
+                                with st.container(key="ai_top_wrap"):
+                                    with st.container(key="ai_actions_wrap"):
+                                        render_ai_action_buttons(
+                                            cycle_disabled=ai_examples_loading,
+                                            reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading,
+                                        )
+                        else:
+                            button_label = ai_disabled_label
+                            if ai_examples_available:
+                                button_label = "Retry" if ai_error_message else "Examples"
+                            with st.container(key="ai_single_row_wrap"):
+                                ai_single_columns = st.columns(1, gap="small")
+                                with ai_single_columns[0]:
+                                    with st.container(key="ai_single_wrap"):
+                                        if st.button(
+                                            button_label,
+                                            key="ai_fetch_btn",
+                                            disabled=not ai_examples_available,
+                                            help=ai_disabled_reason,
+                                        ):
+                                            begin_ai_examples_action("fetch")
+                                            st.rerun()
+                        if show_ai_autoplay_toggle:
+                            with st.container(key="ai_autoplay_row_wrap"):
+                                autoplay_columns = st.columns([1, 7.46], gap="small")
+                                with autoplay_columns[1]:
+                                    with st.container(key="ai_autoplay_wrap"):
+                                        new_ai_auto_play_examples = st.checkbox(
+                                            "Auto speak sentences",
+                                            value=st.session_state.ai_auto_play_examples,
+                                        )
                     else:
-                        with st.container(key="repeat_wrap"):
-                            st.button("?", key="repeat_btn", on_click=mark_repeat)
-                if not review_mode and not favorites_mode:
-                    with left_group_columns[2]:
-                        with st.container(key="nextunscored_wrap"):
-                            st.button("↓", key="nextunscored_btn", on_click=advance_unscored)
-                    with left_group_columns[3]:
-                        if current_card_is_favorite:
-                            st.empty()
-                        else:
-                            with st.container(key="favorite_wrap"):
-                                st.button(
-                                    "♥︎",
-                                    key="favorite_btn",
-                                    on_click=add_current_card_to_favorites,
-                                )
-        with right_col:
-            with st.container(key="action_right_group_wrap"):
-                new_ai_auto_play_examples = st.session_state.ai_auto_play_examples
-                if ai_examples_supported:
-                    show_ai_autoplay_toggle = bool(
-                        ai_examples_loading
-                        or ai_has_sentences
-                        or ai_error_message
-                        or ai_pending_action in {"fetch", "reload"}
-                    )
-                    with st.container(key="ai_bottom_wrap"):
-                        bottom_columns = st.columns(2, gap="small")
-                        with bottom_columns[0]:
+                        right_group_columns = st.columns(3 if review_mode else 2, gap="small")
+                        with right_group_columns[0]:
                             with st.container(key="speaker_wrap"):
-                                render_speaker_button(speaker_audio_text)
-                        with bottom_columns[1]:
+                                render_speaker_button(spanish_audio_text)
+                        with right_group_columns[1]:
                             auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
                             auto_speak_label = "☒∞" if st.session_state.auto_speak_spanish else "☐∞"
                             with st.container(key=auto_speak_key):
                                 st.button(auto_speak_label, key="autospeak_btn", on_click=toggle_auto_speak_spanish)
-                    if ai_examples_loading and not ai_has_sentences:
-                        loading_button_label = "Retry" if ai_error_message else "Examples"
-                        with st.container(key="ai_loading_row_wrap"):
-                            loading_columns = st.columns([1, 7.46], gap="small")
-                            with loading_columns[0]:
-                                with st.container(key="ai_status_wrap"):
-                                    st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
-                            with loading_columns[1]:
-                                with st.container(key="ai_single_wrap"):
-                                    st.button(
-                                        loading_button_label,
-                                        key="ai_fetch_btn",
-                                        disabled=True,
-                                        help=ai_disabled_reason,
-                                    )
-                    elif ai_has_sentences:
-                        if ai_examples_loading:
-                            with st.container(key="ai_reload_loading_wrap"):
-                                reload_loading_columns = st.columns([1, 7.46], gap="small")
-                                with reload_loading_columns[0]:
-                                    with st.container(key="ai_status_wrap"):
-                                        st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
-                                with reload_loading_columns[1]:
-                                    with st.container(key="ai_actions_wrap"):
-                                        render_ai_action_buttons(
-                                            cycle_disabled=True,
-                                            reload_disabled=True,
-                                        )
-                        else:
-                            with st.container(key="ai_top_wrap"):
-                                with st.container(key="ai_actions_wrap"):
-                                    render_ai_action_buttons(
-                                        cycle_disabled=ai_examples_loading,
-                                        reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading,
-                                    )
+                    if new_ai_auto_play_examples != st.session_state.ai_auto_play_examples:
+                        st.session_state.ai_auto_play_examples = new_ai_auto_play_examples
+                        store_active_person_prefs()
+                        save_prefs(current_prefs())
+                        st.rerun()
+            if ai_examples_supported and ai_examples_loading and ai_pending_action in {"fetch", "reload"}:
+                fetch_ai_examples_for_current_card()
+                st.rerun()
+            if review_mode:
+                delete_armed = st.session_state.delete_review_confirm_key == current_review_card_key(current_card)
+                with right_group_columns[2]:
+                    with st.container(key="del_confirm_wrap" if delete_armed else "del_active_wrap"):
+                        st.button("X", key="del_btn", on_click=delete_current_review_card)
+                if delete_armed:
+                    with st.container(key="clear_delete_confirm_wrap"):
+                        st.button("__clear_delete_confirm__", key="clear_delete_confirm_btn", on_click=clear_delete_review_confirm)
+                    render_delete_confirm_timeout()
+    if not review_mode and not favorites_mode:
+        new_ai_auto_play_examples_phone = st.session_state.ai_auto_play_examples
+        auto_speak_phone_key = "autospeak_on_phone_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_phone_wrap"
+        auto_speak_phone_label = "☒∞" if st.session_state.auto_speak_spanish else "☐∞"
+        with st.container(key="answer_action_row_phone_wrap"):
+            with st.container(key="action_phone_top_row_wrap"):
+                phone_top_columns = st.columns(4, gap="small")
+                with phone_top_columns[0]:
+                    with st.container(key="correct_phone_wrap"):
+                        st.button("✓", key="correct_phone_btn", on_click=mark_correct)
+                with phone_top_columns[1]:
+                    with st.container(key="repeat_phone_wrap"):
+                        st.button("?", key="repeat_phone_btn", on_click=mark_repeat)
+                with phone_top_columns[2]:
+                    with st.container(key="nextunscored_phone_wrap"):
+                        st.button("↓", key="nextunscored_phone_btn", on_click=advance_unscored)
+                with phone_top_columns[3]:
+                    if current_card_is_favorite:
+                        st.empty()
                     else:
-                        button_label = ai_disabled_label
-                        if ai_examples_available:
-                            button_label = "Retry" if ai_error_message else "Examples"
-                        with st.container(key="ai_single_row_wrap"):
-                            ai_single_columns = st.columns(1, gap="small")
-                            with ai_single_columns[0]:
-                                with st.container(key="ai_single_wrap"):
-                                    if st.button(
-                                        button_label,
-                                        key="ai_fetch_btn",
-                                        disabled=not ai_examples_available,
-                                        help=ai_disabled_reason,
-                                    ):
-                                        begin_ai_examples_action("fetch")
-                                        st.rerun()
-                    if show_ai_autoplay_toggle:
-                        with st.container(key="ai_autoplay_row_wrap"):
-                            autoplay_columns = st.columns([1, 7.46], gap="small")
-                            with autoplay_columns[1]:
-                                with st.container(key="ai_autoplay_wrap"):
-                                    new_ai_auto_play_examples = st.checkbox(
-                                        "Auto speak sentences",
-                                        value=st.session_state.ai_auto_play_examples,
-                                    )
-                else:
-                    right_group_columns = st.columns(3 if review_mode else 2, gap="small")
-                    with right_group_columns[0]:
-                        with st.container(key="speaker_wrap"):
-                            render_speaker_button(spanish_audio_text)
-                    with right_group_columns[1]:
-                        auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
-                        auto_speak_label = "☒∞" if st.session_state.auto_speak_spanish else "☐∞"
-                        with st.container(key=auto_speak_key):
-                            st.button(auto_speak_label, key="autospeak_btn", on_click=toggle_auto_speak_spanish)
-                if new_ai_auto_play_examples != st.session_state.ai_auto_play_examples:
-                    st.session_state.ai_auto_play_examples = new_ai_auto_play_examples
-                    store_active_person_prefs()
-                    save_prefs(current_prefs())
-                    st.rerun()
-        if ai_examples_supported and ai_examples_loading and ai_pending_action in {"fetch", "reload"}:
-            fetch_ai_examples_for_current_card()
+                        with st.container(key="favorite_phone_wrap"):
+                            st.button("♥︎", key="favorite_phone_btn", on_click=add_current_card_to_favorites)
+            with st.container(key="action_phone_bottom_row_wrap"):
+                phone_bottom_columns = st.columns([1, 1, 2.2], gap="small")
+                with phone_bottom_columns[0]:
+                    with st.container(key="speaker_phone_wrap"):
+                        render_speaker_button(speaker_audio_text if ai_examples_supported else spanish_audio_text)
+                with phone_bottom_columns[1]:
+                    with st.container(key=auto_speak_phone_key):
+                        st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
+                with phone_bottom_columns[2]:
+                    if ai_examples_supported:
+                        if ai_examples_loading and not ai_has_sentences:
+                            loading_button_label = "Retry" if ai_error_message else "Examples"
+                            with st.container(key="phone_ai_fetch_status_row_wrap"):
+                                phone_loading_columns = st.columns([1, 0.95], gap="small")
+                                with phone_loading_columns[0]:
+                                    with st.container(key="phone_ai_single_wrap"):
+                                        st.button(
+                                            loading_button_label,
+                                            key="ai_fetch_phone_btn",
+                                            disabled=True,
+                                            help=ai_disabled_reason,
+                                        )
+                                with phone_loading_columns[1]:
+                                    with st.container(key="phone_ai_status_wrap"):
+                                        st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
+                        elif ai_has_sentences:
+                            with st.container(key="phone_ai_actions_row_wrap"):
+                                phone_actions_columns = st.columns([1, 1.15], gap="small")
+                                with phone_actions_columns[0]:
+                                    with st.container(key="phone_ai_actions_wrap"):
+                                        render_ai_action_buttons(
+                                            cycle_disabled=ai_examples_loading,
+                                            reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading,
+                                        )
+                                with phone_actions_columns[1]:
+                                    if show_ai_autoplay_toggle:
+                                        with st.container(key="phone_ai_checkbox_wrap"):
+                                            new_ai_auto_play_examples_phone = st.checkbox(
+                                                "Auto speak sentences",
+                                                value=st.session_state.ai_auto_play_examples,
+                                                key="ai_auto_play_examples_phone_checkbox",
+                                            )
+                        else:
+                            button_label = ai_disabled_label
+                            if ai_examples_available:
+                                button_label = "Retry" if ai_error_message else "Examples"
+                            with st.container(key="phone_ai_single_wrap"):
+                                if st.button(
+                                    button_label,
+                                    key="ai_fetch_phone_btn",
+                                    disabled=not ai_examples_available,
+                                    help=ai_disabled_reason,
+                                ):
+                                    begin_ai_examples_action("fetch")
+                                    st.rerun()
+                    else:
+                        st.empty()
+        if new_ai_auto_play_examples_phone != st.session_state.ai_auto_play_examples:
+            st.session_state.ai_auto_play_examples = new_ai_auto_play_examples_phone
+            store_active_person_prefs()
+            save_prefs(current_prefs())
             st.rerun()
-        if review_mode:
-            delete_armed = st.session_state.delete_review_confirm_key == current_review_card_key(current_card)
-            with right_group_columns[2]:
-                with st.container(key="del_confirm_wrap" if delete_armed else "del_active_wrap"):
-                    st.button("X", key="del_btn", on_click=delete_current_review_card)
-            if delete_armed:
-                with st.container(key="clear_delete_confirm_wrap"):
-                    st.button("__clear_delete_confirm__", key="clear_delete_confirm_btn", on_click=clear_delete_review_confirm)
-                render_delete_confirm_timeout()
     if ai_examples_supported:
         if ai_has_sentences and st.session_state.ai_auto_play_examples:
             ai_autoplay_key = "|".join(
