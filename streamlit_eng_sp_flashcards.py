@@ -2597,6 +2597,9 @@ def sync_menu_widget_state():
         st.session_state.ai_examples_min_words,
         st.session_state.ai_examples_max_words,
     )
+    st.session_state.menu_ai_word_range_revision = (
+        st.session_state.get("menu_ai_word_range_revision", 0) + 1
+    )
 
 
 def store_active_person_prefs():
@@ -11468,10 +11471,12 @@ def render_menu():
             st.rerun()
         st.markdown('<div class="menu-field-label">Word count</div>', unsafe_allow_html=True)
         pending_ai_word_range = st.session_state.pop("menu_ai_word_range_pending_value", None)
+        ai_word_range_revision = st.session_state.get("menu_ai_word_range_revision", 0)
+        ai_word_range_key = f"menu_ai_word_range_{ai_word_range_revision}"
         if pending_ai_word_range is not None:
-            st.session_state.menu_ai_word_range = pending_ai_word_range
-        elif "menu_ai_word_range" not in st.session_state:
-            st.session_state.menu_ai_word_range = (
+            st.session_state[ai_word_range_key] = pending_ai_word_range
+        elif ai_word_range_key not in st.session_state:
+            st.session_state[ai_word_range_key] = (
                 st.session_state.ai_examples_min_words,
                 st.session_state.ai_examples_max_words,
             )
@@ -11479,9 +11484,9 @@ def render_menu():
             "Word count",
             min_value=AI_EXAMPLES_MIN_WORDS_MIN,
             max_value=AI_EXAMPLES_MAX_WORDS_MAX,
-            value=st.session_state.menu_ai_word_range,
+            value=st.session_state[ai_word_range_key],
             step=1,
-            key="menu_ai_word_range",
+            key=ai_word_range_key,
             label_visibility="collapsed",
         )
         sanitized_ai_word_range = sanitize_ai_examples_word_range(
