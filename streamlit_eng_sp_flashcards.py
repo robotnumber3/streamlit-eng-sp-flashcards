@@ -2593,7 +2593,10 @@ t = THEMES[st.session_state.theme]
 
 
 def sync_menu_widget_state():
-    return
+    st.session_state.menu_ai_word_range = (
+        st.session_state.ai_examples_min_words,
+        st.session_state.ai_examples_max_words,
+    )
 
 
 def store_active_person_prefs():
@@ -2609,6 +2612,8 @@ def store_active_person_prefs():
         "story_pause_amount": st.session_state.story_pause_amount,
         "ai_sentence_tenses": sanitize_ai_sentence_tenses(st.session_state.ai_sentence_tenses),
         "ai_sentence_level": st.session_state.ai_sentence_level,
+        "ai_examples_min_words": st.session_state.ai_examples_min_words,
+        "ai_examples_max_words": st.session_state.ai_examples_max_words,
         "ai_auto_play_examples": st.session_state.ai_auto_play_examples,
     }
 
@@ -4875,6 +4880,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 .st-key-menu_ai_tenses_wrap [data-testid="stCheckbox"] {{
     margin-bottom: 0.1rem;
+}}
+.st-key-menu_ai_tenses_wrap [data-testid="stHorizontalBlock"] {{
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.35rem 0.6rem;
+    align-items: start;
+}}
+.st-key-menu_ai_tenses_wrap [data-testid="column"] {{
+    width: 100% !important;
+    min-width: 0 !important;
+    flex: none !important;
 }}
 .st-key-menu_ai_tenses_wrap [data-testid="stCheckbox"] label {{
     gap: 0.32rem;
@@ -11451,12 +11467,21 @@ def render_menu():
             clear_menu_destructive_confirms()
             st.rerun()
         st.markdown('<div class="menu-field-label">Word count</div>', unsafe_allow_html=True)
+        if st.session_state.get("menu_ai_word_range") != (
+            st.session_state.ai_examples_min_words,
+            st.session_state.ai_examples_max_words,
+        ):
+            st.session_state.menu_ai_word_range = (
+                st.session_state.ai_examples_min_words,
+                st.session_state.ai_examples_max_words,
+            )
         new_ai_word_range = st.slider(
             "Word count",
             min_value=AI_EXAMPLES_MIN_WORDS_MIN,
             max_value=AI_EXAMPLES_MAX_WORDS_MAX,
-            value=(st.session_state.ai_examples_min_words, st.session_state.ai_examples_max_words),
+            value=st.session_state.menu_ai_word_range,
             step=1,
+            key="menu_ai_word_range",
             label_visibility="collapsed",
         )
         sanitized_ai_word_range = sanitize_ai_examples_word_range(
@@ -11470,6 +11495,7 @@ def render_menu():
         ):
             st.session_state.ai_examples_min_words = sanitized_ai_word_range[0]
             st.session_state.ai_examples_max_words = sanitized_ai_word_range[1]
+            st.session_state.menu_ai_word_range = sanitized_ai_word_range
             store_active_person_prefs()
             sync_menu_widget_state()
             save_prefs(current_prefs())
