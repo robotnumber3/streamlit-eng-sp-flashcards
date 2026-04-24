@@ -354,12 +354,9 @@ DEFAULT_AI_SENTENCE_TENSES = {
 }
 DEFAULT_AI_SENTENCE_LEVEL = "beginner"
 AI_EXAMPLES_PER_BATCH = 3
-AI_EXAMPLES_MIN_WORDS = 8
-AI_EXAMPLES_MAX_WORDS = 12
-AI_EXAMPLES_MIN_WORDS_MIN = 5
-AI_EXAMPLES_MIN_WORDS_MAX = 10
-AI_EXAMPLES_MAX_WORDS_MIN = 8
-AI_EXAMPLES_MAX_WORDS_MAX = 25
+AI_EXAMPLES_TARGET_WORDS = 12
+AI_EXAMPLES_TARGET_WORDS_MIN = 6
+AI_EXAMPLES_TARGET_WORDS_MAX = 25
 AI_EXAMPLES_MODEL = configured_setting("OPENAI_EXAMPLES_MODEL") or "gpt-5.4-mini"
 AI_EXAMPLES_STATUS_TTL_SECONDS = 30
 AI_EXAMPLES_STATUS_TIMEOUT_SECONDS = 2
@@ -382,23 +379,17 @@ def default_ai_sentence_tenses():
     return dict(DEFAULT_AI_SENTENCE_TENSES)
 
 
-def sanitize_ai_examples_word_range(min_words, max_words, fallback=None):
-    fallback_min, fallback_max = fallback or (AI_EXAMPLES_MIN_WORDS, AI_EXAMPLES_MAX_WORDS)
+def sanitize_ai_examples_word_target(target_words, fallback=None):
+    fallback_target = fallback if fallback is not None else AI_EXAMPLES_TARGET_WORDS
     try:
-        sanitized_min = int(min_words)
+        sanitized = int(target_words)
     except (TypeError, ValueError):
-        sanitized_min = fallback_min
-    try:
-        sanitized_max = int(max_words)
-    except (TypeError, ValueError):
-        sanitized_max = fallback_max
-
-    sanitized_min = max(AI_EXAMPLES_MIN_WORDS_MIN, min(AI_EXAMPLES_MIN_WORDS_MAX, sanitized_min))
-    sanitized_max = max(AI_EXAMPLES_MAX_WORDS_MIN, min(AI_EXAMPLES_MAX_WORDS_MAX, sanitized_max))
-    if sanitized_min > sanitized_max:
-        sanitized_max = max(AI_EXAMPLES_MAX_WORDS_MIN, sanitized_min)
-
-    return sanitized_min, sanitized_max
+        sanitized = int(fallback_target)
+    sanitized = max(
+        AI_EXAMPLES_TARGET_WORDS_MIN,
+        min(AI_EXAMPLES_TARGET_WORDS_MAX, sanitized),
+    )
+    return sanitized
 
 
 def sanitize_ai_sentence_tenses(raw_value, fallback=None):
@@ -1301,8 +1292,7 @@ def default_person_prefs():
         "story_pause_amount": DEFAULT_STORY_PAUSE_AMOUNT,
         "ai_sentence_tenses": default_ai_sentence_tenses(),
         "ai_sentence_level": DEFAULT_AI_SENTENCE_LEVEL,
-        "ai_examples_min_words": AI_EXAMPLES_MIN_WORDS,
-        "ai_examples_max_words": AI_EXAMPLES_MAX_WORDS,
+        "ai_examples_target_words": AI_EXAMPLES_TARGET_WORDS,
         "ai_auto_play_examples": False,
     }
 
@@ -1338,13 +1328,10 @@ def sanitize_person_prefs(pref_data, fallback=None):
     ai_sentence_level = pref_data.get("ai_sentence_level", fallback["ai_sentence_level"])
     if ai_sentence_level not in {option_key for option_key, _, _ in AI_LEVEL_OPTIONS}:
         ai_sentence_level = fallback["ai_sentence_level"]
-    ai_examples_min_words, ai_examples_max_words = sanitize_ai_examples_word_range(
-        pref_data.get("ai_examples_min_words", fallback["ai_examples_min_words"]),
-        pref_data.get("ai_examples_max_words", fallback["ai_examples_max_words"]),
-        (
-            fallback["ai_examples_min_words"],
-            fallback["ai_examples_max_words"],
-        ),
+    legacy_target = pref_data.get("ai_examples_max_words")
+    ai_examples_target_words = sanitize_ai_examples_word_target(
+        pref_data.get("ai_examples_target_words", legacy_target if legacy_target is not None else fallback["ai_examples_target_words"]),
+        fallback["ai_examples_target_words"],
     )
     ai_auto_play_examples = pref_data.get("ai_auto_play_examples", fallback["ai_auto_play_examples"])
     if not isinstance(ai_auto_play_examples, bool):
@@ -1359,8 +1346,7 @@ def sanitize_person_prefs(pref_data, fallback=None):
         "story_pause_amount": story_pause_amount,
         "ai_sentence_tenses": ai_sentence_tenses,
         "ai_sentence_level": ai_sentence_level,
-        "ai_examples_min_words": ai_examples_min_words,
-        "ai_examples_max_words": ai_examples_max_words,
+        "ai_examples_target_words": ai_examples_target_words,
         "ai_auto_play_examples": ai_auto_play_examples,
     }
 
@@ -1585,8 +1571,7 @@ def merge_local_ai_pref_fields(cloud_pref_data, local_pref_data):
     ai_field_names = (
         "ai_sentence_tenses",
         "ai_sentence_level",
-        "ai_examples_min_words",
-        "ai_examples_max_words",
+        "ai_examples_target_words",
         "ai_auto_play_examples",
     )
 
@@ -1643,8 +1628,7 @@ def load_prefs_supabase():
                 "story_pause_amount": row.get("story_pause_amount"),
                 "ai_sentence_tenses": decode_pref_json_value(row.get("ai_sentence_tenses")),
                 "ai_sentence_level": row.get("ai_sentence_level"),
-                "ai_examples_min_words": row.get("ai_examples_min_words"),
-                "ai_examples_max_words": row.get("ai_examples_max_words"),
+                "ai_examples_target_words": row.get("ai_examples_target_words", row.get("ai_examples_max_words")),
                 "ai_auto_play_examples": row.get("ai_auto_play_examples"),
             },
             default_person_prefs(),
@@ -1681,8 +1665,8 @@ def save_prefs_supabase(pref_data):
                 **legacy_row,
                 "ai_sentence_tenses": json.dumps(person_pref_data["ai_sentence_tenses"], ensure_ascii=False),
                 "ai_sentence_level": person_pref_data["ai_sentence_level"],
-                "ai_examples_min_words": person_pref_data["ai_examples_min_words"],
-                "ai_examples_max_words": person_pref_data["ai_examples_max_words"],
+                "ai_examples_min_words": person_pref_data["ai_examples_target_words"],
+                "ai_examples_max_words": person_pref_data["ai_examples_target_words"],
                 "ai_auto_play_examples": person_pref_data["ai_auto_play_examples"],
             }
         )
@@ -2371,8 +2355,7 @@ def current_prefs():
             "story_pause_amount": st.session_state.story_pause_amount,
             "ai_sentence_tenses": sanitize_ai_sentence_tenses(st.session_state.ai_sentence_tenses),
             "ai_sentence_level": st.session_state.ai_sentence_level,
-            "ai_examples_min_words": st.session_state.ai_examples_min_words,
-            "ai_examples_max_words": st.session_state.ai_examples_max_words,
+            "ai_examples_target_words": st.session_state.ai_examples_target_words,
             "ai_auto_play_examples": st.session_state.ai_auto_play_examples,
         }
     return {
@@ -2519,8 +2502,7 @@ defaults = {
     "story_pause_amount": active_person_prefs["story_pause_amount"],
     "ai_sentence_tenses": sanitize_ai_sentence_tenses(active_person_prefs["ai_sentence_tenses"]),
     "ai_sentence_level": active_person_prefs["ai_sentence_level"],
-    "ai_examples_min_words": active_person_prefs["ai_examples_min_words"],
-    "ai_examples_max_words": active_person_prefs["ai_examples_max_words"],
+    "ai_examples_target_words": active_person_prefs["ai_examples_target_words"],
     "ai_auto_play_examples": active_person_prefs["ai_auto_play_examples"],
     "active_person":  None,
     "person_radio":   None,
@@ -2602,8 +2584,7 @@ if active_person_query_value in PERSON_LABELS and st.session_state.active_person
     st.session_state.story_pause_amount = restored_person_prefs["story_pause_amount"]
     st.session_state.ai_sentence_tenses = sanitize_ai_sentence_tenses(restored_person_prefs["ai_sentence_tenses"])
     st.session_state.ai_sentence_level = restored_person_prefs["ai_sentence_level"]
-    st.session_state.ai_examples_min_words = restored_person_prefs["ai_examples_min_words"]
-    st.session_state.ai_examples_max_words = restored_person_prefs["ai_examples_max_words"]
+    st.session_state.ai_examples_target_words = restored_person_prefs["ai_examples_target_words"]
     st.session_state.ai_auto_play_examples = restored_person_prefs["ai_auto_play_examples"]
     st.session_state.direction = direction_for_mode(restored_person_prefs["direction_mode"])
 
@@ -2641,10 +2622,7 @@ t = THEMES[st.session_state.theme]
 
 
 def sync_menu_widget_state():
-    st.session_state.menu_ai_word_range_pending_value = (
-        st.session_state.ai_examples_min_words,
-        st.session_state.ai_examples_max_words,
-    )
+    st.session_state.menu_ai_word_target_pending_value = st.session_state.ai_examples_target_words
 
 
 def store_active_person_prefs():
@@ -2660,8 +2638,7 @@ def store_active_person_prefs():
         "story_pause_amount": st.session_state.story_pause_amount,
         "ai_sentence_tenses": sanitize_ai_sentence_tenses(st.session_state.ai_sentence_tenses),
         "ai_sentence_level": st.session_state.ai_sentence_level,
-        "ai_examples_min_words": st.session_state.ai_examples_min_words,
-        "ai_examples_max_words": st.session_state.ai_examples_max_words,
+        "ai_examples_target_words": st.session_state.ai_examples_target_words,
         "ai_auto_play_examples": st.session_state.ai_auto_play_examples,
     }
 
@@ -2921,8 +2898,7 @@ def apply_person_prefs(person):
     st.session_state.story_pause_amount = person_prefs["story_pause_amount"]
     st.session_state.ai_sentence_tenses = sanitize_ai_sentence_tenses(person_prefs["ai_sentence_tenses"])
     st.session_state.ai_sentence_level = person_prefs["ai_sentence_level"]
-    st.session_state.ai_examples_min_words = person_prefs["ai_examples_min_words"]
-    st.session_state.ai_examples_max_words = person_prefs["ai_examples_max_words"]
+    st.session_state.ai_examples_target_words = person_prefs["ai_examples_target_words"]
     st.session_state.ai_auto_play_examples = person_prefs["ai_auto_play_examples"]
     st.session_state.direction = direction_for_mode(person_prefs["direction_mode"])
     sync_menu_widget_state()
@@ -7033,8 +7009,7 @@ def current_ai_examples_signature():
         ai_prompt_text(card.get("word", "")),
         tuple(allowed_ai_tense_keys(st.session_state.ai_sentence_tenses)),
         st.session_state.ai_sentence_level,
-        st.session_state.ai_examples_min_words,
-        st.session_state.ai_examples_max_words,
+        st.session_state.ai_examples_target_words,
     )
 
 
@@ -7068,8 +7043,7 @@ def build_ai_examples_prompt(card, action=None, previous_sentences=None):
     english_gloss = ai_prompt_text(card.get("word", ""))
     level_prompt = ai_level_prompt_text(st.session_state.ai_sentence_level)
     tense_names = ai_tense_names_text(st.session_state.ai_sentence_tenses)
-    min_words = st.session_state.ai_examples_min_words
-    max_words = st.session_state.ai_examples_max_words
+    target_words = st.session_state.ai_examples_target_words
     folder_labels = [
         normalized_folder_label(part)
         for part in csv_relative_folder_parts_for(filename)
@@ -7094,22 +7068,24 @@ def build_ai_examples_prompt(card, action=None, previous_sentences=None):
     if folder_labels and folder_labels[0] == "vocabulary":
         return (
             f"Escribe {AI_EXAMPLES_PER_BATCH} oraciones distintas y naturales en español mexicano, "
-            f"con registro adulto, de {min_words} a {max_words} palabras cada una, "
+            f"con registro adulto, de aproximadamente {target_words} palabras cada una, "
             f"donde aparezca {spanish_term}{meaning_clause} de forma natural en contexto. "
             "Si la palabra funciona como adjetivo o color, haz que concuerde naturalmente con el sustantivo. "
             f"{level_prompt}. "
             f"Usa solo estas formas verbales para cualquier verbo que aparezca: {tense_names}. "
-            f"Varía el contexto y la redacción.{avoid_repeat_clause} "
+            f"Varía el contexto y la redacción. "
+            f"Cada oración debe acercarse a {target_words} palabras (más o menos 2).{avoid_repeat_clause} "
             f"Devuelve solo las {AI_EXAMPLES_PER_BATCH} oraciones, una por línea."
         )
 
     return (
         f"Escribe {AI_EXAMPLES_PER_BATCH} oraciones distintas y naturales en español mexicano, "
-        f"con registro adulto, de {min_words} a {max_words} palabras cada una, "
+        f"con registro adulto, de aproximadamente {target_words} palabras cada una, "
         f"usando {spanish_term}{meaning_clause}. "
         f"{level_prompt}. "
         f"Usa solo estas formas verbales para cualquier verbo: {tense_names}. "
-        f"Varía el contexto y la redacción.{avoid_repeat_clause} "
+        f"Varía el contexto y la redacción. "
+        f"Cada oración debe acercarse a {target_words} palabras (más o menos 2).{avoid_repeat_clause} "
         f"Devuelve solo las {AI_EXAMPLES_PER_BATCH} oraciones, una por línea."
     )
 
@@ -11514,46 +11490,29 @@ def render_menu():
             save_prefs(current_prefs())
             clear_menu_destructive_confirms()
             st.rerun()
-        st.markdown('<div class="menu-field-label">Word count</div>', unsafe_allow_html=True)
-        pending_ai_word_range = st.session_state.pop("menu_ai_word_range_pending_value", None)
-        ai_word_range_revision = st.session_state.get("menu_ai_word_range_revision", 0)
-        ai_word_range_key = f"menu_ai_word_range_{ai_word_range_revision}"
-        if pending_ai_word_range is not None:
-            st.session_state[ai_word_range_key] = pending_ai_word_range
-        elif ai_word_range_key not in st.session_state:
-            st.session_state[ai_word_range_key] = (
-                st.session_state.ai_examples_min_words,
-                st.session_state.ai_examples_max_words,
-            )
-        new_ai_word_range = st.slider(
-            "Word count",
-            min_value=AI_EXAMPLES_MIN_WORDS_MIN,
-            max_value=AI_EXAMPLES_MAX_WORDS_MAX,
-            value=st.session_state[ai_word_range_key],
+        st.markdown('<div class="menu-field-label">Sentence length (words)</div>', unsafe_allow_html=True)
+        pending_ai_word_target = st.session_state.pop("menu_ai_word_target_pending_value", None)
+        ai_word_target_key = "menu_ai_word_target"
+        if pending_ai_word_target is not None:
+            st.session_state[ai_word_target_key] = pending_ai_word_target
+        elif ai_word_target_key not in st.session_state:
+            st.session_state[ai_word_target_key] = st.session_state.ai_examples_target_words
+        new_ai_word_target = st.slider(
+            "Sentence length",
+            min_value=AI_EXAMPLES_TARGET_WORDS_MIN,
+            max_value=AI_EXAMPLES_TARGET_WORDS_MAX,
+            value=st.session_state[ai_word_target_key],
             step=1,
-            key=ai_word_range_key,
+            key=ai_word_target_key,
             label_visibility="collapsed",
         )
-        sanitized_ai_word_range = sanitize_ai_examples_word_range(
-            new_ai_word_range[0],
-            new_ai_word_range[1],
-            (st.session_state.ai_examples_min_words, st.session_state.ai_examples_max_words),
+        sanitized_ai_word_target = sanitize_ai_examples_word_target(
+            new_ai_word_target,
+            st.session_state.ai_examples_target_words,
         )
-        slider_was_clamped = sanitized_ai_word_range != new_ai_word_range
-        if (
-            slider_was_clamped
-            or sanitized_ai_word_range != (
-                st.session_state.ai_examples_min_words,
-                st.session_state.ai_examples_max_words,
-            )
-        ):
-            st.session_state.ai_examples_min_words = sanitized_ai_word_range[0]
-            st.session_state.ai_examples_max_words = sanitized_ai_word_range[1]
-            st.session_state.menu_ai_word_range_pending_value = sanitized_ai_word_range
-            if slider_was_clamped:
-                st.session_state.menu_ai_word_range_revision = (
-                    st.session_state.get("menu_ai_word_range_revision", 0) + 1
-                )
+        if sanitized_ai_word_target != st.session_state.ai_examples_target_words:
+            st.session_state.ai_examples_target_words = sanitized_ai_word_target
+            st.session_state.menu_ai_word_target_pending_value = sanitized_ai_word_target
             store_active_person_prefs()
             sync_menu_widget_state()
             save_prefs(current_prefs())
