@@ -2563,16 +2563,7 @@ if "ai_auto_play_examples_default_off_migrated" not in st.session_state:
     save_prefs(current_prefs())
 
 if "ai_tense_forms_v2_migrated" not in st.session_state:
-    for person in PERSON_LABELS:
-        migrated_person_prefs = sanitize_person_prefs(
-            st.session_state.person_settings.get(person, {}),
-            default_person_prefs(),
-        )
-        migrated_person_prefs["ai_sentence_tenses"] = default_ai_sentence_tenses()
-        st.session_state.person_settings[person] = migrated_person_prefs
-    st.session_state.ai_sentence_tenses = default_ai_sentence_tenses()
     st.session_state["ai_tense_forms_v2_migrated"] = True
-    save_prefs(current_prefs())
 
 if "story_display_mode" not in st.session_state:
     legacy_prompt_on = st.session_state.get("story_prompt_on", True)
@@ -2596,9 +2587,6 @@ def sync_menu_widget_state():
     st.session_state.menu_ai_word_range_pending_value = (
         st.session_state.ai_examples_min_words,
         st.session_state.ai_examples_max_words,
-    )
-    st.session_state.menu_ai_word_range_revision = (
-        st.session_state.get("menu_ai_word_range_revision", 0) + 1
     )
 
 
@@ -11494,8 +11482,9 @@ def render_menu():
             new_ai_word_range[1],
             (st.session_state.ai_examples_min_words, st.session_state.ai_examples_max_words),
         )
+        slider_was_clamped = sanitized_ai_word_range != new_ai_word_range
         if (
-            sanitized_ai_word_range != new_ai_word_range
+            slider_was_clamped
             or sanitized_ai_word_range != (
                 st.session_state.ai_examples_min_words,
                 st.session_state.ai_examples_max_words,
@@ -11504,6 +11493,10 @@ def render_menu():
             st.session_state.ai_examples_min_words = sanitized_ai_word_range[0]
             st.session_state.ai_examples_max_words = sanitized_ai_word_range[1]
             st.session_state.menu_ai_word_range_pending_value = sanitized_ai_word_range
+            if slider_was_clamped:
+                st.session_state.menu_ai_word_range_revision = (
+                    st.session_state.get("menu_ai_word_range_revision", 0) + 1
+                )
             store_active_person_prefs()
             sync_menu_widget_state()
             save_prefs(current_prefs())
