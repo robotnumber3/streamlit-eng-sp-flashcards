@@ -5720,6 +5720,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         background-color: #d8b5ea !important;
         border-color: #8a4aa6 !important;
         color: #d04ac5 !important;
+        font-size: 1.18rem !important;
+        line-height: 1 !important;
+    }}
+    .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+    .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
+    .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
+    .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div,
+    .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"],
+    .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] p,
+    .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] span,
+    .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button [data-testid="stMarkdownContainer"] div {{
+        font-size: 1.18rem !important;
+        line-height: 1 !important;
     }}
     .st-key-action_phone_top_row_wrap [data-testid="stHorizontalBlock"] {{
         display: flex !important;
@@ -5745,6 +5758,12 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         justify-content: flex-start !important;
         gap: 0.26rem !important;
         width: 100% !important;
+        margin: 0 !important;
+    }}
+    .st-key-action_phone_checkbox_row_wrap {{
+        margin-top: 0.08rem !important;
+    }}
+    .st-key-action_phone_checkbox_row_wrap [data-testid="stCheckbox"] {{
         margin: 0 !important;
     }}
     .st-key-action_phone_bottom_single_row_wrap [data-testid="stColumn"]:nth-child(1),
@@ -5866,7 +5885,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         white-space: nowrap !important;
     }}
     .st-key-phone_ai_checkbox_wrap [data-testid="stCheckbox"] p {{
-        font-size: 0.68rem !important;
+        font-size: 0.92rem !important;
         line-height: 1 !important;
         white-space: nowrap !important;
     }}
@@ -10290,7 +10309,7 @@ def toggle_auto_speak_spanish():
     save_prefs(current_prefs())
 
 
-def render_speaker_button(text):
+def render_speaker_button(text, icon_font_size="1.15rem"):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
     components.html(
@@ -10311,7 +10330,7 @@ def render_speaker_button(text):
             width: 100%;
             min-width: 0;
             min-height: 100%;
-            font-size: 1.15rem;
+            font-size: {icon_font_size};
             font-weight: 600;
             border-radius: 0.75rem;
             border: 2px solid {t['info']};
@@ -11708,7 +11727,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_loading_row_columns = st.columns([1, 1, 2.08, 1.15], gap="small")
                         with phone_loading_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text)
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.45rem")
                         with phone_loading_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11725,10 +11744,10 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                 st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
                 elif ai_has_sentences:
                     with st.container(key="action_phone_bottom_actions_row_wrap"):
-                        phone_actions_row_columns = st.columns([1, 1, 2.08, 1.5], gap="small")
+                        phone_actions_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_actions_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text)
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.45rem")
                         with phone_actions_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11738,14 +11757,14 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                     cycle_disabled=ai_examples_loading,
                                     reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading,
                                 )
-                        with phone_actions_row_columns[3]:
-                            if show_ai_autoplay_toggle:
-                                with st.container(key="phone_ai_checkbox_wrap"):
-                                    new_ai_auto_play_examples_phone = st.checkbox(
-                                        "Auto speak sentences",
-                                        value=st.session_state.ai_auto_play_examples,
-                                        key="ai_auto_play_examples_phone_checkbox",
-                                    )
+                    if show_ai_autoplay_toggle:
+                        with st.container(key="action_phone_checkbox_row_wrap"):
+                            with st.container(key="phone_ai_checkbox_wrap"):
+                                new_ai_auto_play_examples_phone = st.checkbox(
+                                    "Auto speak sentences",
+                                    value=st.session_state.ai_auto_play_examples,
+                                    key="ai_auto_play_examples_phone_checkbox",
+                                )
                 else:
                     button_label = ai_disabled_label
                     if ai_examples_available:
@@ -11754,7 +11773,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_single_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
-                                render_speaker_button(speaker_audio_text)
+                                render_speaker_button(speaker_audio_text, icon_font_size="1.45rem")
                         with phone_single_row_columns[1]:
                             with st.container(key=auto_speak_phone_key):
                                 st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
@@ -11773,7 +11792,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     phone_single_row_columns = st.columns([1, 1, 2.08], gap="small")
                     with phone_single_row_columns[0]:
                         with st.container(key="speaker_phone_wrap"):
-                            render_speaker_button(spanish_audio_text)
+                            render_speaker_button(spanish_audio_text, icon_font_size="1.45rem")
                     with phone_single_row_columns[1]:
                         with st.container(key=auto_speak_phone_key):
                             st.button(auto_speak_phone_label, key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
