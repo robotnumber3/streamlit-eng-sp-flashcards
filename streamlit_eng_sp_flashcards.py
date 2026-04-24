@@ -2274,7 +2274,7 @@ def current_prefs():
             "direction_mode": st.session_state.direction_mode,
             "speech_speed": st.session_state.speech_speed,
             "show_hints": st.session_state.show_hints,
-            "auto_speak_spanish": st.session_state.auto_speak_spanish,
+            "auto_speak_spanish": False,
             "story_reading_speed": st.session_state.story_reading_speed,
             "story_pause_amount": st.session_state.story_pause_amount,
             "ai_sentence_tenses": sanitize_ai_sentence_tenses(st.session_state.ai_sentence_tenses),
@@ -2419,7 +2419,7 @@ defaults = {
     "direction_mode": active_person_prefs["direction_mode"],
     "speech_speed":   active_person_prefs["speech_speed"],
     "show_hints":     active_person_prefs["show_hints"],
-    "auto_speak_spanish": active_person_prefs["auto_speak_spanish"],
+    "auto_speak_spanish": False,
     "auto_speak_spanish_generation": 0,
     "story_reading_speed": active_person_prefs["story_reading_speed"],
     "story_pause_amount": active_person_prefs["story_pause_amount"],
@@ -2501,7 +2501,7 @@ if active_person_query_value in PERSON_LABELS and st.session_state.active_person
     st.session_state.direction_mode = restored_person_prefs["direction_mode"]
     st.session_state.speech_speed = restored_person_prefs["speech_speed"]
     st.session_state.show_hints = restored_person_prefs["show_hints"]
-    st.session_state.auto_speak_spanish = restored_person_prefs["auto_speak_spanish"]
+    st.session_state.auto_speak_spanish = False
     st.session_state.story_reading_speed = restored_person_prefs["story_reading_speed"]
     st.session_state.story_pause_amount = restored_person_prefs["story_pause_amount"]
     st.session_state.ai_sentence_tenses = sanitize_ai_sentence_tenses(restored_person_prefs["ai_sentence_tenses"])
@@ -2822,15 +2822,13 @@ def apply_person_prefs(person):
     st.session_state.direction_mode = person_prefs["direction_mode"]
     st.session_state.speech_speed = person_prefs["speech_speed"]
     st.session_state.show_hints = person_prefs["show_hints"]
-    st.session_state.auto_speak_spanish = person_prefs["auto_speak_spanish"]
+    st.session_state.auto_speak_spanish = False
     st.session_state.story_reading_speed = person_prefs["story_reading_speed"]
     st.session_state.story_pause_amount = person_prefs["story_pause_amount"]
     st.session_state.ai_sentence_tenses = sanitize_ai_sentence_tenses(person_prefs["ai_sentence_tenses"])
     st.session_state.ai_sentence_level = person_prefs["ai_sentence_level"]
     st.session_state.ai_auto_play_examples = person_prefs["ai_auto_play_examples"]
     st.session_state.direction = direction_for_mode(person_prefs["direction_mode"])
-    if st.session_state.auto_speak_spanish:
-        st.session_state.auto_speak_spanish_generation += 1
     sync_menu_widget_state()
 
 
@@ -3119,8 +3117,6 @@ def activate_deck(deck_value):
         st.session_state.study_mode = "all" if (is_review_deck(deck_value) or is_favorites_deck(deck_value) or is_learned_words_challenge(deck_value)) else None
     st.session_state.person_selector_visible = False
     st.session_state.direction = effective_direction(deck_value)
-    if st.session_state.auto_speak_spanish:
-        st.session_state.auto_speak_spanish_generation += 1
 
 
 def go_back_to_deck_picker():
@@ -6799,8 +6795,6 @@ def advance_card(schedule_current=True):
     st.session_state.ai_examples_loading = False
     st.session_state.ai_examples_pending_action = None
     st.session_state.direction = effective_direction()
-    if st.session_state.auto_speak_spanish:
-        st.session_state.auto_speak_spanish_generation += 1
 
 
 def current_card_supports_ai_examples():
@@ -10659,16 +10653,26 @@ def render_auto_speak_spanish(text, speech_key):
             var speechRate = {speech_rate};
             var speechKey = {json.dumps(speech_key)};
             if (!doc || !synth || !speechText || !speechKey ) return;
-            if (doc._autoSpeakSpanishKey === speechKey) return;
-            doc._autoSpeakSpanishKey = speechKey;
 
-            if (typeof doc._fcSpeakSpanish !== 'function') return;
-            doc._fcSpeakSpanish({{
-                text: speechText,
-                rate: speechRate,
-                key: speechKey,
-                cancelFirst: true,
-            }});
+            function attemptSpeak(remainingAttempts) {{
+                if (doc._autoSpeakSpanishKey === speechKey) return;
+                if (typeof doc._fcSpeakSpanish !== 'function') {{
+                    if (remainingAttempts <= 0) return;
+                    setTimeout(function() {{
+                        attemptSpeak(remainingAttempts - 1);
+                    }}, 120);
+                    return;
+                }}
+                doc._autoSpeakSpanishKey = speechKey;
+                doc._fcSpeakSpanish({{
+                    text: speechText,
+                    rate: speechRate,
+                    key: speechKey,
+                    cancelFirst: true,
+                }});
+            }}
+
+            attemptSpeak(8);
         }})();
         </script>
         """,
