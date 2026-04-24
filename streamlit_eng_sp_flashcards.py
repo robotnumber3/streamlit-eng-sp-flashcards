@@ -5666,6 +5666,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     color: inherit;
 }}
 @media (max-width: 767px) {{
+    .st-key-icon_btn_row_wrap .st-key-action_right_group_wrap .st-key-speaker_wrap iframe {{
+        margin-top: 0.12rem !important;
+    }}
     .st-key-answer_action_row_desktop_wrap {{
         display: none !important;
     }}
@@ -5766,6 +5769,11 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         gap: 0.26rem !important;
         width: 100% !important;
         margin: 0 !important;
+    }}
+    .st-key-action_phone_bottom_single_row_wrap,
+    .st-key-action_phone_bottom_loading_row_wrap,
+    .st-key-action_phone_bottom_actions_row_wrap {{
+        margin-top: 0.16rem !important;
     }}
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_on_phone_wrap div[data-testid="stButton"] > button,
     .st-key-action_phone_bottom_actions_row_wrap .st-key-autospeak_off_phone_wrap div[data-testid="stButton"] > button {{
