@@ -2829,6 +2829,8 @@ def apply_person_prefs(person):
     st.session_state.ai_sentence_level = person_prefs["ai_sentence_level"]
     st.session_state.ai_auto_play_examples = person_prefs["ai_auto_play_examples"]
     st.session_state.direction = direction_for_mode(person_prefs["direction_mode"])
+    if st.session_state.auto_speak_spanish:
+        st.session_state.auto_speak_spanish_generation += 1
     sync_menu_widget_state()
 
 
@@ -3117,6 +3119,8 @@ def activate_deck(deck_value):
         st.session_state.study_mode = "all" if (is_review_deck(deck_value) or is_favorites_deck(deck_value) or is_learned_words_challenge(deck_value)) else None
     st.session_state.person_selector_visible = False
     st.session_state.direction = effective_direction(deck_value)
+    if st.session_state.auto_speak_spanish:
+        st.session_state.auto_speak_spanish_generation += 1
 
 
 def go_back_to_deck_picker():
@@ -5667,7 +5671,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 }}
 @media (max-width: 767px) {{
     .st-key-icon_btn_row_wrap .st-key-action_right_group_wrap .st-key-speaker_wrap iframe {{
-        margin-top: 0.12rem !important;
+        margin-top: 0.22rem !important;
     }}
     .st-key-answer_action_row_desktop_wrap {{
         display: none !important;
@@ -6795,6 +6799,8 @@ def advance_card(schedule_current=True):
     st.session_state.ai_examples_loading = False
     st.session_state.ai_examples_pending_action = None
     st.session_state.direction = effective_direction()
+    if st.session_state.auto_speak_spanish:
+        st.session_state.auto_speak_spanish_generation += 1
 
 
 def current_card_supports_ai_examples():
@@ -10580,13 +10586,14 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
             opacity: {cycle_opacity};
         }}
         #ai-reload-btn {{
-            font-size: 2.3rem;
+            font-size: 2.62rem;
             font-weight: 400;
             border: 2px solid {reload_border};
             background: {reload_bg};
             color: {reload_fg};
             cursor: {reload_cursor};
             opacity: {reload_opacity};
+            padding-top: 0;
         }}
         </style>
         <div class="ai-action-row">
