@@ -4343,7 +4343,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     min-width: 100% !important;
     max-width: 100% !important;
     display: block !important;
-    margin: 0.16rem 0 0 0 !important;
+    margin: -1px 0 0 0 !important;
     position: relative !important;
     z-index: 1 !important;
 }}
@@ -11970,14 +11970,8 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                         )
                             elif ai_examples_loading:
                                 loading_button_label = "Retry" if ai_error_message else "Examples"
-                                with st.container(key="ai_loading_row_wrap"):
-                                    loading_columns = st.columns([1, 7.46], gap="small")
-                                    with loading_columns[0]:
-                                        with st.container(key="ai_status_wrap"):
-                                            st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
-                                    with loading_columns[1]:
-                                        with st.container(key="ai_single_wrap"):
-                                            st.button(loading_button_label, key="ai_fetch_btn", disabled=True, help=ai_disabled_reason)
+                                with st.container(key="ai_single_wrap"):
+                                    st.button(loading_button_label, key="ai_fetch_btn", disabled=True, help=ai_disabled_reason)
                             else:
                                 button_label = ai_disabled_label
                                 if ai_examples_available:
@@ -12013,7 +12007,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                 if ai_examples_loading and not ai_has_sentences:
                     loading_button_label = "Retry" if ai_error_message else "Examples"
                     with st.container(key="action_phone_bottom_loading_row_wrap"):
-                        phone_loading_row_columns = st.columns([1, 1, 2.08, 1.15], gap="small")
+                        phone_loading_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_loading_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
                                 render_speaker_button(speaker_audio_text, icon_font_size="1.9rem")
@@ -12028,9 +12022,6 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                     disabled=True,
                                     help=ai_disabled_reason,
                                 )
-                        with phone_loading_row_columns[3]:
-                            with st.container(key="phone_ai_status_wrap"):
-                                st.markdown('<div class="ai-status-label">Loading...</div>', unsafe_allow_html=True)
                 elif ai_has_sentences:
                     with st.container(key="action_phone_bottom_actions_row_wrap"):
                         phone_actions_row_columns = st.columns([1, 1, 2.08], gap="small")
