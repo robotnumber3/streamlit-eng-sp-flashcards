@@ -11827,6 +11827,18 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
     speaker_audio_text = spanish_audio_text
     if ai_examples_supported and ai_has_sentences:
         speaker_audio_text = st.session_state.ai_examples_sentences[st.session_state.ai_examples_index]
+    if show_ai_autoplay_toggle:
+        with st.container(key="ai_autoplay_test_wrap"):
+            new_ai_auto_play_top = st.checkbox(
+                "Auto speak sentences",
+                value=st.session_state.ai_auto_play_examples,
+                key="ai_auto_play_examples_desktop_checkbox",
+            )
+            if new_ai_auto_play_top != st.session_state.ai_auto_play_examples:
+                st.session_state.ai_auto_play_examples = new_ai_auto_play_top
+                store_active_person_prefs()
+                save_prefs(current_prefs())
+                st.rerun()
     desktop_action_container = st.container(key="answer_action_row_desktop_wrap") if (not review_mode and not favorites_mode) else st.container()
     with desktop_action_container:
         with st.container(key="answer_action_row_wrap"):
@@ -11926,16 +11938,6 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                         ):
                                             begin_ai_examples_action("fetch")
                                             st.rerun()
-                        if show_ai_autoplay_toggle:
-                            with st.container(key="ai_autoplay_row_wrap"):
-                                autoplay_columns = st.columns([1, 7.46], gap="small")
-                                with autoplay_columns[1]:
-                                    with st.container(key="ai_autoplay_wrap"):
-                                        new_ai_auto_play_examples = st.checkbox(
-                                            "Auto speak sentences",
-                                            value=st.session_state.ai_auto_play_examples,
-                                            key="ai_auto_play_examples_desktop_checkbox",
-                                        )
                     else:
                         right_group_columns = st.columns(3 if review_mode else 2, gap="small")
                         with right_group_columns[0]:
