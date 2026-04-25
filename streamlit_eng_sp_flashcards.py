@@ -4347,6 +4347,21 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     position: relative !important;
     z-index: 1 !important;
 }}
+.st-key-answer_action_row_wrap .st-key-autoplay_btn_wrap,
+.st-key-answer_action_row_wrap .st-key-autoplay_btn_wrap > div,
+.st-key-answer_action_row_wrap .st-key-autoplay_btn_wrap [data-testid="stElementContainer"] {{
+    width: 100% !important;
+    min-width: 100% !important;
+}}
+.st-key-answer_action_row_wrap .st-key-autoplay_btn_wrap iframe {{
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    margin: 0 !important;
+    height: 3.2rem !important;
+    min-height: 3.2rem !important;
+}}
 .st-key-icon_btn_row_wrap .st-key-speaker_wrap iframe {{
     width: 100% !important;
     min-width: 100% !important;
@@ -4554,6 +4569,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     opacity: 0 !important;
     pointer-events: none !important;
 }}
+.st-key-autospeak_toggle_hidden_wrap {{
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}}
 .st-key-ai_autospeak_iframe_wrap {{
     position: fixed !important;
     bottom: 0 !important;
@@ -4588,6 +4614,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-regularautoadvance_hidden_wrap,
 .st-key-aicycle_hidden_wrap,
 .st-key-aireload_hidden_wrap,
+.st-key-autospeak_toggle_hidden_wrap,
 .st-key-ai_autospeak_iframe_wrap {{
     position: fixed !important;
     top: -10000px !important;
@@ -4609,6 +4636,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-regularautoadvance_hidden_wrap *,
 .st-key-aicycle_hidden_wrap *,
 .st-key-aireload_hidden_wrap *,
+.st-key-autospeak_toggle_hidden_wrap *,
 .st-key-ai_autospeak_iframe_wrap * {{
     pointer-events: none !important;
 }}
@@ -6023,6 +6051,22 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         max-width: 3.6rem !important;
     }}
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap iframe {{
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
+        height: 3.2rem !important;
+        min-height: 3.2rem !important;
+        margin: 0 !important;
+        display: block !important;
+    }}
+    .st-key-answer_action_row_phone_wrap .st-key-autoplay_btn_phone_wrap,
+    .st-key-answer_action_row_phone_wrap .st-key-autoplay_btn_phone_wrap > div,
+    .st-key-answer_action_row_phone_wrap .st-key-autoplay_btn_phone_wrap [data-testid="stElementContainer"] {{
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
+    }}
+    .st-key-answer_action_row_phone_wrap .st-key-autoplay_btn_phone_wrap iframe {{
         width: 3.6rem !important;
         min-width: 3.6rem !important;
         max-width: 3.6rem !important;
@@ -10562,6 +10606,8 @@ def toggle_auto_speak_spanish():
     st.session_state.auto_speak_spanish = not st.session_state.auto_speak_spanish
     if st.session_state.auto_speak_spanish:
         st.session_state.auto_speak_spanish_generation += 1
+        if st.session_state.ai_examples_sentences:
+            st.session_state.ai_examples_autoplay_generation += 1
     store_active_person_prefs()
     save_prefs(current_prefs())
 
@@ -10654,6 +10700,108 @@ def render_speaker_button(text, icon_font_size="1.15rem"):
 
             button.addEventListener('click', speakFromTap);
             button.addEventListener('touchend', speakFromTap);
+        }})();
+        </script>
+        """,
+        height=64,
+    )
+
+
+def render_auto_speak_button(is_on):
+    if is_on:
+        bg_color = "#ffe0f5"
+        border_color = "#ff1aaa"
+        text_color = "#ff1aaa"
+    else:
+        bg_color = "rgba(128,128,128,0.12)"
+        border_color = "rgba(128,128,128,0.35)"
+        text_color = "rgba(140,140,140,0.8)"
+    components.html(
+        f"""
+        <style>
+        html, body {{
+            width: 100%;
+            height: 3.2rem;
+            min-height: 3.2rem;
+            overflow: hidden;
+        }}
+        body {{
+            margin: 0;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+            min-height: 3.2rem;
+            box-sizing: border-box;
+        }}
+        #autoplay-btn {{
+            width: 100%;
+            height: 3.2rem;
+            min-width: 0;
+            min-height: 3.2rem;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            border-radius: 0.75rem;
+            border: 2px solid {border_color};
+            background-color: {bg_color};
+            color: {text_color};
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            line-height: 1.35;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        </style>
+        <button id="autoplay-btn" type="button"><span>AUTO</span><span>PLAY</span></button>
+        <script>
+        (function() {{
+            var parentWindow = window.parent;
+            var doc = parentWindow.document;
+            var synth = parentWindow.speechSynthesis || window.speechSynthesis;
+            var UtteranceCtor = parentWindow.SpeechSynthesisUtterance || window.SpeechSynthesisUtterance;
+            var button = document.getElementById('autoplay-btn');
+            var suppressClickUntil = 0;
+            if (!button || !doc) return;
+
+            function handleTap(event) {{
+                var now = Date.now();
+                if (event) {{
+                    if (event.type === 'click' && now < suppressClickUntil) {{
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+                        return;
+                    }}
+                    if (event.type === 'touchend') suppressClickUntil = now + 700;
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+                }}
+                if (synth && UtteranceCtor && !doc._fcSpeechUnlocked) {{
+                    try {{
+                        var primer = new UtteranceCtor('.');
+                        primer.volume = 0;
+                        primer.rate = 3;
+                        primer.onstart = function() {{ doc._fcSpeechUnlocked = true; }};
+                        synth.speak(primer);
+                        setTimeout(function() {{ try {{ synth.cancel(); }} catch(e) {{}} }}, 150);
+                    }} catch(e) {{}}
+                }}
+                var hiddenBtn = doc.querySelector('.st-key-autospeak_toggle_hidden_wrap button');
+                if (hiddenBtn) hiddenBtn.click();
+            }}
+
+            button.addEventListener('click', handleTap);
+            button.addEventListener('touchend', handleTap);
         }})();
         </script>
         """,
@@ -10870,7 +11018,9 @@ def render_auto_speak_spanish(text, speech_key):
                     }}, 120);
                     return;
                 }}
-                doc._autoSpeakSpanishKey = speechKey;
+                if (doc._fcSpeechUnlocked) {{
+                    doc._autoSpeakSpanishKey = speechKey;
+                }}
                 doc._fcSpeakSpanish({{
                     text: speechText,
                     rate: speechRate,
@@ -11917,9 +12067,8 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                             with st.container(key="speaker_wrap"):
                                 render_speaker_button(spanish_audio_text)
                         with right_group_columns[1]:
-                            auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
-                            with st.container(key=auto_speak_key):
-                                st.button("AUTO  \nPLAY", key="autospeak_btn", on_click=toggle_auto_speak_spanish)
+                            with st.container(key="autoplay_btn_wrap"):
+                                render_auto_speak_button(st.session_state.auto_speak_spanish)
                 if review_mode:
                     delete_armed = st.session_state.delete_review_confirm_key == current_review_card_key(current_card)
                     with right_group_columns[2]:
@@ -11953,9 +12102,8 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         with st.container(key="speaker_wrap"):
                             render_speaker_button(speaker_audio_text)
                     with bottom_cols[1]:
-                        auto_speak_key = "autospeak_on_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_wrap"
-                        with st.container(key=auto_speak_key):
-                            st.button("AUTO  \nPLAY", key="autospeak_btn", on_click=toggle_auto_speak_spanish)
+                        with st.container(key="autoplay_btn_wrap"):
+                            render_auto_speak_button(st.session_state.auto_speak_spanish)
                     with bottom_cols[2]:
                         if ai_examples_supported:
                             if ai_has_sentences:
@@ -11969,9 +12117,8 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                             reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available),
                                         )
                             elif ai_examples_loading:
-                                loading_button_label = "Retry" if ai_error_message else "Examples"
                                 with st.container(key="ai_single_wrap"):
-                                    st.button(loading_button_label, key="ai_fetch_btn", disabled=True, help=ai_disabled_reason)
+                                    st.button("Loading...", key="ai_fetch_btn", disabled=True, help=ai_disabled_reason)
                             else:
                                 button_label = ai_disabled_label
                                 if ai_examples_available:
@@ -11984,7 +12131,6 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     fetch_ai_examples_for_current_card()
                     st.rerun()
     if not review_mode and not favorites_mode:
-        auto_speak_phone_key = "autospeak_on_phone_wrap" if st.session_state.auto_speak_spanish else "autospeak_off_phone_wrap"
         with st.container(key="answer_action_row_phone_wrap"):
             with st.container(key="action_phone_top_row_wrap"):
                 phone_top_columns = st.columns(4, gap="small")
@@ -12005,19 +12151,18 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                             st.button("♥︎", key="favorite_phone_btn", on_click=add_current_card_to_favorites)
             if ai_examples_supported:
                 if ai_examples_loading and not ai_has_sentences:
-                    loading_button_label = "Retry" if ai_error_message else "Examples"
                     with st.container(key="action_phone_bottom_loading_row_wrap"):
                         phone_loading_row_columns = st.columns([1, 1, 2.08], gap="small")
                         with phone_loading_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
                                 render_speaker_button(speaker_audio_text, icon_font_size="1.9rem")
                         with phone_loading_row_columns[1]:
-                            with st.container(key=auto_speak_phone_key):
-                                st.button("AUTO  \nPLAY", key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
+                            with st.container(key="autoplay_btn_phone_wrap"):
+                                render_auto_speak_button(st.session_state.auto_speak_spanish)
                         with phone_loading_row_columns[2]:
                             with st.container(key="phone_ai_single_wrap"):
                                 st.button(
-                                    loading_button_label,
+                                    "Loading...",
                                     key="ai_fetch_phone_btn",
                                     disabled=True,
                                     help=ai_disabled_reason,
@@ -12029,8 +12174,8 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                             with st.container(key="speaker_phone_wrap"):
                                 render_speaker_button(speaker_audio_text, icon_font_size="1.9rem")
                         with phone_actions_row_columns[1]:
-                            with st.container(key=auto_speak_phone_key):
-                                st.button("AUTO  \nPLAY", key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
+                            with st.container(key="autoplay_btn_phone_wrap"):
+                                render_auto_speak_button(st.session_state.auto_speak_spanish)
                         with phone_actions_row_columns[2]:
                             with st.container(key="phone_ai_actions_wrap"):
                                 render_ai_action_buttons(
@@ -12047,8 +12192,8 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                             with st.container(key="speaker_phone_wrap"):
                                 render_speaker_button(speaker_audio_text, icon_font_size="1.9rem")
                         with phone_single_row_columns[1]:
-                            with st.container(key=auto_speak_phone_key):
-                                st.button("AUTO  \nPLAY", key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
+                            with st.container(key="autoplay_btn_phone_wrap"):
+                                render_auto_speak_button(st.session_state.auto_speak_spanish)
                         with phone_single_row_columns[2]:
                             with st.container(key="phone_ai_single_wrap"):
                                 if st.button(
