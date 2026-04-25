@@ -10708,35 +10708,44 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
             var reloadButton = document.getElementById('ai-reload-btn');
             if (!doc) return;
 
-            function triggerHidden(selector, event) {{
-                if (event) {{
-                    event.preventDefault();
-                    event.stopPropagation();
-                    if (typeof event.stopImmediatePropagation === 'function') {{
-                        event.stopImmediatePropagation();
+            function makeTriggerHandler(selector) {{
+                var suppressClickUntil = 0;
+                return function(event) {{
+                    var now = Date.now();
+                    if (event) {{
+                        if (event.type === 'click' && now < suppressClickUntil) {{
+                            event.preventDefault();
+                            event.stopPropagation();
+                            if (typeof event.stopImmediatePropagation === 'function') {{
+                                event.stopImmediatePropagation();
+                            }}
+                            return;
+                        }}
+                        if (event.type === 'touchend') {{
+                            suppressClickUntil = now + 700;
+                        }}
+                        event.preventDefault();
+                        event.stopPropagation();
+                        if (typeof event.stopImmediatePropagation === 'function') {{
+                            event.stopImmediatePropagation();
+                        }}
                     }}
-                }}
-                var hiddenButton = doc.querySelector(selector);
-                if (!hiddenButton) return;
-                hiddenButton.click();
+                    var hiddenButton = doc.querySelector(selector);
+                    if (!hiddenButton) return;
+                    hiddenButton.click();
+                }};
             }}
 
             if (cycleButton && !cycleButton.disabled) {{
-                cycleButton.addEventListener('click', function(event) {{
-                    triggerHidden('.st-key-aicycle_hidden_wrap button', event);
-                }});
-                cycleButton.addEventListener('touchend', function(event) {{
-                    triggerHidden('.st-key-aicycle_hidden_wrap button', event);
-                }});
+                var cycleHandler = makeTriggerHandler('.st-key-aicycle_hidden_wrap button');
+                cycleButton.addEventListener('click', cycleHandler);
+                cycleButton.addEventListener('touchend', cycleHandler);
             }}
 
             if (reloadButton && !reloadButton.disabled) {{
-                reloadButton.addEventListener('click', function(event) {{
-                    triggerHidden('.st-key-aireload_hidden_wrap button', event);
-                }});
-                reloadButton.addEventListener('touchend', function(event) {{
-                    triggerHidden('.st-key-aireload_hidden_wrap button', event);
-                }});
+                var reloadHandler = makeTriggerHandler('.st-key-aireload_hidden_wrap button');
+                reloadButton.addEventListener('click', reloadHandler);
+                reloadButton.addEventListener('touchend', reloadHandler);
             }}
         }})();
         </script>
