@@ -4514,6 +4514,27 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     opacity: 0 !important;
     pointer-events: none !important;
 }}
+.st-key-ai_autospeak_iframe_wrap {{
+    position: fixed !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+}}
+.st-key-ai_autospeak_iframe_wrap iframe {{
+    width: 1px !important;
+    height: 1px !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    pointer-events: none !important;
+}}
 .st-key-regular_auto_controls_wrap {{
     margin-bottom: 0.35rem !important;
 }}
@@ -12057,10 +12078,11 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                     str(st.session_state.ai_examples_autoplay_generation),
                 ]
             )
-            render_auto_speak_spanish(
-                st.session_state.ai_examples_sentences[st.session_state.ai_examples_index],
-                ai_autoplay_key,
-            )
+            with st.container(key="ai_autospeak_iframe_wrap"):
+                render_auto_speak_spanish(
+                    st.session_state.ai_examples_sentences[st.session_state.ai_examples_index],
+                    ai_autoplay_key,
+                )
         with st.container(key="aicycle_hidden_wrap"):
             if st.button("__ai_cycle_hidden__", key="ai_cycle_hidden_btn"):
                 cycle_ai_example()
