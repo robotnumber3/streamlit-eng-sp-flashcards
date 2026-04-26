@@ -6042,21 +6042,49 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-action_phone_bottom_single_row_wrap [data-testid="stColumn"]:nth-child(3),
     .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(3),
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(3) {{
-        flex: 0 0 7.46rem !important;
-        width: 7.46rem !important;
-        min-width: 7.46rem !important;
-        max-width: 7.46rem !important;
+    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(3),
+    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(4),
+    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(5) {{
+        flex: 0 0 3.6rem !important;
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
         padding: 0 !important;
     }}
-    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(4),
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(4) {{
+    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(4) {{
         flex: 1 1 auto !important;
         min-width: 0 !important;
         padding: 0 !important;
     }}
     .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"] {{
         align-self: stretch !important;
+    }}
+    .st-key-ai_cycle_phone_wrap div[data-testid="stButton"] > button {{
+        background-color: {BUTTON_COLORS['blue']['bg']} !important;
+        border-color: {BUTTON_COLORS['blue']['border']} !important;
+        color: {BUTTON_COLORS['blue']['fg']} !important;
+    }}
+    .st-key-ai_reload_phone_wrap div[data-testid="stButton"] > button {{
+        background-color: color-mix(in srgb, {BUTTON_COLORS['green']['bg']} 68%, {t['card_bg']} 32%) !important;
+        border-color: {BUTTON_COLORS['green']['border']} !important;
+        color: {BUTTON_COLORS['green']['border']} !important;
+        font-size: 2rem !important;
+    }}
+    .st-key-ai_en_phone_off_wrap div[data-testid="stButton"] > button,
+    .st-key-ai_en_phone_on_wrap div[data-testid="stButton"] > button {{
+        font-size: 0.78rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.1em !important;
+    }}
+    .st-key-ai_en_phone_off_wrap div[data-testid="stButton"] > button {{
+        background-color: rgba(128,128,128,0.08) !important;
+        border-color: rgba(128,128,128,0.35) !important;
+        color: rgba(120,120,120,0.85) !important;
+    }}
+    .st-key-ai_en_phone_on_wrap div[data-testid="stButton"] > button {{
+        background-color: rgba(255,136,0,0.13) !important;
+        border-color: #ff8800 !important;
+        color: #ff8800 !important;
     }}
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap,
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap > div,
@@ -12275,7 +12303,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                 )
                 elif ai_has_sentences:
                     with st.container(key="action_phone_bottom_actions_row_wrap"):
-                        phone_actions_row_columns = st.columns([1, 1, 2.08], gap="small")
+                        phone_actions_row_columns = st.columns(5, gap="small")
                         with phone_actions_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
                                 render_speaker_button(speaker_audio_text, icon_font_size="1.9rem")
@@ -12283,13 +12311,16 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                             with st.container(key="autoplay_btn_phone_wrap"):
                                 render_auto_speak_button(st.session_state.auto_speak_spanish)
                         with phone_actions_row_columns[2]:
-                            with st.container(key="phone_ai_actions_wrap"):
-                                render_ai_action_buttons(
-                                    cycle_disabled=ai_examples_loading,
-                                    reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading,
-                                    en_disabled=ai_examples_loading,
-                                    en_is_on=st.session_state.ai_examples_show_english,
-                                )
+                            with st.container(key="ai_cycle_phone_wrap"):
+                                st.button("→", key="ai_cycle_phone_btn", disabled=ai_examples_loading, on_click=cycle_ai_example)
+                        reload_phone_disabled = (not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading
+                        with phone_actions_row_columns[3]:
+                            with st.container(key="ai_reload_phone_wrap"):
+                                st.button("⟳", key="ai_reload_phone_btn", disabled=reload_phone_disabled, on_click=lambda: begin_ai_examples_action("reload"))
+                        with phone_actions_row_columns[4]:
+                            en_phone_key = "ai_en_phone_on_wrap" if st.session_state.ai_examples_show_english else "ai_en_phone_off_wrap"
+                            with st.container(key=en_phone_key):
+                                st.button("EN", key="ai_en_phone_btn", on_click=toggle_ai_examples_en)
                 else:
                     button_label = ai_disabled_label
                     if ai_examples_available:
