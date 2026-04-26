@@ -12238,8 +12238,6 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
             if st.button("__ai_reload_hidden__", key="ai_reload_hidden_btn"):
                 begin_ai_examples_action("reload")
                 st.rerun()
-    with st.container(key="autospeak_toggle_hidden_wrap"):
-        st.button("__autospeak_toggle__", key="autospeak_toggle_hidden_btn", on_click=toggle_auto_speak_spanish)
 
 
 def restart_mistakes_only():
