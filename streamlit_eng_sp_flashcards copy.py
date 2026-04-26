@@ -4428,10 +4428,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     max-width: 3.6rem !important;
 }}
 .st-key-action_bottom_row_wrap [data-testid="stColumn"]:nth-child(3) {{
-    flex: 0 0 7.46rem !important;
-    width: 7.46rem !important;
-    min-width: 7.46rem !important;
-    max-width: 7.46rem !important;
+    flex: 0 0 11.32rem !important;
+    width: 11.32rem !important;
+    min-width: 11.32rem !important;
+    max-width: 11.32rem !important;
 }}
 .st-key-answer_action_row_wrap .st-key-action_bottom_row_wrap {{
     margin-top: 0.26rem !important;
@@ -5188,19 +5188,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin-right: 0 !important;
 }}
 .st-key-answer_action_row_wrap .st-key-ai_actions_wrap {{
-    width: 7.46rem !important;
+    width: 11.32rem !important;
     display: flex !important;
     justify-content: flex-end !important;
 }}
 .st-key-answer_action_row_wrap .st-key-ai_actions_wrap [data-testid="stElementContainer"] {{
     width: fit-content !important;
-    min-width: 7.46rem !important;
+    min-width: 11.32rem !important;
     margin-left: auto !important;
     margin-right: 0 !important;
 }}
 .st-key-answer_action_row_wrap .st-key-ai_actions_wrap iframe {{
-    width: 7.46rem !important;
-    max-width: 7.46rem !important;
+    width: 11.32rem !important;
+    max-width: 11.32rem !important;
     display: block !important;
     margin-left: auto !important;
     margin-right: 0 !important;
@@ -5993,14 +5993,22 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         padding: 0 !important;
     }}
     .st-key-action_phone_bottom_single_row_wrap [data-testid="stHorizontalBlock"],
-    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stHorizontalBlock"],
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stHorizontalBlock"] {{
+    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stHorizontalBlock"] {{
         display: flex !important;
         flex-wrap: nowrap !important;
         align-items: stretch !important;
         justify-content: flex-start !important;
         gap: 0.26rem !important;
         width: 100% !important;
+        margin: 0 !important;
+    }}
+    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stHorizontalBlock"] {{
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        gap: 0.26rem !important;
+        width: fit-content !important;
         margin: 0 !important;
     }}
     .st-key-action_phone_bottom_single_row_wrap,
@@ -6031,9 +6039,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-action_phone_bottom_single_row_wrap [data-testid="stColumn"]:nth-child(1),
     .st-key-action_phone_bottom_single_row_wrap [data-testid="stColumn"]:nth-child(2),
     .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(1),
-    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(2),
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(1),
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(2) {{
+    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(2) {{
         flex: 0 0 3.6rem !important;
         width: 3.6rem !important;
         min-width: 3.6rem !important;
@@ -6042,20 +6048,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-action_phone_bottom_single_row_wrap [data-testid="stColumn"]:nth-child(3),
     .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(3),
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(3) {{
-        flex: 0 0 7.46rem !important;
-        width: 7.46rem !important;
-        min-width: 7.46rem !important;
-        max-width: 7.46rem !important;
-        padding: 0 !important;
-    }}
-    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(4),
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(4) {{
+    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(4) {{
         flex: 1 1 auto !important;
         min-width: 0 !important;
         padding: 0 !important;
     }}
     .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"] {{
+        flex: 0 0 3.6rem !important;
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
+        padding: 0 !important;
         align-self: stretch !important;
     }}
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap,
@@ -6093,9 +6096,35 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-action_phone_bottom_single_row_wrap .st-key-speaker_phone_wrap iframe {{
         margin-top: 0.1rem !important;
     }}
-    .st-key-action_phone_bottom_actions_row_wrap .st-key-speaker_phone_wrap iframe,
-    .st-key-action_phone_bottom_actions_row_wrap .st-key-phone_ai_actions_wrap iframe {{
-        margin-top: 0 !important;
+    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap > div,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap [data-testid="stElementContainer"],
+    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap > div,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap [data-testid="stElementContainer"],
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap > div,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap [data-testid="stElementContainer"],
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap > div,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap [data-testid="stElementContainer"] {{
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }}
+    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap iframe,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap iframe,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap iframe,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap iframe {{
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
+        height: 3.2rem !important;
+        min-height: 3.2rem !important;
+        margin: 0 !important;
+        display: block !important;
     }}
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button {{
         width: 7.46rem !important;
@@ -10883,6 +10912,232 @@ def render_auto_speak_button(is_on):
     )
 
 
+def render_phone_ai_cycle_btn(disabled=False):
+    disabled_attr = "disabled" if disabled else ""
+    cursor_val = "default" if disabled else "pointer"
+    opacity_val = "0.42" if disabled else "1"
+    components.html(
+        f"""
+        <style>
+        html, body {{
+            width: 100%;
+            height: 3.2rem;
+            min-height: 3.2rem;
+            overflow: hidden;
+        }}
+        body {{
+            margin: 0;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+            min-height: 3.2rem;
+            box-sizing: border-box;
+        }}
+        #btn {{
+            width: 100%;
+            height: 3.2rem;
+            min-width: 0;
+            min-height: 3.2rem;
+            font-size: 1.55rem;
+            font-weight: 700;
+            border-radius: 0.75rem;
+            border: 2px solid {BUTTON_COLORS['blue']['border']};
+            background: {BUTTON_COLORS['blue']['bg']};
+            color: {BUTTON_COLORS['blue']['fg']};
+            cursor: {cursor_val};
+            opacity: {opacity_val};
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0.18rem 0 0 0;
+            box-sizing: border-box;
+        }}
+        </style>
+        <button id="btn" type="button" {disabled_attr}>→</button>
+        <script>
+        (function() {{
+            var doc = window.parent.document;
+            var btn = document.getElementById('btn');
+            var sup = 0;
+            if (!btn || !doc || btn.disabled) return;
+            function tap(e) {{
+                var now = Date.now();
+                if (e.type === 'click' && now < sup) {{ e.preventDefault(); e.stopPropagation(); return; }}
+                if (e.type === 'touchend') sup = now + 700;
+                e.preventDefault(); e.stopPropagation();
+                if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+                var h = doc.querySelector('.st-key-aicycle_hidden_wrap button');
+                if (h) h.click();
+            }}
+            btn.addEventListener('click', tap);
+            btn.addEventListener('touchend', tap);
+        }})();
+        </script>
+        """,
+        height=64,
+    )
+
+
+def render_phone_ai_reload_btn(disabled=False):
+    if disabled:
+        border = "color-mix(in srgb, " + t['border'] + " 60%, " + t['card_bg'] + " 40%)"
+        bg = "color-mix(in srgb, " + t['card_bg'] + " 88%, " + t['bg'] + " 12%)"
+        fg = "color-mix(in srgb, " + t['fg'] + " 55%, " + t['card_bg'] + " 45%)"
+    else:
+        border = BUTTON_COLORS['green']['border']
+        bg = "color-mix(in srgb, " + BUTTON_COLORS['green']['bg'] + " 68%, " + t['card_bg'] + " 32%)"
+        fg = BUTTON_COLORS['green']['border']
+    disabled_attr = "disabled" if disabled else ""
+    cursor_val = "default" if disabled else "pointer"
+    opacity_val = "0.42" if disabled else "1"
+    components.html(
+        f"""
+        <style>
+        html, body {{
+            width: 100%;
+            height: 3.2rem;
+            min-height: 3.2rem;
+            overflow: hidden;
+        }}
+        body {{
+            margin: 0;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+            min-height: 3.2rem;
+            box-sizing: border-box;
+        }}
+        #btn {{
+            width: 100%;
+            height: 3.2rem;
+            min-width: 0;
+            min-height: 3.2rem;
+            font-size: 2.62rem;
+            font-weight: 400;
+            border-radius: 0.75rem;
+            border: 2px solid {border};
+            background: {bg};
+            color: {fg};
+            cursor: {cursor_val};
+            opacity: {opacity_val};
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        </style>
+        <button id="btn" type="button" {disabled_attr}>⟳</button>
+        <script>
+        (function() {{
+            var doc = window.parent.document;
+            var btn = document.getElementById('btn');
+            var sup = 0;
+            if (!btn || !doc || btn.disabled) return;
+            function tap(e) {{
+                var now = Date.now();
+                if (e.type === 'click' && now < sup) {{ e.preventDefault(); e.stopPropagation(); return; }}
+                if (e.type === 'touchend') sup = now + 700;
+                e.preventDefault(); e.stopPropagation();
+                if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+                var h = doc.querySelector('.st-key-aireload_hidden_wrap button');
+                if (h) h.click();
+            }}
+            btn.addEventListener('click', tap);
+            btn.addEventListener('touchend', tap);
+        }})();
+        </script>
+        """,
+        height=64,
+    )
+
+
+def render_phone_ai_en_btn(en_is_on=False):
+    if en_is_on:
+        border = "#ff8800"
+        bg = "rgba(255,136,0,0.13)"
+        fg = "#ff8800"
+    else:
+        border = "rgba(128,128,128,0.35)"
+        bg = "rgba(128,128,128,0.08)"
+        fg = "rgba(120,120,120,0.85)"
+    components.html(
+        f"""
+        <style>
+        html, body {{
+            width: 100%;
+            height: 3.2rem;
+            min-height: 3.2rem;
+            overflow: hidden;
+        }}
+        body {{
+            margin: 0;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+            min-height: 3.2rem;
+            box-sizing: border-box;
+        }}
+        #btn {{
+            width: 100%;
+            height: 3.2rem;
+            min-width: 0;
+            min-height: 3.2rem;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            border-radius: 0.75rem;
+            border: 2px solid {border};
+            background: {bg};
+            color: {fg};
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        </style>
+        <button id="btn" type="button">EN</button>
+        <script>
+        (function() {{
+            var doc = window.parent.document;
+            var btn = document.getElementById('btn');
+            var sup = 0;
+            if (!btn || !doc) return;
+            function tap(e) {{
+                var now = Date.now();
+                if (e.type === 'click' && now < sup) {{ e.preventDefault(); e.stopPropagation(); return; }}
+                if (e.type === 'touchend') sup = now + 700;
+                e.preventDefault(); e.stopPropagation();
+                if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+                var h = doc.querySelector('.st-key-aien_hidden_wrap button');
+                if (h) h.click();
+            }}
+            btn.addEventListener('click', tap);
+            btn.addEventListener('touchend', tap);
+        }})();
+        </script>
+        """,
+        height=64,
+    )
+
+
 def render_ai_cycle_button(disabled=False):
     disabled_attr = "disabled" if disabled else ""
     cursor_value = "default" if disabled else "pointer"
@@ -12201,7 +12456,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                             with st.container(key="favorite_wrap"):
                                 st.button("♥︎", key="favorite_btn", on_click=add_current_card_to_favorites)
                 with st.container(key="action_bottom_row_wrap"):
-                    bottom_cols = st.columns([1, 1, 2], gap="small")
+                    bottom_cols = st.columns([1, 1, 3], gap="small")
                     with bottom_cols[0]:
                         with st.container(key="speaker_wrap"):
                             render_speaker_button(speaker_audio_text)
@@ -12275,7 +12530,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                 )
                 elif ai_has_sentences:
                     with st.container(key="action_phone_bottom_actions_row_wrap"):
-                        phone_actions_row_columns = st.columns([1, 1, 2.08], gap="small")
+                        phone_actions_row_columns = st.columns(5, gap="small")
                         with phone_actions_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
                                 render_speaker_button(speaker_audio_text, icon_font_size="1.9rem")
@@ -12283,13 +12538,16 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                             with st.container(key="autoplay_btn_phone_wrap"):
                                 render_auto_speak_button(st.session_state.auto_speak_spanish)
                         with phone_actions_row_columns[2]:
-                            with st.container(key="phone_ai_actions_wrap"):
-                                render_ai_action_buttons(
-                                    cycle_disabled=ai_examples_loading,
-                                    reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading,
-                                    en_disabled=ai_examples_loading,
-                                    en_is_on=st.session_state.ai_examples_show_english,
-                                )
+                            with st.container(key="ai_cycle_phone_wrap"):
+                                render_phone_ai_cycle_btn(disabled=ai_examples_loading)
+                        reload_phone_disabled = (not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading
+                        with phone_actions_row_columns[3]:
+                            with st.container(key="ai_reload_phone_wrap"):
+                                render_phone_ai_reload_btn(disabled=reload_phone_disabled)
+                        with phone_actions_row_columns[4]:
+                            en_phone_key = "ai_en_phone_on_wrap" if st.session_state.ai_examples_show_english else "ai_en_phone_off_wrap"
+                            with st.container(key=en_phone_key):
+                                render_phone_ai_en_btn(en_is_on=st.session_state.ai_examples_show_english)
                 else:
                     button_label = ai_disabled_label
                     if ai_examples_available:

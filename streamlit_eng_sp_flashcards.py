@@ -4428,10 +4428,10 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     max-width: 3.6rem !important;
 }}
 .st-key-action_bottom_row_wrap [data-testid="stColumn"]:nth-child(3) {{
-    flex: 0 0 7.46rem !important;
-    width: 7.46rem !important;
-    min-width: 7.46rem !important;
-    max-width: 7.46rem !important;
+    flex: 0 0 11.32rem !important;
+    width: 11.32rem !important;
+    min-width: 11.32rem !important;
+    max-width: 11.32rem !important;
 }}
 .st-key-answer_action_row_wrap .st-key-action_bottom_row_wrap {{
     margin-top: 0.26rem !important;
@@ -5188,19 +5188,19 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     margin-right: 0 !important;
 }}
 .st-key-answer_action_row_wrap .st-key-ai_actions_wrap {{
-    width: 7.46rem !important;
+    width: 11.32rem !important;
     display: flex !important;
     justify-content: flex-end !important;
 }}
 .st-key-answer_action_row_wrap .st-key-ai_actions_wrap [data-testid="stElementContainer"] {{
     width: fit-content !important;
-    min-width: 7.46rem !important;
+    min-width: 11.32rem !important;
     margin-left: auto !important;
     margin-right: 0 !important;
 }}
 .st-key-answer_action_row_wrap .st-key-ai_actions_wrap iframe {{
-    width: 7.46rem !important;
-    max-width: 7.46rem !important;
+    width: 11.32rem !important;
+    max-width: 11.32rem !important;
     display: block !important;
     margin-left: auto !important;
     margin-right: 0 !important;
