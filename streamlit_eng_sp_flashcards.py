@@ -7099,6 +7099,9 @@ def current_card_supports_ai_examples():
     ):
         return False
 
+    if "vocab" in os.path.basename(filename).lower():
+        return True
+
     folder_labels = [
         normalized_folder_label(part)
         for part in csv_relative_folder_parts_for(filename)
