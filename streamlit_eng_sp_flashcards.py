@@ -369,7 +369,7 @@ AI_EXAMPLES_ALLOWED_POS_FOLDERS = {
     "prepositions",
     "pronouns",
 }
-AI_EXAMPLES_ALLOWED_VERB_FOLDER = "00 infinitives"
+AI_EXAMPLES_ALLOWED_VERB_FOLDER = "infinitives"
 AI_EXAMPLES_ALLOWED_TOP_LEVEL_FOLDERS = {
     "vocabulary",
 }
@@ -5037,7 +5037,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     gap: 0.35rem 0.6rem;
     align-items: start;
 }}
-.st-key-menu_ai_tenses_wrap [data-testid="column"] {{
+.st-key-menu_ai_tenses_wrap [data-testid="stColumn"] {{
     width: 100% !important;
     min-width: 0 !important;
     flex: none !important;
