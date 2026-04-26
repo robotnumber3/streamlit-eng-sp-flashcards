@@ -6031,9 +6031,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-action_phone_bottom_single_row_wrap [data-testid="stColumn"]:nth-child(1),
     .st-key-action_phone_bottom_single_row_wrap [data-testid="stColumn"]:nth-child(2),
     .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(1),
-    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(2),
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(1),
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(2) {{
+    .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(2) {{
         flex: 0 0 3.6rem !important;
         width: 3.6rem !important;
         min-width: 3.6rem !important;
@@ -6048,42 +6046,9 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
         padding: 0 !important;
     }}
     .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"] {{
-        flex: 0 0 3.6rem !important;
-        width: 3.6rem !important;
-        min-width: 3.6rem !important;
-        max-width: 3.6rem !important;
         padding: 0 !important;
+        min-width: 0 !important;
         align-self: stretch !important;
-    }}
-    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap,
-    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap > div,
-    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap [data-testid="stElementContainer"],
-    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap,
-    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap > div,
-    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap [data-testid="stElementContainer"],
-    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap,
-    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap > div,
-    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap [data-testid="stElementContainer"],
-    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap,
-    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap > div,
-    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap [data-testid="stElementContainer"] {{
-        width: 3.6rem !important;
-        min-width: 3.6rem !important;
-        max-width: 3.6rem !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }}
-    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap iframe,
-    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap iframe,
-    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap iframe,
-    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap iframe {{
-        width: 3.6rem !important;
-        min-width: 3.6rem !important;
-        max-width: 3.6rem !important;
-        height: 3.2rem !important;
-        min-height: 3.2rem !important;
-        margin: 0 !important;
-        display: block !important;
     }}
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap,
     .st-key-answer_action_row_phone_wrap .st-key-speaker_phone_wrap > div,
@@ -6120,9 +6085,29 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     .st-key-action_phone_bottom_single_row_wrap .st-key-speaker_phone_wrap iframe {{
         margin-top: 0.1rem !important;
     }}
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-speaker_phone_wrap,
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-speaker_phone_wrap > div,
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-speaker_phone_wrap [data-testid="stElementContainer"],
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-autoplay_btn_phone_wrap,
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-autoplay_btn_phone_wrap > div,
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-autoplay_btn_phone_wrap [data-testid="stElementContainer"],
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-phone_ai_actions_wrap,
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-phone_ai_actions_wrap > div,
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-phone_ai_actions_wrap [data-testid="stElementContainer"] {{
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+    }}
     .st-key-action_phone_bottom_actions_row_wrap .st-key-speaker_phone_wrap iframe,
+    .st-key-action_phone_bottom_actions_row_wrap .st-key-autoplay_btn_phone_wrap iframe,
     .st-key-action_phone_bottom_actions_row_wrap .st-key-phone_ai_actions_wrap iframe {{
-        margin-top: 0 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        height: 3.2rem !important;
+        min-height: 3.2rem !important;
+        margin: 0 !important;
+        display: block !important;
     }}
     .st-key-phone_ai_single_wrap div[data-testid="stButton"] > button {{
         width: 7.46rem !important;
@@ -12528,24 +12513,22 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                 )
                 elif ai_has_sentences:
                     with st.container(key="action_phone_bottom_actions_row_wrap"):
-                        phone_actions_row_columns = st.columns(5, gap="small")
+                        phone_actions_row_columns = st.columns([1, 1, 3], gap="small")
                         with phone_actions_row_columns[0]:
                             with st.container(key="speaker_phone_wrap"):
                                 render_speaker_button(speaker_audio_text, icon_font_size="1.9rem")
                         with phone_actions_row_columns[1]:
                             with st.container(key="autoplay_btn_phone_wrap"):
                                 render_auto_speak_button(st.session_state.auto_speak_spanish)
-                        with phone_actions_row_columns[2]:
-                            with st.container(key="ai_cycle_phone_wrap"):
-                                render_phone_ai_cycle_btn(disabled=ai_examples_loading)
                         reload_phone_disabled = (not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading
-                        with phone_actions_row_columns[3]:
-                            with st.container(key="ai_reload_phone_wrap"):
-                                render_phone_ai_reload_btn(disabled=reload_phone_disabled)
-                        with phone_actions_row_columns[4]:
-                            en_phone_key = "ai_en_phone_on_wrap" if st.session_state.ai_examples_show_english else "ai_en_phone_off_wrap"
-                            with st.container(key=en_phone_key):
-                                render_phone_ai_en_btn(en_is_on=st.session_state.ai_examples_show_english)
+                        with phone_actions_row_columns[2]:
+                            with st.container(key="phone_ai_actions_wrap"):
+                                render_ai_action_buttons(
+                                    cycle_disabled=ai_examples_loading,
+                                    reload_disabled=reload_phone_disabled,
+                                    en_disabled=False,
+                                    en_is_on=st.session_state.ai_examples_show_english,
+                                )
                 else:
                     button_label = ai_disabled_label
                     if ai_examples_available:
