@@ -6042,22 +6042,40 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     }}
     .st-key-action_phone_bottom_single_row_wrap [data-testid="stColumn"]:nth-child(3),
     .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(3),
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(3),
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(4),
-    .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"]:nth-child(5) {{
-        flex: 0 0 3.6rem !important;
-        width: 3.6rem !important;
-        min-width: 3.6rem !important;
-        max-width: 3.6rem !important;
-        padding: 0 !important;
-    }}
     .st-key-action_phone_bottom_loading_row_wrap [data-testid="stColumn"]:nth-child(4) {{
         flex: 1 1 auto !important;
         min-width: 0 !important;
         padding: 0 !important;
     }}
     .st-key-action_phone_bottom_actions_row_wrap [data-testid="stColumn"] {{
+        flex: 0 0 3.6rem !important;
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
+        padding: 0 !important;
         align-self: stretch !important;
+    }}
+    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap > div,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap [data-testid="stElementContainer"],
+    .st-key-answer_action_row_phone_wrap .st-key-ai_cycle_phone_wrap [data-testid="stButton"],
+    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap > div,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap [data-testid="stElementContainer"],
+    .st-key-answer_action_row_phone_wrap .st-key-ai_reload_phone_wrap [data-testid="stButton"],
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap > div,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap [data-testid="stElementContainer"],
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_off_wrap [data-testid="stButton"],
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap > div,
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap [data-testid="stElementContainer"],
+    .st-key-answer_action_row_phone_wrap .st-key-ai_en_phone_on_wrap [data-testid="stButton"] {{
+        width: 3.6rem !important;
+        min-width: 3.6rem !important;
+        max-width: 3.6rem !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }}
     .st-key-ai_cycle_phone_wrap div[data-testid="stButton"] > button {{
         background-color: {BUTTON_COLORS['blue']['bg']} !important;
