@@ -5878,6 +5878,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .deck-picker-status-in_progress .deck-picker-row-icon,
 .deck-picker-status-review .deck-picker-row-icon {{
     color: #f2c94c;
+    font-size: 1.45rem;
 }}
 .deck-picker-status-complete .deck-picker-row-icon {{
     color: {t['accent']};

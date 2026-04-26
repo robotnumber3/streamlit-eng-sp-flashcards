@@ -1,30 +1,31 @@
-to open,abrir
-to admit,admitir
-to attend,asistir
-to share,compartir
-to cover,cubrir
-to fulfill / turn (age),cumplir
-to discuss / debate,debatir
-to decide,decidir
-to describe,describir
-to discover,descubrir
-to discuss,discutir
-to divide,dividir
-to write,escribir
-to spit,escupir
-to pretend / feign,fingir
-to print,imprimir
-to insist,insistir
-to omit,omitir
-to split / depart,partir
-to allow,permitir
-to prohibit / forbid,prohibir
-to polish / shine,pulir
-to receive,recibir
-to cover again / re‑cover,recubrir
-to print again / reprint,reimprimir
-to go up / upload,subir
-to suffer,sufrir
-to transmit / broadcast,transmitir
-to join / unite,unir
-to live,vivir
+"id","word","answer"
+"1","to open","abrir"
+"2","to admit","admitir"
+"3","to attend","asistir"
+"4","to share","compartir"
+"5","to cover","cubrir"
+"6","to fulfill / turn (age)","cumplir"
+"7","to discuss / debate","debatir"
+"8","to decide","decidir"
+"9","to describe","describir"
+"10","to discover","descubrir"
+"11","to discuss","discutir"
+"12","to divide","dividir"
+"13","to write","escribir"
+"14","to spit","escupir"
+"15","to pretend / feign","fingir"
+"16","to print","imprimir"
+"17","to insist","insistir"
+"18","to omit","omitir"
+"19","to split / depart","partir"
+"20","to allow","permitir"
+"21","to prohibit / forbid","prohibir"
+"22","to polish / shine","pulir"
+"23","to receive","recibir"
+"24","to cover again / re‑cover","recubrir"
+"25","to print again / reprint","reimprimir"
+"26","to go up / upload","subir"
+"27","to suffer","sufrir"
+"28","to transmit / broadcast","transmitir"
+"29","to join / unite","unir"
+"30","to live","vivir"
