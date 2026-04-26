@@ -2560,6 +2560,8 @@ defaults = {
     "ai_examples_loading": False,
     "ai_examples_pending_action": None,
     "ai_examples_autoplay_generation": 0,
+    "ai_examples_translations": [],
+    "ai_examples_show_english": False,
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -4580,6 +4582,17 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
     opacity: 0 !important;
     pointer-events: none !important;
 }}
+.st-key-aien_hidden_wrap {{
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}}
 .st-key-ai_autospeak_iframe_wrap {{
     position: fixed !important;
     bottom: 0 !important;
@@ -4614,6 +4627,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-regularautoadvance_hidden_wrap,
 .st-key-aicycle_hidden_wrap,
 .st-key-aireload_hidden_wrap,
+.st-key-aien_hidden_wrap,
 .st-key-autospeak_toggle_hidden_wrap,
 .st-key-ai_autospeak_iframe_wrap {{
     position: fixed !important;
@@ -4636,6 +4650,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 .st-key-regularautoadvance_hidden_wrap *,
 .st-key-aicycle_hidden_wrap *,
 .st-key-aireload_hidden_wrap *,
+.st-key-aien_hidden_wrap *,
 .st-key-autospeak_toggle_hidden_wrap *,
 .st-key-ai_autospeak_iframe_wrap * {{
     pointer-events: none !important;
@@ -7023,6 +7038,8 @@ def advance_card(schedule_current=True):
     st.session_state.delete_review_confirm_key = None
     st.session_state.ai_examples_signature = None
     st.session_state.ai_examples_sentences = []
+    st.session_state.ai_examples_translations = []
+    st.session_state.ai_examples_show_english = False
     st.session_state.ai_examples_index = 0
     st.session_state.ai_examples_error = None
     st.session_state.ai_examples_reload_unlocked = False
@@ -7170,6 +7187,8 @@ def sync_ai_examples_state():
         return
     st.session_state.ai_examples_signature = signature
     st.session_state.ai_examples_sentences = []
+    st.session_state.ai_examples_translations = []
+    st.session_state.ai_examples_show_english = False
     st.session_state.ai_examples_index = 0
     st.session_state.ai_examples_error = None
     st.session_state.ai_examples_reload_unlocked = False
@@ -7226,7 +7245,8 @@ def build_ai_examples_prompt(card, action=None, previous_sentences=None):
             f"Usa solo estas formas verbales para cualquier verbo que aparezca: {tense_names}. "
             f"Varía el contexto y la redacción. "
             f"Cada oración debe acercarse a {target_words} palabras (más o menos 2).{avoid_repeat_clause} "
-            f"Devuelve solo las {AI_EXAMPLES_PER_BATCH} oraciones, una por línea."
+            f"Para cada oración, escribe primero la oración en español y en la siguiente línea su traducción al inglés. "
+            f"Separa los pares con una línea en blanco. No uses numeración."
         )
 
     return (
@@ -7237,7 +7257,8 @@ def build_ai_examples_prompt(card, action=None, previous_sentences=None):
         f"Usa solo estas formas verbales para cualquier verbo: {tense_names}. "
         f"Varía el contexto y la redacción. "
         f"Cada oración debe acercarse a {target_words} palabras (más o menos 2).{avoid_repeat_clause} "
-        f"Devuelve solo las {AI_EXAMPLES_PER_BATCH} oraciones, una por línea."
+        f"Para cada oración, escribe primero la oración en español y en la siguiente línea su traducción al inglés. "
+        f"Separa los pares con una línea en blanco. No uses numeración."
     )
 
 
@@ -7261,17 +7282,52 @@ def parse_ai_examples_text(text):
     return lines[:AI_EXAMPLES_PER_BATCH]
 
 
+def parse_ai_examples_pairs(text):
+    raw_lines = [
+        re.sub(r'^\s*(?:\d+[\).:-]?\s*|[-*]\s*)', '', line).strip()
+        for line in (text or "").splitlines()
+    ]
+    groups, current = [], []
+    for line in raw_lines:
+        if line:
+            current.append(line)
+        else:
+            if current:
+                groups.append(current)
+                current = []
+    if current:
+        groups.append(current)
+    spanish_list, english_list = [], []
+    for group in groups:
+        if len(group) >= 2:
+            spanish_list.append(group[0])
+            english_list.append(group[1])
+        elif len(group) == 1:
+            spanish_list.append(group[0])
+            english_list.append("")
+    if len(spanish_list) < AI_EXAMPLES_PER_BATCH:
+        non_blank = [l for l in raw_lines if l]
+        if len(non_blank) >= AI_EXAMPLES_PER_BATCH * 2:
+            spanish_list = [non_blank[i * 2] for i in range(AI_EXAMPLES_PER_BATCH)]
+            english_list = [non_blank[i * 2 + 1] for i in range(AI_EXAMPLES_PER_BATCH)]
+    return spanish_list[:AI_EXAMPLES_PER_BATCH], english_list[:AI_EXAMPLES_PER_BATCH]
+
+
 def fetch_ai_examples_for_current_card():
     sync_ai_examples_state()
     st.session_state.ai_examples_error = None
     availability = current_ai_examples_availability()
     if not availability["eligible"]:
         st.session_state.ai_examples_sentences = []
+        st.session_state.ai_examples_translations = []
+        st.session_state.ai_examples_show_english = False
         st.session_state.ai_examples_loading = False
         st.session_state.ai_examples_pending_action = None
         return False
     if not availability["available"]:
         st.session_state.ai_examples_sentences = []
+        st.session_state.ai_examples_translations = []
+        st.session_state.ai_examples_show_english = False
         st.session_state.ai_examples_error = availability["reason"]
         st.session_state.ai_examples_loading = False
         st.session_state.ai_examples_pending_action = None
@@ -7299,6 +7355,8 @@ def fetch_ai_examples_for_current_card():
             result = json.loads(response.read().decode("utf-8"))
     except Exception as error:
         st.session_state.ai_examples_sentences = []
+        st.session_state.ai_examples_translations = []
+        st.session_state.ai_examples_show_english = False
         st.session_state.ai_examples_error = ai_examples_request_error_message(error)
         st.session_state.ai_examples_loading = False
         st.session_state.ai_examples_pending_action = None
@@ -7313,15 +7371,19 @@ def fetch_ai_examples_for_current_card():
         if output_text:
             break
 
-    sentences = parse_ai_examples_text(output_text)
+    sentences, translations = parse_ai_examples_pairs(output_text)
     if len(sentences) != AI_EXAMPLES_PER_BATCH:
         st.session_state.ai_examples_sentences = []
+        st.session_state.ai_examples_translations = []
+        st.session_state.ai_examples_show_english = False
         st.session_state.ai_examples_error = "Could not parse three examples from the response."
         st.session_state.ai_examples_loading = False
         st.session_state.ai_examples_pending_action = None
         return False
 
     st.session_state.ai_examples_sentences = sentences
+    st.session_state.ai_examples_translations = translations
+    st.session_state.ai_examples_show_english = False
     st.session_state.ai_examples_index = 0
     st.session_state.ai_examples_error = None
     st.session_state.ai_examples_reload_unlocked = False
@@ -9756,12 +9818,20 @@ def render_flashcard(prompt, solution, show_answer):
         if current_card_supports_ai_examples():
             sync_ai_examples_state()
             if st.session_state.ai_examples_sentences:
-                current_example = st.session_state.ai_examples_sentences[st.session_state.ai_examples_index]
-                current_position = st.session_state.ai_examples_index + 1
+                idx = st.session_state.ai_examples_index
+                show_en = st.session_state.ai_examples_show_english
+                translations = st.session_state.ai_examples_translations
+                if show_en and idx < len(translations) and translations[idx]:
+                    current_example = translations[idx]
+                    example_label = "Translation"
+                else:
+                    current_example = st.session_state.ai_examples_sentences[idx]
+                    example_label = "Example"
+                current_position = idx + 1
                 total_examples = len(st.session_state.ai_examples_sentences)
                 ai_extra_html = (
                     '<div class="fc-ai-example-wrap">'
-                    '<div class="fc-ai-example-label">Example</div>'
+                    f'<div class="fc-ai-example-label">{example_label}</div>'
                     '<div class="fc-ai-example">'
                     + html.escape(current_example)
                     + ' <span class="fc-ai-example-count">['
@@ -10602,6 +10672,10 @@ def inject_speech_priming():
     )
 
 
+def toggle_ai_examples_en():
+    st.session_state.ai_examples_show_english = not st.session_state.ai_examples_show_english
+
+
 def toggle_auto_speak_spanish():
     st.session_state.auto_speak_spanish = not st.session_state.auto_speak_spanish
     if st.session_state.auto_speak_spanish:
@@ -10872,13 +10946,16 @@ def render_ai_cycle_button(disabled=False):
     )
 
 
-def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
+def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False, en_disabled=False, en_is_on=False):
     cycle_disabled_attr = "disabled" if cycle_disabled else ""
     reload_disabled_attr = "disabled" if reload_disabled else ""
+    en_disabled_attr = "disabled" if en_disabled else ""
     cycle_cursor = "default" if cycle_disabled else "pointer"
     reload_cursor = "default" if reload_disabled else "pointer"
+    en_cursor = "default" if en_disabled else "pointer"
     cycle_opacity = "0.42" if cycle_disabled else "1"
     reload_opacity = "0.42" if reload_disabled else "1"
+    en_opacity = "0.42" if en_disabled else "1"
     if reload_disabled:
         reload_border = "color-mix(in srgb, " + t['border'] + " 60%, " + t['card_bg'] + " 40%)"
         reload_bg = "color-mix(in srgb, " + t['card_bg'] + " 88%, " + t['bg'] + " 12%)"
@@ -10887,6 +10964,14 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
         reload_border = BUTTON_COLORS['green']['border']
         reload_bg = "color-mix(in srgb, " + BUTTON_COLORS['green']['bg'] + " 68%, " + t['card_bg'] + " 32%)"
         reload_fg = BUTTON_COLORS['green']['border']
+    if en_is_on and not en_disabled:
+        en_border = "#ff8800"
+        en_bg = "rgba(255,136,0,0.13)"
+        en_fg = "#ff8800"
+    else:
+        en_border = "rgba(128,128,128,0.35)"
+        en_bg = "rgba(128,128,128,0.08)"
+        en_fg = "rgba(120,120,120,0.85)"
     components.html(
         f"""
         <style>
@@ -10911,7 +10996,7 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
             min-width: 0;
             max-width: none;
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             column-gap: 0.26rem;
             align-items: center;
             justify-items: stretch;
@@ -10950,10 +11035,22 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
             opacity: {reload_opacity};
             padding-top: 0;
         }}
+        #ai-en-btn {{
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            border: 2px solid {en_border};
+            background: {en_bg};
+            color: {en_fg};
+            cursor: {en_cursor};
+            opacity: {en_opacity};
+            padding-top: 0;
+        }}
         </style>
         <div class="ai-action-row">
             <button id="ai-cycle-btn" class="ai-action-btn" type="button" {cycle_disabled_attr}>→</button>
             <button id="ai-reload-btn" class="ai-action-btn" type="button" {reload_disabled_attr}>⟳</button>
+            <button id="ai-en-btn" class="ai-action-btn" type="button" {en_disabled_attr}>EN</button>
         </div>
         <script>
         (function() {{
@@ -10961,6 +11058,7 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
             var doc = parentWindow.document;
             var cycleButton = document.getElementById('ai-cycle-btn');
             var reloadButton = document.getElementById('ai-reload-btn');
+            var enButton = document.getElementById('ai-en-btn');
             if (!doc) return;
 
             function triggerHidden(selector, event) {{
@@ -10985,6 +11083,12 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False):
             if (reloadButton && !reloadButton.disabled) {{
                 reloadButton.addEventListener('click', function(event) {{
                     triggerHidden('.st-key-aireload_hidden_wrap button', event);
+                }});
+            }}
+
+            if (enButton && !enButton.disabled) {{
+                enButton.addEventListener('click', function(event) {{
+                    triggerHidden('.st-key-aien_hidden_wrap button', event);
                 }});
             }}
         }})();
@@ -12109,12 +12213,14 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                             if ai_has_sentences:
                                 if ai_examples_loading:
                                     with st.container(key="ai_actions_wrap"):
-                                        render_ai_action_buttons(cycle_disabled=True, reload_disabled=True)
+                                        render_ai_action_buttons(cycle_disabled=True, reload_disabled=True, en_disabled=True, en_is_on=False)
                                 else:
                                     with st.container(key="ai_actions_wrap"):
                                         render_ai_action_buttons(
                                             cycle_disabled=False,
                                             reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available),
+                                            en_disabled=False,
+                                            en_is_on=st.session_state.ai_examples_show_english,
                                         )
                             elif ai_examples_loading:
                                 with st.container(key="ai_single_wrap"):
@@ -12181,6 +12287,8 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                                 render_ai_action_buttons(
                                     cycle_disabled=ai_examples_loading,
                                     reload_disabled=(not ai_reload_unlocked) or (not ai_examples_available) or ai_examples_loading,
+                                    en_disabled=ai_examples_loading,
+                                    en_is_on=st.session_state.ai_examples_show_english,
                                 )
                 else:
                     button_label = ai_disabled_label
@@ -12238,6 +12346,8 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
             if st.button("__ai_reload_hidden__", key="ai_reload_hidden_btn"):
                 begin_ai_examples_action("reload")
                 st.rerun()
+        with st.container(key="aien_hidden_wrap"):
+            st.button("__ai_en_hidden__", key="ai_en_hidden_btn", on_click=toggle_ai_examples_en)
     with st.container(key="autospeak_toggle_hidden_wrap"):
         st.button("__autospeak_toggle__", key="autospeak_toggle_hidden_btn", on_click=toggle_auto_speak_spanish)
 
