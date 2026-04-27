@@ -1,106 +1,106 @@
-id,word,answer
-1,something,algo
-2,someone,alguien
-3,"someone [F, sing]",alguna
-4,"some [F, pl]",algunas
-5,"someone [M, sing]",alguno
-6,"some [M, pl]",algunos
-7,"that over there [M, sing]",aquel
-8,"that over there [F, sing]",aquella
-9,"those over there [F, pl]",aquellas
-10,that over there [neuter],aquello
-11,"those over there [M, pl]",aquellos
-24,how,cómo
-12,"which [M, sing]",cual
-16,which/what [choice],cuál
-13,which [pl],cuales
-18,which [pl],cuáles
-19,when,cuándo
-20,"how much [F, sing]",cuánta
-21,"how many [F, pl]",cuántas
-22,"how much [M, sing]",cuánto
-23,"how many [M, pl]",cuántos
-14,"whose [F, sing]",cuya
-15,"whose [M, sing]",cuyo
-26,where,dónde
-124,"he [M, sing, subj]",él
-27,"each other [M, sing]",el uno al otro
-28,"she [F, sing, subj]",ella
-30,"they [F, pl, subj]",ellas
-31,"they [pl, subj, M/mixed]",ellos
-33,"that [F, sing]",esa
-34,"those [F, pl]",esas
-35,"that [M, sing]",ese
-36,that [neuter],eso
-37,"those [M, pl]",esos
-38,"this [F, sing]",esta
-39,"these [F, pl]",estas
-40,"this [M, sing]",este
-41,this [neuter],esto
-42,"these [M, pl]",estos
-43,"her [F, sing, D.O.]",la
-45,"each other [F, sing]",la una a la otra
-46,"them [F, pl, D.O.]",las
-47,"each other [F, pl]",las unas a las otras
-48,"to/for you/him/her [formal, M, sing, I.O.]",le
-51,"to/for you all / them [pl, I.O.]",les
-53,"him / it [M, sing, D.O.]",lo
-55,"them / you all [pl, D.O.]",los
-57,"each other [M, pl]",los unos a los otros
-58,"me [sing, obj]",me [obj]
-59,myself [reflexive],me [reflexive]
-60,"to/for me – it [F, sing, clitic]",me la
-61,"to/for me – them [F, pl, clitic]",me las
-62,"to/for me – it [M, sing, clitic]",me lo
-63,"to/for me – them [M, pl, clitic]",me los
-66,"for me [sing, prep]",mí
-64,my,mi / mis
-67,"mine [F, sing]",mía
-68,"mine [F, pl]",mías
-69,"mine [M, sing]",mío
-70,"mine [M, pl]",míos
-65,each other [neutral common],mutuamente
-71,nothing,nada
-72,no one,nadie
-73,"none [F, sing]",ninguna
-74,"none [M, sing]",ninguno
-75,"us [pl, obj]",nos [obj]
-76,ourselves [reflexive],nos [reflexive]
-77,"to/for us – it [F, sing, clitic]",nos la
-78,"to/for us – it [M, sing, clitic]",nos lo
-79,"we [F, pl, subj]",nosotras
-80,"we [pl, subj, M/mixed]",nosotros
-82,"our / ours [F, sing]",nuestra
-84,"our / ours [F, pl]",nuestras
-86,"our / ours [M, sing]",nuestro
-88,"our / ours [M, pl]",nuestros
-90,why,por qué
-91,that / which,que
-93,who,que
-98,what,qué
-96,who [sing],quién
-97,who [pl],quiénes
-99,"themselves / yourselves  [pl, reflexive]",se [reflexive]
-101,himself/herself/yourself/themselves/yourselves [reflexive],se [reflexive]
-102,"to/for him/her/you/them – it [formal, F, sing, clitic]",se la
-103,"to/for him/her/you/them – them [formal, F, pl, clitic]",se las
-104,"to/for him/her/you/them – it [formal, M, sing, clitic]",se lo
-105,"to/for him/her/you/them – them [formal, M, pl, clitic]",se los
-111,"for yourself [sing, prep, reflexive]",sí [reflexive]
-106,his/her/its/your/their [formal],su / sus
-107,"his/hers/yours/theirs [formal, F, sing]",suya
-108,"his/hers/yours/theirs [formal, F, pl]",suyas
-109,"his/hers/yours/theirs [formal, M, sing]",suyo
-110,"his/hers/yours/theirs [formal, M, pl]",suyos
-112,"you [informal, sing, obj]",te [obj]
-113,"yourself [informal, reflexive]",te [reflexive]
-114,"for you [informal, sing, prep]",ti
-120,"you [informal, sing, subj]",tú
-115,your [informal],tu / tus
-116,"yours [informal, F, sing]",tuya
-117,"yours [informal, F, pl]",tuyas
-118,"yours [informal, M, sing]",tuyo
-119,"yours [informal, M, pl]",tuyos
-121,"you [formal, sing, subj]",usted
-122,"you all [pl, subj]",ustedes
-123,"I [sing, subj]",yo
+"id","word","answer"
+"1","something","algo"
+"2","someone","alguien"
+"3","someone [F, sing]","alguna"
+"4","some [F, pl]","algunas"
+"5","someone [M, sing]","alguno"
+"6","some [M, pl]","algunos"
+"7","that over there [M, sing]","aquel"
+"8","that over there [F, sing]","aquella"
+"9","those over there [F, pl]","aquellas"
+"10","that over there [neuter]","aquello"
+"11","those over there [M, pl]","aquellos"
+"24","how","cómo"
+"12","which [M, sing]","cual"
+"16","which/what [choice]","cuál"
+"13","which [pl]","cuales"
+"18","which [pl]","cuáles"
+"19","when","cuándo"
+"20","how much [F, sing]","cuánta"
+"21","how many [F, pl]","cuántas"
+"22","how much [M, sing]","cuánto"
+"23","how many [M, pl]","cuántos"
+"14","whose [F, sing]","cuya"
+"15","whose [M, sing]","cuyo"
+"26","where","dónde"
+"124","he [M, sing, subj]","él"
+"27","each other [M, sing]","el uno al otro"
+"28","she [F, sing, subj]","ella"
+"30","they [F, pl, subj]","ellas"
+"31","they [pl, subj, M/mixed]","ellos"
+"33","that [F, sing]","esa"
+"34","those [F, pl]","esas"
+"35","that [M, sing]","ese"
+"36","that [neuter]","eso"
+"37","those [M, pl]","esos"
+"38","this [F, sing]","esta"
+"39","these [F, pl]","estas"
+"40","this [M, sing]","este"
+"41","this [neuter]","esto"
+"42","these [M, pl]","estos"
+"43","her [F, sing, D.O.]","la"
+"45","each other [F, sing]","la una a la otra"
+"46","them [F, pl, D.O.]","las"
+"47","each other [F, pl]","las unas a las otras"
+"48","to/for you/him/her [formal, M, sing, I.O.]","le"
+"51","to/for you all / them [pl, I.O.]","les"
+"53","him / it [M, sing, D.O.]","lo"
+"55","them / you all [pl, D.O.]","los"
+"57","each other [M, pl]","los unos a los otros"
+"58","me [sing, obj]","me [obj]"
+"59","myself [reflexive]","me [reflexive]"
+"60","to/for me – it [F, sing, clitic]","me la"
+"61","to/for me – them [F, pl, clitic]","me las"
+"62","to/for me – it [M, sing, clitic]","me lo"
+"63","to/for me – them [M, pl, clitic]","me los"
+"66","for me [sing, prep]","mí"
+"64","my","mi / mis"
+"67","mine [F, sing]","mía"
+"68","mine [F, pl]","mías"
+"69","mine [M, sing]","mío"
+"70","mine [M, pl]","míos"
+"65","each other [neutral common]","mutuamente"
+"71","nothing","nada"
+"72","no one","nadie"
+"73","none [F, sing]","ninguna"
+"74","none [M, sing]","ninguno"
+"75","us [pl, obj]","nos [obj]"
+"76","ourselves [reflexive]","nos [reflexive]"
+"77","to/for us – it [F, sing, clitic]","nos la"
+"78","to/for us – it [M, sing, clitic]","nos lo"
+"79","we [F, pl, subj]","nosotras"
+"80","we [pl, subj, M/mixed]","nosotros"
+"82","our / ours [F, sing]","nuestra"
+"84","our / ours [F, pl]","nuestras"
+"86","our / ours [M, sing]","nuestro"
+"88","our / ours [M, pl]","nuestros"
+"90","why","por qué"
+"91","that / which","que"
+"93","who","que"
+"98","what","qué"
+"96","who [sing]","quién"
+"97","who [pl]","quiénes"
+"99","themselves / yourselves  [pl, reflexive]","se [reflexive]"
+"101","himself/herself/yourself/themselves/yourselves [reflexive]","se [reflexive]"
+"102","to/for him/her/you/them – it [formal, F, sing, clitic]","se la"
+"103","to/for him/her/you/them – them [formal, F, pl, clitic]","se las"
+"104","to/for him/her/you/them – it [formal, M, sing, clitic]","se lo"
+"105","to/for him/her/you/them – them [formal, M, pl, clitic]","se los"
+"111","for yourself [sing, prep, reflexive]","sí [reflexive]"
+"106","his/her/its/your/their [formal]","su / sus"
+"107","his/hers/yours/theirs [formal, F, sing]","suya"
+"108","his/hers/yours/theirs [formal, F, pl]","suyas"
+"109","his/hers/yours/theirs [formal, M, sing]","suyo"
+"110","his/hers/yours/theirs [formal, M, pl]","suyos"
+"112","you [informal, sing, obj]","te [obj]"
+"113","yourself [informal, reflexive]","te [reflexive]"
+"114","for you [informal, sing, prep]","ti"
+"120","you [informal, sing, subj]","tú"
+"115","your [informal]","tu / tus"
+"116","yours [informal, F, sing]","tuya"
+"117","yours [informal, F, pl]","tuyas"
+"118","yours [informal, M, sing]","tuyo"
+"119","yours [informal, M, pl]","tuyos"
+"121","you [formal, sing, subj]","usted"
+"122","you all [pl, subj]","ustedes"
+"123","I [sing, subj]","yo"

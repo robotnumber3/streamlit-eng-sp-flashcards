@@ -1,49 +1,50 @@
-to shave,afeitar
-to grab / pick up,agarrar
-to hurry,apurarse
-to throw / toss,aventar
-to brush,cepillar
-to cross,cruzar
-to fold (clothes) / bend,doblar
-to push,empujar
-to turn in / submit,entregar
-to stretch,estirar
-to dial,marcar
-to park,parquear
-to participate,participar
-to scratch,rascar
-to ring / sound,sonar
-to toast (bread),tostar
-to turn around,voltear
-to accept,aceptar
-to accompany,acompañar
-to admire,admirar
-to point / aim / write down,apuntar
-to assure / insure,asegurar
-to charge / collect (money),cobrar
-to take care of,cuidar
-to have breakfast,desayunar
-to have dinner / supper,cenar
-to enjoy,disfrutar
-to pack,empacar
-to sign,firmar
-to smoke,fumar
-to spend (money),gastar
-to keep / put away / save,guardar
-to drive,manejar
-to improve,mejorar
-to go for a walk / stroll,pasear
-to fish,pescar
-to paint,pintar
-to remove / take away,quitar
-to check / review,revisar
-to steal / rob,robar
-to take out / remove,sacar
-to put up with / tolerate,soportar
-to cry,llorar
-to joke / kid around,bromear
-to chat / talk,charlar
-to move forward / overtake,adelantar
-to delay / set back,atrasar
-to congratulate,felicitar
-to imagine,imaginar
+"id","word","answer"
+"1","to shave","afeitar"
+"2","to grab / pick up","agarrar"
+"3","to hurry","apurarse"
+"4","to throw / toss","aventar"
+"5","to brush","cepillar"
+"6","to cross","cruzar"
+"7","to fold (clothes) / bend","doblar"
+"8","to push","empujar"
+"9","to turn in / submit","entregar"
+"10","to stretch","estirar"
+"11","to dial","marcar"
+"12","to park","parquear"
+"13","to participate","participar"
+"14","to scratch","rascar"
+"15","to ring / sound","sonar"
+"16","to toast (bread)","tostar"
+"17","to turn around","voltear"
+"18","to accept","aceptar"
+"19","to accompany","acompañar"
+"20","to admire","admirar"
+"21","to point / aim / write down","apuntar"
+"22","to assure / insure","asegurar"
+"23","to charge / collect (money)","cobrar"
+"24","to take care of","cuidar"
+"25","to have breakfast","desayunar"
+"26","to have dinner / supper","cenar"
+"27","to enjoy","disfrutar"
+"28","to pack","empacar"
+"29","to sign","firmar"
+"30","to smoke","fumar"
+"31","to spend (money)","gastar"
+"32","to keep / put away / save","guardar"
+"33","to drive","manejar"
+"34","to improve","mejorar"
+"35","to go for a walk / stroll","pasear"
+"36","to fish","pescar"
+"37","to paint","pintar"
+"38","to remove / take away","quitar"
+"39","to check / review","revisar"
+"40","to steal / rob","robar"
+"41","to take out / remove","sacar"
+"42","to put up with / tolerate","soportar"
+"43","to cry","llorar"
+"44","to joke / kid around","bromear"
+"45","to chat / talk","charlar"
+"46","to move forward / overtake","adelantar"
+"47","to delay / set back","atrasar"
+"48","to congratulate","felicitar"
+"49","to imagine","imaginar"

@@ -7099,6 +7099,9 @@ def current_card_supports_ai_examples():
     ):
         return False
 
+    if "vocab" in os.path.basename(filename).lower():
+        return True
+
     folder_labels = [
         normalized_folder_label(part)
         for part in csv_relative_folder_parts_for(filename)
@@ -12578,7 +12581,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                         with st.container(key="speaker_phone_wrap"):
                             render_speaker_button(spanish_audio_text, icon_font_size="1.9rem")
                     with phone_single_row_columns[1]:
-                        with st.container(key=auto_speak_phone_key):
+                        with st.container(key="autoplay_btn_phone_wrap"):
                             st.button("AUTO  \nPLAY", key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
                     with phone_single_row_columns[2]:
                         st.empty()

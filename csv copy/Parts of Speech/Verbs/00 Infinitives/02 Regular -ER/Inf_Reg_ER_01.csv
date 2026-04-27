@@ -1,49 +1,50 @@
-to absorb,absorber
-to thank / appreciate,agradecer
-to appear,aparecer
-to apprehend / seize,aprehender
-to learn,aprender
-to sweep,barrer
-to drink,beber
-to yield / give way,ceder
-to eat,comer
-to commit,cometer
-to understand,comprender
-to concede / grant,conceder
-to run,correr
-to correspond,corresponder
-to sew,coser
-to grow,crecer
-to believe,creer
-to owe / should,deber
-to depend,depender
-to hide,esconder
-to exceed,exceder
-to intercede,interceder
-to read,leer
-to deserve,merecer
-to put in / insert,meter
-to obey,obedecer
-to offend,ofender
-to offer,ofrecer
-to suffer,padecer
-to persuade,persuader
-to possess,poseer
-to precede,preceder
-to turn on / catch (fire),prender
-to proceed,proceder
-to promise,prometer
-to protect,proteger
-to access again / re‑enter,reacceder
-to collect / pick up,recoger
-to recognize,reconocer
-to possess again,reposeer 
-to respond,responder
-to go back / retreat,retroceder
-to break,romper
-to surprise,sorprender
-to happen,suceder
-to suspend,suspender
-to fear,temer
-to cough,toser
-to sell,vender
+"id","word","answer"
+"1","to absorb","absorber"
+"2","to thank / appreciate","agradecer"
+"3","to appear","aparecer"
+"4","to apprehend / seize","aprehender"
+"5","to learn","aprender"
+"6","to sweep","barrer"
+"7","to drink","beber"
+"8","to yield / give way","ceder"
+"9","to eat","comer"
+"10","to commit","cometer"
+"11","to understand","comprender"
+"12","to concede / grant","conceder"
+"13","to run","correr"
+"14","to correspond","corresponder"
+"15","to sew","coser"
+"16","to grow","crecer"
+"17","to believe","creer"
+"18","to owe / should","deber"
+"19","to depend","depender"
+"20","to hide","esconder"
+"21","to exceed","exceder"
+"22","to intercede","interceder"
+"23","to read","leer"
+"24","to deserve","merecer"
+"25","to put in / insert","meter"
+"26","to obey","obedecer"
+"27","to offend","ofender"
+"28","to offer","ofrecer"
+"29","to suffer","padecer"
+"30","to persuade","persuader"
+"31","to possess","poseer"
+"32","to precede","preceder"
+"33","to turn on / catch (fire)","prender"
+"34","to proceed","proceder"
+"35","to promise","prometer"
+"36","to protect","proteger"
+"37","to access again / re‑enter","reacceder"
+"38","to collect / pick up","recoger"
+"39","to recognize","reconocer"
+"40","to possess again","reposeer "
+"41","to respond","responder"
+"42","to go back / retreat","retroceder"
+"43","to break","romper"
+"44","to surprise","sorprender"
+"45","to happen","suceder"
+"46","to suspend","suspender"
+"47","to fear","temer"
+"48","to cough","toser"
+"49","to sell","vender"

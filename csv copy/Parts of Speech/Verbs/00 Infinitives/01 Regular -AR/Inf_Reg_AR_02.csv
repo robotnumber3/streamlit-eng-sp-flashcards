@@ -1,50 +1,51 @@
-to guess,adivinar
-to turn off,apagar
-to fix / repair,arreglar
-to lower / go down / get off,bajar
-to erase / delete,borrar
-to toast (cheers),brindar
-to warm up (food),calentar
-to charge (a device),cargar
-to look for / search online,checar
-to cut,cortar
-to turn (a corner),dar vuelta
-to decorate,decorar
-to leave behind / drop off / forget,dejar
-to spill / pour,derramar
-to wish / want,desear
-to unplug,desenchufar
-to shower,duchar
-to plug in,enchufar
-to teach,enseñar
-to wrap,envolver
-to park,estacionar
-to enter (data) / type in,ingresar
-to install,instalar
-to fill (out),llenar
-to mix,mezclar
-to climb / mount,montar
-to swim,nadar
-to notice,notar
-to ask for / order (food),ordenar
-to touch / knock,palpar
-to stop,parar
-to pass / happen,pasar
-to skate,patinar
-to glue / stick / hit,pegar
-to fight / argue,pelear
-to iron,planchar
-to plant,plantar
-to turn on,prender
-to borrow,prestar
-to complain,reclamar
-to water (plants),regar
-to finish up / wrap up,rematar
-to repair,reparar
-to reserve / book,reservar
-to jump,saltar
-to greet,saludar
-to dry,secar
-to point out / signal,señalar
-to add,sumar
-to throw away,tirar
+"id","word","answer"
+"1","to guess","adivinar"
+"2","to turn off","apagar"
+"3","to fix / repair","arreglar"
+"4","to lower / go down / get off","bajar"
+"5","to erase / delete","borrar"
+"6","to toast (cheers)","brindar"
+"7","to warm up (food)","calentar"
+"8","to charge (a device)","cargar"
+"9","to look for / search online","checar"
+"10","to cut","cortar"
+"11","to turn (a corner)","dar vuelta"
+"12","to decorate","decorar"
+"13","to leave behind / drop off / forget","dejar"
+"14","to spill / pour","derramar"
+"15","to wish / want","desear"
+"16","to unplug","desenchufar"
+"17","to shower","duchar"
+"18","to plug in","enchufar"
+"19","to teach","enseñar"
+"20","to wrap","envolver"
+"21","to park","estacionar"
+"22","to enter (data) / type in","ingresar"
+"23","to install","instalar"
+"24","to fill (out)","llenar"
+"25","to mix","mezclar"
+"26","to climb / mount","montar"
+"27","to swim","nadar"
+"28","to notice","notar"
+"29","to ask for / order (food)","ordenar"
+"30","to touch / knock","palpar"
+"31","to stop","parar"
+"32","to pass / happen","pasar"
+"33","to skate","patinar"
+"34","to glue / stick / hit","pegar"
+"35","to fight / argue","pelear"
+"36","to iron","planchar"
+"37","to plant","plantar"
+"38","to turn on","prender"
+"39","to borrow","prestar"
+"40","to complain","reclamar"
+"41","to water (plants)","regar"
+"42","to finish up / wrap up","rematar"
+"43","to repair","reparar"
+"44","to reserve / book","reservar"
+"45","to jump","saltar"
+"46","to greet","saludar"
+"47","to dry","secar"
+"48","to point out / signal","señalar"
+"49","to add","sumar"
+"50","to throw away","tirar"
