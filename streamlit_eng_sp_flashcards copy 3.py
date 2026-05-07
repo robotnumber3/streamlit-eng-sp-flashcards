@@ -12582,7 +12582,7 @@ def render_buttons(show_answer, spanish_audio_text, spanish_visible_before_answe
                             render_speaker_button(spanish_audio_text, icon_font_size="1.9rem")
                     with phone_single_row_columns[1]:
                         with st.container(key="autoplay_btn_phone_wrap"):
-                            st.button("AUTO  \nPLAY", key="autospeak_phone_btn", on_click=toggle_auto_speak_spanish)
+                            render_auto_speak_button(st.session_state.auto_speak_spanish)
                     with phone_single_row_columns[2]:
                         st.empty()
     if ai_examples_supported:
