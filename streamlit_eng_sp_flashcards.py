@@ -1001,33 +1001,40 @@ def csv_data_row_count(filename):
 csv_row_counts = {filename: compute_csv_data_row_count(filename) for filename in csv_files}
 
 
-def resolved_csv_row_count(filename):
+def resolve_known_csv_filename(filename):
     if not filename:
-        return 0
+        return None
 
-    exact_count = csv_row_counts.get(filename)
-    if exact_count is not None:
-        return exact_count
+    if filename in csv_relative_paths:
+        return filename
 
     candidate_name = os.path.basename(str(filename).strip())
     if not candidate_name:
-        return 0
+        return None
+
+    if candidate_name in csv_relative_paths:
+        return candidate_name
 
     candidate_stem, candidate_extension = os.path.splitext(candidate_name)
-    for known_filename, row_count in csv_row_counts.items():
+    for known_filename in csv_relative_paths:
         known_basename = os.path.basename(known_filename)
         if known_basename == candidate_name:
-            return row_count
+            return known_filename
         known_stem, _ = os.path.splitext(known_basename)
         if candidate_extension.lower() != ".csv" and known_stem == candidate_name:
-            return row_count
+            return known_filename
         if known_stem == candidate_stem:
-            return row_count
+            return known_filename
 
-    try:
-        return csv_data_row_count(candidate_name)
-    except Exception:
+    return None
+
+
+def resolved_csv_row_count(filename):
+    resolved_filename = resolve_known_csv_filename(filename)
+    if resolved_filename is None:
         return 0
+
+    return compute_csv_data_row_count(resolved_filename)
 
 
 def picker_folder_item_count(folder_node):
