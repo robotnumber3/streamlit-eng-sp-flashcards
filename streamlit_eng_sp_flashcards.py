@@ -981,8 +981,7 @@ def story_title_row_present_in_file(filename):
         return False
 
 
-@st.cache_data(show_spinner=False)
-def csv_data_row_count(filename):
+def compute_csv_data_row_count(filename):
     file_path = csv_path_for(filename)
     try:
         with open(file_path, encoding="utf-8", errors="ignore") as handle:
@@ -994,7 +993,41 @@ def csv_data_row_count(filename):
         return 0
 
 
-csv_row_counts = {filename: csv_data_row_count(filename) for filename in csv_files}
+@st.cache_data(show_spinner=False)
+def csv_data_row_count(filename):
+    return compute_csv_data_row_count(filename)
+
+
+csv_row_counts = {filename: compute_csv_data_row_count(filename) for filename in csv_files}
+
+
+def resolved_csv_row_count(filename):
+    if not filename:
+        return 0
+
+    exact_count = csv_row_counts.get(filename)
+    if exact_count is not None:
+        return exact_count
+
+    candidate_name = os.path.basename(str(filename).strip())
+    if not candidate_name:
+        return 0
+
+    candidate_stem, candidate_extension = os.path.splitext(candidate_name)
+    for known_filename, row_count in csv_row_counts.items():
+        known_basename = os.path.basename(known_filename)
+        if known_basename == candidate_name:
+            return row_count
+        known_stem, _ = os.path.splitext(known_basename)
+        if candidate_extension.lower() != ".csv" and known_stem == candidate_name:
+            return row_count
+        if known_stem == candidate_stem:
+            return row_count
+
+    try:
+        return csv_data_row_count(candidate_name)
+    except Exception:
+        return 0
 
 
 def picker_folder_item_count(folder_node):
@@ -1084,7 +1117,7 @@ def display_deck_name(filename):
     base_name, extension = os.path.splitext(filename)
     if extension.lower() == ".csv":
         display_name = picker_entry_metadata(filename, is_folder=False)["display_name"]
-        return f"{display_name} [{csv_row_counts.get(filename, 0)}]"
+        return f"{display_name} [{resolved_csv_row_count(filename)}]"
     return base_name
 
 
@@ -1101,7 +1134,7 @@ def picker_display_deck_name(filename, person):
         return base_name
 
     display_name = picker_entry_metadata(filename, is_folder=False)["display_name"]
-    return f"{display_name} ({csv_row_counts.get(filename, 0)})"
+    return f"{display_name} ({resolved_csv_row_count(filename)})"
 
 
 def is_dialog_deck(filename):
