@@ -1,4 +1,3 @@
-Z
 """Streamlit Spanish flashcards application.
 
 This app now treats folder placement as the primary source of deck meaning.
