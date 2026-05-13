@@ -1,4 +1,4 @@
-
+Z
 """Streamlit Spanish flashcards application.
 
 This app now treats folder placement as the primary source of deck meaning.
@@ -1101,7 +1101,8 @@ def picker_display_deck_name(filename, person):
     if extension.lower() != ".csv":
         return base_name
 
-    return picker_entry_metadata(filename, is_folder=False)["display_name"]
+    display_name = picker_entry_metadata(filename, is_folder=False)["display_name"]
+    return f"{display_name} ({csv_row_counts.get(filename, 0)})"
 
 
 def is_dialog_deck(filename):

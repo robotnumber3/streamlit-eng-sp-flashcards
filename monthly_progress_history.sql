@@ -10,6 +10,10 @@ create table if not exists public.monthly_progress_history (
     constraint monthly_progress_history_learned_count_check check (learned_count >= 0)
 );
 
+grant select, insert, update, delete
+on public.monthly_progress_history
+to service_role;
+
 create or replace function public.set_monthly_progress_history_updated_at()
 returns trigger
 language plpgsql
