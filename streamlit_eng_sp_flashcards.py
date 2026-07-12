@@ -37,7 +37,6 @@ from urllib.parse import quote
 from datetime import date, datetime
 import matplotlib.pyplot as plt
 import pandas as pd
-import streamlit.components.v1 as components
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
 # Set page config FIRST
@@ -457,7 +456,11 @@ def get_supabase_client():
         print("[SUPABASE] Using anon key (SUPABASE_ANON_KEY)")
     if create_client is None or not SUPABASE_URL or not supabase_key:
         return None
-    return create_client(SUPABASE_URL, supabase_key)
+    try:
+        return create_client(SUPABASE_URL, supabase_key)
+    except Exception as exc:
+        print(f"[SUPABASE] Failed to create client: {exc}")
+        return None
 
 
 def cloud_sync_enabled():
@@ -2746,7 +2749,7 @@ def polygon_points_attribute(points):
 
 
 def inject_splash_action_bridge():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -2797,7 +2800,7 @@ def inject_splash_action_bridge():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -2896,7 +2899,7 @@ def render_splash_selector():
     inject_splash_action_bridge()
 
 def render_menu_backdrop_close_handler():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -2921,7 +2924,7 @@ def render_menu_backdrop_close_handler():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -3480,7 +3483,7 @@ def picker_build_code_text():
 
 
 def inject_picker_toggle_bridge():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -3550,7 +3553,7 @@ def inject_picker_toggle_bridge():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -6629,7 +6632,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 # VIEWPORT META
 # ------------------------------------------------------------------------
 
-components.html("""
+st.iframe("""
 <script>
 (function() {
     var doc = window.parent.document;
@@ -6645,7 +6648,7 @@ components.html("""
     }
 })();
 </script>
-""", height=0)
+""", height=1)
 
 
 def render_mobile_deck_picker_height_fix(scroll_target=None):
@@ -6819,9 +6822,9 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
         })();
         </script>
         """.replace("__SCROLL_TARGET__", json.dumps(scroll_target))
-    components.html(
+    st.iframe(
         script,
-        height=0,
+        height=1,
     )
 
 # ------------------------------------------------------------------------
@@ -6943,7 +6946,7 @@ def add_current_story_line_to_favorites():
 
 
 def render_delete_confirm_timeout():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -6970,7 +6973,7 @@ def render_delete_confirm_timeout():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -6979,7 +6982,7 @@ def clear_erase_review_confirm():
 
 
 def render_erase_review_confirm_timeout():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -7006,7 +7009,7 @@ def render_erase_review_confirm_timeout():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -7015,7 +7018,7 @@ def clear_erase_favorites_confirm():
 
 
 def render_erase_favorites_confirm_timeout():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -7042,7 +7045,7 @@ def render_erase_favorites_confirm_timeout():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -7051,7 +7054,7 @@ def clear_initialize_all_decks_confirm():
 
 
 def render_initialize_all_decks_confirm_timeout():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -7078,7 +7081,7 @@ def render_initialize_all_decks_confirm_timeout():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 def schedule_repeat(card_index, repeat_score):
@@ -7618,7 +7621,7 @@ def story_box_shield_html(is_clickable):
 def render_story_pause_request_guard():
     story_index = st.session_state.index
     story_run_token = st.session_state.story_run_token
-    components.html(
+    st.iframe(
         f"""
         <script>
         (function() {{
@@ -7666,12 +7669,12 @@ def render_story_pause_request_guard():
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
 def render_story_box_shield_handler():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -7697,7 +7700,7 @@ def render_story_box_shield_handler():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -7722,7 +7725,7 @@ def render_story_start_unlock_handler(
     initial_render_delay_ms = max(int(initial_render_delay_seconds * 1000), 0)
     story_key = st.session_state.selected_csv or ""
     story_run_token = st.session_state.story_run_token + (0 if running else 1)
-    components.html(
+    st.iframe(
         f"""
         <script>
         (function() {{
@@ -8765,12 +8768,12 @@ def render_story_start_unlock_handler(
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
 def render_story_mobile_controller_cleanup():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -8832,14 +8835,14 @@ def render_story_mobile_controller_cleanup():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
 def render_story_paused_cleanup():
     story_index = st.session_state.index
     story_run_token = st.session_state.story_run_token
-    components.html(
+    st.iframe(
         f"""
         <script>
         (function() {{
@@ -8884,12 +8887,12 @@ def render_story_paused_cleanup():
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
 def render_story_advance_tap_handler():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -8934,12 +8937,12 @@ def render_story_advance_tap_handler():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
 def render_story_advance_tap_cleanup():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -8961,12 +8964,12 @@ def render_story_advance_tap_cleanup():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
 def render_story_ignore_tap_handler():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -9006,7 +9009,7 @@ def render_story_ignore_tap_handler():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -9014,7 +9017,7 @@ def render_story_auto_advance(delay_seconds):
     delay_ms = max(int(delay_seconds * 1000), 0)
     story_index = st.session_state.index
     last_story_index = max(len(st.session_state.order) - 1, 0)
-    components.html(
+    st.iframe(
         f"""
         <script>
         (function() {{
@@ -9068,7 +9071,7 @@ def render_story_auto_advance(delay_seconds):
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -9080,7 +9083,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
     delay_ms = max(int(delay_seconds * 1000), 0)
     render_delay_ms = max(int(render_delay_seconds * 1000), 0)
     last_story_index = max(len(st.session_state.order) - 1, 0)
-    components.html(
+    st.iframe(
         f"""
         <script>
         (function() {{
@@ -9536,7 +9539,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -9926,7 +9929,7 @@ def render_flashcard(prompt, solution, show_answer):
 
 def inject_tap_reveal(show_answer):
     show_str = "true" if show_answer else "false"
-    components.html("""
+    st.iframe("""
     <script>
     (function() {
         var parentWindow = window.parent;
@@ -9973,7 +9976,7 @@ def inject_tap_reveal(show_answer):
         tryAttach();
     })();
     </script>
-    """, height=0)
+    """, height=1)
 
 
 def speech_rate_value():
@@ -9988,7 +9991,7 @@ def speech_rate_value():
 
 
 def inject_flashcard_speech_runtime():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -10600,12 +10603,12 @@ def inject_flashcard_speech_runtime():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
 def inject_speech_priming():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -10741,7 +10744,7 @@ def inject_speech_priming():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -10762,7 +10765,7 @@ def toggle_auto_speak_spanish():
 def render_speaker_button(text, icon_font_size="1.15rem"):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
-    components.html(
+    st.iframe(
         f"""
         <style>
         html, body {{
@@ -10863,7 +10866,7 @@ def render_auto_speak_button(is_on):
         bg_color = "rgba(128,128,128,0.12)"
         border_color = "rgba(128,128,128,0.35)"
         text_color = "rgba(140,140,140,0.8)"
-    components.html(
+    st.iframe(
         f"""
         <style>
         html, body {{
@@ -10960,7 +10963,7 @@ def render_phone_ai_cycle_btn(disabled=False):
     disabled_attr = "disabled" if disabled else ""
     cursor_val = "default" if disabled else "pointer"
     opacity_val = "0.42" if disabled else "1"
-    components.html(
+    st.iframe(
         f"""
         <style>
         html, body {{
@@ -11039,7 +11042,7 @@ def render_phone_ai_reload_btn(disabled=False):
     disabled_attr = "disabled" if disabled else ""
     cursor_val = "default" if disabled else "pointer"
     opacity_val = "0.42" if disabled else "1"
-    components.html(
+    st.iframe(
         f"""
         <style>
         html, body {{
@@ -11115,7 +11118,7 @@ def render_phone_ai_en_btn(en_is_on=False):
         border = "rgba(128,128,128,0.35)"
         bg = "rgba(128,128,128,0.08)"
         fg = "rgba(120,120,120,0.85)"
-    components.html(
+    st.iframe(
         f"""
         <style>
         html, body {{
@@ -11186,7 +11189,7 @@ def render_ai_cycle_button(disabled=False):
     disabled_attr = "disabled" if disabled else ""
     cursor_value = "default" if disabled else "pointer"
     opacity_value = "0.42" if disabled else "1"
-    components.html(
+    st.iframe(
         f"""
         <style>
         body {{
@@ -11271,7 +11274,7 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False, en_dis
         en_border = "rgba(128,128,128,0.35)"
         en_bg = "rgba(128,128,128,0.08)"
         en_fg = "rgba(120,120,120,0.85)"
-    components.html(
+    st.iframe(
         f"""
         <style>
         html, body {{
@@ -11400,7 +11403,7 @@ def render_ai_action_buttons(cycle_disabled=False, reload_disabled=False, en_dis
 def render_auto_speak_spanish(text, speech_key):
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
-    components.html(
+    st.iframe(
         f"""
         <script>
         (function() {{
@@ -11436,7 +11439,7 @@ def render_auto_speak_spanish(text, speech_key):
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -11508,7 +11511,7 @@ def render_regular_auto_hidden_buttons():
 
 
 def render_regular_auto_mode_cleanup():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -11534,12 +11537,12 @@ def render_regular_auto_mode_cleanup():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
 def render_browser_audio_cleanup():
-    components.html(
+    st.iframe(
         """
         <script>
         (function() {
@@ -11618,7 +11621,7 @@ def render_browser_audio_cleanup():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -11626,7 +11629,7 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
     speech_text = strip_spoken_text(text)
     speech_rate = speech_rate_value()
     action_delay_ms = max(int(pause_after_seconds * 1000), 0)
-    components.html(
+    st.iframe(
         f"""
         <script>
         (function() {{
@@ -11936,7 +11939,7 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
