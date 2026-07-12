@@ -1,4 +1,5 @@
-streamlit>=1.59.1
-pandas>=3.0.3
-matplotlib>=3.11.0
-supabase>=2.31.0,<3
+streamlit==1.59.1
+pandas==2.2.3
+matplotlib==3.10.3
+numpy==1.26.4
+supabase>=2,<3

@@ -2800,7 +2800,7 @@ def inject_splash_action_bridge():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -2924,7 +2924,7 @@ def render_menu_backdrop_close_handler():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -3553,7 +3553,7 @@ def inject_picker_toggle_bridge():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -6648,7 +6648,7 @@ st.iframe("""
     }
 })();
 </script>
-""", height=0)
+""", height=1)
 
 
 def render_mobile_deck_picker_height_fix(scroll_target=None):
@@ -6824,7 +6824,7 @@ def render_mobile_deck_picker_height_fix(scroll_target=None):
         """.replace("__SCROLL_TARGET__", json.dumps(scroll_target))
     st.iframe(
         script,
-        height=0,
+        height=1,
     )
 
 # ------------------------------------------------------------------------
@@ -6973,7 +6973,7 @@ def render_delete_confirm_timeout():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -7009,7 +7009,7 @@ def render_erase_review_confirm_timeout():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -7045,7 +7045,7 @@ def render_erase_favorites_confirm_timeout():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -7081,7 +7081,7 @@ def render_initialize_all_decks_confirm_timeout():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 def schedule_repeat(card_index, repeat_score):
@@ -7669,7 +7669,7 @@ def render_story_pause_request_guard():
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -7700,7 +7700,7 @@ def render_story_box_shield_handler():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -8768,7 +8768,7 @@ def render_story_start_unlock_handler(
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -8835,7 +8835,7 @@ def render_story_mobile_controller_cleanup():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -8887,7 +8887,7 @@ def render_story_paused_cleanup():
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -8937,7 +8937,7 @@ def render_story_advance_tap_handler():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -8964,7 +8964,7 @@ def render_story_advance_tap_cleanup():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -9009,7 +9009,7 @@ def render_story_ignore_tap_handler():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -9071,7 +9071,7 @@ def render_story_auto_advance(delay_seconds):
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -9539,7 +9539,7 @@ def render_story_audio_autoplay(text, auto_advance=False, delay_seconds=0, dialo
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -9976,7 +9976,7 @@ def inject_tap_reveal(show_answer):
         tryAttach();
     })();
     </script>
-    """, height=0)
+    """, height=1)
 
 
 def speech_rate_value():
@@ -10603,7 +10603,7 @@ def inject_flashcard_speech_runtime():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -10744,7 +10744,7 @@ def inject_speech_priming():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -11439,7 +11439,7 @@ def render_auto_speak_spanish(text, speech_key):
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -11537,7 +11537,7 @@ def render_regular_auto_mode_cleanup():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -11621,7 +11621,7 @@ def render_browser_audio_cleanup():
         })();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
@@ -11939,7 +11939,7 @@ def render_regular_auto_mode_driver(phase, phase_key, text, language, pause_afte
         }})();
         </script>
         """,
-        height=0,
+        height=1,
     )
 
 
