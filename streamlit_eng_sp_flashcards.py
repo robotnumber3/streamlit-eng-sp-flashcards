@@ -6632,7 +6632,7 @@ div[data-testid="stButton"] > button:hover {{ opacity: 0.82 !important; }}
 # VIEWPORT META
 # ------------------------------------------------------------------------
 
-st.iframe("""
+st.components.v1.html("""
 <script>
 (function() {
     var doc = window.parent.document;
