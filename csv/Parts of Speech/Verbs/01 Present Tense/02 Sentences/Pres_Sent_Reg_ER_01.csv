@@ -1,51 +1,51 @@
-ID,word,answer
-1,I believe a short story.,Creo un cuento corto.
-2,You believe a simple idea.,Crees una idea simple.
-3,He believes an easy answer.,Cree una respuesta fácil.
-4,We believe a good plan.,Creemos un plan bueno.
-5,You believe a true word. [pl],Creen una palabra verdadera.
-6,I drink cold water.,Bebo agua fría.
-7,You drink hot milk.,Bebes leche caliente.
-8,He drinks sweet juice.,Bebe jugo dulce.
-9,We drink black coffee.,Bebemos café negro.
-10,They drink green tea.,Beben té verde.
-11,I eat white rice.,Como arroz blanco.
-12,You eat red soup.,Comes sopa roja.
-13,He eats fresh bread.,Come pan fresco.
-14,We eat yellow cheese.,Comemos queso amarillo.
-15,They eat ripe fruit.,Comen fruta madura.
-16,I learn a new song.,Aprendo una canción nueva.
-17,You learn a long name.,Aprendes un nombre largo.
-18,He learns a small lesson.,Aprende una lección pequeña.
-19,We learn a basic rule.,Aprendemos una regla básica.
-20,They learn a clear question.,Aprenden una pregunta clara.
-21,I read an old book.,Leo un libro viejo.
-22,You read a clean letter.,Lees una carta limpia.
-23,"You read a pretty page. [sing, formal]",Lee una página bonita.
-24,We read a blue card.,Leemos una tarjeta azul.
-25,You read a brown sign. [pl],Leen un letrero café.
-26,I sell a cheap shirt.,Vendo una camisa barata.
-27,You sell a gray table.,Vendes una mesa gris.
-28,"You sell a purple car. [sing, formal]",Vende un carro morado.
-29,We sell a pink chair.,Vendemos una silla rosa.
-30,You sell orange shoes. [pl],Venden zapatos naranjas.
-31,I sew a white dress.,Coso un vestido blanco.
-32,You sew a red skirt.,Coses una falda roja.
-33,He sews a large bag.,Cose una bolsa grande.
-34,We sew a soft hat.,Cosemos un sombrero suave.
-35,They sew a warm coat.,Cosen un abrigo abrigado.
-36,I surprise a tall friend.,Sorprendo a un amigo alto.
-37,You surprise a happy girl.,Sorprendes a una niña feliz.
-38,He surprises a quiet boy.,Sorprende a un niño tranquilo.
-39,We surprise a kind teacher.,Sorprendemos a una maestra amable.
-40,You surprise a young student. [pl],Sorprenden a un estudiante joven.
-41,I sweep the dirty floor.,Barro el piso sucio.
-42,You sweep the dry room.,Barres el cuarto seco.
-43,He sweeps the open kitchen.,Barre la cocina abierta.
-44,We sweep the closed patio.,Barremos el patio cerrado.
-45,They sweep the long hall.,Barren el pasillo largo.
-46,I understand the important text.,Comprendo el texto importante.
-47,You understand the useful map.,Comprendes el mapa útil.
-48,"You understand the difficult problem. [sing, formal]",Comprende el problema difícil.
-49,We understand the perfect class.,Comprendemos la clase perfecta.
-50,You understand the famous example. [pl],Comprenden el ejemplo famoso.
+"ID","word","answer"
+"1","I believe a short story.","Creo un cuento corto."
+"2","You believe a simple idea.","Crees una idea simple."
+"3","He believes an easy answer.","Cree una respuesta fácil."
+"4","We believe a good plan.","Creemos un plan bueno."
+"5","You believe a true word. [pl]","Creen una palabra verdadera."
+"6","I drink cold water.","Bebo agua fría."
+"7","You drink hot milk.","Bebes leche caliente."
+"8","He drinks sweet juice.","Bebe jugo dulce."
+"9","We drink black coffee.","Bebemos café negro."
+"10","They drink green tea.","Beben té verde."
+"11","I eat white rice.","Como arroz blanco."
+"12","You eat red soup.","Comes sopa roja."
+"13","He eats fresh bread.","Come pan fresco."
+"14","We eat yellow cheese.","Comemos queso amarillo."
+"15","They eat ripe fruit.","Comen fruta madura."
+"16","I learn a new song.","Aprendo una canción nueva."
+"17","You learn a long name.","Aprendes un nombre largo."
+"18","He learns a small lesson.","Aprende una lección pequeña."
+"19","We learn a basic rule.","Aprendemos una regla básica."
+"20","They learn a clear question.","Aprenden una pregunta clara."
+"21","I read an old book.","Leo un libro viejo."
+"22","You read a clean letter.","Lees una carta limpia."
+"23","You read a pretty page. [sing, formal]","Lee una página bonita."
+"24","We read a blue card.","Leemos una tarjeta azul."
+"25","You read a brown sign. [pl]","Leen un letrero café."
+"26","I sell a cheap shirt.","Vendo una camisa barata."
+"27","You sell a gray table.","Vendes una mesa gris."
+"28","You sell a purple car. [sing, formal]","Vende un carro morado."
+"29","We sell a pink chair.","Vendemos una silla rosa."
+"30","You sell orange shoes. [pl]","Venden zapatos naranjas."
+"31","I sew a white dress.","Coso un vestido blanco."
+"32","You sew a red skirt.","Coses una falda roja."
+"33","He sews a large bag.","Cose una bolsa grande."
+"34","We sew a soft hat.","Cosemos un sombrero suave."
+"35","They sew a warm coat.","Cosen un abrigo abrigado."
+"36","I surprise a tall friend.","Sorprendo a un amigo alto."
+"37","You surprise a happy girl.","Sorprendes a una niña feliz."
+"38","He surprises a quiet boy.","Sorprende a un niño tranquilo."
+"39","We surprise a kind teacher.","Sorprendemos a una maestra amable."
+"40","You surprise a young student. [pl]","Sorprenden a un estudiante joven."
+"41","I sweep the dirty floor.","Barro el piso sucio."
+"42","You sweep the dry room.","Barres el cuarto seco."
+"43","He sweeps the open kitchen.","Barre la cocina abierta."
+"44","We sweep the closed patio.","Barremos el patio cerrado."
+"45","They sweep the long hall.","Barren el pasillo largo."
+"46","I understand the important text.","Comprendo el texto importante."
+"47","You understand the useful map.","Comprendes el mapa útil."
+"48","You understand the difficult problem. [sing, formal]","Comprende el problema difícil."
+"49","We understand the perfect class.","Comprendemos la clase perfecta."
+"50","You understand the famous example. [pl]","Comprenden el ejemplo famoso."

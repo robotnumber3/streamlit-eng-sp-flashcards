@@ -1,46 +1,46 @@
-ID,word,answer
-1,I permit the small game.,Permito el juego pequeño.
-2,You permit the short visit.,Permites la visita corta.
-3,He permits the new class.,Permite la clase nueva.
-4,We permit the quiet dog.,Permitimos el perro tranquilo.
-5,They permit the blue bag.,Permiten la bolsa azul.
-6,I describe the red car.,Describo el carro rojo.
-7,You describe the big table.,Describes la mesa grande.
-8,He describes the pretty house.,Describe la casa bonita.
-9,We describe the white cat.,Describimos el gato blanco.
-10,You describe the old door. [pl],Describen la puerta vieja.
-11,I discuss the easy lesson.,Discuto la lección fácil.
-12,You discuss the important plan.,Discutes el plan importante.
-13,He discusses the long book.,Discute el libro largo.
-14,We discuss the good idea.,Discutimos la idea buena.
-15,They discuss the warm soup.,Discuten la sopa caliente.
-16,I divide the yellow cake.,Divido el pastel amarillo.
-17,You divide the fresh bread.,Divides el pan fresco.
-18,She divides the clean paper.,Divide el papel limpio.
-19,We divide the cold water.,Dividimos el agua fría.
-20,You divide the green salad. [pl],Dividen la ensalada verde.
-21,I live in a small apartment.,Vivo en un apartamento pequeño.
-22,You live in a quiet town.,Vives en un pueblo tranquilo.
-23,"You live in a new room. [sing, formal]",Vive en un cuarto nuevo.
-24,We live on a pretty street.,Vivimos en una calle bonita.
-25,They live in a big city.,Viven en una ciudad grande.
-26,I open the black box.,Abro la caja negra.
-27,You open the clean window.,Abres la ventana limpia.
-28,He opens the heavy suitcase.,Abre la maleta pesada.
-29,We open the simple menu.,Abrimos el menú sencillo.
-30,You open the brown book. [pl],Abren el libro café.
-31,I receive the nice letter.,Recibo la carta amable.
-32,You receive the new phone.,Recibes el teléfono nuevo.
-33,She receives the small gift.,Recibe el regalo pequeño.
-34,We receive the large package.,Recibimos el paquete grande.
-35,They receive the white shirt.,Reciben la camisa blanca.
-36,I share the sweet fruit.,Comparto la fruta dulce.
-37,You share the cold drink.,Compartes la bebida fría.
-38,He shares the hot coffee.,Comparte el café caliente.
-39,We share the good rice.,Compartimos el arroz bueno.
-40,You share the rich cheese. [pl],Comparten el queso rico.
-41,I write the short note.,Escribo la nota corta.
-42,You write the long message.,Escribes el mensaje largo.
-43,"You write the easy word. [sing, formal]",Escribe la palabra fácil.
-44,We write the new story.,Escribimos el cuento nuevo.
-45,They write the clear answer.,Escriben la respuesta clara.
+"ID","word","answer"
+"1","I permit the small game.","Permito el juego pequeño."
+"2","You permit the short visit.","Permites la visita corta."
+"3","He permits the new class.","Permite la clase nueva."
+"4","We permit the quiet dog.","Permitimos el perro tranquilo."
+"5","They permit the blue bag.","Permiten la bolsa azul."
+"6","I describe the red car.","Describo el carro rojo."
+"7","You describe the big table.","Describes la mesa grande."
+"8","He describes the pretty house.","Describe la casa bonita."
+"9","We describe the white cat.","Describimos el gato blanco."
+"10","You describe the old door. [pl]","Describen la puerta vieja."
+"11","I discuss the easy lesson.","Discuto la lección fácil."
+"12","You discuss the important plan.","Discutes el plan importante."
+"13","He discusses the long book.","Discute el libro largo."
+"14","We discuss the good idea.","Discutimos la idea buena."
+"15","They discuss the warm soup.","Discuten la sopa caliente."
+"16","I divide the yellow cake.","Divido el pastel amarillo."
+"17","You divide the fresh bread.","Divides el pan fresco."
+"18","She divides the clean paper.","Divide el papel limpio."
+"19","We divide the cold water.","Dividimos el agua fría."
+"20","You divide the green salad. [pl]","Dividen la ensalada verde."
+"21","I live in a small apartment.","Vivo en un apartamento pequeño."
+"22","You live in a quiet town.","Vives en un pueblo tranquilo."
+"23","You live in a new room. [sing, formal]","Vive en un cuarto nuevo."
+"24","We live on a pretty street.","Vivimos en una calle bonita."
+"25","They live in a big city.","Viven en una ciudad grande."
+"26","I open the black box.","Abro la caja negra."
+"27","You open the clean window.","Abres la ventana limpia."
+"28","He opens the heavy suitcase.","Abre la maleta pesada."
+"29","We open the simple menu.","Abrimos el menú sencillo."
+"30","You open the brown book. [pl]","Abren el libro café."
+"31","I receive the nice letter.","Recibo la carta amable."
+"32","You receive the new phone.","Recibes el teléfono nuevo."
+"33","She receives the small gift.","Recibe el regalo pequeño."
+"34","We receive the large package.","Recibimos el paquete grande."
+"35","They receive the white shirt.","Reciben la camisa blanca."
+"36","I share the sweet fruit.","Comparto la fruta dulce."
+"37","You share the cold drink.","Compartes la bebida fría."
+"38","He shares the hot coffee.","Comparte el café caliente."
+"39","We share the good rice.","Compartimos el arroz bueno."
+"40","You share the rich cheese. [pl]","Comparten el queso rico."
+"41","I write the short note.","Escribo la nota corta."
+"42","You write the long message.","Escribes el mensaje largo."
+"43","You write the easy word. [sing, formal]","Escribe la palabra fácil."
+"44","We write the new story.","Escribimos el cuento nuevo."
+"45","They write the clear answer.","Escriben la respuesta clara."
